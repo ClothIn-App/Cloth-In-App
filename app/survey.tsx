@@ -1,12 +1,10 @@
-// survey.tsx
+// app/survey.tsx
 export const options = {
   headerShown: false,
 };
 
 import { useRouter } from 'expo-router';
-import { getAuth } from 'firebase/auth';
-import { doc, getFirestore, setDoc } from 'firebase/firestore';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   ImageBackground,
   KeyboardAvoidingView,
@@ -20,6 +18,10 @@ import {
   View,
 } from 'react-native';
 
+import { getAuth } from 'firebase/auth';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { db } from '../firebase/config';
+
 import bgPattern from '../assets/images/login-bg.png';
 
 const questions = [
@@ -32,8 +34,15 @@ const questions = [
     id: 'categories',
     question: 'What product categories would you like to explore?',
     options: [
-      'Clothing', 'Skincare', 'Makeup', 'Jewelry', 'Tech/Gadgets',
-      'Home Decor', 'Fitness Gear', 'Sustainable Products', 'Budget Finds',
+      'Clothing',
+      'Skincare',
+      'Makeup',
+      'Jewelry',
+      'Tech/Gadgets',
+      'Home Decor',
+      'Fitness Gear',
+      'Sustainable Products',
+      'Budget Finds',
     ],
   },
   {
@@ -52,73 +61,92 @@ const questions = [
     options: ['Stick to Favorites', 'Love New Brands'],
   },
   {
-     id: 'discovery',
+    id: 'discovery',
     question: 'What is your preferred method(s) to discover new products?',
     options: ['Direct Product Listings', 'Pictures and Videos Featuring Products'],
   },
 ];
 
 export default function Survey() {
-  const [currentIndex, setCurrentIndex] = useState(-1); // -1 = intro
-  const [responses, setResponses] = useState({});
-  const [customInputs, setCustomInputs] = useState({});
+  // -1 = intro screen, then 0..n for questions
+  const [currentIndex, setCurrentIndex] = useState(-1);
+  const [responses, setResponses] = useState<any>({});
+  const [customInputs, setCustomInputs] = useState<any>({});
   const router = useRouter();
-  const question = questions[currentIndex] || {};
-  const selected = responses[question.id] || [];
 
-  const toggleOption = (option) => {
-    const current = responses[question.id] || [];
+  const question = (questions as any)[currentIndex] || ({} as any);
+  const selected: string[] = (responses[question.id] as string[]) || [];
+
+  const toggleOption = (option: string) => {
+    const current: string[] = (responses[question.id] as string[]) || [];
     const updated = current.includes(option)
       ? current.filter((item) => item !== option)
       : [...current, option];
-    setResponses((prev) => ({ ...prev, [question.id]: updated }));
+    setResponses((prev: any) => ({ ...prev, [question.id]: updated }));
   };
 
   const handleAddCustomInput = () => {
-    const current = customInputs[question.id] || [];
-    setCustomInputs((prev) => ({
+    const current: string[] = (customInputs[question.id] as string[]) || [];
+    setCustomInputs((prev: any) => ({
       ...prev,
       [question.id]: [...current, ''],
     }));
   };
 
-  const handleRemoveCustomInput = (indexToRemove) => {
-    const inputs = [...(customInputs[question.id] || [])];
+  const handleRemoveCustomInput = (indexToRemove: number) => {
+    const inputs = [...(((customInputs[question.id] as string[]) || []))];
     inputs.splice(indexToRemove, 1);
-    setCustomInputs((prev) => ({
+    setCustomInputs((prev: any) => ({
       ...prev,
       [question.id]: inputs,
     }));
   };
 
-  const handleCustomInputChange = (text, index) => {
-    const inputs = [...(customInputs[question.id] || [])];
+  const handleCustomInputChange = (text: string, index: number) => {
+    const inputs = [...(((customInputs[question.id] as string[]) || []))];
     inputs[index] = text;
-    setCustomInputs((prev) => ({
+    setCustomInputs((prev: any) => ({
       ...prev,
       [question.id]: inputs,
     }));
   };
 
   const handleNext = async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
+    // Merge custom inputs for the current question into responses
     const finalResponses = {
       ...responses,
       [question.id]: [
-        ...(responses[question.id] || []),
-        ...(customInputs[question.id]?.filter(Boolean) || []),
+        ...(((responses[question.id] as string[]) || [])),
+        ...((((customInputs[question.id] as string[]) || []).filter(Boolean))),
       ],
     };
     setResponses(finalResponses);
 
-    if (currentIndex === questions.length - 1) {
-      if (user) {
-        await setDoc(doc(getFirestore(), 'surveyResponses', user.uid), finalResponses);
-      }
-      router.replace('/(tabs)');
-    } else {
+    const isLastQuestion = currentIndex === questions.length - 1;
+
+    if (!isLastQuestion) {
       setCurrentIndex((prev) => prev + 1);
+      return;
+    }
+
+    // Last question -> save to Firestore, then route to tabs
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (user) {
+        await setDoc(
+          doc(db, 'surveyResponses', user.uid),
+          { ...finalResponses, updatedAt: serverTimestamp() },
+          { merge: true }
+        );
+        // Optional: console.log('Survey saved');
+      }
+    } catch (err) {
+      console.warn('Failed to save survey responses:', err);
+      // You could show a toast here if you want
+    } finally {
+      router.replace('/(tabs)');
     }
   };
 
@@ -139,38 +167,49 @@ export default function Survey() {
       style={styles.background}
       imageStyle={{ opacity: 0.03 }}
     >
-     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        {/* Progress Bar */}
-        <View style={styles.progressBarContainer}>
-          <View style={[styles.progressBar, { width: `${progress}%` }]} />
-        </View>
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          {/* Progress Bar */}
+          <View style={styles.progressBarContainer}>
+            <View style={[styles.progressBar, { width: `${progress}%` }]} />
+          </View>
 
-        {currentIndex === -1 ? (
-          <View style={styles.introContent}>
-            <Text style={styles.title}>Let's Personalize Your Experience!</Text>
-            <Text style={styles.subtitle}>This short quiz helps tailor your "For You" page.</Text>
+          {currentIndex === -1 ? (
+            <View style={styles.introContent}>
+              <Text style={styles.title}>Let's Personalize Your Experience!</Text>
+              <Text style={styles.subtitle}>
+                This short quiz helps tailor your "For You" page.
+              </Text>
 
-            <View style={styles.bottomButtons}>
-              <TouchableOpacity style={styles.buttonFullWidth} onPress={() => setCurrentIndex(0)}>
-                <Text style={styles.buttonText}>Start Survey</Text>
+              <View style={styles.bottomButtons}>
+                <TouchableOpacity
+                  style={styles.buttonFullWidth}
+                  onPress={() => setCurrentIndex(0)}
+                >
+                  <Text style={styles.buttonText}>Start Survey</Text>
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity onPress={() => router.replace('/(tabs)')}>
+                <Text style={styles.skip}>Skip Survey</Text>
               </TouchableOpacity>
             </View>
-
-            <TouchableOpacity onPress={() => router.replace('/home')}>
-              <Text style={styles.skip}>Skip Survey</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <>
-             <ScrollView contentContainerStyle={styles.scroll}>
+          ) : (
+            <>
+              <ScrollView contentContainerStyle={styles.scroll}>
                 <Text style={styles.question}>{question.question}</Text>
-                {question.options.map((option, i) => (
+
+                {question.options?.map((option: string, i: number) => (
                   <TouchableOpacity key={i} onPress={() => toggleOption(option)}>
-                    <View style={[styles.option, selected.includes(option) && styles.optionSelected]}>
+                    <View
+                      style={[
+                        styles.option,
+                        selected.includes(option) && styles.optionSelected,
+                      ]}
+                    >
                       <Text
                         style={[
                           styles.optionText,
@@ -182,27 +221,33 @@ export default function Survey() {
                     </View>
                   </TouchableOpacity>
                 ))}
-                {(customInputs[question.id] || []).map((text, index) => (
-                  <View key={index} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <TextInput
-                      style={[styles.inputBox, { flex: 1 }]}
-                      value={text}
-                      onChangeText={(t) => handleCustomInputChange(t, index)}
-                      placeholder="Type your answer..."
-                    />
-                    <TouchableOpacity onPress={() => handleRemoveCustomInput(index)}>
-                      <Text style={{ color: 'red', marginLeft: 10 }}>✕</Text>
-                    </TouchableOpacity>
-                  </View>
-                ))}
+
+                {(customInputs[question.id] as string[] | undefined)?.map(
+                  (text: string, index: number) => (
+                    <View key={index} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <TextInput
+                        style={[styles.inputBox, { flex: 1 }]}
+                        value={text}
+                        onChangeText={(t) => handleCustomInputChange(t, index)}
+                        placeholder="Type your answer..."
+                      />
+                      <TouchableOpacity onPress={() => handleRemoveCustomInput(index)}>
+                        <Text style={{ color: 'red', marginLeft: 10 }}>✕</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )
+                )}
+
                 <TouchableOpacity onPress={handleAddCustomInput}>
                   <Text style={styles.addCustom}>+ Add Your Own</Text>
                 </TouchableOpacity>
               </ScrollView>
+
               <View style={styles.bottomButtons}>
                 <TouchableOpacity onPress={handleBack}>
                   <Text style={styles.skip}>Back</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity style={styles.button} onPress={handleNext}>
                   <Text style={styles.buttonText}>
                     {currentIndex === questions.length - 1 ? 'Finish' : 'Next'}
@@ -218,18 +263,12 @@ export default function Survey() {
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
+  background: { flex: 1 },
+  safeArea: { flex: 1 },
+  container: { flex: 1 },
   scroll: {
     padding: 20,
-    paddingBottom: 150,
+    paddingBottom: 150, // leave space for fixed buttons
     flexGrow: 1,
   },
   introContent: {
@@ -237,45 +276,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
-  title: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    marginBottom: 24,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 24,
-  },
-  question: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
+  title: { fontSize: 40, fontWeight: 'bold', marginBottom: 24 },
+  subtitle: { fontSize: 16, color: '#666', marginBottom: 24 },
+  question: { fontSize: 18, fontWeight: 'bold', marginBottom: 16 },
+
   progressBarContainer: {
     height: 8,
     backgroundColor: '#eee',
     width: '100%',
   },
-  progressBar: {
-    height: 8,
-    backgroundColor: '#000',
-  },
+  progressBar: { height: 8, backgroundColor: '#000' },
+
   option: {
     backgroundColor: '#eee',
     padding: 12,
     marginVertical: 6,
     borderRadius: 6,
   },
-  optionSelected: {
-    backgroundColor: '#000',
-  },
-  optionText: {
-    color: '#000',
-  },
-  optionTextSelected: {
-    color: '#fff',
-  },
+  optionSelected: { backgroundColor: '#000' },
+  optionText: { color: '#000' },
+  optionTextSelected: { color: '#fff' },
+
   inputBox: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -283,17 +304,15 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginVertical: 8,
   },
-  addCustom: {
-    color: '#007AFF',
-    marginTop: 10,
-    fontWeight: '600',
-  },
+  addCustom: { color: '#007AFF', marginTop: 10, fontWeight: '600' },
+
   skip: {
     color: '#888',
     textDecorationLine: 'underline',
     marginRight: 20,
     marginTop: 16,
   },
+
   button: {
     backgroundColor: '#000',
     padding: 14,
@@ -310,10 +329,8 @@ const styles = StyleSheet.create({
     marginTop: 12,
     width: '100%',
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
+  buttonText: { color: '#fff', fontSize: 16 },
+
   bottomButtons: {
     position: 'absolute',
     bottom: 30,
