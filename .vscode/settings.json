@@ -3,5 +3,10 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
+  },
+  "files.exclude": {
+    "node_modules/": true,
+    ".expo/": true,
+    "_inventory/": true
   }
 }
