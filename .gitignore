@@ -37,3 +37,16 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+
+# IDEs
+.idea/
+.vscode/

@@ -13,7 +13,7 @@ import {
 
 import bgPattern from '../../assets/images/login-bg.png';
 import { useAuth } from '../../src/context/AuthContext';
-import { apiClient } from '../../src/services/apiClient'; // adjust path if needed
+import { authApiClient as apiClient } from '../../src/services/apiClients';  // adjust path if needed
 
 export default function Signup() {
   const [email, setEmail] = useState('');
