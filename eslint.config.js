@@ -6,5 +6,9 @@ module.exports = defineConfig([
   expoConfig,
   {
     ignores: ['dist/*'],
+    linterOptions: {
+      // "warn" by default in v9, but set explicitly if you like:
+      reportUnusedDisableDirectives: "warn",
+    }
   },
 ]);

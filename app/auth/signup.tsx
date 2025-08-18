@@ -1,5 +1,5 @@
+// app/auth/Signup.tsx
 import { useRouter } from 'expo-router';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -10,20 +10,32 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { auth } from '../../firebase/config';
 
 import bgPattern from '../../assets/images/login-bg.png';
+import { useAuth } from '../../src/context/AuthContext';
+import { authApiClient as apiClient } from '../../src/services/apiClients';  // adjust path if needed
 
 export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { setAuth } = useAuth();
 
   const handleSignup = async () => {
-    // Step 1: Basic validation
-    if (!email || !password || !confirmPassword) {
+    // 🔎 fast, presentation-only preflight checks (server still enforces real rules)
+    const trimmedEmail = email.trim().toLowerCase();
+
+    if (!trimmedEmail || !password || !confirmPassword) {
       Alert.alert('Error', 'Please fill out all fields.');
+      return;
+    }
+
+    // very light email sanity (API still validates with EmailStr)
+    const looksLikeEmail = /\S+@\S+\.\S+/.test(trimmedEmail);
+    if (!looksLikeEmail) {
+      Alert.alert('Error', 'Please enter a valid email.');
       return;
     }
 
@@ -37,27 +49,31 @@ export default function Signup() {
       return;
     }
 
+    // ✅ call API (or mock, based on EXPO_PUBLIC_USE_MOCKS)
     try {
-      // Step 2: Firebase registration
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log('Account created for:', userCredential.user.email);
+      setLoading(true);
+      const resp = await apiClient.signup({
+        email: trimmedEmail,
+        password,
+        confirmPassword,
+      });
 
-      // Step 3: Redirect to main app
+      // Save auth in context (works for mock and real API)
+      setAuth({
+        idToken: resp?.idToken ?? null,
+        refreshToken: resp?.refreshToken ?? null,
+        user: resp?.user ?? { uid: 'mock-uid', email: trimmedEmail },
+      });
+
+      // (optional later) persist tokens securely
+      // await SecureStore.setItemAsync('idToken', resp.idToken);
+      // await SecureStore.setItemAsync('refreshToken', resp.refreshToken);
+
       router.replace('/survey');
-    } catch (error: any) {
-      // Step 4: Handle Firebase errors
-      const code = error.code;
-      let message = 'Something went wrong.';
-
-      if (code === 'auth/email-already-in-use') {
-        message = 'This email is already in use.';
-      } else if (code === 'auth/invalid-email') {
-        message = 'Please enter a valid email.';
-      } else if (code === 'auth/weak-password') {
-        message = 'Password is too weak.';
-      }
-
-      Alert.alert('Signup Failed', message);
+    } catch (e: any) {
+      Alert.alert('Signup Failed', e?.message || 'Signup failed.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,8 +115,12 @@ export default function Signup() {
           style={styles.input}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleSignup}>
-          <Text style={styles.buttonText}>Create Account</Text>
+        <TouchableOpacity
+          style={[styles.button, loading && { opacity: 0.8 }]}
+          onPress={handleSignup}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>{loading ? 'Creating…' : 'Create Account'}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
