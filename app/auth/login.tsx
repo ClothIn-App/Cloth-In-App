@@ -31,7 +31,7 @@ export default function Login() {
       console.log('Logged in user:', user.email);
 
       // ✅ Redirect to tabs layout (home)
-      router.replace('/(tabs)');
+      router.replace('/home')
     } catch (error: any) {
       Alert.alert('Login Failed', error.message);
     }
