@@ -1,4 +1,6 @@
 // src/services/http.ts
+import { log } from '../debug/log'; // adjust path if needed
+
 const BASE_API_URL =
   process.env.EXPO_PUBLIC_API_URL ?? "http://127.0.0.1:8080";
 
@@ -39,10 +41,7 @@ type RequestOptions = {
 
 type CallOptions<RequestBodyType> = RequestOptions & {
   pathParameters?: Record<string, string | number>;
-  queryParameters?: Record<
-    string,
-    string | number | boolean | undefined
-  >;
+  queryParameters?: Record<string, string | number | boolean | undefined>;
   requestBody?: RequestBodyType;
 };
 
@@ -82,10 +81,7 @@ function buildPathFromTemplate(
 }
 
 function buildQueryString(
-  rawQueryParameters?: Record<
-    string,
-    string | number | boolean | undefined
-  >
+  rawQueryParameters?: Record<string, string | number | boolean | undefined>
 ): { queryString: string; finalQueryParameters: Record<string, string> } {
   if (!rawQueryParameters) return { queryString: "", finalQueryParameters: {} };
 
@@ -122,6 +118,18 @@ async function buildDefaultHeaders(): Promise<Record<string, string>> {
 }
 /** ------------------------------------------------------------------------- */
 
+// Mask sensitive headers when logging
+function maskHeaders(h: Record<string, string>): Record<string, string> {
+  const out: Record<string, string> = { ...h };
+  for (const k of Object.keys(out)) {
+    if (k.toLowerCase() === "authorization") {
+      const v = out[k] ?? "";
+      out[k] = v.length > 20 ? `${v.slice(0, 10)}…${v.slice(-5)}` : "****";
+    }
+  }
+  return out;
+}
+
 export async function callApiEndpoint<RequestBodyType, ResponseBodyType>(
   endpointDefinition: EndpointDefinition<RequestBodyType, ResponseBodyType>,
   options: CallOptions<RequestBodyType> = {}
@@ -142,39 +150,110 @@ export async function callApiEndpoint<RequestBodyType, ResponseBodyType>(
     ...(options.headers ?? {}),
   };
 
+  const shouldIncludeBody =
+    endpointDefinition.method !== "GET" || endpointDefinition.allowBodyOnGet;
+
+  const url = `${BASE_API_URL}${resolvedPath}${queryString}`;
+
+  // ---- MOCKED PATH (with logging) ----
   if (shouldUseMockForEndpoint(endpointDefinition.key, currentApiMode)) {
     if (!endpointDefinition.mock) {
       throw new Error(
         `No mock is defined for endpoint key: ${endpointDefinition.key}`
       );
     }
-    await waitForMilliseconds(MOCK_LATENCY_MILLISECONDS);
-    return await endpointDefinition.mock({
-      body: options.requestBody,
+
+    const startedAt = Date.now();
+    log.debug("[HTTP:MOCK_REQUEST]", {
+      key: endpointDefinition.key,
+      mode: currentApiMode,
+      url, // for visibility; no network will be used
+      method: endpointDefinition.method,
+      headers: maskHeaders(mergedHeaders),
+      body: shouldIncludeBody ? options.requestBody : undefined,
       pathParameters: finalPathParameters,
       queryParameters: finalQueryParameters,
-      headers: mergedHeaders,
     });
+
+    try {
+      await waitForMilliseconds(MOCK_LATENCY_MILLISECONDS);
+      const mockData = await endpointDefinition.mock({
+        body: options.requestBody,
+        pathParameters: finalPathParameters,
+        queryParameters: finalQueryParameters,
+        headers: mergedHeaders,
+      });
+
+      const elapsedMs = Date.now() - startedAt;
+      log.debug("[HTTP:MOCK_RESPONSE]", {
+        key: endpointDefinition.key,
+        url,
+        ok: true,
+        elapsedMs,
+        data: mockData,
+      });
+
+      return mockData as ResponseBodyType;
+    } catch (mockError: any) {
+      const elapsedMs = Date.now() - startedAt;
+      log.debug("[HTTP:MOCK_ERROR]", {
+        key: endpointDefinition.key,
+        url,
+        elapsedMs,
+        error: mockError?.message ?? String(mockError),
+      });
+      throw mockError;
+    }
   }
 
-  const shouldIncludeBody =
-    endpointDefinition.method !== "GET" || endpointDefinition.allowBodyOnGet;
-
-  const response = await fetch(`${BASE_API_URL}${resolvedPath}${queryString}`, {
+  // ---- REAL FETCH (with logging) ----
+  const init: RequestInit = {
     method: endpointDefinition.method,
     headers: mergedHeaders,
-    body: shouldIncludeBody
-      ? JSON.stringify(options.requestBody ?? {})
-      : undefined,
+    body: shouldIncludeBody ? JSON.stringify(options.requestBody ?? {}) : undefined,
     signal: options.signal,
+  };
+
+  const startedAt = Date.now();
+  log.debug("[HTTP:REQUEST]", {
+    key: endpointDefinition.key,
+    mode: currentApiMode,
+    url,
+    method: endpointDefinition.method,
+    headers: maskHeaders(mergedHeaders),
+    body: shouldIncludeBody ? options.requestBody : undefined,
   });
+
+  let response: Response;
+  try {
+    response = await fetch(url, init);
+  } catch (networkError: any) {
+    const elapsedMs = Date.now() - startedAt;
+    log.debug("[HTTP:ERROR]", {
+      key: endpointDefinition.key,
+      url,
+      elapsedMs,
+      error: networkError?.message ?? String(networkError),
+    });
+    throw networkError;
+  }
 
   let responseData: unknown;
   try {
     responseData = await response.json();
   } catch {
-    /* ignore non-JSON / empty responses */
+    responseData = undefined; // non-JSON / empty
   }
+
+  const elapsedMs = Date.now() - startedAt;
+  log.debug("[HTTP:RESPONSE]", {
+    key: endpointDefinition.key,
+    url,
+    status: response.status,
+    ok: response.ok,
+    elapsedMs,
+    data: responseData,
+  });
 
   if (!response.ok) {
     const message =

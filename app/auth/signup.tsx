@@ -11,9 +11,10 @@ import {
   View,
 } from 'react-native';
 
-import bgPattern from '../../assets/images/login-bg.png';
-import { useAuth } from '../../src/context/AuthContext';
-import { authApiClient as apiClient } from '../../src/services/apiClients';  // adjust path if needed
+const bgPattern = require('../../assets/images/login-bg.png');
+import { useAuth } from '@/src/context/AuthContext';
+import { authApiClient as apiClient } from '@/src/services/apiClients';
+import { log } from '@/src/debug/log';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -24,6 +25,7 @@ export default function Signup() {
   const { setAuth } = useAuth();
 
   const handleSignup = async () => {
+    log.debug("Handling Signup")
     // 🔎 fast, presentation-only preflight checks (server still enforces real rules)
     const trimmedEmail = email.trim().toLowerCase();
 

@@ -1,5 +1,6 @@
+// app/auth/login.tsx (or wherever your Login screen lives)
+
 import { useRouter } from 'expo-router';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -9,31 +10,43 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from 'react-native';
-import { auth } from '../../firebase/config';
 
-import bgPattern from '../../assets/images/login-bg.png';
+import { authApiClient } from '@/src/services/apiClients'; // ← uses our API layer
+import { log } from '@/src/debug/log';
+const bgPattern = require('../../assets/images/login-bg.png');
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleLogin = async () => {
+    log.debug("Calling login function")
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password.');
       return;
     }
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      console.log('Logged in user:', user.email);
+      setSubmitting(true);
 
-      // ✅ Redirect to tabs layout (home)
-      router.replace('/home')
+      // 🔑 Call your API (mock/real decided by EXPO_PUBLIC_API_MODE)
+      const res = await authApiClient.login({ email, password });
+
+      // If you’ve set up setAuthTokenProvider() to read a stored token,
+      // you can persist res.idToken here (e.g., SecureStore/AsyncStorage).
+      // Skipping storage here to avoid extra deps—routing still works.
+      console.log('Logged in user:', res.user.email);
+
+      // ✅ Redirect to home (tabs layout)
+      router.replace('/home');
     } catch (error: any) {
-      Alert.alert('Login Failed', error.message);
+      Alert.alert('Login Failed', error?.message ?? 'Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -66,8 +79,16 @@ export default function Login() {
           style={styles.input}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Log In</Text>
+        <TouchableOpacity
+          style={[styles.button, submitting && { opacity: 0.7 }]}
+          onPress={handleLogin}
+          disabled={submitting}
+        >
+          {submitting ? (
+            <ActivityIndicator />
+          ) : (
+            <Text style={styles.buttonText}>Log In</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => Alert.alert('TODO: Forgot Password flow')}>
@@ -92,19 +113,9 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 32,
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 24,
-  },
+  background: { flex: 1 },
+  container: { flex: 1, paddingHorizontal: 32, justifyContent: 'center' },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 24 },
   input: {
     height: 50,
     backgroundColor: '#fff',
@@ -126,14 +137,6 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     marginTop: 16,
   },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
-  },
-  link: {
-    color: '#555',
-    textAlign: 'center',
-    marginTop: 12,
-  },
+  buttonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  link: { color: '#555', textAlign: 'center', marginTop: 12 },
 });
