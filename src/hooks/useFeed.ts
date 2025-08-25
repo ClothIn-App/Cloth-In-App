@@ -1,29 +1,47 @@
-/*decides which posts to Fetch and Rank*/
-import { rankFollowing, rankForYou } from "../algorithms/rankers";
-import { fetchAllPosts, fetchFollowedPosts } from "../services/feedApi";
-import { Post } from "../types/post";
+// src/hooks/useFeed.ts
+// Skeleton feed: just fetches mock posts for "For You" and "Following".
+// No ranking logic yet – API will handle that later.
 
 import { useEffect, useState } from "react";
+import { fetchAllPosts, fetchFollowedPosts } from "../services/feedApi";
+import type { Post } from "../types/post";
 
-export function useFeed(tab: "forYou" | "following") {
+type FeedTab = "forYou" | "following";
+
+export function useFeed(tab: FeedTab) {
   const [data, setData] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let alive = true;
+
     (async () => {
       setLoading(true);
       let posts: Post[] = [];
+
       if (tab === "forYou") {
         posts = await fetchAllPosts();
-        posts = rankForYou(posts);
       } else {
         posts = await fetchFollowedPosts();
-        posts = rankFollowing(posts);
       }
-      setData(posts);
-      setLoading(false);
+
+      if (alive) {
+        setData(posts);
+        setLoading(false);
+      }
     })();
+
+    return () => {
+      alive = false;
+    };
   }, [tab]);
 
   return { data, loading };
 }
+
+export default useFeed;
+
+
+
+
+
