@@ -1,22 +1,14 @@
-// src/services/apiClient.ts
+import { loginEndpoint } from "../endpoints/auth/login";
+import { signupEndpoint } from "../endpoints/auth/signup";
 import { callApiEndpoint } from "../http";
-import {
-	signupEndpoint,
-	type SignupPayload,
-	type SignupResponse,
-	loginEndpoint,
-	type LoginPayload,
-	type LoginResponse,
-} from "../endpoints";
 
-export const authApiClient = {
-	signup: (payload: SignupPayload) =>
-		callApiEndpoint<SignupPayload, SignupResponse>(signupEndpoint, {
-			requestBody: payload,
-		}),
+// function-style
+export async function signup(body: any) {
+  return callApiEndpoint<any, any>(signupEndpoint, { requestBody: body });
+}
+export async function login(body: any) {
+  return callApiEndpoint<any, any>(loginEndpoint, { requestBody: body });
+}
 
-	login: (payload: LoginPayload) =>
-		callApiEndpoint<LoginPayload, LoginResponse>(loginEndpoint, {
-		  requestBody: payload,
-    }),
-};
+// object-style (what your screens import)
+export const authApiClient = { signup, login };

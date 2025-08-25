@@ -6,6 +6,14 @@ export type GetUserResponse = {
     uid: string;
     email: string;
     displayName?: string | null;
+    username?: string;
+    avatarUrl?: string;
+    bio?: string | null;
+    counts?: {
+      posts: number;
+      following: number;
+      followers: number;
+    };
   };
 };
 
@@ -14,17 +22,31 @@ export const getUserEndpoint: EndpointDefinition<undefined, GetUserResponse> = {
   method: "GET",
   pathTemplate: "/v1/users/get/:userId",
   mock: async ({ pathParameters, headers }) => {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    if (!headers.Authorization) {
-      // Simulate a protected endpoint
-      throw new Error("Unauthorized");
-    }
+    // simulate latency
+    await new Promise((r) => setTimeout(r, 200));
+
+    // protected route example
+    // if (!headers.Authorization) {
+    //   throw new Error("Unauthorized");
+    // }
+
     const userId = pathParameters.userId;
+
     return {
       user: {
         uid: userId,
         email: `user+${userId}@example.com`.toLowerCase(),
-        displayName: "Mocked User",
+        displayName: "Jane Doe",
+        username: "janedoe",
+        avatarUrl: "https://example.com/avatars/jane.png",
+        bio: "Clothes & coffee.",
+        //added account type - 8/24/25 (controls tabs shown on account page - constants/accountTabs.ts)
+        accountType: "personal",
+        counts: {
+          posts: 12,
+          following: 87,
+          followers: 143,
+        },
       },
     };
   },

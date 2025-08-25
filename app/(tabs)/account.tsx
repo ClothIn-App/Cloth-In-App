@@ -6,30 +6,26 @@ import ProfileHeader from "../../components/account/ProfileHeader";
 import TabContent from "../../components/account/TabContent";
 import TabSwitcher from "../../components/account/TabSwitcher";
 
+import { getAccountTabs } from "../../constants/accountTabs";
 import useAccountData from "../../src/hooks/useAccountData";
 
 export default function AccountScreen() {
-  const { data, loading, error, refetch } = useAccountData();
   const insets = useSafeAreaInsets();
 
-  // Build the tab list from mock/API; fallback to a fixed list if nothing arrives
+  // TODO: pull from your real auth context
+  const userId = "u_demo";
+
+  const { data, loading, error, refetch } = useAccountData(userId);
+
+  // Frontend-only tabs, dynamic by accountType
   const tabList = useMemo(
-    () =>
-      data.tabs?.tabs ?? [
-        { key: "fitpics", label: "FitPics" },
-        { key: "closet", label: "Closet" },
-        { key: "products", label: "Products" },
-        { key: "following", label: "Following" },
-        { key: "followers", label: "Followers" },
-      ],
-    [data.tabs]
+    () => getAccountTabs(data.me?.accountType),
+    [data.me?.accountType]
   );
 
-  // Default tab: from payload if present, otherwise first tab
-  const initialKey = data.tabs?.defaultKey ?? tabList[0]?.key ?? "fitpics";
+  const initialKey = tabList[0]?.key ?? "fitpics";
   const [activeKey, setActiveKey] = useState(initialKey);
 
-  // If the payload’s defaultKey changes (or tabs arrive later), sync state once
   useEffect(() => {
     setActiveKey((prev) => (prev ? prev : initialKey));
   }, [initialKey]);

@@ -1,13 +1,15 @@
-// src/services/apiClient.ts
+import { getUserEndpoint, type GetUserResponse } from "../endpoints/users/getUser";
 import { callApiEndpoint } from "../http";
-import {
-	getUserEndpoint,
-	type GetUserResponse,
-} from "../endpoints";
 
-export const userApiClient = {
-	getUser: (userId: string) =>
-		callApiEndpoint<undefined, GetUserResponse>(getUserEndpoint, {
-			pathParameters: { userId },
-		}),
-};
+// function-style
+export async function getUser(userId: string) {
+  return callApiEndpoint<undefined, GetUserResponse>(getUserEndpoint, {
+    pathParameters: { userId },
+  });
+}
+
+// object-style
+export const userApiClient = { getUser };
+
+export type { GetUserResponse };
+

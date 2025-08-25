@@ -1,10 +1,10 @@
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import type { AccountTab } from "../../constants/accountTabs";
 import { useThemeColor } from "../../hooks/useThemeColor";
-import type { ProfileTab } from "../../src/types/account";
 
 type Props = {
-  tabs: ProfileTab[];
+  tabs: AccountTab[];
   activeKey: string;
   onChange: (key: string) => void;
 };

@@ -1,64 +1,47 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getCounts, getMe, getTabs } from "../services/endpoints/profile";
-import { callApiEndpoint } from "../services/http";
-import type {
-    AccountData,
-    ProfileCounts,
-    ProfileMe,
-    ProfileTabs,
-} from "../types/account";
+import { userClient } from "../services/apiClients";
+import type { AccountData, ProfileCounts, ProfileMe } from "../types/account";
 
-export function useAccountData() {
+export default function useAccountData(userId: string) {
   const [data, setData] = useState<AccountData>({});
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
-
-  // Track latest request to avoid setting state after unmount
-  const requestIdRef = useRef(0);
+  const reqRef = useRef(0);
 
   const load = useCallback(async () => {
-    const myRequestId = ++requestIdRef.current;
+    const myReq = ++reqRef.current;
     setLoading(true);
     setError(null);
 
-    const controller = new AbortController();
-
     try {
-      const [me, counts, tabs] = await Promise.all([
-        callApiEndpoint<typeof getMe extends { mock: any } ? unknown : never, ProfileMe>(getMe, {
-          signal: controller.signal,
-        }),
-        callApiEndpoint<typeof getCounts extends { mock: any } ? unknown : never, ProfileCounts>(getCounts, {
-          signal: controller.signal,
-        }),
-        callApiEndpoint<typeof getTabs extends { mock: any } ? unknown : never, ProfileTabs>(getTabs, {
-          signal: controller.signal,
-        }),
-      ]);
+      const res = await userClient.getUser(userId);
+      if (reqRef.current === myReq) {
+        const me: ProfileMe = {
+          uid: res.user.uid,
+          displayName: res.user.displayName ?? undefined,
+          username: res.user.username ?? "username",
+          avatarUrl: res.user.avatarUrl ?? undefined,
+          bio: res.user.bio ?? undefined,
+          accountType: (res.user as any).accountType,
+        };
+        const counts: ProfileCounts | undefined = res.user.counts
+          ? {
+              posts: res.user.counts.posts,
+              following: res.user.counts.following,
+              followers: res.user.counts.followers,
+            }
+          : undefined;
 
-      if (requestIdRef.current === myRequestId) {
-        setData({ me, counts, tabs });
+        setData({ me, counts });
       }
     } catch (e) {
-      if (requestIdRef.current === myRequestId) setError(e);
+      if (reqRef.current === myReq) setError(e);
     } finally {
-      if (requestIdRef.current === myRequestId) setLoading(false);
+      if (reqRef.current === myReq) setLoading(false);
     }
+  }, [userId]);
 
-    return () => controller.abort();
-  }, []);
+  useEffect(() => { void load(); }, [load]);
 
-useEffect(() => {
-  void load(); // fire and forget
-}, [load]);
-
-
-  return {
-    data,
-    loading,
-    error,
-    refetch: load,
-  };
+  return { data, loading, error, refetch: load };
 }
-
-export default useAccountData;
