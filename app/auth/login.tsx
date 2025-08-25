@@ -3,6 +3,7 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   ImageBackground,
   StyleSheet,
@@ -10,11 +11,10 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  ActivityIndicator,
 } from 'react-native';
 
-import { authApiClient } from '@/src/services/apiClients'; // ← uses our API layer
 import { log } from '@/src/debug/log';
+import { authApiClient } from '@/src/services/apiClients'; // ← uses our API layer
 const bgPattern = require('../../assets/images/login-bg.png');
 
 export default function Login() {

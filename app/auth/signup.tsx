@@ -1,4 +1,7 @@
 // app/auth/Signup.tsx
+import { useAuth } from '@/src/context/AuthContext';
+import { log } from '@/src/debug/log';
+import { authApiClient as apiClient } from '@/src/services/apiClients';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -12,9 +15,6 @@ import {
 } from 'react-native';
 
 const bgPattern = require('../../assets/images/login-bg.png');
-import { useAuth } from '@/src/context/AuthContext';
-import { authApiClient as apiClient } from '@/src/services/apiClients';
-import { log } from '@/src/debug/log';
 
 export default function Signup() {
   const [email, setEmail] = useState('');

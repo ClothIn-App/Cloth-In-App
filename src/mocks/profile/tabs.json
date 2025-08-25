@@ -1,0 +1,10 @@
+{
+  "tabs": [
+    { "key": "fitpics", "label": "FitPics" },
+    { "key": "closet", "label": "Closet" },
+    { "key": "products", "label": "Products" },
+    { "key": "saved", "label": "Saved" },
+    { "key": "tagged", "label": "Tagged" }
+  ],
+  "defaultKey": "fitpics"
+}
