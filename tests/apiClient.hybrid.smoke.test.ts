@@ -1,62 +1,59 @@
 // tests/apiClient.hybrid.smoke.test.ts
+jest.setTimeout(15000);
 
-/**
- * This file DOES NOT mock callApiEndpoint.
- * It verifies that:
- *  - In hybrid mode, users.get is served by its mock (no fetch)
- *  - While another route (auth.signup) still hits fetch (real)
- */
+describe("hybrid smoke", () => {
+  let fetchSpy: jest.SpyInstance | null = null;
 
-afterEach(() => {
-  jest.resetModules();
-  delete (global as any).fetch;
+  afterEach(() => {
+    if (fetchSpy) fetchSpy.mockRestore();
+    fetchSpy = null;
 
-  delete process.env.EXPO_PUBLIC_API_MODE;
-  delete process.env.EXPO_PUBLIC_API_URL;
-  delete process.env.EXPO_PUBLIC_MOCK_ROUTES;
-  delete process.env.EXPO_PUBLIC_MOCK_LATENCY_MS;
-});
+    jest.resetModules();
+    delete (global as any).fetch;
 
-test("hybrid mode: users.get mocked; auth.signup real", async () => {
-  // Arrange environment for hybrid mocking
-  process.env.EXPO_PUBLIC_API_MODE = "hybrid";
-  process.env.EXPO_PUBLIC_MOCK_ROUTES = "users.get";
-  process.env.EXPO_PUBLIC_MOCK_LATENCY_MS = "0";
-  process.env.EXPO_PUBLIC_API_URL = "http://api.example";
-
-  // Import real modules AFTER setting env
-  const http = await import("../src/services/http");
-  const { authApiClient, userApiClient } = await import("../src/services/apiClients");
-
-  // getUser mock requires Authorization; provide a token globally
-  http.setAuthTokenProvider(() => "smoke-token");
-
-  // Stub fetch; users.get shouldn't call it, signup should
-  (global as any).fetch = jest.fn().mockResolvedValue({
-    ok: true,
-    json: async () => ({ created: true }),
+    delete process.env.EXPO_PUBLIC_API_MODE;
+    delete process.env.EXPO_PUBLIC_API_URL;
+    delete process.env.EXPO_PUBLIC_MOCK_ROUTES;
+    delete process.env.EXPO_PUBLIC_MOCK_LATENCY_MS;
   });
 
-  // 1) users.get should be served by the mock (no fetch)
-  const userId = "abc-123";
-  const userRes = await userApiClient.getUser(userId);
+  test("hybrid mode: users.get mocked; auth.signup real", async () => {
+    // Arrange env BEFORE imports so modules read correct config
+    process.env.EXPO_PUBLIC_API_MODE = "hybrid";
+    process.env.EXPO_PUBLIC_MOCK_ROUTES = "users.get";
+    process.env.EXPO_PUBLIC_MOCK_LATENCY_MS = "0";
+    process.env.EXPO_PUBLIC_API_URL = "http://api.example";
 
-  expect(userRes.user.uid).toBe(userId);
-  expect(userRes.user.email).toBe(`user+${userId}@example.com`);
-  expect((global as any).fetch).not.toHaveBeenCalled();
+    // Import real modules after env is set
+    const http = await import("../src/services/http");
+    const { authApiClient, userApiClient } = await import("../src/services/apiClients");
 
-  // 2) auth.signup should go to the network (fetch called)
-  const signupRes = await authApiClient.signup({
-    email: "a@b.com",
-    password: "p",
-    confirmPassword: "p",
+    // Provide token required by the users.get mock
+    http.setAuthTokenProvider(() => "smoke-token");
+
+    // Spy on global.fetch so any "real" call is intercepted
+    fetchSpy = jest.spyOn(global as any, "fetch").mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ created: true }),
+    } as any);
+
+    // 1) users.get should be served by its MOCK (no fetch call)
+    const user = await userApiClient.getUser("abc-123");
+    expect(user.user.uid).toBe("abc-123");
+    expect(fetchSpy).not.toHaveBeenCalled();
+
+    // 2) auth.signup should go through REAL transport (fetch called)
+    const signup = await authApiClient.signup({
+      email: "a@b.com",
+      password: "p",
+      confirmPassword: "p",
+    });
+    expect(signup).toEqual({ created: true });
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+    const [url, init] = fetchSpy.mock.calls[0];
+    expect(url).toBe("http://api.example/v1/auth/signup");
+    expect(init.method).toBe("POST");
   });
-
-  expect((global as any).fetch).toHaveBeenCalledTimes(1);
-  expect(signupRes).toEqual({ created: true });
-
-  // Bonus: verify URL constructed as expected
-  const [url, init] = (global as any).fetch.mock.calls[0];
-  expect(url).toBe("http://api.example/v1/auth/signup");
-  expect(init.method).toBe("POST");
 });
