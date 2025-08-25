@@ -7,6 +7,8 @@ import 'react-native-reanimated';
 
 // ✅ Add this import
 import { AuthProvider } from '../src/context/AuthContext';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -18,16 +20,20 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           {/* Your existing screens */}
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="auth" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
           <Stack.Screen name="survey" options={{ headerShown: false }} />
+          <Stack.Screen name="modals" options={{ 
+            headerShown: false, 
+            presentation: 'fullScreenModal', 
+            gestureEnabled: false, 
+            animation: 'fade',
+            }} />
         </Stack>
         <StatusBar style="auto" />
-      </ThemeProvider>
     </AuthProvider>
   );
 }
