@@ -1,4 +1,5 @@
 // app/auth/Signup.tsx
+import * as SecureStore from 'expo-secure-store';
 import { useAuth } from '@/src/context/AuthContext';
 import { log } from '@/src/debug/log';
 import { authApiClient as apiClient } from '@/src/services/apiClients';
@@ -68,8 +69,8 @@ export default function Signup() {
       });
 
       // (optional later) persist tokens securely
-      // await SecureStore.setItemAsync('idToken', resp.idToken);
-      // await SecureStore.setItemAsync('refreshToken', resp.refreshToken);
+       await SecureStore.setItemAsync('idToken', resp.idToken);
+       await SecureStore.setItemAsync('refreshToken', resp.refreshToken);
 
       router.replace('/survey');
     } catch (e: any) {
