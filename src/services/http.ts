@@ -21,11 +21,21 @@ const MOCK_LATENCY_MILLISECONDS = Number(
   process.env.EXPO_PUBLIC_MOCK_LATENCY_MS ?? 400
 );
 
+/** ---------------------- Endpoint Definition ---------------------- */
 export type EndpointDefinition<RequestBodyType, ResponseBodyType> = {
   key: string; // e.g., "auth.signup"
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   pathTemplate: string; // e.g., "/v1/users/get/:userId"
   allowBodyOnGet?: boolean;
+
+  /**
+   * Auth policy:
+   *  - "required" (default): must have Authorization header, or throw before request/mock
+   *  - "optional": include Authorization if available, but do not require it
+   *  - "none": do NOT require or send Authorization (strips the header if present)
+   */
+  auth?: "required" | "optional" | "none";
+
   mock?: (args: {
     body: RequestBodyType | undefined;
     pathParameters: Record<string, string>;
@@ -33,6 +43,7 @@ export type EndpointDefinition<RequestBodyType, ResponseBodyType> = {
     headers: Record<string, string>;
   }) => Promise<ResponseBodyType> | ResponseBodyType;
 };
+/** ----------------------------------------------------------------- */
 
 type RequestOptions = {
   signal?: AbortSignal;
@@ -149,6 +160,25 @@ export async function callApiEndpoint<RequestBodyType, ResponseBodyType>(
     ...defaultHeaders,
     ...(options.headers ?? {}),
   };
+
+  // ------------------ Centralized auth policy enforcement ------------------
+  const authPolicy: "required" | "optional" | "none" =
+    endpointDefinition.auth ?? "required";
+
+  // If public, strip any Authorization header so we don't leak it
+  if (authPolicy === "none" && "Authorization" in mergedHeaders) {
+    delete mergedHeaders.Authorization;
+  }
+
+  // If required, enforce before mock or network
+  if (authPolicy === "required" && !mergedHeaders.Authorization) {
+    log.debug("[HTTP:AUTH_MISSING]", {
+      key: endpointDefinition.key,
+      path: resolvedPath,
+    });
+    throw new Error("Unauthorized");
+  }
+  // ------------------------------------------------------------------------
 
   const shouldIncludeBody =
     endpointDefinition.method !== "GET" || endpointDefinition.allowBodyOnGet;

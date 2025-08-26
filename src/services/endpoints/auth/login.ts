@@ -14,6 +14,7 @@ export type LoginResponse = {
 export const loginEndpoint: EndpointDefinition<LoginPayload, LoginResponse> = {
   key: "auth.login",
   method: "POST",
+  auth: "none",
   pathTemplate: "/v1/auth/login",
   mock: async ({ body }) => {
     // Flip to true to test error state in the UI
