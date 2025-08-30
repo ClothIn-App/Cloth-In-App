@@ -10,6 +10,7 @@ export type GetUserResponse = {
     username?: string;
     avatarUrl?: string;
     bio?: string | null;
+    accountType?: string | null;
     counts?: {
       posts: number;
       following: number;

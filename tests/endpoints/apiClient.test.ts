@@ -6,21 +6,21 @@
  *  - errors from callApiEndpoint propagate to caller
  */
 
-jest.mock("../src/services/http", () => {
+jest.mock("../../src/services/http", () => {
   // Keep all real exports except replace callApiEndpoint with a jest.fn()
-  const actual = jest.requireActual("../src/services/http");
+  const actual = jest.requireActual("../../src/services/http");
   return {
     ...actual,
     callApiEndpoint: jest.fn(),
   };
 });
 
-import { authApiClient, userApiClient } from "../src/services/apiClients";
+import { authApiClient, userApiClient } from "../../src/services/apiClients";
 import {
   signupEndpoint,
   getUserEndpoint,
-} from "../src/services/endpoints";
-import { callApiEndpoint } from "../src/services/http";
+} from "../../src/services/endpoints";
+import { callApiEndpoint } from "../../src/services/http";
 
 describe("apiClient -> transport wiring", () => {
   beforeEach(() => {
