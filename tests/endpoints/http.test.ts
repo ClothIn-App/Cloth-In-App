@@ -1,10 +1,10 @@
 // tests/http.test.ts
-type AnyEndpointDef = import("../src/services/http").EndpointDefinition<any, any>;
+type AnyEndpointDef = import("../..//src/services/http").EndpointDefinition<any, any>;
 
 // Helper: import a fresh http module *after* setting env per test
 async function importHttp() {
   jest.resetModules();
-  const mod = await import("../src/services/http");
+  const mod = await import("../..//src/services/http");
   return mod;
 }
 
