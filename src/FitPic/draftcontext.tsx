@@ -7,7 +7,7 @@ import React, {
   useState,
   type ReactNode,
 } from 'react';
-import type { MediaItem } from './media';
+import type { MediaItem } from './camera/media';
 
 /**
  * Result of trying to add an item.

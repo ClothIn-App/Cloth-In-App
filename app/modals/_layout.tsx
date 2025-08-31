@@ -6,10 +6,10 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function ModalStackLayout() {
   return (
-    <DraftsProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <DraftsProvider>
         <Stack screenOptions={{ headerShown: false }} />
-      </GestureHandlerRootView>
-    </DraftsProvider>
+      </DraftsProvider>
+    </GestureHandlerRootView>
   );
 }
