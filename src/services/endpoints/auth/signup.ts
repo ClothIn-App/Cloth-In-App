@@ -20,6 +20,7 @@ export const signupEndpoint: EndpointDefinition<
 > = {
   key: "auth.signup",
   method: "POST",
+  auth: "none",
   pathTemplate: "/v1/auth/signup",
   mock: async ({ body }) => {
     const shouldSimulateError = false;

@@ -1,5 +1,7 @@
 // app/_layout.tsx
 import 'react-native-gesture-handler';
+import '../src/bootstrap/authBootstrap';
+
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -22,7 +24,6 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
         <Stack>
-          {/* Your existing screens */}
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="auth" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />

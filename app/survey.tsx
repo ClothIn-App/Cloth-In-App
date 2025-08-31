@@ -18,11 +18,10 @@ import {
   View,
 } from 'react-native';
 
-import { getAuth } from 'firebase/auth';
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { db } from '../firebase/config';
+const bgPattern = require('../assets/images/login-bg.png');
 
-import bgPattern from '../assets/images/login-bg.png';
+import { useAuth } from '@/src/context/AuthContext';
+import { userClient } from '@/src/services/apiClients';
 
 const questions = [
   {
@@ -73,6 +72,9 @@ export default function Survey() {
   const [responses, setResponses] = useState<any>({});
   const [customInputs, setCustomInputs] = useState<any>({});
   const router = useRouter();
+
+  const { auth } = useAuth();
+  const userId = auth?.user?.uid ?? 'u_demo';
 
   const question = (questions as any)[currentIndex] || ({} as any);
   const selected: string[] = (responses[question.id] as string[]) || [];
@@ -129,21 +131,16 @@ export default function Survey() {
       return;
     }
 
-    // Last question -> save to Firestore, then route to tabs
+    // Last question -> save to API, then route to tabs
     try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-
-      if (user) {
-        await setDoc(
-          doc(db, 'surveyResponses', user.uid),
-          { ...finalResponses, updatedAt: serverTimestamp() },
-          { merge: true }
-        );
-        // Optional: console.log('Survey saved');
+      if (userId) {
+        // Store survey under a `survey` field on the user profile
+        // (Cast keeps TS happy if your SetUserPayload doesn't include `survey` yet)
+        await userClient.setUser(userId, { survey: finalResponses } as any);
+        // Optional: console.log('Survey saved via API');
       }
     } catch (err) {
-      console.warn('Failed to save survey responses:', err);
+      console.warn('Failed to save survey responses via API:', err);
       // You could show a toast here if you want
     } finally {
       router.replace('/(tabs)/home');
@@ -224,7 +221,10 @@ export default function Survey() {
 
                 {(customInputs[question.id] as string[] | undefined)?.map(
                   (text: string, index: number) => (
-                    <View key={index} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View
+                      key={index}
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                    >
                       <TextInput
                         style={[styles.inputBox, { flex: 1 }]}
                         value={text}
@@ -248,7 +248,10 @@ export default function Survey() {
                   <Text style={styles.skip}>Back</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={handleNext}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={handleNext}
+                >
                   <Text style={styles.buttonText}>
                     {currentIndex === questions.length - 1 ? 'Finish' : 'Next'}
                   </Text>
@@ -263,9 +266,15 @@ export default function Survey() {
 }
 
 const styles = StyleSheet.create({
-  background: { flex: 1 },
-  safeArea: { flex: 1 },
-  container: { flex: 1 },
+  background: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+  },
   scroll: {
     padding: 20,
     paddingBottom: 150, // leave space for fixed buttons
@@ -276,16 +285,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
-  title: { fontSize: 40, fontWeight: 'bold', marginBottom: 24 },
-  subtitle: { fontSize: 16, color: '#666', marginBottom: 24 },
-  question: { fontSize: 18, fontWeight: 'bold', marginBottom: 16 },
+  title: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    marginBottom: 24,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 24,
+  },
+  question: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
 
   progressBarContainer: {
     height: 8,
     backgroundColor: '#eee',
     width: '100%',
   },
-  progressBar: { height: 8, backgroundColor: '#000' },
+  progressBar: {
+    height: 8,
+    backgroundColor: '#000',
+  },
 
   option: {
     backgroundColor: '#eee',
@@ -293,9 +317,15 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     borderRadius: 6,
   },
-  optionSelected: { backgroundColor: '#000' },
-  optionText: { color: '#000' },
-  optionTextSelected: { color: '#fff' },
+  optionSelected: {
+    backgroundColor: '#000',
+  },
+  optionText: {
+    color: '#000',
+  },
+  optionTextSelected: {
+    color: '#fff',
+  },
 
   inputBox: {
     borderWidth: 1,
@@ -304,7 +334,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginVertical: 8,
   },
-  addCustom: { color: '#007AFF', marginTop: 10, fontWeight: '600' },
+  addCustom: {
+    color: '#007AFF',
+    marginTop: 10,
+    fontWeight: '600',
+  },
 
   skip: {
     color: '#888',
@@ -329,7 +363,10 @@ const styles = StyleSheet.create({
     marginTop: 12,
     width: '100%',
   },
-  buttonText: { color: '#fff', fontSize: 16 },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
 
   bottomButtons: {
     position: 'absolute',

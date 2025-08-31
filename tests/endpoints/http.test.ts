@@ -1,11 +1,28 @@
 // tests/http.test.ts
-type AnyEndpointDef = import("../src/services/http").EndpointDefinition<any, any>;
+type AnyEndpointDef = import("../..//src/services/http").EndpointDefinition<any, any>;
 
-// Helper: import fresh module *after* setting env per test
+// Helper: import a fresh http module *after* setting env per test
 async function importHttp() {
-  const mod = await import("../src/services/http");
+  jest.resetModules();
+  const mod = await import("../..//src/services/http");
   return mod;
 }
+
+afterEach(() => {
+  // Clean up between tests so env/config doesn't leak
+  delete process.env.EXPO_PUBLIC_API_MODE;
+  delete process.env.EXPO_PUBLIC_API_URL;
+  delete process.env.EXPO_PUBLIC_MOCK_ROUTES;
+  delete process.env.EXPO_PUBLIC_MOCK_LATENCY_MS;
+  delete process.env.EXPO_PUBLIC_USE_MOCKS;
+
+  // Reset any fetch mocks
+  if ((global as any).fetch && "mockClear" in (global as any).fetch) {
+    (global as any).fetch.mockClear();
+  }
+  // optional: unset to force tests to set it explicitly
+  // (global as any).fetch = undefined;
+});
 
 describe("HTTP transport (callApiEndpoint)", () => {
   test("mock mode uses endpoint.mock and never calls fetch", async () => {
@@ -27,6 +44,7 @@ describe("HTTP transport (callApiEndpoint)", () => {
       key: "things.read",
       method: "GET",
       pathTemplate: "/v1/things/:id",
+      // default auth: "required" -> fine because we set a token provider above
       mock: async (args) => mockFn(args),
     };
 
@@ -50,7 +68,6 @@ describe("HTTP transport (callApiEndpoint)", () => {
     }
   });
 
-
   test("real mode builds URL with path + query; GET has no body; headers merged", async () => {
     process.env.EXPO_PUBLIC_API_MODE = "real";
     process.env.EXPO_PUBLIC_API_URL = "http://api.test";
@@ -66,6 +83,7 @@ describe("HTTP transport (callApiEndpoint)", () => {
       key: "users.get",
       method: "GET",
       pathTemplate: "/v1/users/get/:userId",
+      // default auth "required" is fine; we set a token provider above
     };
 
     const res = await callApiEndpoint(endpoint, {
@@ -99,6 +117,7 @@ describe("HTTP transport (callApiEndpoint)", () => {
       key: "auth.signup",
       method: "POST",
       pathTemplate: "/v1/auth/signup",
+      auth: "none", // public route in tests
     };
 
     await callApiEndpoint(endpoint, {
@@ -127,6 +146,7 @@ describe("HTTP transport (callApiEndpoint)", () => {
       method: "GET",
       pathTemplate: "/v1/search",
       allowBodyOnGet: true,
+      auth: "none", // avoid Unauthorized in this test
     };
 
     await callApiEndpoint(endpointWithBody, {
@@ -137,11 +157,12 @@ describe("HTTP transport (callApiEndpoint)", () => {
     expect(init.body).toBe(JSON.stringify({ filters: ["a"] }));
 
     // now without allowBodyOnGet
-    (global.fetch as jest.Mock).mockClear();
+    (global as any).fetch.mockClear();
     const endpointNoBody: AnyEndpointDef = {
       key: "query.search2",
       method: "GET",
       pathTemplate: "/v1/search",
+      auth: "none", // avoid Unauthorized in this test
     };
     await callApiEndpoint(endpointNoBody, {
       requestBody: { filters: ["a"] },
@@ -159,6 +180,7 @@ describe("HTTP transport (callApiEndpoint)", () => {
       key: "users.get",
       method: "GET",
       pathTemplate: "/v1/users/get/:userId",
+      auth: "none", // ensure auth doesn't mask path error
     };
 
     await expect(
@@ -183,6 +205,7 @@ describe("HTTP transport (callApiEndpoint)", () => {
       key: "auth.signup",
       method: "POST",
       pathTemplate: "/v1/auth/signup",
+      auth: "none", // public for test
     };
 
     await expect(callApiEndpoint(endpoint, { requestBody: {} })).rejects.toThrow("Nope");
@@ -196,7 +219,9 @@ describe("HTTP transport (callApiEndpoint)", () => {
     process.env.EXPO_PUBLIC_MOCK_LATENCY_MS = "0";
     process.env.EXPO_PUBLIC_API_URL = "http://api.test";
 
-    const { callApiEndpoint } = await importHttp();
+    const { callApiEndpoint, setAuthTokenProvider } = await importHttp();
+    // Provide token so required-auth endpoints don't throw
+    setAuthTokenProvider(() => "tok-1");
 
     const usersMock = jest.fn().mockResolvedValue({ user: { uid: "1" } });
     const usersEndpoint: AnyEndpointDef = {
@@ -204,6 +229,7 @@ describe("HTTP transport (callApiEndpoint)", () => {
       method: "GET",
       pathTemplate: "/v1/users/get/:id",
       mock: async (args) => usersMock(args),
+      // default auth "required" is fine because we set token
     };
 
     (global as any).fetch = jest.fn().mockResolvedValue({
@@ -215,6 +241,7 @@ describe("HTTP transport (callApiEndpoint)", () => {
       key: "items.list",
       method: "GET",
       pathTemplate: "/v1/items",
+      auth: "none", // treat as public for this test
     };
 
     const a = await callApiEndpoint(usersEndpoint, { pathParameters: { id: "1" } });
@@ -235,7 +262,7 @@ describe("HTTP transport (callApiEndpoint)", () => {
       json: async () => ({}),
     });
     await callDefault(
-      { key: "ping", method: "GET", pathTemplate: "/v1/ping" },
+      { key: "ping", method: "GET", pathTemplate: "/v1/ping", auth: "none" },
       {}
     );
     let [url] = (global.fetch as jest.Mock).mock.calls[0];
@@ -251,7 +278,7 @@ describe("HTTP transport (callApiEndpoint)", () => {
       json: async () => ({}),
     });
     await callWithEnv(
-      { key: "ping", method: "GET", pathTemplate: "/v1/ping" },
+      { key: "ping", method: "GET", pathTemplate: "/v1/ping", auth: "none" },
       {}
     );
     [url] = (global.fetch as jest.Mock).mock.calls[0];
@@ -275,7 +302,7 @@ describe("HTTP transport (callApiEndpoint)", () => {
       { pathParameters: { id: "abc" } }
     );
 
-    const [, init] = (global.fetch as jest.Mock).mock.calls[0];
+    const [, init] = (global as any).fetch.mock.calls[0];
     expect(init.headers.Authorization).toBe("Bearer id-token-999");
   });
 });

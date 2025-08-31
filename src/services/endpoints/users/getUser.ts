@@ -1,5 +1,6 @@
 // src/services/endpoints/users/getUser.ts
 import type { EndpointDefinition } from "../../http";
+import { log } from "../../../debug/log";
 
 export type GetUserResponse = {
   user: {
@@ -9,6 +10,7 @@ export type GetUserResponse = {
     username?: string;
     avatarUrl?: string;
     bio?: string | null;
+    accountType?: string | null;
     counts?: {
       posts: number;
       following: number;
@@ -24,11 +26,6 @@ export const getUserEndpoint: EndpointDefinition<undefined, GetUserResponse> = {
   mock: async ({ pathParameters, headers }) => {
     // simulate latency
     await new Promise((r) => setTimeout(r, 200));
-
-    // protected route example
-    // if (!headers.Authorization) {
-    //   throw new Error("Unauthorized");
-    // }
 
     const userId = pathParameters.userId;
 

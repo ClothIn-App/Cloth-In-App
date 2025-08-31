@@ -1,5 +1,6 @@
 // app/auth/login.tsx (or wherever your Login screen lives)
 
+import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -36,6 +37,8 @@ export default function Login() {
       // 🔑 Call your API (mock/real decided by EXPO_PUBLIC_API_MODE)
       const res = await authApiClient.login({ email, password });
 
+      await SecureStore.setItemAsync('idToken', res.idToken);
+      await SecureStore.setItemAsync('refreshToken', res.refreshToken);
       // If you’ve set up setAuthTokenProvider() to read a stored token,
       // you can persist res.idToken here (e.g., SecureStore/AsyncStorage).
       // Skipping storage here to avoid extra deps—routing still works.

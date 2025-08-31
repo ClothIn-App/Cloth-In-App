@@ -25,8 +25,8 @@ describe("hybrid smoke", () => {
     process.env.EXPO_PUBLIC_API_URL = "http://api.example";
 
     // Import real modules after env is set
-    const http = await import("../src/services/http");
-    const { authApiClient, userApiClient } = await import("../src/services/apiClients");
+    const http = await import("../../src/services/http");
+    const { authApiClient, userApiClient } = await import("../../src/services/apiClients");
 
     // Provide token required by the users.get mock
     http.setAuthTokenProvider(() => "smoke-token");
