@@ -1,4 +1,3 @@
-// app/features/fitpic/CameraSurface.tsx
 import * as React from 'react';
 import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 import { CameraView } from 'expo-camera';
@@ -11,11 +10,16 @@ type CameraController = ReturnType<typeof useCameraController>;
 type Props = {
   controller: CameraController;
   style?: StyleProp<ViewStyle>;
-  enableZoomGesture?: boolean; // our custom pinch
+  enableZoomGesture?: boolean; // keep for our custom pinch toggle
   children?: React.ReactNode;
 };
 
-const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+// Apple-style factor mapping 1x..10x <-> 0..1
+const MIN_X = 1;
+const MAX_X = 10;
+const clampX = (v: number) => (v < MIN_X ? MIN_X : v > MAX_X ? MAX_X : v);
+const xToNorm = (x: number) => (x - MIN_X) / (MAX_X - MIN_X);
+const normToX = (n: number) => MIN_X + n * (MAX_X - MIN_X);
 
 export default function CameraSurface({
   controller,
@@ -23,38 +27,31 @@ export default function CameraSurface({
   enableZoomGesture = true,
   children,
 }: Props) {
-  // Keep the zoom-at-pinch-start ONLY on the JS side (never in a worklet)
-  const startZoomRef = React.useRef(controller.zoom);
+  const startZoomXRef = React.useRef(normToX(controller.zoom));
 
   const onPinchBegin = React.useCallback(() => {
-    // read current zoom from controller in JS
-    startZoomRef.current = controller.zoom;
+    startZoomXRef.current = normToX(controller.zoom);
   }, [controller.zoom]);
 
   const onPinchUpdate = React.useCallback(
     (scale: number) => {
-      // compute next zoom in JS and call controller setter
-      const next = clamp01(startZoomRef.current * scale);
-      controller.setZoomSmooth(next);
+      const nextX = clampX(startZoomXRef.current * scale);
+      const nextNorm = xToNorm(nextX);
+      // ✅ use your existing controller API
+      controller.setZoom(nextNorm);
     },
     [controller]
   );
 
-  // Pinch — worklet forwards primitives to JS; it doesn't capture the ref
   const pinch = React.useMemo(
     () =>
       Gesture.Pinch()
         .enabled(!!enableZoomGesture)
-        .onBegin(() => {
-          runOnJS(onPinchBegin)();
-        })
-        .onUpdate((e) => {
-          runOnJS(onPinchUpdate)(e.scale);
-        }),
+        .onBegin(() => runOnJS(onPinchBegin)())
+        .onUpdate((e) => runOnJS(onPinchUpdate)(e.scale)),
     [enableZoomGesture, onPinchBegin, onPinchUpdate]
   );
 
-  // Double-tap → flip (also via runOnJS)
   const doubleTap = React.useMemo(
     () =>
       Gesture.Tap()
@@ -76,8 +73,9 @@ export default function CameraSurface({
           ref={controller.cameraRef}
           style={styles.camera}
           facing={controller.facing}
-          zoom={controller.zoom}
-          flash={controller.flashMode}            
+          zoom={controller.zoom}   // normalized 0..1
+          flash={controller.flashMode}
+          // removed enableZoomGesture — not supported on your SDK
         />
       </GestureDetector>
 

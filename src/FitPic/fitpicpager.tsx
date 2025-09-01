@@ -32,9 +32,10 @@ export type FitPicPagerProps = {
 };
 
 export type FitPicPagerHandle = {
-  /** Programmatically navigate to page 0 (Roll) or 1 (Capture) */
   scrollTo: (index: Index, animated?: boolean) => void;
+  setPage: (index: Index, animated?: boolean) => void; // ← add this
 };
+
 
 const clampToIndex = (n: number): Index => (n <= 0 ? 0 : 1);
 
@@ -63,7 +64,10 @@ const FitPicPager = forwardRef<FitPicPagerHandle, FitPicPagerProps>(
       [width]
     );
 
-    useImperativeHandle(ref, () => ({ scrollTo }), [scrollTo]);
+    useImperativeHandle(ref, () => ({
+      scrollTo,
+      setPage: (i: Index, animated: boolean = true) => scrollTo(i, animated), // ← add this
+    }), [scrollTo]);
 
     // Honor initialIndex when width becomes known or changes.
     useEffect(() => {

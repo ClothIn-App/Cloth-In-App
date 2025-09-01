@@ -12,6 +12,7 @@ import CameraRollScreen from '../../src/FitPic/roll/camerarollscreen';
 import { useCameraController } from '../../src/FitPic/camera/usecameracontroller';
 import CameraSurface from '../../src/FitPic/camera/camerasurface';
 import ShutterButton from '../../src/FitPic/camera/shutterbutton';
+import GallerButton from '../../src/FitPic/camera/gallerybutton'; // gallery button (left of shutter)
 import { useDrafts } from '../../src/FitPic/draftcontext';
 import CornerThumbStack from '../../src/FitPic/thumbnailstack';
 import SelectedDrawer from '../../src/FitPic/selecteddrawer';
@@ -34,7 +35,7 @@ export default function FitPicMediaScreen() {
     Alert.alert('Next', `Proceeding with ${items.length} item(s).`);
   }, [items.length]);
 
-  // Await capture/stop and write the result into Drafts (typed as MediaItem)
+  // Take photo and stash into Drafts
   const onShutterPress = React.useCallback(async () => {
     const media = (await takePhoto?.()) as MediaItem | undefined;
     if (media) add(media);
@@ -43,7 +44,7 @@ export default function FitPicMediaScreen() {
   return (
     <View style={styles.container}>
       <FitPicPager
-        initialIndex={0} // land on Camera Roll (page 0)
+        initialIndex={1} // land on Camera (page 1)
         ref={pagerRef}
         onIndexChange={() => {}}
         renderCameraRoll={() => (
@@ -51,22 +52,35 @@ export default function FitPicMediaScreen() {
             onJumpToCamera={() => pagerRef.current?.setPage(1)}
             onClose={() => router.back()}
             onNext={(selectionIds) => {
-              // Navigate to your post screen with ordered IDs.
-              // Adjust the pathname to match your route if needed.
-              router.push({ pathname: '/post', params: { selectionIds: JSON.stringify(selectionIds) } });
+              router.push({
+                pathname: '/post',
+                params: { selectionIds: JSON.stringify(selectionIds) },
+              });
             }}
           />
         )}
         renderCapture={() => (
           <View style={{ flex: 1 }}>
             <CameraSurface controller={controller} />
+
             <TopLeftControls />
             <TopRightControls controller={controller} photoCount={items.length} />
+
             <View style={styles.cornerStackContainer} pointerEvents="box-none">
               <CornerThumbStack items={items} onPress={() => setDrawerOpen(true)} />
             </View>
-            <View style={{ position: 'absolute', bottom: 36, alignSelf: 'center' }} pointerEvents="box-none">
-              <ShutterButton onPress={onShutterPress} />
+
+            {/* Bottom bar: shutter centered; gallery on the left */}
+            <View style={styles.bottomBar} pointerEvents="box-none">
+              <View style={styles.centerRow} pointerEvents="box-none">
+                <GallerButton
+                  onOpen={() => pagerRef.current?.setPage(0)}
+                  style={{ marginRight: 12 }}
+                />
+                <ShutterButton onPress={onShutterPress} />
+                {/* Spacer to mirror gallery width so shutter stays perfectly centered */}
+                <View style={{ width: 44 }} />
+              </View>
             </View>
           </View>
         )}
@@ -86,25 +100,27 @@ export default function FitPicMediaScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  bottomBar: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  shutter: {
-    width: 78,
-    height: 78,
-    borderRadius: 39,
-    backgroundColor: 'white',
-    borderWidth: 2,
-    borderColor: 'black',
-  },
+
   cornerStackContainer: {
     position: 'absolute',
     right: 5,
     bottom: 30,
+  },
+
+  // full-width bar pinned to bottom; contents centered
+  bottomBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 36, // tweak to taste / safe-area
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // keeps shutter centered by balancing left (gallery) with a right spacer
+  centerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
