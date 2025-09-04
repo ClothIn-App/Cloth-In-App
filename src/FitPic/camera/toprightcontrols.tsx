@@ -45,7 +45,7 @@ export default function TopRightControls({
 
   const onPressNext = React.useCallback(() => {
     if (!canGoNext) return;
-    router.push(nextRoute);
+    router.push('/modals/fitpic_post');
   }, [canGoNext, nextRoute]);
 
   return (

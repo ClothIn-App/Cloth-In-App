@@ -1,6 +1,6 @@
 // app/modals/fitpic_media.tsx
 import * as React from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import FitPicPager, {
@@ -12,7 +12,7 @@ import CameraRollScreen from '../../src/FitPic/roll/camerarollscreen';
 import { useCameraController } from '../../src/FitPic/camera/usecameracontroller';
 import CameraSurface from '../../src/FitPic/camera/camerasurface';
 import ShutterButton from '../../src/FitPic/camera/shutterbutton';
-import GallerButton from '../../src/FitPic/camera/gallerybutton'; // gallery button (left of shutter)
+import GallerButton from '../../src/FitPic/camera/gallerybutton'; 
 import { useDrafts } from '../../src/FitPic/draftcontext';
 import CornerThumbStack from '../../src/FitPic/thumbnailstack';
 import SelectedDrawer from '../../src/FitPic/selecteddrawer';
@@ -20,6 +20,7 @@ import TopLeftControls from '../../src/FitPic/camera/topleftcontrols';
 import TopRightControls from '../../src/FitPic/camera/toprightcontrols';
 
 import type { MediaItem } from '../../src/FitPic/camera/media';
+import { usePostDraft } from '../../src/FitPic/post/postdraftprovider';
 
 export default function FitPicMediaScreen() {
   const pagerRef = React.useRef<FitPicPagerRef>(null);
@@ -31,9 +32,22 @@ export default function FitPicMediaScreen() {
   const { items, add, remove } = useDrafts();
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
+  // Helper: seed draft + navigate
+  const postDraft = usePostDraft();
+  const goToPost = React.useCallback(
+    (ids: string[]) => {
+      if (!ids || ids.length === 0) return;
+      postDraft.startFromSelection(ids);
+      router.push('./fitpic_post');
+    },
+    [postDraft, router]
+  );
+
+  // "Next" from Selected Drawer
   const handleNext = React.useCallback(() => {
-    Alert.alert('Next', `Proceeding with ${items.length} item(s).`);
-  }, [items.length]);
+    const ids = items.map((m) => m.id);
+    goToPost(ids);
+  }, [items, goToPost]);
 
   // Take photo and stash into Drafts
   const onShutterPress = React.useCallback(async () => {
@@ -51,11 +65,9 @@ export default function FitPicMediaScreen() {
           <CameraRollScreen
             onJumpToCamera={() => pagerRef.current?.setPage(1)}
             onClose={() => router.back()}
+            // "Next" from Camera Roll
             onNext={(selectionIds) => {
-              router.push({
-                pathname: '/post',
-                params: { selectionIds: JSON.stringify(selectionIds) },
-              });
+              goToPost(selectionIds);
             }}
           />
         )}
