@@ -20,7 +20,7 @@ import TopLeftControls from '../../src/FitPic/camera/topleftcontrols';
 import TopRightControls from '../../src/FitPic/camera/toprightcontrols';
 
 import type { MediaItem } from '../../src/FitPic/camera/media';
-import { usePostDraft } from '../../src/FitPic/post/postcontext';
+import { usePostContext } from '../../src/FitPic/post/postcontext';
 
 export default function FitPicMediaScreen() {
   const pagerRef = React.useRef<FitPicPagerRef>(null);
@@ -33,7 +33,7 @@ export default function FitPicMediaScreen() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   // Helper: seed draft + navigate
-  const postDraft = usePostDraft();
+  const postDraft = usePostContext();
   const goToPost = React.useCallback(
     (ids: string[]) => {
       if (!ids || ids.length === 0) return;
