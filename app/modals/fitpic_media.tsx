@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useIsFocused } from '@react-navigation/native';
 
 import FitPicPager, {
   type FitPicPagerHandle as FitPicPagerRef,
@@ -12,7 +13,7 @@ import CameraRollScreen from '../../src/FitPic/roll/camerarollscreen';
 import { useCameraController } from '../../src/FitPic/camera/usecameracontroller';
 import CameraSurface from '../../src/FitPic/camera/camerasurface';
 import ShutterButton from '../../src/FitPic/camera/shutterbutton';
-import GallerButton from '../../src/FitPic/camera/gallerybutton'; 
+import GallerButton from '../../src/FitPic/camera/gallerybutton';
 import { useDrafts } from '../../src/FitPic/draftcontext';
 import CornerThumbStack from '../../src/FitPic/thumbnailstack';
 import SelectedDrawer from '../../src/FitPic/selecteddrawer';
@@ -25,6 +26,7 @@ import { usePostContext } from '../../src/FitPic/post/postcontext';
 export default function FitPicMediaScreen() {
   const pagerRef = React.useRef<FitPicPagerRef>(null);
   const router = useRouter();
+  const isFocused = useIsFocused();
 
   const controller = useCameraController();
   const { takePhoto } = controller;
@@ -32,7 +34,20 @@ export default function FitPicMediaScreen() {
   const { items, add, remove } = useDrafts();
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
-  // Helper: seed draft + navigate
+  // Track which page the pager is on: 0 = Gallery, 1 = Camera
+  const [activeIndex, setActiveIndex] = React.useState(1);
+
+  // On blur/unmount, release camera resources if controller supports it
+  React.useEffect(() => {
+    if (!isFocused) {
+      try { controller.pause?.(); } catch {}
+    }
+    return () => {
+      try { controller.stop?.(); } catch {}
+    };
+  }, [isFocused, controller]);
+
+  // Helper: seed draft + navigate (UNCHANGED)
   const postDraft = usePostContext();
   const goToPost = React.useCallback(
     (ids: string[]) => {
@@ -43,24 +58,29 @@ export default function FitPicMediaScreen() {
     [postDraft, router]
   );
 
-  // "Next" from Selected Drawer
+  // "Next" from Selected Drawer (UNCHANGED)
   const handleNext = React.useCallback(() => {
     const ids = items.map((m) => m.id);
     goToPost(ids);
   }, [items, goToPost]);
 
-  // Take photo and stash into Drafts
+  // Take photo and stash into Drafts (UNCHANGED)
   const onShutterPress = React.useCallback(async () => {
     const media = (await takePhoto?.()) as MediaItem | undefined;
     if (media) add(media);
   }, [takePhoto, add]);
+
+  // Only render the live camera when:
+  // - this screen is focused, AND
+  // - the pager is on the camera page (index === 1)
+  const shouldShowCamera = isFocused && activeIndex === 1;
 
   return (
     <View style={styles.container}>
       <FitPicPager
         initialIndex={1} // land on Camera (page 1)
         ref={pagerRef}
-        onIndexChange={() => {}}
+        onIndexChange={(i) => setActiveIndex(i)}
         renderCameraRoll={() => (
           <CameraRollScreen
             onJumpToCamera={() => pagerRef.current?.setPage(1)}
@@ -73,7 +93,12 @@ export default function FitPicMediaScreen() {
         )}
         renderCapture={() => (
           <View style={{ flex: 1 }}>
-            <CameraSurface controller={controller} />
+            {shouldShowCamera ? (
+              <CameraSurface controller={controller} />
+            ) : (
+              // Keep layout stable while camera is unmounted to release device cleanly
+              <View style={{ flex: 1, backgroundColor: '#000' }} />
+            )}
 
             <TopLeftControls />
             <TopRightControls controller={controller} photoCount={items.length} />

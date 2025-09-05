@@ -1,8 +1,17 @@
 import * as React from 'react';
-import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
-import { CameraView } from 'expo-camera';
+import {
+  ActivityIndicator,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
+import { useIsFocused } from '@react-navigation/native';
 
 import type { useCameraController } from './usecameracontroller';
 type CameraController = ReturnType<typeof useCameraController>;
@@ -10,15 +19,15 @@ type CameraController = ReturnType<typeof useCameraController>;
 type Props = {
   controller: CameraController;
   style?: StyleProp<ViewStyle>;
-  enableZoomGesture?: boolean; // keep for our custom pinch toggle
+  enableZoomGesture?: boolean;
   children?: React.ReactNode;
 };
 
-// Apple-style factor mapping 1x..10x <-> 0..1
-const MIN_X = 1;
-const MAX_X = 10;
-const clampX = (v: number) => (v < MIN_X ? MIN_X : v > MAX_X ? MAX_X : v);
-const xToNorm = (x: number) => (x - MIN_X) / (MAX_X - MIN_X);
+const MIN_X = 0;
+const MAX_X = 1;
+const clamp = (n: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, n));
+const xToNorm = (x: number) => clamp((x - MIN_X) / (MAX_X - MIN_X), 0, 1);
 const normToX = (n: number) => MIN_X + n * (MAX_X - MIN_X);
 
 export default function CameraSurface({
@@ -27,66 +36,114 @@ export default function CameraSurface({
   enableZoomGesture = true,
   children,
 }: Props) {
+  const isFocused = useIsFocused();
+
+  const [permission, requestPermission] = useCameraPermissions();
+  const [ready, setReady] = React.useState(false);
   const startZoomXRef = React.useRef(normToX(controller.zoom));
 
-  const onPinchBegin = React.useCallback(() => {
+  // Ask for permission once
+  React.useEffect(() => {
+    if (!permission) return;
+    if (!permission.granted) {
+      void requestPermission();
+    }
+  }, [permission, requestPermission]);
+
+  // Release camera when screen loses focus / on unmount
+  React.useEffect(() => {
+    if (!isFocused) {
+      controller.pause?.();      // pause preview if possible
+    }
+    return () => {
+      controller.stop?.();       // stop recording if any
+    };
+  }, [isFocused, controller]);
+
+  // ---- Gesture handlers (ALWAYS hop back to JS) ----
+  const onPinchBeginJS = React.useCallback(() => {
     startZoomXRef.current = normToX(controller.zoom);
   }, [controller.zoom]);
 
-  const onPinchUpdate = React.useCallback(
+  const onPinchUpdateJS = React.useCallback(
     (scale: number) => {
-      const nextX = clampX(startZoomXRef.current * scale);
-      const nextNorm = xToNorm(nextX);
-      // ✅ use your existing controller API
-      controller.setZoom(nextNorm);
+      const nextX = clamp(startZoomXRef.current * scale, MIN_X, MAX_X);
+      controller.setZoom(xToNorm(nextX));
     },
     [controller]
   );
+
+  const onDoubleTapJS = React.useCallback(() => {
+    controller.flip();
+  }, [controller]);
 
   const pinch = React.useMemo(
     () =>
       Gesture.Pinch()
         .enabled(!!enableZoomGesture)
-        .onBegin(() => runOnJS(onPinchBegin)())
-        .onUpdate((e) => runOnJS(onPinchUpdate)(e.scale)),
-    [enableZoomGesture, onPinchBegin, onPinchUpdate]
+        .onBegin(() => runOnJS(onPinchBeginJS)())
+        .onUpdate((e) => runOnJS(onPinchUpdateJS)(e.scale)),
+    [enableZoomGesture, onPinchBeginJS, onPinchUpdateJS]
   );
 
   const doubleTap = React.useMemo(
-    () =>
-      Gesture.Tap()
-        .numberOfTaps(2)
-        .onEnd((_e, success) => {
-          if (success) runOnJS(controller.flip)();
-        }),
-    [controller]
+    () => Gesture.Tap().numberOfTaps(2).onEnd(() => runOnJS(onDoubleTapJS)()),
+    [onDoubleTapJS]
   );
 
   const gesture = enableZoomGesture
     ? Gesture.Simultaneous(pinch, doubleTap)
     : doubleTap;
 
-  return (
+  if (!permission) {
+    return <View style={styles.root} />;
+  }
+
+  if (!permission.granted) {
+    return (
+      <View style={[styles.root, styles.center]}>
+        <Text style={styles.text}>Camera permission is required.</Text>
+        <TouchableOpacity onPress={() => requestPermission()}>
+          <Text style={[styles.text, { textDecorationLine: 'underline' }]}>
+            Grant permission
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // Only mount CameraView when the screen is focused
+  return isFocused ? (
     <View style={[styles.root, style]}>
       <GestureDetector gesture={gesture}>
         <CameraView
           ref={controller.cameraRef}
           style={styles.camera}
           facing={controller.facing}
-          zoom={controller.zoom}   // normalized 0..1
+          zoom={controller.zoom}        // 0..1 normalized
           flash={controller.flashMode}
-          // removed enableZoomGesture — not supported on your SDK
+          onCameraReady={() => setReady(true)}
         />
       </GestureDetector>
+
+      {!ready && (
+        <View style={[StyleSheet.absoluteFill, styles.center]}>
+          <ActivityIndicator />
+        </View>
+      )}
 
       <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
         {children}
       </View>
     </View>
+  ) : (
+    <View style={styles.root} />
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#000', position: 'relative' },
   camera: { flex: 1 },
+  center: { alignItems: 'center', justifyContent: 'center' },
+  text: { color: '#fff', fontSize: 16, marginVertical: 6 },
 });

@@ -1,77 +1,75 @@
-// app/features/fitpic/usecameracontroller.ts
 import { useCallback, useRef, useState } from 'react';
 
 export type CameraMode = 'photo' | 'video';
 export type FlashMode = 'off' | 'on' | 'auto';
 
 function useCameraController() {
-  // --- refs ---
   const cameraRef = useRef<any>(null);
 
-  // --- states (kept simple to avoid coupling to a specific camera lib) ---
-  const [mode, setMode] = useState<CameraMode>('photo'); // NEW per task
+  const [mode, setMode] = useState<CameraMode>('photo');
   const [flashMode, setFlashMode] = useState<FlashMode>('off');
-  const [zoom, setZoom] = useState(0);
+  const [zoom, setZoom] = useState(0); // 0..1
   const [facing, setFacing] = useState<'back' | 'front'>('back');
 
-  // --- device / UI helpers ---
   const flip = useCallback(() => {
-    setFacing((p) => (p === 'back' ? 'front' : 'back'));
+    setFacing((f) => (f === 'back' ? 'front' : 'back'));
   }, []);
 
   const toggleFlash = useCallback(() => {
     setFlashMode((f) => (f === 'off' ? 'on' : 'off'));
   }, []);
 
-  // --- photo ---
-  const takePhoto = useCallback(async () => {
-    const cam: any = cameraRef.current;
-    if (!cam?.takePictureAsync) return null;
-
+  // These are JS-side helpers (never call from a worklet directly)
+  const pause = useCallback(async () => {
     try {
-      const result = await cam.takePictureAsync?.({});
-      const now = Date.now();
-      const id = `${now}-${Math.random().toString(36).slice(2, 8)}`;
-
-      return {
-        id,
-        uri: result?.uri,
-        width: result?.width,
-        height: result?.height,
-        createdAt: now,
-        type: 'photo',
-        thumbnailUri: result?.uri,
-      };
-    } catch (e) {
-      console.warn('takePhoto error:', e);
-      return null;
-    }
+      await cameraRef.current?.pausePreview?.();
+    } catch {}
   }, []);
 
+  const stop = useCallback(() => {
+    try {
+      cameraRef.current?.stopRecording?.();
+    } catch {}
+  }, []);
 
+  const takePhoto = useCallback(async () => {
+    const cam = cameraRef.current;
+    if (!cam) return null;
+    const photo = await cam.takePictureAsync?.({ quality: 1 });
+    if (!photo) return null;
+    return {
+      id: String(Date.now()),
+      type: 'photo' as const,
+      uri: photo.uri,
+      width: photo.width,
+      height: photo.height,
+    };
+  }, []);
 
-  // --- public API ---
   return {
-    // refs
+    // ref
     cameraRef,
 
-    // capture mode (NEW)
+    // modes
     mode,
     setMode,
-
-    takePhoto,
 
     // flash
     flashMode,
     setFlashMode,
     toggleFlash,
 
-
     // device controls
     facing,
     flip,
+
     zoom,
     setZoom,
+
+    // actions
+    takePhoto,
+    pause,
+    stop,
   };
 }
 
