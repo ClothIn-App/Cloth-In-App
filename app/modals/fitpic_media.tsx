@@ -20,7 +20,7 @@ import TopLeftControls from '../../src/FitPic/camera/topleftcontrols';
 import TopRightControls from '../../src/FitPic/camera/toprightcontrols';
 
 import type { MediaItem } from '../../src/FitPic/camera/media';
-import { usePostDraft } from '../../src/FitPic/post/postdraftprovider';
+import { usePostDraft } from '../../src/FitPic/post/postcontext';
 
 export default function FitPicMediaScreen() {
   const pagerRef = React.useRef<FitPicPagerRef>(null);

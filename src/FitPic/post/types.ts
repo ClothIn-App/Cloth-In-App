@@ -1,11 +1,9 @@
-export type PostDraftStatus = 'idle' | 'editing' | 'posting' | 'error';
+// Lightweight types for post-only fields (caption/products)
 
-export type PostDraft = {
-  id: string;            // uuid
-  photoIds: string[];    // ordered
+export const CAPTION_MAX = 2200 as const; // enforced by setter elsewhere
+
+export type PostMeta = {
   caption: string;
-  productIds: string[];  // database ids (placeholder for now)
-  status: PostDraftStatus;
-  createdAt: number;
+  productIds: string[]; // placeholder IDs for now
   updatedAt: number;
 };

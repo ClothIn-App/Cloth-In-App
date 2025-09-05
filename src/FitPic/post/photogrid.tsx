@@ -1,7 +1,7 @@
 // app/src/FitPic/post/PhotoGrid.tsx
 import React, { useCallback, useMemo, useState } from 'react';
 import { View, Pressable, Image, Text, StyleSheet, useWindowDimensions } from 'react-native';
-import { usePostDraft } from './postdraftprovider';
+import { usePostDraft } from './postcontext';
 
 type Props = {
   onOpenPreview?: (startIndex: number, ids: string[]) => void;

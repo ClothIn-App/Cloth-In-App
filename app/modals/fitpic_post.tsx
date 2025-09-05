@@ -1,28 +1,28 @@
 // app/modals/fitpic_post.tsx
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   Alert,
   ActivityIndicator,
+  Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
-  Pressable,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { usePostDraft, MAX_CAPTION_CHARS } from '../../src/FitPic/post/postdraftprovider';
-import type { PostDraft } from '../../src/FitPic/post/types';
-import PhotoGrid from '../../src/FitPic/post/photogrid';
+
+import { useDrafts } from '../../src/FitPic/draftcontext';
+import { usePostContext } from '../../src/FitPic/post/postcontext';
+import { CAPTION_MAX } from '../../src/FitPic/post/types';
 
 type Props = {
   onBackToCamera?: () => void;
-  onSyncSelection?: (photoIds: string[]) => void;
   onOpenProductPicker?: () => void;
-  onPost?: (draft: PostDraft) => Promise<void> | void;
+  onPost?: () => Promise<void> | void; // host only; parent handles real posting
   posting?: boolean;
   onToast?: (msg: string) => void;
-  /** Open your existing full-screen preview (reuse the Selected Drawer preview). */
   onOpenPreview?: (startIndex: number, ids: string[]) => void;
 };
 
@@ -31,7 +31,6 @@ const shorten = (s: string) => (s.length > 18 ? s.slice(0, 8) + '…' + s.slice(
 
 export default function FitPicPostModal({
   onBackToCamera = noop,
-  onSyncSelection,
   onOpenProductPicker,
   onPost,
   posting = false,
@@ -40,57 +39,63 @@ export default function FitPicPostModal({
 }: Props) {
   const insets = useSafeAreaInsets();
 
-  const {
-    draft,
-    setPhotoIds,
-    addProduct,
-    removeProduct,
-    setCaption,
-    saveTemp,
-    isDirty,
-  } = usePostDraft();
+  // Photos live in DraftsContext now
+  const { selectedIds, removeSelected, setSelectedOrder } = useDrafts();
 
-  const photoIds = draft?.photoIds ?? [];
-  const productIds = draft?.productIds ?? [];
-  const caption = draft?.caption ?? '';
+  // Caption + products live in PostContext
+  const { meta, setCaption, addProduct, removeProduct, saveToStorage } = usePostContext();
 
-  const hasPhotos = photoIds.length > 0;
+  const caption = meta.caption;
+  const productIds = meta.productIds;
+  const ids = selectedIds;
+
+  const hasPhotos = ids.length > 0;
   const postDisabled = !hasPhotos || posting;
 
   const toast = (msg: string) => (onToast ? onToast(msg) : Alert.alert(msg));
 
   const handleBack = useCallback(() => {
-    if (draft) onSyncSelection?.(draft.photoIds);
+    // No manual sync needed—photo edits are already in DraftsContext.
     onBackToCamera();
-  }, [draft, onBackToCamera, onSyncSelection]);
+  }, [onBackToCamera]);
 
-  const handleSaveDraft = useCallback(() => {
-    saveTemp();
-    toast(isDirty ? 'Draft updated' : 'Draft saved');
-  }, [saveTemp, isDirty]);
+  const handleSaveDraft = useCallback(async () => {
+    await saveToStorage();
+    toast('Draft saved');
+  }, [saveToStorage]);
 
   const handlePost = useCallback(async () => {
-    if (!draft) return;
-    if (onPost) await onPost(draft);
-  }, [draft, onPost]);
+    if (!onPost) return;
+    await onPost();
+  }, [onPost]);
 
-  // Photo helpers for quick actions (cover/remove) outside the grid if needed later
-  const makeCover = (id: string) => {
-    if (!draft) return;
-    if (draft.photoIds[0] === id) return;
-    const next = [id, ...draft.photoIds.filter(x => x !== id)];
-    setPhotoIds(next);
-  };
-  const removePhoto = (id: string) => {
-    if (!draft) return;
-    setPhotoIds(draft.photoIds.filter(x => x !== id));
-  };
+  // simple reorder UI (same feel as your old grid’s ↑/↓ controls)
+  const [activeForReorder, setActiveForReorder] = useState<number | null>(null);
+  const move = useCallback(
+    (from: number, to: number) => {
+      if (from === to || from < 0 || to < 0 || from >= ids.length || to >= ids.length) return;
+      const next = [...ids];
+      const [spliced] = next.splice(from, 1);
+      next.splice(to, 0, spliced);
+      setSelectedOrder(next);
+      setActiveForReorder(to);
+    },
+    [ids, setSelectedOrder],
+  );
 
-  // Tight header under camera cutout + footer exactly above home indicator
+  // Tight header under camera cutout + footer just above home indicator
   const topPad = Math.max(insets.top - 6, 0);
   const headerHeight = 40 + topPad;
-  const footerSafePad = insets.bottom;    // clears the home indicator area exactly
-  const footerInnerExtra = 4;             // tiny visual gap above the line
+  const footerSafePad = insets.bottom;
+  const footerInnerExtra = 4;
+
+  // thumbnail size (4-col)
+  const tile = useMemo(() => {
+    const GAP = 2, PADDING = 2, NUM_COLS = 4;
+    const totalGutter = (NUM_COLS - 1) * GAP + PADDING * 2;
+    const size = Math.floor((Math.min(420, 800) - totalGutter) / NUM_COLS); // safe default
+    return { GAP, PADDING, NUM_COLS, size };
+  }, []);
 
   return (
     <SafeAreaView style={S.root} edges={['left', 'right']}>
@@ -103,7 +108,7 @@ export default function FitPicPostModal({
         <Text style={S.title}>Create Post</Text>
 
         <Pressable onPress={handleSaveDraft} hitSlop={10} style={S.headerBtn}>
-          <Text style={[S.headerBtnText, S.save]}>{isDirty ? 'Save Draft*' : 'Save Draft'}</Text>
+          <Text style={[S.headerBtnText, S.save]}>Save Draft</Text>
         </Pressable>
       </View>
 
@@ -113,10 +118,76 @@ export default function FitPicPostModal({
         <Section title="Photos">
           {hasPhotos ? (
             <>
-              {/* New 4-col grid with remove/reorder + cover styling */}
-              <PhotoGrid
-                onOpenPreview={(startIndex, ids) => onOpenPreview?.(startIndex, ids)}
-              />
+              <View style={[S.gridWrap, { paddingHorizontal: tile.PADDING, marginTop: tile.GAP }]}>
+                <View style={S.grid}>
+                  {ids.map((id, index) => {
+                    const isCover = index === 0;
+                    const isActive = activeForReorder === index;
+                    const isEnd = (index + 1) % tile.NUM_COLS === 0;
+                    return (
+                      <View
+                        key={id}
+                        style={[
+                          S.tileWrap,
+                          {
+                            width: tile.size,
+                            height: tile.size,
+                            marginRight: isEnd ? 0 : tile.GAP,
+                            marginBottom: tile.GAP,
+                          },
+                        ]}
+                      >
+                        <Pressable
+                          onPress={() => onOpenPreview?.(index, ids)}
+                          onLongPress={() => setActiveForReorder(isActive ? null : index)}
+                          delayLongPress={250}
+                          style={[S.tile, isCover && S.coverBorder, isActive && S.activeOutline]}
+                        >
+                          <Image source={{ uri: id }} style={{ width: '100%', height: '100%' }} />
+                          {/* Remove “x” */}
+                          <Pressable
+                            onPress={() => removeSelected(id)}
+                            style={S.closeBtn}
+                            hitSlop={8}
+                          >
+                            <Text style={S.closeTxt}>×</Text>
+                          </Pressable>
+
+                          {/* Cover badge */}
+                          {isCover && (
+                            <View style={S.coverBadge}>
+                              <Text style={S.coverTxt}>Cover</Text>
+                            </View>
+                          )}
+
+                          {/* Reorder controls */}
+                          {isActive && (
+                            <View style={S.reorderBar}>
+                              <Pressable
+                                onPress={() => move(index, Math.max(0, index - 1))}
+                                style={S.arrowBtn}
+                                hitSlop={8}
+                              >
+                                <Text style={S.arrowTxt}>↑</Text>
+                              </Pressable>
+                              <Pressable
+                                onPress={() => move(index, Math.min(ids.length - 1, index + 1))}
+                                style={S.arrowBtn}
+                                hitSlop={8}
+                              >
+                                <Text style={S.arrowTxt}>↓</Text>
+                              </Pressable>
+                              <Pressable onPress={() => setActiveForReorder(null)} hitSlop={8}>
+                                <Text style={S.doneTxt}>Done</Text>
+                              </Pressable>
+                            </View>
+                          )}
+                        </Pressable>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
               <Text style={S.help}>
                 Tip: Long-press a tile for quick Up/Down reordering. The first tile is the cover.
               </Text>
@@ -130,7 +201,7 @@ export default function FitPicPostModal({
         <Section title="Products">
           {productIds.length ? (
             <View style={S.chipsWrap}>
-              {productIds.map(pid => (
+              {productIds.map((pid) => (
                 <View key={pid} style={S.chip}>
                   <Text style={S.chipText}>{shorten(pid)}</Text>
                   <View style={S.chipBtns}>
@@ -158,12 +229,12 @@ export default function FitPicPostModal({
             onChangeText={setCaption}
             multiline
             style={S.captionInput}
-            maxLength={MAX_CAPTION_CHARS}
+            maxLength={CAPTION_MAX}
             textAlignVertical="top"
             placeholderTextColor="#9ca3af"
           />
           <Text style={S.counter}>
-            {caption.length}/{MAX_CAPTION_CHARS}
+            {caption.length}/{CAPTION_MAX}
           </Text>
         </Section>
 
@@ -219,6 +290,52 @@ const S = StyleSheet.create({
   help: { color: '#6b7280', fontSize: 12, marginTop: 6 },
   muted: { color: '#6b7280', fontSize: 14 },
 
+  gridWrap: { width: '100%' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap' },
+  tileWrap: {},
+  tile: { flex: 1, borderRadius: 6, overflow: 'hidden', backgroundColor: '#eee' },
+  coverBorder: { borderWidth: 2, borderColor: '#111' },
+  activeOutline: { outlineStyle: 'solid' as any, outlineWidth: 2, outlineColor: '#6aa0ff' },
+  closeBtn: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 0,
+    minWidth: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeTxt: { color: '#fff', fontSize: 16, lineHeight: 18, fontWeight: '600' },
+  coverBadge: {
+    position: 'absolute',
+    left: 4,
+    bottom: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: 4,
+  },
+  coverTxt: { fontSize: 10, fontWeight: '700', color: '#111' },
+  reorderBar: {
+    position: 'absolute',
+    left: 4,
+    top: 4,
+    right: 24,
+    height: 22,
+    borderRadius: 6,
+    backgroundColor: 'rgba(17,17,17,0.6)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 6,
+  },
+  arrowBtn: { paddingHorizontal: 4, paddingVertical: 2, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.15)' },
+  arrowTxt: { color: '#fff', fontSize: 12, fontWeight: '700' },
+  doneTxt: { color: '#fff', marginLeft: 'auto', fontSize: 12, fontWeight: '700' },
+
   chipsWrap: { gap: 8 },
   chip: {
     flexDirection: 'row',
@@ -271,7 +388,7 @@ const S = StyleSheet.create({
   footer: {
     paddingHorizontal: 16,
     paddingTop: 8,
-    paddingBottom: 8, // tiny extra to sit ~4px above the home indicator
+    paddingBottom: 8,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: '#e5e7eb',
   },

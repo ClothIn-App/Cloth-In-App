@@ -3,15 +3,15 @@ import React from 'react';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DraftsProvider } from '../../src/FitPic/draftcontext';
-import { PostDraftProvider } from '../../src/FitPic/post/postdraftprovider';
+import { PostProvider } from '../../src/FitPic/post/postcontext';
 
 export default function ModalStackLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <DraftsProvider>
-        <PostDraftProvider>
+        <PostProvider>
           <Stack screenOptions={{ headerShown: false }} />
-        </PostDraftProvider>
+        </PostProvider>
       </DraftsProvider>
     </GestureHandlerRootView>
   );
