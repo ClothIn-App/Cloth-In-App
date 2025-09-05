@@ -1,25 +1,35 @@
 // jest.config.js
 module.exports = {
   projects: [
-    {
-      displayName: 'endpoints',
-      preset: 'ts-jest',
-      testEnvironment: 'node',
-      testMatch: ['<rootDir>/tests/endpoints/**/*.(test|spec).ts'],
-      setupFilesAfterEnv: ['<rootDir>/tests/setupTests.ts'],
-      moduleNameMapper: { '^@/(.*)$': '<rootDir>/$1' },
-      clearMocks: true,
-    },
+    // --- APP (pure RN component tests; no Expo runtime) ---
     {
       displayName: 'app',
-      preset: 'jest-expo',
-      testMatch: ['<rootDir>/tests/app/**/*.(test|spec).(ts|tsx)'],
-      setupFilesAfterEnv: ['<rootDir>/tests/setupTests.ts'],
+      preset: 'react-native',
+      testMatch: ['<rootDir>/tests/app/**/*.test.ts?(x)'],
+      // No Winter setup here
+      setupFilesAfterEnv: ['<rootDir>/tests/setupAppTests.ts'],
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/$1',
         '\\.(png|jpg|jpeg|gif|webp|svg)$': '<rootDir>/tests/__mocks__/fileMock.js',
       },
-      // ← no transformIgnorePatterns here (let jest-expo handle it)
+      // Ensure RN deps are transformed
+      transformIgnorePatterns: [
+        'node_modules/(?!(react-native|@react-native|react-native-reanimated|react-native-gesture-handler|@react-navigation)/)',
+      ],
+      clearMocks: true,
+    },
+
+    // --- ENDPOINTS (node/ts-jest) ---
+    {
+      displayName: 'endpoints',
+      preset: 'ts-jest',
+      testEnvironment: 'node',
+      testMatch: ['<rootDir>/tests/endpoints/**/*.test.ts'],
+      setupFilesAfterEnv: ['<rootDir>/tests/setupEndpointTests.ts'],
+      moduleNameMapper: { '^@/(.*)$': '<rootDir>/$1' },
+      transform: {
+        '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: { isolatedModules: true } }],
+      },
       clearMocks: true,
     },
   ],
