@@ -143,7 +143,7 @@ export default function Survey() {
       console.warn('Failed to save survey responses via API:', err);
       // You could show a toast here if you want
     } finally {
-      router.replace('../(tabs)');
+      router.replace('/(tabs)/home');
     }
   };
 
@@ -190,7 +190,7 @@ export default function Survey() {
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity onPress={() => router.replace('../(tabs)')}>
+              <TouchableOpacity onPress={() => router.replace('/(tabs)/home')}>
                 <Text style={styles.skip}>Skip Survey</Text>
               </TouchableOpacity>
             </View>
