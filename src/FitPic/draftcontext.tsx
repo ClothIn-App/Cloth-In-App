@@ -29,10 +29,10 @@ type DraftsContextValue = {
   has: (id: string) => boolean;
 
   // ---- NEW: selection API ----
-  selectedIds: string[];                                // ordered
-  addSelected: (assets: AssetLite[]) => void;           // dedupes, appends
-  removeSelected: (assetId: string) => void;            // no-op if missing
-  setSelectedOrder: (assetIds: string[]) => void;       // reorder/normalize
+  selectedIds: string[];                           
+  addSelected: (assets: AssetLite[]) => void;          
+  removeSelected: (assetId: string) => void;          
+  setSelectedOrder: (assetIds: string[]) => void;       
 };
 
 const DraftsContext = createContext<DraftsContextValue | null>(null);

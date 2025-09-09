@@ -1,178 +1,317 @@
-// app/src/FitPic/post/PhotoGrid.tsx
-import React, { useCallback, useMemo, useState } from 'react';
-import { View, Pressable, Image, Text, StyleSheet, useWindowDimensions } from 'react-native';
-import { usePostDraft } from './postcontext';
+// File: src/FitPic/post/components/PhotoGrid.tsx
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native';
+import { Image } from 'expo-image';
+import * as MediaLibrary from 'expo-media-library';
+import { useDrafts } from './../draftcontext';
 
-type Props = {
-  onOpenPreview?: (startIndex: number, ids: string[]) => void;
-  renderThumb?: (id: string, size: number) => React.ReactNode;
+export type PhotoGridProps = {
+  /**
+   * Ordered list of selected asset IDs to display (photos only).
+   * If omitted, falls back to DraftsContext.selectedIds.
+   */
+  selectedIds?: string[];
+  /** Open a full-screen preview for the tapped photo id. */
+  onOpenPreview: (id: string) => void;
+  /** Remove the given id from selection. If omitted, uses DraftsContext.removeSelected. */
+  removeSelected?: (id: string) => void;
+  /** Replace the current selection order. If omitted, uses DraftsContext.setSelectedOrder. */
+  setSelectedOrder?: (ids: string[]) => void;
 };
 
-const NUM_COLS = 4;
-const GAP = 2;
-const PADDING = 2;
+type AnyItem = {
+  id: string;
+  uri?: string;
+  // support a few common shapes we've used elsewhere
+  type?: string;        // 'photo' | 'video'
+  mediaType?: string;   // 'photo' | 'video'
+  kind?: string;        // 'photo' | 'video'
+};
 
-export default function PhotoGrid({ onOpenPreview, renderThumb }: Props) {
-  const { draft, setPhotoIds } = usePostDraft();
-  const ids = draft?.photoIds ?? [];
-  const { width } = useWindowDimensions();
-  const [activeForReorder, setActiveForReorder] = useState<number | null>(null);
+function moveIndex(ids: string[], from: number, to: number): string[] {
+  if (from === to || from < 0 || to < 0 || from >= ids.length || to >= ids.length) return ids;
+  const next = ids.slice();
+  const [x] = next.splice(from, 1);
+  next.splice(to, 0, x);
+  return next;
+}
 
-  const tile = useMemo(() => {
-    const totalGutter = (NUM_COLS - 1) * GAP + PADDING * 2;
-    const size = Math.floor((width - totalGutter) / NUM_COLS);
-    return { size };
-  }, [width]);
+const isVideo = (item?: AnyItem | null) => {
+  const t = (item?.type ?? item?.mediaType ?? item?.kind ?? '').toLowerCase();
+  return t === 'video';
+};
 
-  const setOrder = useCallback((next: string[]) => setPhotoIds(next), [setPhotoIds]);
+// Resolves an asset's displayable URI, handling iOS `ph://` and Android `content://`
+async function resolveAssetUri(id: string, raw?: string | null): Promise<string | null> {
+  if (raw && !raw.startsWith('ph://') && !raw.startsWith('content://')) {
+    return raw;
+  }
+  try {
+    const info = await MediaLibrary.getAssetInfoAsync(id);
+    return info.localUri ?? info.uri ?? null;
+  } catch {
+    return null;
+  }
+}
 
-  const removeAt = useCallback(
-    (index: number) => {
-      setOrder(ids.filter((_, i) => i !== index));
-      if (activeForReorder === index) setActiveForReorder(null);
-    },
-    [ids, setOrder, activeForReorder],
-  );
+// A tiny cell component so we can safely use hooks to resolve URIs.
+const GridCell = React.memo(function GridCell({
+  id,
+  index,
+  asset,
+  cover,
+  isLast,
+  onOpenPreview,
+  onRemove,
+  onMove,
+}: {
+  id: string;
+  index: number;
+  asset?: AnyItem;
+  cover: boolean;
+  isLast: boolean;
+  onOpenPreview: (id: string) => void;
+  onRemove: (id: string) => void;
+  onMove: (index: number, dir: -1 | 1) => void;
+}) {
+  const [uri, setUri] = useState<string | null>(null);
 
-  const move = useCallback(
-    (from: number, to: number) => {
-      if (from === to || from < 0 || to < 0 || from >= ids.length || to >= ids.length) return;
-      const next = [...ids];
-      const [spliced] = next.splice(from, 1);
-      next.splice(to, 0, spliced);
-      setOrder(next);
-      setActiveForReorder(to);
-    },
-    [ids, setOrder],
-  );
-
-  if (!draft || ids.length === 0) return null;
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const next = await resolveAssetUri(id, asset?.uri);
+      if (alive) setUri(next);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [id, asset?.uri]);
 
   return (
-    <View style={[S.container, { paddingHorizontal: PADDING }]}>
-      <View style={[S.grid, { marginTop: GAP }]}>
-        {ids.map((id, index) => {
-          const isCover = index === 0;
-          const isActive = activeForReorder === index;
-          const isEndOfRow = (index + 1) % NUM_COLS === 0;
+    <View style={styles.cell}>
+      <Pressable
+        style={[styles.thumb, cover && styles.coverBorder]}
+        onPress={() => onOpenPreview(id)}
+      >
+        {uri ? (
+          <Image
+            source={{ uri }}
+            style={styles.image}
+            contentFit="cover"
+            recyclingKey={id}
+          />
+        ) : (
+          <View style={[styles.image, styles.fallback]}>
+            <Text style={styles.fallbackText}>ID {id}</Text>
+          </View>
+        )}
 
-          return (
-            <View
-              key={id}
-              style={[
-                S.tileWrap,
-                {
-                  width: tile.size,
-                  height: tile.size,
-                  marginRight: isEndOfRow ? 0 : GAP,
-                  marginBottom: GAP,
-                },
-              ]}
-            >
-              <Pressable
-                onPress={() => onOpenPreview?.(index, ids)}
-                onLongPress={() => setActiveForReorder(isActive ? null : index)}
-                delayLongPress={250}
-                style={[S.tile, isCover && S.coverBorder, isActive && S.activeOutline]}
-              >
-                {renderThumb ? (
-                  renderThumb(id, tile.size)
-                ) : (
-                  <Image source={{ uri: id }} style={{ width: '100%', height: '100%' }} />
-                )}
+        {/* Cover badge */}
+        {cover && (
+          <View style={styles.coverBadge}>
+            <Text style={styles.coverText}>Cover</Text>
+          </View>
+        )}
 
-                {/* Remove “x” */}
-                <Pressable onPress={() => removeAt(index)} style={S.closeBtn} hitSlop={8}>
-                  <Text style={S.closeTxt}>×</Text>
-                </Pressable>
+        {/* Remove pill (top-right) */}
+        <Pressable onPress={() => onRemove(id)} style={styles.removePill} hitSlop={6}>
+          <Text style={styles.removeText}>✕</Text>
+        </Pressable>
 
-                {/* Cover badge */}
-                {isCover && (
-                  <View style={S.coverBadge}>
-                    <Text style={S.coverTxt}>Cover</Text>
-                  </View>
-                )}
-
-                {/* Reorder controls (shown after long-press) */}
-                {isActive && (
-                  <View style={S.reorderBar}>
-                    <Pressable
-                      onPress={() => move(index, Math.max(0, index - 1))}
-                      style={S.arrowBtn}
-                      hitSlop={8}
-                    >
-                      <Text style={S.arrowTxt}>↑</Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={() => move(index, Math.min(ids.length - 1, index + 1))}
-                      style={S.arrowBtn}
-                      hitSlop={8}
-                    >
-                      <Text style={S.arrowTxt}>↓</Text>
-                    </Pressable>
-                    <Pressable onPress={() => setActiveForReorder(null)} hitSlop={8}>
-                      <Text style={S.doneTxt}>Done</Text>
-                    </Pressable>
-                  </View>
-                )}
-              </Pressable>
-            </View>
-          );
-        })}
-      </View>
+        {/* Up/Down controls (bottom-right) */}
+        <View style={styles.moveGroup}>
+          <Pressable
+            disabled={index === 0}
+            onPress={() => onMove(index, -1)}
+            style={[styles.moveBtn, index === 0 && styles.moveDisabled]}
+            hitSlop={6}
+          >
+            <Text style={styles.moveText}>↑</Text>
+          </Pressable>
+          <Pressable
+            disabled={isLast}
+            onPress={() => onMove(index, +1 as 1)}
+            style={[styles.moveBtn, isLast && styles.moveDisabled]}
+            hitSlop={6}
+          >
+            <Text style={styles.moveText}>↓</Text>
+          </Pressable>
+        </View>
+      </Pressable>
     </View>
+  );
+});
+
+export default function PhotoGrid(props: PhotoGridProps) {
+  const drafts = useDrafts();
+  const selectedIds = props.selectedIds ?? drafts.selectedIds;
+  const removeSelected = props.removeSelected ?? drafts.removeSelected;
+  const setSelectedOrder = props.setSelectedOrder ?? drafts.setSelectedOrder;
+
+  // Build quick id -> item map so we can fetch URIs for thumbs.
+  const idToItem = useMemo(() => {
+    const map = new Map<string, AnyItem>();
+    for (const it of drafts.items as AnyItem[]) map.set(it.id, it);
+    return map;
+  }, [drafts.items]);
+
+  // Filter to PHOTOS only, preserving order.
+  const photoIds = useMemo(
+    () => selectedIds.filter(id => !isVideo(idToItem.get(id))),
+    [selectedIds, idToItem]
+  );
+
+  const handleMove = useCallback(
+    (index: number, dir: -1 | 1) => {
+      const nextIndex = index + dir;
+      if (nextIndex < 0 || nextIndex >= photoIds.length) return;
+
+      const reorderedPhotos = moveIndex(photoIds, index, nextIndex);
+
+      // Rebuild the full selected order, preserving any videos (if present)
+      const photoQueue = new Map<string, number>();
+      reorderedPhotos.forEach((id, i) => photoQueue.set(id, i));
+      const rebuilt = selectedIds
+        .slice()
+        .sort((a, b) => {
+          const ia = photoQueue.get(a);
+          const ib = photoQueue.get(b);
+          if (ia === undefined && ib === undefined) return 0;
+          if (ia === undefined) return 1;
+          if (ib === undefined) return -1;
+          return ia - ib;
+        });
+
+      setSelectedOrder(rebuilt);
+    },
+    [photoIds, selectedIds, setSelectedOrder]
+  );
+
+  const renderItem = useCallback(
+    ({ item: id, index }: { item: string; index: number }) => {
+      const asset = idToItem.get(id);
+      const cover = index === 0;
+      const isLast = index === photoIds.length - 1;
+
+      return (
+        <GridCell
+          id={id}
+          index={index}
+          asset={asset}
+          cover={cover}
+          isLast={isLast}
+          onOpenPreview={props.onOpenPreview}
+          onRemove={removeSelected}
+          onMove={handleMove}
+        />
+      );
+    },
+    [idToItem, photoIds.length, removeSelected, handleMove, props]
+  );
+
+  return (
+    <FlatList
+      data={photoIds}
+      keyExtractor={(id) => id}
+      numColumns={4}
+      renderItem={renderItem}
+      scrollEnabled={false}
+      contentContainerStyle={styles.listContent as ViewStyle}
+      columnWrapperStyle={styles.row}
+    />
   );
 }
 
-const S = StyleSheet.create({
-  container: { width: '100%' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap' },
-  tileWrap: {},
-  tile: {
-    flex: 1,
-    borderRadius: 6,
-    overflow: 'hidden',
-    backgroundColor: '#eee',
+const styles = StyleSheet.create({
+  listContent: {
+    paddingHorizontal: 8,
+    paddingTop: 8,
   },
-  coverBorder: { borderWidth: 2, borderColor: '#111' },
-  activeOutline: { outlineStyle: 'solid' as any, outlineWidth: 2, outlineColor: '#6aa0ff' },
-  closeBtn: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    borderRadius: 10,
-    paddingHorizontal: 6,
-    paddingVertical: 0,
-    minWidth: 20,
+  row: {
+    gap: 8,
+    paddingBottom: 8,
+  },
+  cell: {
+    flex: 1,
+  },
+  thumb: {
+    position: 'relative',
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: '#f2f2f2',
+    aspectRatio: 1,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  fallback: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  closeTxt: { color: '#fff', fontSize: 16, lineHeight: 18, fontWeight: '600' },
+  fallbackText: {
+    fontSize: 11,
+    color: '#666',
+  },
+  coverBorder: {
+    borderWidth: 3,
+    borderColor: '#111',
+  },
   coverBadge: {
     position: 'absolute',
-    left: 4,
-    bottom: 4,
+    top: 6,
+    left: 6,
+    backgroundColor: '#111',
     paddingHorizontal: 6,
     paddingVertical: 2,
-    backgroundColor: 'rgba(255,255,255,0.9)',
     borderRadius: 4,
   },
-  coverTxt: { fontSize: 10, fontWeight: '700', color: '#111' },
-  reorderBar: {
-    position: 'absolute',
-    left: 4,
-    top: 4,
-    right: 24,
-    height: 22,
-    borderRadius: 6,
-    backgroundColor: 'rgba(17,17,17,0.6)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 6,
+  coverText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '600',
   },
-  arrowBtn: { paddingHorizontal: 4, paddingVertical: 2, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.15)' },
-  arrowTxt: { color: '#fff', fontSize: 12, fontWeight: '700' },
-  doneTxt: { color: '#fff', marginLeft: 'auto', fontSize: 12, fontWeight: '700' },
+  removePill: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    backgroundColor: 'rgba(0,0,0,0.75)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 999,
+  },
+  removeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  moveGroup: {
+    position: 'absolute',
+    right: 6,
+    bottom: 6,
+    gap: 4,
+    alignItems: 'center',
+  },
+  moveBtn: {
+    backgroundColor: 'rgba(0,0,0,0.75)',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  moveDisabled: {
+    opacity: 0.35,
+  },
+  moveText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 12,
+  },
 });
