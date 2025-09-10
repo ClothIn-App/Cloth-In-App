@@ -1,5 +1,5 @@
-// app/features/fitpic/cameraroll/useSelectionSync.ts
-import { useCallback, useMemo } from 'react';
+// app/features/fitpic/cameraroll/useSelectionSync.tsx
+import { useCallback } from 'react';
 import { useDrafts } from '../draftcontext';
 
 // Minimal shape for grid assets coming from Camera Roll
@@ -14,10 +14,16 @@ export type AssetLite = {
 };
 
 export function useSelectionSync() {
-  const { items, add, remove, clear, has } = useDrafts();
+  const {
+    items,               // backing MediaItem list (for id → item mapping)
+    has,                 // check if a draft item exists
+    add,                 // add a backing MediaItem if needed
+    selectedIds,         // ← the real source of truth for selection + order
+    addSelected,         // select one or more ids
+    removeSelected,      // unselect an id
+    setSelectedOrder,    // set the full selection order
+  } = useDrafts();
 
-  // Ordered selection (backed by DraftsContext insertion order)
-  const selectedIds = useMemo(() => items.map((m) => m.id), [items]);
   const selectedCount = selectedIds.length;
 
   const isSelected = useCallback(
@@ -33,73 +39,73 @@ export function useSelectionSync() {
     [selectedIds]
   );
 
-  // Drag-reorder helper. Keeps any pre-existing items (e.g., camera shots)
-  // at the front, then applies the deduped nextIds sequence.
+  /**
+   * Apply a new order to the CURRENT selection.
+   * - Dedupes incoming ids
+   * - Keeps any selected ids not present in `nextIds` appended in their prior order
+   * - No-op if the resulting order is unchanged
+   */
   const setOrder = useCallback(
     (nextIds: string[]) => {
-      if (!nextIds || nextIds.length === 0) return;
+      if (!Array.isArray(nextIds) || nextIds.length === 0) return;
 
-      // Only keep ids we actually have
-      const idToItem = new Map(items.map((it) => [it.id, it]));
-      const dedupNext = Array.from(
-        new Set(nextIds.filter((id) => idToItem.has(id)))
+      // Only reorder among the current selection; ignore unknown ids.
+      const dedupNext = Array.from(new Set(nextIds)).filter((id) =>
+        selectedIds.includes(id)
       );
-
-      // Keep current items that weren't part of dedupNext as a fixed prefix
-      const prefix = items.map((it) => it.id).filter((id) => !dedupNext.includes(id));
-
-      const finalIds = [...prefix, ...dedupNext];
+      const remainder = selectedIds.filter((id) => !dedupNext.includes(id));
+      const final = [...dedupNext, ...remainder];
 
       // If order didn't change, bail
       const unchanged =
-        finalIds.length === items.length &&
-        finalIds.every((id, i) => id === items[i].id);
+        final.length === selectedIds.length &&
+        final.every((id, i) => id === selectedIds[i]);
       if (unchanged) return;
 
-      // Rebuild drafts in the new order
-      const finalItems = finalIds.map((id) => idToItem.get(id)!).filter(Boolean);
-      clear();
-      for (const it of finalItems) {
-        // `add` expects a MediaItem; we pass through the same objects from context.
-        add(it as any);
-      }
+      setSelectedOrder(final);
     },
-    [items, add, clear]
+    [selectedIds, setSelectedOrder]
   );
 
-  // Toggle selection (append when adding; remove when already selected)
+  /**
+   * Toggle selection for a Camera Roll asset.
+   * - If already selected: UNSELECT (do not hard-delete the draft)
+   * - If not selected: ensure a backing draft exists, then SELECT and append to order
+   */
   const toggle = useCallback(
     (asset: AssetLite) => {
       if (!asset?.id) return;
 
+      // Deselect
       if (isSelected(asset.id)) {
-        remove(asset.id);
-        // After removal, numbering automatically renumbers because it’s index-based.
+        removeSelected(asset.id);
         return;
       }
 
-      // Map AssetLite -> MediaItem (minimal fields; rest optional)
-      const mediaItem = {
-        id: asset.id,
-        uri: asset.uri,
-        width: asset.width ?? 0,
-        height: asset.height ?? 0,
-        createdAt: asset.createdAt ?? Date.now(),
-        // keep any provided thumbs/previews for your UI
-        thumbnailUri: asset.thumbnailUri,
-        previewUri: asset.previewUri,
-        // harmless extra metadata others may read
-        kind: 'photo',
-        source: 'cameraroll',
-      } as any;
+      // Ensure a backing MediaItem exists in drafts
+      if (!has?.(asset.id)) {
+        const mediaItem = {
+          id: asset.id,
+          uri: asset.uri,
+          width: asset.width ?? 0,
+          height: asset.height ?? 0,
+          createdAt: asset.createdAt ?? Date.now(),
+          thumbnailUri: asset.thumbnailUri,
+          previewUri: asset.previewUri,
+          kind: 'photo',
+          source: 'cameraroll',
+        } as any; // keep loose here; callers can refine the MediaItem type
 
-      // `add` is de-dupe safe; it will no-op if id already exists.
-      add(mediaItem);
+        add(mediaItem);
+      }
 
-      // Appending automatically places it after any pre-existing camera shots.
-      // No explicit setOrder needed here.
+      // Select the id
+      addSelected([{ id: asset.id }]);
+
+      // Ensure appended order (in case addSelected doesn't enforce position)
+      setSelectedOrder([...selectedIds, asset.id]);
     },
-    [add, remove, isSelected]
+    [add, has, addSelected, removeSelected, setSelectedOrder, selectedIds, isSelected]
   );
 
   return {

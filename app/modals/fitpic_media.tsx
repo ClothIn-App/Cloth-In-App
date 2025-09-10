@@ -39,6 +39,13 @@ export default function FitPicMediaScreen() {
     selectedIds, // ← use current selection to append new ids in-order
   } = useDrafts();
 
+  const selectedItems = React.useMemo(() => {
+  const byId = new Map(items.map(m => [m.id, m]));
+  return selectedIds
+    .map(id => byId.get(id))
+    .filter((x): x is NonNullable<typeof x> => Boolean(x));
+}, [items, selectedIds]);
+
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   // Track which page the pager is on: 0 = Gallery, 1 = Camera
@@ -68,10 +75,13 @@ export default function FitPicMediaScreen() {
 
   // "Next" from Selected Drawer
   const handleNext = React.useCallback(() => {
-    const ids = items.map((m) => m.id);
-    goToPost(ids);
-  }, [items, goToPost]);
+    goToPost(selectedIds);
+  }, [selectedIds, goToPost]);
 
+  // "Back" from Camera page
+  const handleBack = React.useCallback(() => {
+    router.back();
+  }, [router]);
   // Take photo → add to drafts → mark selected → keep order
   const onShutterPress = React.useCallback(async () => {
     const media = (await takePhoto?.()) as MediaItem | undefined;
@@ -124,7 +134,7 @@ export default function FitPicMediaScreen() {
             <TopRightControls controller={controller} onNext={handleNext} />
 
             <View style={styles.cornerStackContainer} pointerEvents="box-none">
-              <CornerThumbStack items={items} onPress={() => setDrawerOpen(true)} />
+              <CornerThumbStack items={selectedItems} onPress={() => setDrawerOpen(true)} />
             </View>
 
             {/* Bottom bar: shutter centered; gallery on the left */}

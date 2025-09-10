@@ -1,5 +1,5 @@
 // app/modals/fitpic_post.tsx
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Alert,
   ActivityIndicator,
@@ -11,13 +11,12 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router'; // ← added
+import { useRouter } from 'expo-router';
 
 import { useDrafts } from '../../src/FitPic/draftcontext';
 import { usePost } from '../../src/FitPic/post/postcontext';
 import { CAPTION_MAX } from '../../src/FitPic/post/types';
 
-// 🔽 Drop-in grid built for this modal
 import PhotoGrid from '../../src/FitPic/post/photogrid';
 
 type Props = {
@@ -29,11 +28,10 @@ type Props = {
   onOpenPreview?: (startIndex: number, ids: string[]) => void;
 };
 
-// removed noop
 const shorten = (s: string) => (s.length > 18 ? s.slice(0, 8) + '…' + s.slice(-8) : s);
 
 export default function FitPicPostModal({
-  onBackToCamera, // ← removed default (= noop)
+  onBackToCamera,
   onOpenProductPicker,
   onPost,
   posting = false,
@@ -41,7 +39,10 @@ export default function FitPicPostModal({
   onOpenPreview,
 }: Props) {
   const insets = useSafeAreaInsets();
-  const router = useRouter(); // ← added
+  const router = useRouter();
+
+  // Disable scroll while dragging photos
+  const [dragging, setDragging] = useState(false);
 
   // Photos live in DraftsContext
   const { selectedIds, removeSelected, setSelectedOrder } = useDrafts();
@@ -61,11 +62,10 @@ export default function FitPicPostModal({
     if (onBackToCamera) {
       onBackToCamera();
     } else {
-      router.back(); // fallback to native swipe-back behavior
+      router.back();
     }
   }, [onBackToCamera, router]);
 
-  // Task 5: Save Draft is a no-op placeholder (wire storage later)
   const handleSaveDraft = useCallback(() => {
     toast('Draft saved (placeholder)');
   }, [toast]);
@@ -106,7 +106,12 @@ export default function FitPicPostModal({
       </View>
 
       {/* Body */}
-      <ScrollView style={S.body} contentContainerStyle={S.bodyContent}>
+      <ScrollView
+        style={S.body}
+        contentContainerStyle={S.bodyContent}
+        scrollEnabled={!dragging}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Photos */}
         <Section title="Photos">
           {hasPhotos ? (
@@ -116,10 +121,9 @@ export default function FitPicPostModal({
                 onOpenPreview={handleOpenPreview}
                 removeSelected={removeSelected}
                 setSelectedOrder={setSelectedOrder}
+                onDragStateChange={setDragging}
               />
-              <Text style={S.help}>
-                Tip: Use ↑/↓ on a tile to reorder. The first tile is the cover.
-              </Text>
+              <Text style={S.help}>Tip: Long-press and drag to reorder. The first tile is the cover.</Text>
             </>
           ) : (
             <Text style={S.muted}>No photos selected yet.</Text>

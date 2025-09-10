@@ -50,10 +50,13 @@ const SelectedDrawer: React.FC<SelectedDrawerProps> = ({
   onRemove: onRemoveProp,
   onClose,
 }) => {
-  const { items: ctxItems, remove: ctxRemove } = useDrafts();
+  const {
+    items: ctxItems,
+    selectedIds,
+    removeSelected: ctxRemoveSelected,
+  } = useDrafts();
 
   const items = itemsProp ?? ctxItems;
-  const remove = onRemoveProp ?? ctxRemove;
 
   const sheetH = SHEET_HEIGHT;
 
@@ -65,10 +68,13 @@ const SelectedDrawer: React.FC<SelectedDrawerProps> = ({
   const [previewFade] = useState(new Animated.Value(0));
   const [previewWH, setPreviewWH] = useState<{ w: number; h: number } | null>(null);
 
-  const data = useMemo(
-    () => [...items].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0)),
-    [items]
-  );
+  const data = useMemo(() => {
+    const byId = new Map(items.map(m => [m.id, m]));
+    return selectedIds
+      .map(id => byId.get(id))
+      .filter((x): x is NonNullable<typeof x> => Boolean(x));
+  }, [items, selectedIds]);
+
 
   const tileSize = useMemo(() => {
     const totalGap = GAP * (COLS - 1) + PADDING_H * 2;
@@ -149,13 +155,13 @@ const SelectedDrawer: React.FC<SelectedDrawerProps> = ({
             style={StyleSheet.absoluteFill}
             contentFit="cover"
           />
-          <Pressable onPress={() => remove(item.id)} style={styles.removeBtn} hitSlop={8}>
+          <Pressable onPress={() => ctxRemoveSelected(item.id)} style={styles.removeBtn} hitSlop={8}>
             <Text style={styles.removeText}>✕</Text>
           </Pressable>
         </Pressable>
       );
     },
-    [onPressTile, remove, tileSize]
+    [onPressTile, ctxRemoveSelected, tileSize]
   );
 
   const onGestureEvent = useMemo(
@@ -227,7 +233,7 @@ const SelectedDrawer: React.FC<SelectedDrawerProps> = ({
             <Pressable onPress={handleClose} hitSlop={8} style={styles.headerBtn}>
               <Text style={styles.headerBtnText}>Close</Text>
             </Pressable>
-            <Text style={styles.headerTitle}>Selected • {items.length}</Text>
+            <Text style={styles.headerTitle}>Selected • {selectedIds.length}</Text>
             <Pressable onPress={onNext} hitSlop={8} style={styles.headerBtn}>
               <Text style={styles.headerBtnText}>Next</Text>
             </Pressable>
