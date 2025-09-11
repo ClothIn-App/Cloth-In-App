@@ -18,6 +18,9 @@ import { usePost } from '../../src/FitPic/post/postcontext';
 import { CAPTION_MAX } from '../../src/FitPic/post/types';
 
 import PhotoGrid from '../../src/FitPic/post/photogrid';
+import ProductPicker from '../../src/FitPic/post/productpicker';
+import ProductGrid from '../../src/FitPic/post/productgrid';
+import CaptionInput from '../../src/FitPic/post/captioninput';
 
 type Props = {
   onBackToCamera?: () => void;
@@ -40,6 +43,9 @@ export default function FitPicPostModal({
 }: Props) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+
+  // keep prop referenced to avoid unused var warnings if your tsconfig has noUnusedParameters
+  void onOpenProductPicker;
 
   // Disable scroll while dragging photos
   const [dragging, setDragging] = useState(false);
@@ -132,41 +138,21 @@ export default function FitPicPostModal({
 
         {/* Products */}
         <Section title="Products">
-          {products.length ? (
-            <View style={S.chipsWrap}>
-              {products.map((p) => (
-                <View key={p.id} style={S.chip}>
-                  <Text style={S.chipText}>{p.name ?? shorten(p.id)}</Text>
-                  <Pressable onPress={() => removeProduct(p.id)} style={S.smallBtn}>
-                    <Text style={S.smallBtnTxt}>Remove</Text>
-                  </Pressable>
-                </View>
-              ))}
-            </View>
-          ) : (
-            <Text style={S.muted}>No products tagged.</Text>
-          )}
+          {/* Selector writes to PostContext; grid reflects context */}
+          <ProductPicker />
 
-          <Pressable onPress={onOpenProductPicker} style={[S.rowBtn, S.rowBtnPrimary]}>
-            <Text style={S.rowBtnText}>+ Add product</Text>
-          </Pressable>
+          <View style={{ marginTop: 12 }}>
+            <ProductGrid products={products} onRemove={removeProduct} />
+          </View>
         </Section>
 
         {/* Caption */}
         <Section title="Caption">
-          <TextInput
-            placeholder="Write a caption…"
-            value={caption}
-            onChangeText={setCaption}
-            multiline
-            style={S.captionInput}
-            maxLength={CAPTION_MAX}
-            textAlignVertical="top"
-            placeholderTextColor="#9ca3af"
+          <CaptionInput
+            value={caption}     
+            onChange={setCaption}    
+            max={CAPTION_MAX}
           />
-          <Text style={S.counter}>
-            {caption.length}/{CAPTION_MAX}
-          </Text>
         </Section>
 
         {/* Spacer so last content isn't obscured by sticky footer */}
