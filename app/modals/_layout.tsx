@@ -2,8 +2,8 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { DraftsProvider } from '../../src/FitPic/draftcontext';
-import { PostProvider } from '../../src/FitPic/post/postcontext';
+import { DraftsProvider } from '../../src/create/draftcontext';
+import { PostProvider } from '../../src/create/post/postcontext';
 
 export default function ModalStackLayout() {
   return (

@@ -1,9 +1,9 @@
-// app/src/fitpic/toprightcontrols.tsx
 import * as React from 'react';
-import { View, Pressable, StyleSheet, Text } from 'react-native';
+import { View, Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SymbolView as IconSymbol } from 'expo-symbols';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
+import { useDrafts } from '../draftcontext';
 
 type CameraControllerLike = {
   flashOn?: boolean;
@@ -15,27 +15,18 @@ type CameraControllerLike = {
 
 type Props = {
   controller: CameraControllerLike;
-  /** Pass your current photos length here */
-  photoCount?: number; // ← required for enabling Next (defaults to 0 if omitted)
-  /** Optional legacy prop; only used if photoCount is undefined */
-  canProceed?: boolean;
-  style?: any;
-  /** If you want a different route, change this prop or the default below */
-  nextRoute?: string;
+  style?: ViewStyle | ViewStyle[];
+  /** If provided, called when user taps Next (preferred). */
+  onNext?: () => void;
 };
 
-export default function TopRightControls({
-  controller,
-  photoCount = 0,
-  canProceed,
-  style,
-  nextRoute = '/postpic', // ← change this if your file lives elsewhere (e.g. '/modals/postpic')
-}: Props) {
+export default function TopRightControls({ controller, style, onNext }: Props) {
   const { top, right } = useSafeAreaInsets();
+  const router = useRouter();
+  const { items, selectedIds } = useDrafts();
 
-  // Prefer photoCount if present; else fall back to canProceed
   const canGoNext =
-    typeof photoCount === 'number' ? photoCount >= 1 : !!canProceed;
+    (selectedIds?.length ?? 0) > 0 || (items?.length ?? 0) > 0;
 
   const isFlashOn =
     controller.flashOn ??
@@ -45,13 +36,21 @@ export default function TopRightControls({
 
   const onPressNext = React.useCallback(() => {
     if (!canGoNext) return;
-    router.push('/modals/fitpic_post');
-  }, [canGoNext, nextRoute]);
+    if (onNext) {
+      onNext(); // let parent seed selection/order + navigate
+    } else {
+      router.push('/modals/fitpic_post'); // fallback
+    }
+  }, [canGoNext, onNext, router]);
 
   return (
     <View
       pointerEvents="box-none"
-      style={[styles.absolute, { top: top + 8, right: Math.max(right, 8) }, style]}
+      style={[
+        styles.absolute,
+        { top: top + 8, right: Math.max(right, 8) },
+        style,
+      ]}
     >
       <View pointerEvents="auto" style={styles.column}>
         {/* NEXT */}
@@ -69,7 +68,7 @@ export default function TopRightControls({
           <Text style={styles.nextTxt}>Next</Text>
         </Pressable>
 
-        {/* FLASH (no bubble) */}
+        {/* FLASH */}
         <IconButton
           testID="btn-flash"
           sf={flashSymbol}
@@ -78,7 +77,7 @@ export default function TopRightControls({
           onPress={controller.toggleFlash}
         />
 
-        {/* FLIP (no bubble) */}
+        {/* FLIP */}
         <IconButton
           testID="btn-flip"
           sf="camera.rotate"
@@ -99,7 +98,13 @@ type IconButtonProps = {
   testID?: string;
 };
 
-function IconButton({ sf, onPress, active, label, testID }: IconButtonProps) {
+function IconButton({
+  sf,
+  onPress,
+  active,
+  label,
+  testID,
+}: IconButtonProps) {
   return (
     <Pressable
       onPress={onPress}
@@ -116,7 +121,6 @@ function IconButton({ sf, onPress, active, label, testID }: IconButtonProps) {
         key={sf}
         name={sf as any}
         size={22}
-        // Still no bubble — just tint
         tintColor={active ? '#FFF' : 'rgba(255,255,255,0.85)'}
       />
     </Pressable>
@@ -126,24 +130,11 @@ function IconButton({ sf, onPress, active, label, testID }: IconButtonProps) {
 const styles = StyleSheet.create({
   absolute: { position: 'absolute', zIndex: 20 },
   column: { flexDirection: 'column', gap: 10, alignItems: 'flex-end' },
-
-  // NEXT styles
-  nextBase: {
-    borderRadius: 18,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-  },
-  nextEnabled: {
-    backgroundColor: '#000', // ← solid black bubble when 1+ photo
-  },
-  nextDisabled: {
-    backgroundColor: 'rgba(0,0,0,0.55)', // greyed/disabled
-    opacity: 0.65,
-  },
+  nextBase: { borderRadius: 18, paddingHorizontal: 14, paddingVertical: 8 },
+  nextEnabled: { backgroundColor: '#000' },
+  nextDisabled: { backgroundColor: 'rgba(0,0,0,0.55)', opacity: 0.65 },
   nextPressed: { opacity: 0.9 },
   nextTxt: { color: '#fff', fontSize: 14, fontWeight: '700' },
-
-  // Icon buttons: no bubbles
   iconPressable: {
     paddingHorizontal: 6,
     paddingVertical: 6,

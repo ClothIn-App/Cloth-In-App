@@ -1,4 +1,4 @@
-// app/src/FitPic/cameraroll/PreviewPanel.tsx
+// app/src/create/cameraroll/PreviewPanel.tsx
 import React, { useEffect, useRef } from 'react';
 import {
   Animated,

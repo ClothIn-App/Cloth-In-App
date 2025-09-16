@@ -1,4 +1,4 @@
-// app/src/FitPic/cameraroll/PhotoGrid.tsx
+// app/src/create/cameraroll/PhotoGrid.tsx
 import type { FlatListProps, ListRenderItem } from 'react-native';
 import React, { memo, useMemo, useCallback } from 'react';
 import {
