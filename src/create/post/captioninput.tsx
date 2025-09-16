@@ -1,6 +1,6 @@
-// src/FitPic/post/components/CaptionInput.tsx
-import React, { useMemo } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+// src/create/post/components/CaptionInput.tsx
+import React, { useMemo, useRef, useEffect } from 'react';
+import { StyleSheet, Text, TextInput, View, Keyboard } from 'react-native';
 
 export type CaptionInputProps = {
   value: string;
@@ -9,6 +9,7 @@ export type CaptionInputProps = {
 };
 
 export default function CaptionInput({ value, onChange, max }: CaptionInputProps) {
+  const inputRef = useRef<TextInput>(null);
   // show helper when within 200 chars of the cap (e.g., 2000/2200)
   const remaining = Math.max(0, max - (value?.length ?? 0));
   const showHelper = remaining <= 200;
@@ -25,9 +26,14 @@ export default function CaptionInput({ value, onChange, max }: CaptionInputProps
     onChange(next);
   };
 
+  const handleSubmit = () => {
+    Keyboard.dismiss();
+  };
+
   return (
     <View style={S.wrap}>
       <TextInput
+        ref={inputRef}
         placeholder="Write a caption…"
         value={value}
         onChangeText={handleChange}
@@ -38,6 +44,9 @@ export default function CaptionInput({ value, onChange, max }: CaptionInputProps
         // Using maxLength here improves UX on both iOS/Android
         maxLength={max}
         accessibilityLabel="Post caption"
+        returnKeyType="done"
+        onSubmitEditing={handleSubmit}
+        blurOnSubmit={true}
       />
       <View style={S.footerRow} accessible accessibilityLabel={`Characters remaining: ${remaining}`}>
         <Text style={[S.counter, showHelper && S.counterNear]}>
@@ -52,7 +61,8 @@ export default function CaptionInput({ value, onChange, max }: CaptionInputProps
 const S = StyleSheet.create({
   wrap: { gap: 6 },
   input: {
-    minHeight: 120,
+    minHeight: 100,
+    maxHeight: 200,
     borderRadius: 12,
     padding: 12,
     backgroundColor: '#ffffff',

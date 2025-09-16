@@ -1,4 +1,4 @@
-// src/FitPic/post/components/ProductPicker.tsx
+// src/create/post/components/ProductPicker.tsx
 import React, { useMemo, useRef, useState } from 'react';
 import {
   View,
@@ -67,8 +67,6 @@ export default function ProductPicker({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Products</Text>
-
       <TextInput
         ref={inputRef}
         style={styles.input}
@@ -152,7 +150,6 @@ const BORDER = '#E2E8F0';
 
 const styles = StyleSheet.create({
   container: { width: '100%' },
-  label: { fontSize: 16, fontWeight: '600', marginBottom: 6 },
   input: {
     borderWidth: 1,
     borderColor: BORDER,

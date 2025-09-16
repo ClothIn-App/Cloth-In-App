@@ -1,4 +1,4 @@
-// app/src/FitPic/cameraroll/types.ts
+// app/src/create/cameraroll/types.ts
 export type AssetLite = {
   id: string;
   uri: string;

@@ -6,21 +6,21 @@ import { useIsFocused } from '@react-navigation/native';
 
 import FitPicPager, {
   type FitPicPagerHandle as FitPicPagerRef,
-} from '../../src/FitPic/fitpicpager';
+} from '../../src/create/fitpicpager';
 
-import CameraRollScreen from '../../src/FitPic/roll/camerarollscreen';
+import CameraRollScreen from '../../src/create/roll/camerarollscreen';
 
-import { useCameraController } from '../../src/FitPic/camera/usecameracontroller';
-import CameraSurface from '../../src/FitPic/camera/camerasurface';
-import ShutterButton from '../../src/FitPic/camera/shutterbutton';
-import GallerButton from '../../src/FitPic/camera/gallerybutton';
-import { useDrafts } from '../../src/FitPic/draftcontext';
-import CornerThumbStack from '../../src/FitPic/thumbnailstack';
-import SelectedDrawer from '../../src/FitPic/selecteddrawer';
-import TopLeftControls from '../../src/FitPic/camera/topleftcontrols';
-import TopRightControls from '../../src/FitPic/camera/toprightcontrols';
+import { useCameraController } from '../../src/create/camera/usecameracontroller';
+import CameraSurface from '../../src/create/camera/camerasurface';
+import ShutterButton from '../../src/create/camera/shutterbutton';
+import GallerButton from '../../src/create/camera/gallerybutton';
+import { useDrafts } from '../../src/create/draftcontext';
+import CornerThumbStack from '../../src/create/thumbnailstack';
+import SelectedDrawer from '../../src/create/selecteddrawer';
+import TopLeftControls from '../../src/create/camera/topleftcontrols';
+import TopRightControls from '../../src/create/camera/toprightcontrols';
 
-import type { MediaItem } from '../../src/FitPic/camera/media';
+import type { MediaItem } from '../../src/create/camera/media';
 
 export default function FitPicMediaScreen() {
   const pagerRef = React.useRef<FitPicPagerRef>(null);

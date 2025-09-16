@@ -1,4 +1,4 @@
-// app/src/FitPic/cameraroll/CameraRollScreen.tsx
+// app/src/create/cameraroll/CameraRollScreen.tsx
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, Pressable, SafeAreaView, StyleSheet } from 'react-native';
 

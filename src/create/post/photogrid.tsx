@@ -1,4 +1,4 @@
-// File: src/FitPic/post/photogrid.tsx
+// File: src/create/post/photogrid.tsx
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,

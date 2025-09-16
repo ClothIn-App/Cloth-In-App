@@ -3,6 +3,7 @@ import React, { useCallback, useState } from 'react';
 import {
   Alert,
   ActivityIndicator,
+  Keyboard,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -13,14 +14,14 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-import { useDrafts } from '../../src/FitPic/draftcontext';
-import { usePost } from '../../src/FitPic/post/postcontext';
-import { CAPTION_MAX } from '../../src/FitPic/post/types';
+import { useDrafts } from '../../src/create/draftcontext';
+import { usePost } from '../../src/create/post/postcontext';
+import { CAPTION_MAX } from '../../src/create/post/types';
 
-import PhotoGrid from '../../src/FitPic/post/photogrid';
-import ProductPicker from '../../src/FitPic/post/productpicker';
-import ProductGrid from '../../src/FitPic/post/productgrid';
-import CaptionInput from '../../src/FitPic/post/captioninput';
+import PhotoGrid from '../../src/create/post/photogrid';
+import ProductPicker from '../../src/create/post/productpicker';
+import ProductGrid from '../../src/create/post/productgrid';
+import CaptionInput from '../../src/create/post/captioninput';
 
 type Props = {
   onBackToCamera?: () => void;
@@ -117,6 +118,9 @@ export default function FitPicPostModal({
         contentContainerStyle={S.bodyContent}
         scrollEnabled={!dragging}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        automaticallyAdjustKeyboardInsets={true}
+        showsVerticalScrollIndicator={false}
       >
         {/* Photos */}
         <Section title="Photos">
@@ -141,7 +145,7 @@ export default function FitPicPostModal({
           {/* Selector writes to PostContext; grid reflects context */}
           <ProductPicker />
 
-          <View style={{ marginTop: 12 }}>
+          <View style={{ marginTop: 8 }}>
             <ProductGrid products={products} onRemove={removeProduct} />
           </View>
         </Section>
@@ -200,7 +204,7 @@ const S = StyleSheet.create({
   title: { flex: 1, textAlign: 'center', color: '#111827', fontSize: 15, fontWeight: '600' },
 
   body: { flex: 1 },
-  bodyContent: { padding: 16, gap: 20, backgroundColor: '#ffffff' },
+  bodyContent: { padding: 16, gap: 16, backgroundColor: '#ffffff' },
 
   section: { gap: 10 },
   sectionTitle: { color: '#111827', fontSize: 15, fontWeight: '700', letterSpacing: 0.2 },
