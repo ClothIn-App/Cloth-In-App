@@ -25,7 +25,6 @@ const ThumbItem = memo(function ThumbItem({
       style={[
         styles.cell,
         { width: size, height: size },
-        isSelected && styles.selected,
       ]}
     >
       <Image source={{ uri: asset.uri }} style={styles.image} contentFit="cover" />
@@ -45,10 +44,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
     position: 'relative',
-  },
-  selected: {
-    borderWidth: 2,
-    borderColor: '#3b82f6',
   },
   image: {
     width: '100%',

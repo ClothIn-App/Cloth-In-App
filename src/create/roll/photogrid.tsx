@@ -132,22 +132,18 @@ const getItemLayout: FlatListProps<GridItem>['getItemLayout'] = (_, index) => {
       windowSize={11}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.listContent}
+      columnWrapperStyle={COLS > 1 ? styles.row : undefined}
     />
   );
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  listContent: { 
-    paddingBottom: 2,
-    paddingHorizontal: 4, // 4px padding on each side for centering
-    alignItems: 'center', // Center the grid
+  listContent: { paddingBottom: 2 },
+  row: { 
+    justifyContent: 'space-between',
+    paddingHorizontal: 0,
   },
-  cell: { 
-    width: CELL, 
-    height: CELL,
-    marginHorizontal: 1.5, // 1.5px margin on left/right (creates 3px gap between items)
-    marginVertical: 1, // 1px margin on top/bottom
-  },
+  cell: { width: CELL, height: CELL },
   placeholder: { backgroundColor: '#E5E5EA' },
 });

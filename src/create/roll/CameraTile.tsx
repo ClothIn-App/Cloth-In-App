@@ -1,6 +1,6 @@
 // src/create/roll/CameraTile.tsx
 import React, { memo } from 'react';
-import { Pressable, Text, StyleSheet } from 'react-native';
+import { Pressable, Text, StyleSheet, Image } from 'react-native';
 
 type CameraTileProps = {
   onPress: () => void;
@@ -9,7 +9,11 @@ type CameraTileProps = {
 const CameraTile = memo(function CameraTile({ onPress }: CameraTileProps) {
   return (
     <Pressable onPress={onPress} style={[styles.cell, styles.cameraCell]}>
-      <Text style={styles.cameraEmoji}>📷</Text>
+      <Image 
+        source={require('../../../assets/images/camera-icon.png')} 
+        style={styles.cameraIcon}
+        resizeMode="contain"
+      />
       <Text style={styles.cameraLabel}>Camera</Text>
     </Pressable>
   );
@@ -24,12 +28,10 @@ const styles = StyleSheet.create({
   },
   cameraCell: {
     backgroundColor: '#f3f4f6',
-    borderWidth: 2,
-    borderColor: '#d1d5db',
-    borderStyle: 'dashed',
   },
-  cameraEmoji: {
-    fontSize: 32,
+  cameraIcon: {
+    width: 32,
+    height: 32,
     marginBottom: 4,
   },
   cameraLabel: {
