@@ -71,6 +71,7 @@ export function useSelectionSync() {
    * Toggle selection for a Camera Roll asset.
    * - If already selected: UNSELECT (do not hard-delete the draft)
    * - If not selected: ensure a backing draft exists, then SELECT and append to order
+   * - Enforces max 5 items limit
    */
   const toggle = useCallback(
     (asset: AssetLite) => {
@@ -79,6 +80,12 @@ export function useSelectionSync() {
       // Deselect
       if (isSelected(asset.id)) {
         removeSelected(asset.id);
+        return;
+      }
+
+      // Check max limit (5 items)
+      if (selectedCount >= 5) {
+        // Could show an alert here or return early
         return;
       }
 
@@ -105,7 +112,7 @@ export function useSelectionSync() {
       // Ensure appended order (in case addSelected doesn't enforce position)
       setSelectedOrder([...selectedIds, asset.id]);
     },
-    [add, has, addSelected, removeSelected, setSelectedOrder, selectedIds, isSelected]
+    [add, has, addSelected, removeSelected, setSelectedOrder, selectedIds, isSelected, selectedCount]
   );
 
   return {

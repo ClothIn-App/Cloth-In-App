@@ -1,6 +1,6 @@
 // app/modals/fitpic_media.tsx
 import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -8,7 +8,7 @@ import FitPicPager, {
   type FitPicPagerHandle as FitPicPagerRef,
 } from '../../src/create/fitpicpager';
 
-import CameraRollScreen from '../../src/create/roll/camerarollscreen';
+import CameraRollScreen from '../../src/create/roll/camerarollscreen-fitpic';
 
 import { useCameraController } from '../../src/create/camera/usecameracontroller';
 import CameraSurface from '../../src/create/camera/camerasurface';
@@ -84,6 +84,16 @@ export default function FitPicMediaScreen() {
   }, [router]);
   // Take photo → add to drafts → mark selected → keep order
   const onShutterPress = React.useCallback(async () => {
+    // Check max limit before taking photo
+    if (selectedIds.length >= 5) {
+      Alert.alert(
+        'Maximum Selection Reached',
+        'You can only select up to 5 photos. Please deselect a photo first.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
     const media = (await takePhoto?.()) as MediaItem | undefined;
     if (!media) return;
 
