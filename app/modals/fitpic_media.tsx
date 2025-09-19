@@ -8,7 +8,7 @@ import FitPicPager, {
   type FitPicPagerHandle as FitPicPagerRef,
 } from '../../src/create/fitpicpager';
 
-import CameraRollScreen from '../../src/create/roll/camerarollscreen';
+import CameraRollScreen from '../../src/create/roll/camerarollscreen-fitpic';
 
 import { useCameraController } from '../../src/create/camera/usecameracontroller';
 import CameraSurface from '../../src/create/camera/camerasurface';

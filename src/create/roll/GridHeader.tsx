@@ -8,6 +8,7 @@ type GridHeaderProps = {
   onNext: () => void;
   selectedCount: number;
   disabled?: boolean;
+  buttonText?: string;
 };
 
 export default function GridHeader({
@@ -16,6 +17,7 @@ export default function GridHeader({
   onNext,
   selectedCount,
   disabled = false,
+  buttonText = 'Next',
 }: GridHeaderProps) {
   return (
     <View style={styles.header}>
@@ -32,7 +34,7 @@ export default function GridHeader({
         disabled={disabled}
       >
         <Text style={[styles.next, disabled && styles.disabledText]}>
-          Next {selectedCount > 0 && `(${selectedCount})`}
+          {buttonText} {selectedCount > 0 && `(${selectedCount})`}
         </Text>
       </Pressable>
     </View>

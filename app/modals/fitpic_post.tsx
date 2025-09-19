@@ -93,7 +93,7 @@ export default function FitPicPostModal({
 
   // Tight header under camera + footer above home indicator
   const topPad = Math.max(insets.top - 6, 0);
-  const headerHeight = 40 + topPad;
+  const headerHeight = 60 + topPad;
   const footerSafePad = insets.bottom;
   const footerInnerExtra = 4;
 
@@ -108,7 +108,7 @@ export default function FitPicPostModal({
         <Text style={S.title}>Create Post</Text>
 
         <Pressable onPress={handleSaveDraft} hitSlop={10} style={S.headerBtn}>
-          <Text style={[S.headerBtnText, S.save]}>Save Draft</Text>
+          <Text style={[S.headerBtnText, S.save]}>Post</Text>
         </Pressable>
       </View>
 
