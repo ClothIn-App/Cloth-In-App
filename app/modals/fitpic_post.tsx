@@ -17,6 +17,7 @@ import { useRouter } from 'expo-router';
 import { useDrafts } from '../../src/create/draftcontext';
 import { usePost } from '../../src/create/post/postcontext';
 import { CAPTION_MAX } from '../../src/create/post/types';
+import { useFitPicPosting } from '../../src/hooks/useFitPicPosting';
 
 import PhotoGrid from '../../src/create/post/photogrid';
 import ProductPicker from '../../src/create/post/productpicker';
@@ -57,11 +58,14 @@ export default function FitPicPostModal({
   // Caption + products live in PostContext
   const { meta, setCaption, removeProduct } = usePost();
 
+  // FitPic posting functionality
+  const { postingState, handlePost, canPost } = useFitPicPosting();
+
   const caption = meta.caption ?? '';
   const products = meta.products ?? [];
 
   const hasPhotos = selectedIds.length > 0;
-  const postDisabled = !hasPhotos || posting;
+  const postDisabled = !canPost || postingState.isPosting;
 
   const toast = (msg: string) => (onToast ? onToast(msg) : Alert.alert(msg));
 
@@ -77,10 +81,11 @@ export default function FitPicPostModal({
     toast('Draft saved (placeholder)');
   }, [toast]);
 
-  const handlePost = useCallback(async () => {
-    if (!onPost) return;
-    await onPost();
-  }, [onPost]);
+  // Use the FitPic posting handler instead of the prop
+  // const handlePost = useCallback(async () => {
+  //   if (!onPost) return;
+  //   await onPost();
+  // }, [onPost]);
 
   // Adapt PhotoGrid’s onOpenPreview(id) -> modal’s (index, ids)
   const handleOpenPreview = useCallback(
@@ -171,7 +176,17 @@ export default function FitPicPostModal({
             disabled={postDisabled}
             style={[S.postBtn, postDisabled && S.postBtnDisabled]}
           >
-            {posting ? <ActivityIndicator /> : <Text style={S.postBtnText}>Post</Text>}
+            {postingState.isPosting ? (
+              <View style={S.postingContainer}>
+                <ActivityIndicator size="small" color="#ffffff" />
+                <Text style={S.postingText}>
+                  {postingState.currentStep === 'uploading' ? 'Uploading...' : 
+                   postingState.currentStep === 'creating' ? 'Creating...' : 'Posting...'}
+                </Text>
+              </View>
+            ) : (
+              <Text style={S.postBtnText}>Post</Text>
+            )}
           </Pressable>
         </View>
       </SafeAreaView>
@@ -275,4 +290,10 @@ const S = StyleSheet.create({
   },
   postBtnDisabled: { backgroundColor: '#e5e7eb' },
   postBtnText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
+  postingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  postingText: { color: '#ffffff', fontSize: 14, fontWeight: '600' },
 });

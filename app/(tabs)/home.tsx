@@ -4,15 +4,29 @@ import React, { useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
-import PinGrid from "../../components/PinGrid";
 import SegmentedTabs from "../../components/SegmentedTabs";
+import FitPicGrid from "../../src/components/FitPicGrid";
+import FitPicDetailModal from "../../src/components/FitPicDetailModal";
 import { useAuth } from "../../src/context/AuthContext";
-import { useFeed } from "../../src/hooks/useFeed";
+import { useFitPicFeed } from "../../src/hooks/useFitPicFeed";
+import type { FitPic } from "../../src/types/fitpic";
 
 export default function HomeScreen() {
   const [tab, setTab] = useState<"forYou" | "following">("forYou");
-  const { data, loading } = useFeed(tab);
+  const [selectedFitPic, setSelectedFitPic] = useState<FitPic | null>(null);
   const { auth } = useAuth();
+  
+  const {
+    fitpics,
+    loading,
+    refreshing,
+    hasMore,
+    error,
+    refresh,
+    loadMore,
+    handleLike,
+    handleSave,
+  } = useFitPicFeed(tab);
 
   // fall back to mock until API integrated
   const displayName =
@@ -41,7 +55,25 @@ export default function HomeScreen() {
           ]}
         />
       </View>
-      <PinGrid posts={data} loading={loading} />
+      <FitPicGrid
+        fitpics={fitpics}
+        loading={loading}
+        refreshing={refreshing}
+        onRefresh={refresh}
+        onLoadMore={loadMore}
+        onFitPicPress={setSelectedFitPic}
+        emptyMessage="No fit pics yet"
+        emptySubtitle="Discover amazing styles from the community!"
+      />
+      
+      {/* FitPic Detail Modal */}
+      <FitPicDetailModal
+        fitpic={selectedFitPic}
+        visible={!!selectedFitPic}
+        onClose={() => setSelectedFitPic(null)}
+        onLike={handleLike}
+        onSave={handleSave}
+      />
     </SafeAreaView>
   );
 }

@@ -57,7 +57,7 @@ export default function AccountScreen() {
     >
       <ProfileHeader me={data.me} counts={data.counts} />
       <TabSwitcher tabs={tabList} activeKey={activeKey} onChange={setActiveKey} />
-      <TabContent activeKey={activeKey} />
+      <TabContent activeKey={activeKey} userId={userId} />
     </SafeAreaView>
   );
 }

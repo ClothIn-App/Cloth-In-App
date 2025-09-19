@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { View } from "react-native";
 import { useThemeColor } from "../../hooks/useThemeColor";
 import { ThemedText } from "../ThemedText";
+import FitPicGrid from "../../src/components/FitPicGrid";
+import FitPicDetailModal from "../../src/components/FitPicDetailModal";
+import { useUserFitPics } from "../../src/hooks/useUserFitPics";
+import type { FitPic } from "../../src/types/fitpic";
 
-type Props = { activeKey: string };
+type Props = { 
+  activeKey: string;
+  userId?: string;
+};
 
 const messages: Record<string, { title: string; subtitle?: string }> = {
   fitpics:  { title: "No FitPics yet",   subtitle: "Post your first fit to see it here." },
@@ -13,11 +20,54 @@ const messages: Record<string, { title: string; subtitle?: string }> = {
   tagged:   { title: "No tagged posts",  subtitle: "Posts you’re tagged in will show here." },
 };
 
-export default function TabContent({ activeKey }: Props) {
+export default function TabContent({ activeKey, userId }: Props) {
+  const [selectedFitPic, setSelectedFitPic] = useState<FitPic | null>(null);
   const msg = messages[activeKey] ?? { title: "Nothing here (yet)" };
   const border = useThemeColor({}, "border");
   const muted = useThemeColor({}, "mutedText");
 
+  // Load user's FitPics for the fitpics tab
+  const {
+    fitpics,
+    loading,
+    refreshing,
+    hasMore,
+    error,
+    refresh,
+    loadMore,
+    handleLike,
+    handleSave,
+  } = useUserFitPics(userId || '');
+
+  // Render FitPics for the fitpics tab
+  if (activeKey === 'fitpics' && userId) {
+    return (
+      <View style={{ flex: 1 }}>
+        <FitPicGrid
+          fitpics={fitpics}
+          loading={loading}
+          refreshing={refreshing}
+          onRefresh={refresh}
+          onLoadMore={loadMore}
+          onFitPicPress={setSelectedFitPic}
+          emptyMessage={msg.title}
+          emptySubtitle={msg.subtitle}
+          style={{ margin: 12 }}
+        />
+        
+        {/* FitPic Detail Modal */}
+        <FitPicDetailModal
+          fitpic={selectedFitPic}
+          visible={!!selectedFitPic}
+          onClose={() => setSelectedFitPic(null)}
+          onLike={handleLike}
+          onSave={handleSave}
+        />
+      </View>
+    );
+  }
+
+  // Default empty state for other tabs
   return (
     <View
       style={{
