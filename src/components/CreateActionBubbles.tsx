@@ -17,7 +17,7 @@ type Props = {
 };
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const BOX_WIDTH = 100;
+const BOX_WIDTH = 120;
 const BOX_HEIGHT = 120;
 const BOX_SPACING = 20;
 
@@ -59,9 +59,9 @@ export function CreateActionBubbles({ visible, onClose, onSelect }: Props) {
           hitSlop={10}
         >
           <View style={styles.iconContainer}>
-            <IconSymbol name="camera.fill" color="white" size={32} />
+            <IconSymbol name="camera.fill" color="white" size={40} />
           </View>
-          <Text style={styles.boxLabel}>Fit Pic</Text>
+          <Text style={styles.boxLabel}>Fit-Pic</Text>
         </Pressable>
       </View>
 
@@ -80,9 +80,9 @@ export function CreateActionBubbles({ visible, onClose, onSelect }: Props) {
           hitSlop={10}
         >
           <View style={styles.iconContainer}>
-            <IconSymbol name="bag.fill" color="white" size={32} />
+            <IconSymbol name="bag.fill" color="white" size={40} />
           </View>
-          <Text style={styles.boxLabel}>Product</Text>
+          <Text style={styles.boxLabel}>Add Product</Text>
         </Pressable>
       </View>
     </Modal>
