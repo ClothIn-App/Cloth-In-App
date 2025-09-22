@@ -19,7 +19,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { FitPic } from '../types/fitpic';
+import ProductTag from './ProductTag';
+import EmojiReaction from './EmojiReaction';
+import EmojiPicker from './EmojiPicker';
+import type { FitPic, EmojiReaction as EmojiReactionType } from '../types/fitpic';
 
 type Props = {
   fitpic: FitPic;
@@ -44,6 +47,9 @@ export default function FitPicDetail({
   const [isSaved, setIsSaved] = useState(fitpic.engagement.isSaved || false);
   const [likeCount, setLikeCount] = useState(fitpic.engagement.likes);
   const [saveCount, setSaveCount] = useState(fitpic.engagement.saves);
+  const [reactions, setReactions] = useState(fitpic.engagement.reactions || []);
+  const [userReactions, setUserReactions] = useState(fitpic.engagement.userReactions || []);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const currentPhoto = fitpic.photos[currentPhotoIndex];
 
@@ -59,6 +65,41 @@ export default function FitPicDetail({
     setIsSaved(newSaved);
     setSaveCount(prev => newSaved ? prev + 1 : prev - 1);
     onSave?.(fitpic);
+  };
+
+  const handleEmojiReaction = (emoji: string) => {
+    const isCurrentlyReacted = userReactions.includes(emoji);
+    
+    if (isCurrentlyReacted) {
+      // Remove reaction
+      setUserReactions(prev => prev.filter(e => e !== emoji));
+      setReactions(prev => 
+        prev.map(r => 
+          r.emoji === emoji 
+            ? { ...r, count: Math.max(0, r.count - 1) }
+            : r
+        ).filter(r => r.count > 0)
+      );
+    } else {
+      // Add reaction
+      setUserReactions(prev => [...prev, emoji]);
+      setReactions(prev => {
+        const existingReaction = prev.find(r => r.emoji === emoji);
+        if (existingReaction) {
+          return prev.map(r => 
+            r.emoji === emoji 
+              ? { ...r, count: r.count + 1 }
+              : r
+          );
+        } else {
+          return [...prev, { emoji, count: 1, users: [] }];
+        }
+      });
+    }
+  };
+
+  const handleAddReaction = () => {
+    setShowEmojiPicker(true);
   };
 
   const handleShare = async () => {
@@ -135,6 +176,15 @@ export default function FitPicDetail({
             resizeMode="cover"
           />
           
+          {/* Product Tags */}
+          {currentPhoto?.productTags?.map((tag) => (
+            <ProductTag
+              key={tag.id}
+              tag={tag}
+              onPress={(tag) => onProductPress?.(tag.product)}
+            />
+          ))}
+          
           {/* Photo indicators */}
           {fitpic.photos.length > 1 && (
             <View style={styles.photoIndicators}>
@@ -176,13 +226,6 @@ export default function FitPicDetail({
         {/* Engagement Actions */}
         <View style={styles.engagementSection}>
           <View style={styles.engagementActions}>
-            <Pressable onPress={handleLike} style={styles.actionButton}>
-              <Ionicons
-                name={isLiked ? "heart" : "heart-outline"}
-                size={28}
-                color={isLiked ? "#ef4444" : "#000"}
-              />
-            </Pressable>
             <Pressable onPress={handleSave} style={styles.actionButton}>
               <Ionicons
                 name={isSaved ? "bookmark" : "bookmark-outline"}
@@ -190,15 +233,29 @@ export default function FitPicDetail({
                 color={isSaved ? "#3b82f6" : "#000"}
               />
             </Pressable>
+            <Pressable onPress={handleAddReaction} style={styles.actionButton}>
+              <Ionicons name="add-circle-outline" size={28} color="#000" />
+            </Pressable>
             <Pressable onPress={handleShare} style={styles.actionButton}>
               <Ionicons name="share-outline" size={28} color="#000" />
             </Pressable>
           </View>
           
+          {/* Emoji Reactions */}
+          {reactions.length > 0 && (
+            <View style={styles.reactionsContainer}>
+              {reactions.map((reaction) => (
+                <EmojiReaction
+                  key={reaction.emoji}
+                  reaction={reaction}
+                  isSelected={userReactions.includes(reaction.emoji)}
+                  onPress={handleEmojiReaction}
+                />
+              ))}
+            </View>
+          )}
+          
           <View style={styles.engagementStats}>
-            <Text style={styles.statText}>
-              <Text style={styles.statNumber}>{likeCount}</Text> likes
-            </Text>
             <Text style={styles.statText}>
               <Text style={styles.statNumber}>{saveCount}</Text> saves
             </Text>
@@ -261,6 +318,13 @@ export default function FitPicDetail({
           </View>
         )}
       </ScrollView>
+      
+      {/* Emoji Picker Modal */}
+      <EmojiPicker
+        visible={showEmojiPicker}
+        onEmojiSelect={handleEmojiReaction}
+        onClose={() => setShowEmojiPicker(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -367,9 +431,15 @@ const styles = StyleSheet.create({
   actionButton: {
     padding: 4,
   },
+  reactionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 12,
+  },
   engagementStats: {
     flexDirection: 'row',
     gap: 16,
+    marginTop: 12,
   },
   statText: {
     fontSize: 14,

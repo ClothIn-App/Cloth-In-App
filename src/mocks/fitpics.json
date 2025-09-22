@@ -18,7 +18,41 @@
           "isCover": true,
           "width": 800,
           "height": 1000,
-          "alt": "Casual street style outfit with denim jacket"
+          "alt": "Casual street style outfit with denim jacket",
+          "productTags": [
+            {
+              "id": "tag_001_1",
+              "productId": "prod_001",
+              "x": 30,
+              "y": 20,
+              "product": {
+                "id": "prod_001",
+                "name": "Classic Denim Jacket",
+                "brand": "Levi's",
+                "category": "Outerwear",
+                "price": 89.99,
+                "currency": "USD",
+                "imageUrl": "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=300&h=400&fit=crop",
+                "purchaseUrl": "https://example.com/levis-denim-jacket"
+              }
+            },
+            {
+              "id": "tag_001_2",
+              "productId": "prod_002",
+              "x": 70,
+              "y": 60,
+              "product": {
+                "id": "prod_002",
+                "name": "Essential White Tee",
+                "brand": "Uniqlo",
+                "category": "Tops",
+                "price": 19.90,
+                "currency": "USD",
+                "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop",
+                "purchaseUrl": "https://example.com/uniqlo-white-tee"
+              }
+            }
+          ]
         },
         {
           "id": "ph_001_2",
@@ -62,7 +96,25 @@
         "comments": 8,
         "shares": 3,
         "isLiked": false,
-        "isSaved": true
+        "isSaved": true,
+        "reactions": [
+          {
+            "emoji": "👍",
+            "count": 45,
+            "users": ["u_demo2", "u_demo3"]
+          },
+          {
+            "emoji": "❤️",
+            "count": 82,
+            "users": ["u_demo", "u_demo2", "u_demo3"]
+          },
+          {
+            "emoji": "🎉",
+            "count": 12,
+            "users": ["u_demo2"]
+          }
+        ],
+        "userReactions": ["❤️"]
       },
       "location": {
         "name": "Downtown Coffee Shop"
@@ -90,7 +142,41 @@
           "isCover": true,
           "width": 800,
           "height": 1000,
-          "alt": "Elegant evening outfit with blazer"
+          "alt": "Elegant evening outfit with blazer",
+          "productTags": [
+            {
+              "id": "tag_002_1",
+              "productId": "prod_003",
+              "x": 25,
+              "y": 30,
+              "product": {
+                "id": "prod_003",
+                "name": "Tailored Blazer",
+                "brand": "Zara",
+                "category": "Blazers",
+                "price": 79.99,
+                "currency": "USD",
+                "imageUrl": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=400&fit=crop",
+                "purchaseUrl": "https://example.com/zara-blazer"
+              }
+            },
+            {
+              "id": "tag_002_2",
+              "productId": "prod_004",
+              "x": 75,
+              "y": 70,
+              "product": {
+                "id": "prod_004",
+                "name": "Silk Camisole",
+                "brand": "Everlane",
+                "category": "Tops",
+                "price": 45.00,
+                "currency": "USD",
+                "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop",
+                "purchaseUrl": "https://example.com/everlane-camisole"
+              }
+            }
+          ]
         }
       ],
       "caption": "Date night ready! This blazer is everything ✨ Perfect for that special dinner reservation. Sometimes you just need to dress up and feel confident! 💫 #datenight #blazer #elegant",
@@ -124,7 +210,25 @@
         "comments": 12,
         "shares": 5,
         "isLiked": true,
-        "isSaved": false
+        "isSaved": false,
+        "reactions": [
+          {
+            "emoji": "👍",
+            "count": 23,
+            "users": ["u_demo", "u_demo3"]
+          },
+          {
+            "emoji": "❤️",
+            "count": 66,
+            "users": ["u_demo", "u_demo2", "u_demo3"]
+          },
+          {
+            "emoji": "🎉",
+            "count": 8,
+            "users": ["u_demo2"]
+          }
+        ],
+        "userReactions": ["👍", "❤️"]
       },
       "location": {
         "name": "The Rooftop Restaurant"
@@ -196,7 +300,25 @@
         "comments": 6,
         "shares": 2,
         "isLiked": false,
-        "isSaved": true
+        "isSaved": true,
+        "reactions": [
+          {
+            "emoji": "👍",
+            "count": 67,
+            "users": ["u_demo", "u_demo2"]
+          },
+          {
+            "emoji": "❤️",
+            "count": 89,
+            "users": ["u_demo", "u_demo2", "u_demo3"]
+          },
+          {
+            "emoji": "🎉",
+            "count": 15,
+            "users": ["u_demo2", "u_demo3"]
+          }
+        ],
+        "userReactions": ["👍"]
       },
       "location": {
         "name": "Office Building"

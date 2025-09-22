@@ -12,6 +12,14 @@ export type ProductLite = {
   purchaseUrl?: string;
 };
 
+export type ProductTag = {
+  id: string;
+  productId: string;
+  x: number; // percentage from left (0-100)
+  y: number; // percentage from top (0-100)
+  product: ProductLite;
+};
+
 export type FitPicPhoto = {
   id: string;
   url: string;
@@ -21,6 +29,13 @@ export type FitPicPhoto = {
   width?: number;
   height?: number;
   alt?: string;
+  productTags?: ProductTag[];
+};
+
+export type EmojiReaction = {
+  emoji: string;
+  count: number;
+  users: string[]; // user IDs who reacted with this emoji
 };
 
 export type FitPicEngagement = {
@@ -30,6 +45,8 @@ export type FitPicEngagement = {
   shares?: number;
   isLiked?: boolean;
   isSaved?: boolean;
+  reactions?: EmojiReaction[];
+  userReactions?: string[]; // emojis the current user has reacted with
 };
 
 export type FitPic = {

@@ -12,6 +12,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
+  Dimensions,
 } from 'react-native';
 import FitPicCard from './FitPicCard';
 import type { FitPic } from '../types/fitpic';
@@ -28,6 +29,12 @@ type Props = {
   style?: any;
 };
 
+const { width: screenWidth } = Dimensions.get('window');
+const getNumColumns = () => {
+  if (screenWidth >= 768) return 3; // Tablet
+  return 2; // Phone
+};
+
 export default function FitPicGrid({
   fitpics,
   loading = false,
@@ -39,6 +46,8 @@ export default function FitPicGrid({
   emptySubtitle = 'Be the first to share your style!',
   style,
 }: Props) {
+  const numColumns = getNumColumns();
+  
   const renderFitPic = ({ item }: { item: FitPic }) => (
     <FitPicCard fitpic={item} onPress={onFitPicPress} />
   );
@@ -78,8 +87,8 @@ export default function FitPicGrid({
         data={fitpics}
         renderItem={renderFitPic}
         keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
+        numColumns={numColumns}
+        columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
         contentContainerStyle={[
           styles.contentContainer,
           fitpics.length === 0 && !loading && styles.emptyContentContainer
@@ -109,10 +118,11 @@ export default function FitPicGrid({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f8f9fa',
   },
   contentContainer: {
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingTop: 8,
     paddingBottom: 24,
   },
   emptyContentContainer: {
@@ -121,7 +131,7 @@ const styles = StyleSheet.create({
   },
   row: {
     justifyContent: 'space-between',
-    marginBottom: 12,
+    paddingHorizontal: 6,
   },
   emptyContainer: {
     alignItems: 'center',
