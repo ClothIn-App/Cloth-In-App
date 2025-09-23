@@ -88,10 +88,6 @@ const filterFitPics = (fitpics: FitPic[], filters?: FitPicFilters): FitPic[] => 
   
   return fitpics.filter(fitpic => {
     if (filters.userId && fitpic.authorId !== filters.userId) return false;
-    if (filters.tags && filters.tags.length > 0) {
-      const hasMatchingTag = filters.tags.some(tag => fitpic.tags?.includes(tag));
-      if (!hasMatchingTag) return false;
-    }
     if (filters.hasProducts && fitpic.products.length === 0) return false;
     if (filters.dateRange) {
       const fitpicDate = new Date(fitpic.createdAt);
@@ -136,7 +132,6 @@ export const createFitPic = async (request: CreateFitPicRequest): Promise<Create
         isSaved: false
       },
       location: request.location,
-      tags: request.tags || [],
       isPublic: request.isPublic !== false,
       isReported: false,
       isHidden: false
@@ -342,7 +337,8 @@ export const deleteFitPic = async (id: string): Promise<{ success: boolean; erro
     }
     
     // In a real implementation, this would delete from the database
-    fitpicsData.fitpics.splice(fitpicIndex, 1);
+    // Note: We don't actually mutate the mock data to avoid side effects
+    // fitpicsData.fitpics.splice(fitpicIndex, 1);
     
     return {
       success: true

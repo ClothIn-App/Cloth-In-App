@@ -17,9 +17,8 @@ import {
   Share,
   Alert,
 } from 'react-native';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import ProductTag from './ProductTag';
 import EmojiReaction from './EmojiReaction';
 import EmojiPicker from './EmojiPicker';
 import type { FitPic, EmojiReaction as EmojiReactionType } from '../types/fitpic';
@@ -41,7 +40,6 @@ export default function FitPicDetail({
   onSave,
   onProductPress,
 }: Props) {
-  const insets = useSafeAreaInsets();
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(fitpic.engagement.isLiked || false);
   const [isSaved, setIsSaved] = useState(fitpic.engagement.isSaved || false);
@@ -50,6 +48,8 @@ export default function FitPicDetail({
   const [reactions, setReactions] = useState(fitpic.engagement.reactions || []);
   const [userReactions, setUserReactions] = useState(fitpic.engagement.userReactions || []);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const currentPhoto = fitpic.photos[currentPhotoIndex];
 
@@ -136,25 +136,33 @@ export default function FitPicDetail({
     });
   };
 
+  const handlePanGesture = (event: any) => {
+    const { translationX, state } = event.nativeEvent;
+    
+    if (state === State.END) {
+      // If swiped right more than 100px, close the modal
+      if (translationX > 100) {
+        onClose();
+      }
+    }
+  };
+
   return (
+    <PanGestureHandler onHandlerStateChange={handlePanGesture}>
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top }]}>
-        <Pressable onPress={onClose} style={styles.headerButton}>
-          <Ionicons name="close" size={24} color="#000" />
-        </Pressable>
-        
-        <View style={styles.headerActions}>
-          <Pressable onPress={handleShare} style={styles.headerButton}>
-            <Ionicons name="share-outline" size={24} color="#000" />
-          </Pressable>
-          <Pressable onPress={handleReport} style={styles.headerButton}>
-            <Ionicons name="flag-outline" size={24} color="#000" />
+        <ScrollView 
+          ref={scrollViewRef}
+          style={styles.content} 
+          showsVerticalScrollIndicator={false}
+          onScroll={(event) => setScrollY(event.nativeEvent.contentOffset.y)}
+          scrollEventThrottle={16}
+        >
+          {/* Back Button */}
+          <View style={styles.backButtonContainer}>
+            <Pressable onPress={onClose} style={styles.backButton}>
+              <Ionicons name="arrow-back" size={24} color="#000" />
           </Pressable>
         </View>
-      </View>
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Author Info */}
         <View style={styles.authorSection}>
           <Image
@@ -176,21 +184,13 @@ export default function FitPicDetail({
             resizeMode="cover"
           />
           
-          {/* Product Tags */}
-          {currentPhoto?.productTags?.map((tag) => (
-            <ProductTag
-              key={tag.id}
-              tag={tag}
-              onPress={(tag) => onProductPress?.(tag.product)}
-            />
-          ))}
           
           {/* Photo indicators */}
           {fitpic.photos.length > 1 && (
             <View style={styles.photoIndicators}>
-              {fitpic.photos.map((_, index) => (
+              {fitpic.photos.map((photo, index) => (
                 <View
-                  key={index}
+                  key={photo.id}
                   style={[
                     styles.indicator,
                     index === currentPhotoIndex && styles.activeIndicator
@@ -221,6 +221,11 @@ export default function FitPicDetail({
               )}
             </>
           )}
+
+          {/* Report Button */}
+          <Pressable style={styles.reportButton} onPress={handleReport}>
+            <Ionicons name="flag-outline" size={20} color="#fff" />
+          </Pressable>
         </View>
 
         {/* Engagement Actions */}
@@ -309,14 +314,6 @@ export default function FitPicDetail({
           </View>
         )}
 
-        {/* Tags */}
-        {fitpic.tags && fitpic.tags.length > 0 && (
-          <View style={styles.tagsSection}>
-            {fitpic.tags.map((tag) => (
-              <Text key={tag} style={styles.tag}>#{tag}</Text>
-            ))}
-          </View>
-        )}
       </ScrollView>
       
       {/* Emoji Picker Modal */}
@@ -326,6 +323,7 @@ export default function FitPicDetail({
         onClose={() => setShowEmojiPicker(false)}
       />
     </SafeAreaView>
+    </PanGestureHandler>
   );
 }
 
@@ -334,21 +332,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  backButtonContainer: {
     paddingHorizontal: 16,
-    paddingBottom: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#e5e7eb',
+    paddingTop: 16,
+    paddingBottom: 8,
   },
-  headerButton: {
+  backButton: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 20,
     padding: 8,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   content: {
     flex: 1,
@@ -419,6 +420,14 @@ const styles = StyleSheet.create({
   },
   navButtonRight: {
     right: 16,
+  },
+  reportButton: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderRadius: 20,
+    padding: 8,
   },
   engagementSection: {
     padding: 16,
@@ -514,17 +523,5 @@ const styles = StyleSheet.create({
   locationText: {
     fontSize: 14,
     color: '#6b7280',
-  },
-  tagsSection: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 16,
-    paddingBottom: 32,
-    gap: 8,
-  },
-  tag: {
-    fontSize: 14,
-    color: '#3b82f6',
-    fontWeight: '500',
   },
 });

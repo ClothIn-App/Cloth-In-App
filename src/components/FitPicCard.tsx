@@ -25,7 +25,10 @@ type Props = {
 const { width: screenWidth } = Dimensions.get('window');
 const getCardWidth = () => {
   const numColumns = screenWidth >= 768 ? 3 : 2;
-  return (screenWidth - 36) / numColumns; // Responsive width based on columns
+  const horizontalPadding = 24; // 12px padding on each side from FitPicGrid
+  const cardMargins = 8; // 4px margin on each side of each card
+  const totalMarginSpace = cardMargins * numColumns;
+  return (screenWidth - horizontalPadding - totalMarginSpace) / numColumns;
 };
 
 export default function FitPicCard({ fitpic, onPress, style }: Props) {
@@ -76,6 +79,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     marginBottom: 12,
+    marginHorizontal: 4,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

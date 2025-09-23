@@ -12,13 +12,6 @@ export type ProductLite = {
   purchaseUrl?: string;
 };
 
-export type ProductTag = {
-  id: string;
-  productId: string;
-  x: number; // percentage from left (0-100)
-  y: number; // percentage from top (0-100)
-  product: ProductLite;
-};
 
 export type FitPicPhoto = {
   id: string;
@@ -29,7 +22,6 @@ export type FitPicPhoto = {
   width?: number;
   height?: number;
   alt?: string;
-  productTags?: ProductTag[];
 };
 
 export type EmojiReaction = {
@@ -79,7 +71,6 @@ export type FitPic = {
       lng: number;
     };
   };
-  tags?: string[];
   isPublic: boolean;
   
   // Moderation
@@ -103,7 +94,6 @@ export type CreateFitPicRequest = {
       lng: number;
     };
   };
-  tags?: string[];
   isPublic?: boolean;
 };
 
@@ -147,7 +137,6 @@ export type UpdateFitPicEngagementResponse = {
 // Filter and search types
 export type FitPicFilters = {
   userId?: string;
-  tags?: string[];
   hasProducts?: boolean;
   dateRange?: {
     start: string;

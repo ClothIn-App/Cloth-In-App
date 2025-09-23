@@ -43,15 +43,24 @@ export const useFitPicFeed = (type: FeedType) => {
       const response = await getFeedFitPics(request);
 
       if (response.success) {
-        setState(prev => ({
-          ...prev,
-          fitpics: refresh ? response.fitpics : [...prev.fitpics, ...response.fitpics],
-          hasMore: response.pagination.hasMore,
-          nextCursor: response.pagination.nextCursor,
-          loading: false,
-          refreshing: false,
-          error: null,
-        }));
+        setState(prev => {
+          const newFitpics = refresh ? response.fitpics : [...prev.fitpics, ...response.fitpics];
+          
+          // Remove duplicates based on ID
+          const uniqueFitpics = newFitpics.filter((fitpic, index, self) => 
+            index === self.findIndex(f => f.id === fitpic.id)
+          );
+          
+          return {
+            ...prev,
+            fitpics: uniqueFitpics,
+            hasMore: response.pagination.hasMore,
+            nextCursor: response.pagination.nextCursor,
+            loading: false,
+            refreshing: false,
+            error: null,
+          };
+        });
       } else {
         setState(prev => ({
           ...prev,
@@ -68,7 +77,7 @@ export const useFitPicFeed = (type: FeedType) => {
         error: error instanceof Error ? error.message : 'Failed to load feed',
       }));
     }
-  }, [type, state.nextCursor]);
+  }, [type]);
 
   const refresh = useCallback(() => {
     loadFeed(true);

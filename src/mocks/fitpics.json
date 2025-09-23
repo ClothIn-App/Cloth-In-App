@@ -18,41 +18,7 @@
           "isCover": true,
           "width": 800,
           "height": 1000,
-          "alt": "Casual street style outfit with denim jacket",
-          "productTags": [
-            {
-              "id": "tag_001_1",
-              "productId": "prod_001",
-              "x": 30,
-              "y": 20,
-              "product": {
-                "id": "prod_001",
-                "name": "Classic Denim Jacket",
-                "brand": "Levi's",
-                "category": "Outerwear",
-                "price": 89.99,
-                "currency": "USD",
-                "imageUrl": "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=300&h=400&fit=crop",
-                "purchaseUrl": "https://example.com/levis-denim-jacket"
-              }
-            },
-            {
-              "id": "tag_001_2",
-              "productId": "prod_002",
-              "x": 70,
-              "y": 60,
-              "product": {
-                "id": "prod_002",
-                "name": "Essential White Tee",
-                "brand": "Uniqlo",
-                "category": "Tops",
-                "price": 19.90,
-                "currency": "USD",
-                "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop",
-                "purchaseUrl": "https://example.com/uniqlo-white-tee"
-              }
-            }
-          ]
+          "alt": "Casual street style outfit with denim jacket"
         },
         {
           "id": "ph_001_2",
@@ -65,7 +31,7 @@
           "alt": "Close-up of outfit details"
         }
       ],
-      "caption": "Casual Friday vibes! Loving this denim jacket with my favorite white tee. Perfect for those in-between weather days ☀️ #casualstyle #denim #streetwear",
+      "caption": "Casual Friday vibes! Loving this denim jacket with my favorite white tee. Perfect for those in-between weather days ☀️",
       "products": [
         {
           "id": "prod_001",
@@ -119,7 +85,6 @@
       "location": {
         "name": "Downtown Coffee Shop"
       },
-      "tags": ["casualstyle", "denim", "streetwear", "fashion"],
       "isPublic": true,
       "isReported": false,
       "isHidden": false
@@ -136,59 +101,25 @@
       "photos": [
         {
           "id": "ph_002_1",
-          "url": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&h=1000&fit=crop",
-          "thumbnailUrl": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=300&h=400&fit=crop",
+          "url": "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800&h=1000&fit=crop",
+          "thumbnailUrl": "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=300&h=400&fit=crop",
           "index": 0,
           "isCover": true,
           "width": 800,
           "height": 1000,
-          "alt": "Elegant evening outfit with blazer",
-          "productTags": [
-            {
-              "id": "tag_002_1",
-              "productId": "prod_003",
-              "x": 25,
-              "y": 30,
-              "product": {
-                "id": "prod_003",
-                "name": "Tailored Blazer",
-                "brand": "Zara",
-                "category": "Blazers",
-                "price": 79.99,
-                "currency": "USD",
-                "imageUrl": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=400&fit=crop",
-                "purchaseUrl": "https://example.com/zara-blazer"
-              }
-            },
-            {
-              "id": "tag_002_2",
-              "productId": "prod_004",
-              "x": 75,
-              "y": 70,
-              "product": {
-                "id": "prod_004",
-                "name": "Silk Camisole",
-                "brand": "Everlane",
-                "category": "Tops",
-                "price": 45.00,
-                "currency": "USD",
-                "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop",
-                "purchaseUrl": "https://example.com/everlane-camisole"
-              }
-            }
-          ]
+          "alt": "Elegant evening outfit with blazer"
         }
       ],
-      "caption": "Date night ready! This blazer is everything ✨ Perfect for that special dinner reservation. Sometimes you just need to dress up and feel confident! 💫 #datenight #blazer #elegant",
+      "caption": "Date night ready! This blazer is perfect for any occasion. Love how it elevates a simple outfit ✨",
       "products": [
         {
           "id": "prod_003",
-          "name": "Tailored Blazer",
+          "name": "Classic Black Blazer",
           "brand": "Zara",
-          "category": "Blazers",
+          "category": "Outerwear",
           "price": 79.99,
           "currency": "USD",
-          "imageUrl": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=400&fit=crop",
+          "imageUrl": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=300&h=400&fit=crop",
           "purchaseUrl": "https://example.com/zara-blazer"
         },
         {
@@ -198,7 +129,7 @@
           "category": "Tops",
           "price": 45.00,
           "currency": "USD",
-          "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop",
+          "imageUrl": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=400&fit=crop",
           "purchaseUrl": "https://example.com/everlane-camisole"
         }
       ],
@@ -213,27 +144,21 @@
         "isSaved": false,
         "reactions": [
           {
-            "emoji": "👍",
-            "count": 23,
+            "emoji": "❤️",
+            "count": 67,
             "users": ["u_demo", "u_demo3"]
           },
           {
-            "emoji": "❤️",
-            "count": 66,
-            "users": ["u_demo", "u_demo2", "u_demo3"]
-          },
-          {
-            "emoji": "🎉",
-            "count": 8,
+            "emoji": "✨",
+            "count": 22,
             "users": ["u_demo2"]
           }
         ],
-        "userReactions": ["👍", "❤️"]
+        "userReactions": ["❤️"]
       },
       "location": {
         "name": "The Rooftop Restaurant"
       },
-      "tags": ["datenight", "blazer", "elegant", "fashion"],
       "isPublic": true,
       "isReported": false,
       "isHidden": false
@@ -243,8 +168,8 @@
       "authorId": "u_demo3",
       "author": {
         "uid": "u_demo3",
-        "username": "minimalistmike",
-        "displayName": "Mike Rodriguez",
+        "username": "minimalist",
+        "displayName": "Alex Kim",
         "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
       },
       "photos": [
@@ -260,36 +185,36 @@
         },
         {
           "id": "ph_003_2",
-          "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1000&fit=crop&crop=bottom",
-          "thumbnailUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=400&fit=crop&crop=bottom",
+          "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1000&fit=crop&crop=left",
+          "thumbnailUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=400&fit=crop&crop=left",
           "index": 1,
           "isCover": false,
           "width": 800,
           "height": 1000,
-          "alt": "Shoes and accessories detail"
+          "alt": "Side view of outfit"
         }
       ],
-      "caption": "Monday motivation with a clean, minimal look. Sometimes less is more! This outfit got me through back-to-back meetings and still felt comfortable all day. 🏢 #minimalist #workwear #comfortable",
+      "caption": "Keeping it simple and professional. Sometimes less is more!",
       "products": [
         {
           "id": "prod_005",
-          "name": "Classic White Shirt",
-          "brand": "COS",
-          "category": "Shirts",
-          "price": 65.00,
+          "name": "Essential White Shirt",
+          "brand": "Uniqlo",
+          "category": "Tops",
+          "price": 29.90,
           "currency": "USD",
-          "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop",
-          "purchaseUrl": "https://example.com/cos-white-shirt"
+          "imageUrl": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300&h=400&fit=crop",
+          "purchaseUrl": "https://example.com/uniqlo-shirt"
         },
         {
           "id": "prod_006",
-          "name": "Tailored Trousers",
-          "brand": "Uniqlo",
-          "category": "Pants",
-          "price": 39.90,
+          "name": "Classic Black Pants",
+          "brand": "COS",
+          "category": "Bottoms",
+          "price": 95.00,
           "currency": "USD",
           "imageUrl": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=400&fit=crop",
-          "purchaseUrl": "https://example.com/uniqlo-trousers"
+          "purchaseUrl": "https://example.com/cos-pants"
         }
       ],
       "createdAt": "2024-01-13T09:15:00Z",
@@ -304,26 +229,20 @@
         "reactions": [
           {
             "emoji": "👍",
-            "count": 67,
+            "count": 89,
             "users": ["u_demo", "u_demo2"]
           },
           {
-            "emoji": "❤️",
-            "count": 89,
-            "users": ["u_demo", "u_demo2", "u_demo3"]
-          },
-          {
-            "emoji": "🎉",
-            "count": 15,
-            "users": ["u_demo2", "u_demo3"]
+            "emoji": "💼",
+            "count": 67,
+            "users": ["u_demo3"]
           }
         ],
-        "userReactions": ["👍"]
+        "userReactions": []
       },
       "location": {
         "name": "Office Building"
       },
-      "tags": ["minimalist", "workwear", "comfortable", "professional"],
       "isPublic": true,
       "isReported": false,
       "isHidden": false
@@ -340,25 +259,25 @@
       "photos": [
         {
           "id": "ph_004_1",
-          "url": "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&h=1000&fit=crop",
-          "thumbnailUrl": "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=300&h=400&fit=crop",
+          "url": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800&h=1000&fit=crop",
+          "thumbnailUrl": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=400&fit=crop",
           "index": 0,
           "isCover": true,
           "width": 800,
           "height": 1000,
-          "alt": "Weekend casual outfit"
+          "alt": "Weekend casual look"
         }
       ],
-      "caption": "Weekend vibes! Nothing beats a cozy sweater and your favorite jeans. Perfect for running errands and grabbing coffee with friends ☕️ #weekend #cozy #casual",
+      "caption": "Perfect weekend vibes! Comfy and cute ☕️",
       "products": [
         {
           "id": "prod_007",
           "name": "Oversized Sweater",
           "brand": "H&M",
-          "category": "Sweaters",
-          "price": 29.99,
+          "category": "Tops",
+          "price": 39.99,
           "currency": "USD",
-          "imageUrl": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=400&fit=crop",
+          "imageUrl": "https://images.unsplash.com/photo-1571945153237-4929e83af6a4?w=300&h=400&fit=crop",
           "purchaseUrl": "https://example.com/hm-sweater"
         }
       ],
@@ -370,12 +289,24 @@
         "comments": 4,
         "shares": 1,
         "isLiked": true,
-        "isSaved": false
+        "isSaved": false,
+        "reactions": [
+          {
+            "emoji": "☕",
+            "count": 31,
+            "users": ["u_demo2"]
+          },
+          {
+            "emoji": "❤️",
+            "count": 42,
+            "users": ["u_demo", "u_demo3"]
+          }
+        ],
+        "userReactions": ["❤️"]
       },
       "location": {
         "name": "Local Coffee Shop"
       },
-      "tags": ["weekend", "cozy", "casual", "comfortable"],
       "isPublic": true,
       "isReported": false,
       "isHidden": false
@@ -392,8 +323,8 @@
       "photos": [
         {
           "id": "ph_005_1",
-          "url": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=800&h=1000&fit=crop",
-          "thumbnailUrl": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=300&h=400&fit=crop",
+          "url": "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800&h=1000&fit=crop",
+          "thumbnailUrl": "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=300&h=400&fit=crop",
           "index": 0,
           "isCover": true,
           "width": 800,
@@ -402,33 +333,33 @@
         },
         {
           "id": "ph_005_2",
-          "url": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=800&h=1000&fit=crop&crop=left",
-          "thumbnailUrl": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=300&h=400&fit=crop&crop=left",
+          "url": "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800&h=1000&fit=crop&crop=right",
+          "thumbnailUrl": "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=300&h=400&fit=crop&crop=right",
           "index": 1,
           "isCover": false,
           "width": 800,
           "height": 1000,
-          "alt": "Side view of summer dress"
+          "alt": "Side view of dress"
         },
         {
           "id": "ph_005_3",
-          "url": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=800&h=1000&fit=crop&crop=right",
-          "thumbnailUrl": "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=300&h=400&fit=crop&crop=right",
+          "url": "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800&h=1000&fit=crop&crop=bottom",
+          "thumbnailUrl": "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=300&h=400&fit=crop&crop=bottom",
           "index": 2,
           "isCover": false,
           "width": 800,
           "height": 1000,
-          "alt": "Back view of summer dress"
+          "alt": "Detail shot of dress"
         }
       ],
-      "caption": "Summer is here! 🌞 This flowy dress is perfect for those warm days. Light, comfortable, and makes me feel like I'm on vacation even when I'm just walking around the city! #summer #dress #vacationvibes",
+      "caption": "Summer vibes! This dress is perfect for warm weather 🌸",
       "products": [
         {
           "id": "prod_008",
-          "name": "Flowy Summer Dress",
+          "name": "Floral Maxi Dress",
           "brand": "Reformation",
           "category": "Dresses",
-          "price": 128.00,
+          "price": 198.00,
           "currency": "USD",
           "imageUrl": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=400&fit=crop",
           "purchaseUrl": "https://example.com/reformation-dress"
@@ -436,28 +367,40 @@
         {
           "id": "prod_009",
           "name": "Straw Hat",
-          "brand": "Free People",
+          "brand": "Ganni",
           "category": "Accessories",
-          "price": 45.00,
+          "price": 89.00,
           "currency": "USD",
-          "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop",
-          "purchaseUrl": "https://example.com/free-people-hat"
+          "imageUrl": "https://images.unsplash.com/photo-1571945153237-4929e83af6a4?w=300&h=400&fit=crop",
+          "purchaseUrl": "https://example.com/ganni-hat"
         }
       ],
-      "createdAt": "2024-01-11T13:30:00Z",
-      "updatedAt": "2024-01-11T13:30:00Z",
+      "createdAt": "2024-01-11T11:30:00Z",
+      "updatedAt": "2024-01-11T11:30:00Z",
       "engagement": {
-        "likes": 203,
+        "likes": 234,
         "saves": 67,
-        "comments": 15,
+        "comments": 19,
         "shares": 8,
         "isLiked": false,
-        "isSaved": true
+        "isSaved": true,
+        "reactions": [
+          {
+            "emoji": "🌸",
+            "count": 89,
+            "users": ["u_demo", "u_demo3"]
+          },
+          {
+            "emoji": "❤️",
+            "count": 145,
+            "users": ["u_demo2"]
+          }
+        ],
+        "userReactions": []
       },
       "location": {
         "name": "City Park"
       },
-      "tags": ["summer", "dress", "vacationvibes", "flowy"],
       "isPublic": true,
       "isReported": false,
       "isHidden": false

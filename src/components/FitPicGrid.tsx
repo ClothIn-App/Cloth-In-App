@@ -48,9 +48,9 @@ export default function FitPicGrid({
 }: Props) {
   const numColumns = getNumColumns();
   
-  const renderFitPic = ({ item }: { item: FitPic }) => (
-    <FitPicCard fitpic={item} onPress={onFitPicPress} />
-  );
+  const renderFitPic = ({ item }: { item: FitPic }) => {
+    return <FitPicCard fitpic={item} onPress={onFitPicPress} />;
+  };
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
   row: {
     justifyContent: 'space-between',
     paddingHorizontal: 6,
+    marginBottom: 8,
   },
   emptyContainer: {
     alignItems: 'center',
