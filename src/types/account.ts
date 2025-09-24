@@ -16,6 +16,24 @@ export type ProfileCounts = {
   followers: number;
 };
 
+export type FollowerUser = {
+  uid: string;
+  displayName?: string;
+  username: string;
+  avatarUrl?: string;
+  bio?: string;
+  isFollowing?: boolean;
+};
+
+export type FollowingUser = {
+  uid: string;
+  displayName?: string;
+  username: string;
+  avatarUrl?: string;
+  bio?: string;
+  isFollowing?: boolean;
+};
+
 // Convenience aggregate used by the hook
 export type AccountData = {
   me?: ProfileMe;

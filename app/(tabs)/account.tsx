@@ -52,7 +52,7 @@ export default function AccountScreen() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, paddingTop: insets.top + 8, paddingBottom: insets.bottom }}
+      style={{ flex: 1, paddingBottom: insets.bottom }}
       edges={["top", "bottom"]}
     >
       <ProfileHeader me={data.me} counts={data.counts} />
