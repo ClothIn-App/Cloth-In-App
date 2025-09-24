@@ -1,13 +1,17 @@
-import React from "react";
-import { Image, View } from "react-native";
+import React, { useState } from "react";
+import { Image, View, TouchableOpacity } from "react-native";
 import { useThemeColor } from "../../hooks/useThemeColor";
 import type { ProfileCounts, ProfileMe } from "../../src/types/account";
 import { ThemedText } from "../ThemedText";
+import FollowersModal from "./FollowersModal";
+import FollowingModal from "./FollowingModal";
 
 type Props = { me?: ProfileMe; counts?: ProfileCounts };
 
 export default function ProfileHeader({ me, counts }: Props) {
   const muted = useThemeColor({}, "mutedText");
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showFollowingModal, setShowFollowingModal] = useState(false);
 
   const name = me?.displayName ?? "My Account";
   const handle = me?.username ?? "username";
@@ -16,29 +20,52 @@ export default function ProfileHeader({ me, counts }: Props) {
   const followers = counts?.followers ?? 0;
 
   return (
-    <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 }}>
+    <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 }}>
+      {/* My Profile Header */}
+      <View style={{ marginBottom: 8 }}>
+        <ThemedText type="title" style={{ fontSize: 20, fontWeight: "600" }}>
+          My Profile
+        </ThemedText>
+      </View>
+
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <Image
-          source={{ uri: me?.avatarUrl || "https://placehold.co/120x120" }}
+          source={{ uri: me?.avatarUrl || "https://placehold.co/80x80" }}
           style={{
-            width: 100,
-            height: 100,
-            borderRadius: 50,
-            marginRight: 16,
+            width: 60,
+            height: 60,
+            borderRadius: 30,
+            marginRight: 12,
             backgroundColor: "#ccc",
           }}
         />
-        <View>
-          <ThemedText type="title">{name}</ThemedText>
-          <ThemedText style={{ color: muted }}>@{handle}</ThemedText>
+        <View style={{ flex: 1 }}>
+          <ThemedText style={{ fontSize: 16, fontWeight: "600" }}>{name}</ThemedText>
+          <ThemedText style={{ color: muted, fontSize: 14 }}>@{handle}</ThemedText>
         </View>
       </View>
 
-      <View style={{ flexDirection: "row", gap: 16, marginTop: 10 }}>
-        <ThemedText>Posts {posts}</ThemedText>
-        <ThemedText>Following {following}</ThemedText>
-        <ThemedText>Followers {followers}</ThemedText>
+      <View style={{ flexDirection: "row", gap: 16, marginTop: 8 }}>
+        <ThemedText style={{ fontSize: 14 }}>Posts {posts}</ThemedText>
+        <TouchableOpacity onPress={() => setShowFollowingModal(true)}>
+          <ThemedText style={{ fontSize: 14 }}>Following {following}</ThemedText>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setShowFollowersModal(true)}>
+          <ThemedText style={{ fontSize: 14 }}>Followers {followers}</ThemedText>
+        </TouchableOpacity>
       </View>
+
+      {/* Modals */}
+      <FollowersModal
+        visible={showFollowersModal}
+        onClose={() => setShowFollowersModal(false)}
+        userId={me?.uid}
+      />
+      <FollowingModal
+        visible={showFollowingModal}
+        onClose={() => setShowFollowingModal(false)}
+        userId={me?.uid}
+      />
     </View>
   );
 }

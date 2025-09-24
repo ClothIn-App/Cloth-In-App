@@ -52,12 +52,12 @@ export default function AccountScreen() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, paddingTop: insets.top + 8, paddingBottom: insets.bottom }}
+      style={{ flex: 1, paddingBottom: insets.bottom }}
       edges={["top", "bottom"]}
     >
       <ProfileHeader me={data.me} counts={data.counts} />
       <TabSwitcher tabs={tabList} activeKey={activeKey} onChange={setActiveKey} />
-      <TabContent activeKey={activeKey} />
+      <TabContent activeKey={activeKey} userId={userId} />
     </SafeAreaView>
   );
 }
