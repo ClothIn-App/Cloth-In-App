@@ -1,6 +1,6 @@
 // src/components/create/CreateSheetContext.tsx
 import React, { createContext, ReactNode, useContext, useState } from "react";
-import { CreateSheet } from "../components/CreateSheet"; // <- correct local path
+import { CreateActionBubbles } from "../components/CreateActionBubbles";
 
 type Ctx = { open: () => void; close: () => void; visible: boolean };
 const CreateSheetCtx = createContext<Ctx | null>(null);
@@ -14,7 +14,7 @@ export function CreateSheetProvider({ children }: { children: ReactNode }) {
     <CreateSheetCtx.Provider value={{ open, close, visible }}>
       {children}
       {/* Mount once at app level so it can appear over any tab */}
-      <CreateSheet
+      <CreateActionBubbles
         visible={visible}
         onClose={close}
         onSelect={(opt) => {

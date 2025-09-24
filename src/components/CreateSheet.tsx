@@ -85,7 +85,8 @@ export function CreateSheet({ visible, onClose, onSelect }: Props) {
           subtitle="Add or suggest a product"
           onPress={() => {
             onSelect?.("product");
-            // router.push("/modals/selectproducts"); // when ready
+            onClose();
+            router.push("/modals/addproduct");
           }}
         />
       </Animated.View>
