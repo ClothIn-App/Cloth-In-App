@@ -2,6 +2,7 @@
 import { IconSymbol } from "@/components/ui/IconSymbol"; // adjust if your icon helper lives elsewhere
 import { Tabs } from "expo-router";
 import React from "react";
+import { Ionicons } from '@expo/vector-icons';
 
 import {
   CreateSheetProvider,
@@ -39,7 +40,7 @@ function TabsInner() {
         name="product"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <IconSymbol name="bag" color={color} size={28} />
+            <Ionicons name="bag-outline" color={color} size={28} />
           ),
         }}
       />
@@ -79,7 +80,7 @@ function TabsInner() {
         name="account"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <IconSymbol name="person" color={color} size={28} />
+            <Ionicons name="person-outline" color={color} size={28} />
           ),
         }}
       />

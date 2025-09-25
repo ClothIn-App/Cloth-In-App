@@ -39,7 +39,7 @@ export default function TopRightControls({ controller, style, onNext }: Props) {
     if (onNext) {
       onNext(); // let parent seed selection/order + navigate
     } else {
-      router.push('/modals/fitpic_post'); // fallback
+      router.push('/create-modals/fitpic_post'); // fallback
     }
   }, [canGoNext, onNext, router]);
 

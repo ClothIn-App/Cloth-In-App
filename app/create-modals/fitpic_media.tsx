@@ -1,4 +1,4 @@
-// app/modals/fitpic_media.tsx
+// app/create-modals/fitpic_media.tsx
 import * as React from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
