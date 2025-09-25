@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { Image, View, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 import { useThemeColor } from "../../hooks/useThemeColor";
 import type { ProfileCounts, ProfileMe } from "../../src/types/account";
 import { ThemedText } from "../ThemedText";
 import FollowersModal from "./FollowersModal";
 import FollowingModal from "./FollowingModal";
+import { Ionicons } from "@expo/vector-icons";
 
 type Props = { me?: ProfileMe; counts?: ProfileCounts };
 
 export default function ProfileHeader({ me, counts }: Props) {
+  const router = useRouter();
   const muted = useThemeColor({}, "mutedText");
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
@@ -22,10 +25,17 @@ export default function ProfileHeader({ me, counts }: Props) {
   return (
     <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 }}>
       {/* My Profile Header */}
-      <View style={{ marginBottom: 8 }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
         <ThemedText type="title" style={{ fontSize: 20, fontWeight: "600" }}>
           My Profile
         </ThemedText>
+        <TouchableOpacity 
+          onPress={() => router.push("../user-settings")}
+          style={{ padding: 8 }}
+          hitSlop={8}
+        >
+          <Ionicons name="settings-outline" size={24} color="#000" />
+        </TouchableOpacity>
       </View>
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>

@@ -1,4 +1,4 @@
-// app/modals/fitpic_post.tsx
+// app/create-modals/fitpic_post.tsx
 import React, { useCallback, useState } from 'react';
 import {
   Alert,

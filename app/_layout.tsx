@@ -29,12 +29,21 @@ export default function RootLayout() {
           <Stack.Screen name="+not-found" />
           <Stack.Screen name="survey" options={{ headerShown: false }} />
           <Stack.Screen
-            name="modals"
+            name="create-modals"
             options={{
               headerShown: false,
               presentation: 'fullScreenModal',
               gestureEnabled: false,
               animation: 'fade',
+            }}
+          />
+          <Stack.Screen
+            name="user-settings"
+            options={{
+              headerShown: false,
+              presentation: 'card',
+              gestureEnabled: true,
+              animation: 'slide_from_right',
             }}
           />
         </Stack>

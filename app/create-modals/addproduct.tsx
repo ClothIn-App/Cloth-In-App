@@ -1,4 +1,4 @@
-// app/modals/addproduct.tsx
+// app/create-modals/addproduct.tsx
 import * as React from 'react';
 import { View, StyleSheet, Alert, Modal, Pressable, Text, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';

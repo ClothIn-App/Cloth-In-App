@@ -76,7 +76,7 @@ export function CreateSheet({ visible, onClose, onSelect }: Props) {
           onPress={() => {
             onSelect?.("fitPic");
             onClose();
-            router.push("/modals/fitpic_media");
+            router.push("/create-modals/fitpic_media");
           }}
         />
 
@@ -86,7 +86,7 @@ export function CreateSheet({ visible, onClose, onSelect }: Props) {
           onPress={() => {
             onSelect?.("product");
             onClose();
-            router.push("/modals/addproduct");
+            router.push("/create-modals/addproduct");
           }}
         />
       </Animated.View>

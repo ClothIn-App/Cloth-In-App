@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { router } from "expo-router";
+import { Ionicons } from '@expo/vector-icons';
 import { IconSymbol } from "@/components/ui/IconSymbol";
 
 type Props = {
@@ -26,13 +27,13 @@ export function CreateActionBubbles({ visible, onClose, onSelect }: Props) {
   const handleFitPicPress = () => {
     onSelect?.("fitPic");
     onClose();
-    router.push("/modals/fitpic_media");
+    router.push("/create-modals/fitpic_media");
   };
 
   const handleProductPress = () => {
     onSelect?.("product");
     onClose();
-    router.push("/modals/addproduct");
+    router.push("/create-modals/addproduct");
   };
 
   const leftBoxX = SCREEN_WIDTH / 2 - BOX_WIDTH - BOX_SPACING / 2;
@@ -80,7 +81,7 @@ export function CreateActionBubbles({ visible, onClose, onSelect }: Props) {
           hitSlop={10}
         >
           <View style={styles.iconContainer}>
-            <IconSymbol name="bag.fill" color="white" size={40} />
+            <Ionicons name="bag" color="white" size={40} />
           </View>
           <Text style={styles.boxLabel}>Add Product</Text>
         </Pressable>
