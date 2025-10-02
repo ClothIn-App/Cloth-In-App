@@ -14,15 +14,15 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
-import { useDrafts } from '../../src/create/draftcontext';
-import { usePost } from '../../src/create/post/postcontext';
-import { CAPTION_MAX } from '../../src/create/post/types';
+import { useDrafts } from '../../components/create/draftcontext';
+import { usePost } from '../../components/create/post/postcontext';
+import { CAPTION_MAX } from '../../components/create/post/types';
 import { useFitPicPosting } from '../../src/hooks/useFitPicPosting';
 
-import PhotoGrid from '../../src/create/post/photogrid';
-import ProductPicker from '../../src/create/post/productpicker';
-import ProductGrid from '../../src/create/post/productgrid';
-import CaptionInput from '../../src/create/post/captioninput';
+import PhotoGrid from '../../components/create/post/photogrid';
+import ProductPicker from '../../components/create/post/productpicker';
+import ProductGrid from '../../components/create/post/productgrid';
+import CaptionInput from '../../components/create/post/captioninput';
 
 type Props = {
   onBackToCamera?: () => void;

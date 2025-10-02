@@ -23,7 +23,7 @@ export default function Welcome() {
       <View style={styles.container}>
         {/* Header / Title */}
         <View style={styles.header}>
-          <Text style={styles.title}>Cloth-In</Text>
+          <Text style={styles.title}>ClothIn</Text>
         </View>
 
         {/* Slogan */}
