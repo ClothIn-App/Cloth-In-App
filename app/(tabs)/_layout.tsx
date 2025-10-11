@@ -35,17 +35,7 @@ function TabsInner() {
         }}
       />
 
-      {/* 2. Product */}
-      <Tabs.Screen
-        name="product"
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="bag-outline" color={color} size={28} />
-          ),
-        }}
-      />
-
-      {/* 3. Create (icon aligned like others; intercept press to open sheet) */}
+      {/* 2. Create (icon aligned like others; intercept press to open sheet) */}
       <Tabs.Screen
         name="create"
         options={{
@@ -61,21 +51,7 @@ function TabsInner() {
         }}
       />
 
-      {/* 4. Search */}
-      <Tabs.Screen
-        name="search"
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <IconSymbol
-              name="magnifyingglass"
-              color={color}
-              size={28}
-            />
-          ),
-        }}
-      />
-
-      {/* 5. Account */}
+      {/* 3. Account */}
       <Tabs.Screen
         name="account"
         options={{
