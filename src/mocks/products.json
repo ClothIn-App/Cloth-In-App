@@ -1,0 +1,6114 @@
+{
+  "products": [
+    {
+      "id": "prod_001",
+      "name": "Casual Pants",
+      "brand": "Rag & Bone",
+      "category": "Jewelry",
+      "price": 454.23,
+      "originalPrice": 505.24,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_001_1",
+          "url": "https://picsum.photos/800/1000?random=1",
+          "alt": "Rag & Bone product view 1"
+        },
+        {
+          "id": "img_001_2",
+          "url": "https://picsum.photos/800/1000?random=2",
+          "alt": "Rag & Bone product view 2"
+        },
+        {
+          "id": "img_001_3",
+          "url": "https://picsum.photos/800/1000?random=3",
+          "alt": "Rag & Bone product view 3"
+        },
+        {
+          "id": "img_001_4",
+          "url": "https://picsum.photos/800/1000?random=4",
+          "alt": "Rag & Bone product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=1",
+      "purchaseUrl": "https://example.com/rag---bone-1",
+      "rating": 4.6,
+      "reviewCount": 378,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "White",
+        "Purple"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "specifications": "Eco-friendly materials, sustainable",
+      "tags": [
+        "casual",
+        "formal",
+        "classic",
+        "affordable",
+        "luxury"
+      ]
+    },
+    {
+      "id": "prod_002",
+      "name": "Luxury Skirt",
+      "brand": "Mansur Gavriel",
+      "category": "Jewelry",
+      "price": 49.58,
+      "originalPrice": 75.73,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_002_1",
+          "url": "https://picsum.photos/800/1000?random=11",
+          "alt": "Mansur Gavriel product view 1"
+        },
+        {
+          "id": "img_002_2",
+          "url": "https://picsum.photos/800/1000?random=12",
+          "alt": "Mansur Gavriel product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=2",
+      "purchaseUrl": "https://example.com/mansur-gavriel-2",
+      "rating": 3.2,
+      "reviewCount": 247,
+      "isAvailable": true,
+      "colors": [
+        "Orange",
+        "Dark Blue",
+        "Nude",
+        "Beige"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "specifications": "Moisture wicking, performance fabric",
+      "tags": [
+        "trendy",
+        "stylish",
+        "classic",
+        "versatile",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_003",
+      "name": "Essential Skirt",
+      "brand": "Theory",
+      "category": "Bottoms",
+      "price": 231.84,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_003_1",
+          "url": "https://picsum.photos/800/1000?random=21",
+          "alt": "Theory product view 1"
+        },
+        {
+          "id": "img_003_2",
+          "url": "https://picsum.photos/800/1000?random=22",
+          "alt": "Theory product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=3",
+      "purchaseUrl": "https://example.com/theory-3",
+      "rating": 3.8,
+      "reviewCount": 364,
+      "isAvailable": true,
+      "colors": [
+        "Navy",
+        "Dark Blue",
+        "Beige",
+        "Tan"
+      ],
+      "sizes": [
+        "XS",
+        "27",
+        "28",
+        "S",
+        "24",
+        "25"
+      ],
+      "specifications": "Pre-shrunk, colorfast, durable",
+      "tags": [
+        "trendy",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_004",
+      "name": "Essential Accessory",
+      "brand": "Levi's",
+      "category": "Bags",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_004_1",
+          "url": "https://picsum.photos/800/1000?random=31",
+          "alt": "Levi's product view 1"
+        },
+        {
+          "id": "img_004_2",
+          "url": "https://picsum.photos/800/1000?random=32",
+          "alt": "Levi's product view 2"
+        },
+        {
+          "id": "img_004_3",
+          "url": "https://picsum.photos/800/1000?random=33",
+          "alt": "Levi's product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=4",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Pink",
+        "Cream",
+        "Dark Blue",
+        "Blue"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "affordable",
+        "casual"
+      ]
+    },
+    {
+      "id": "prod_005",
+      "name": "Vintage Bag",
+      "brand": "Rag & Bone",
+      "category": "Jewelry",
+      "price": 338.81,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_005_1",
+          "url": "https://picsum.photos/800/1000?random=41",
+          "alt": "Rag & Bone product view 1"
+        },
+        {
+          "id": "img_005_2",
+          "url": "https://picsum.photos/800/1000?random=42",
+          "alt": "Rag & Bone product view 2"
+        },
+        {
+          "id": "img_005_3",
+          "url": "https://picsum.photos/800/1000?random=43",
+          "alt": "Rag & Bone product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=5",
+      "purchaseUrl": "https://example.com/rag---bone-5",
+      "rating": 3.5,
+      "reviewCount": 234,
+      "isAvailable": true,
+      "colors": [
+        "Nude",
+        "Beige",
+        "Blue"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "classic",
+        "stylish",
+        "trendy",
+        "versatile",
+        "luxury"
+      ]
+    },
+    {
+      "id": "prod_006",
+      "name": "Essential Pants",
+      "brand": "J.Crew",
+      "category": "Jewelry",
+      "price": 71.41,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Sold Out",
+      "images": [
+        {
+          "id": "img_006_1",
+          "url": "https://picsum.photos/800/1000?random=51",
+          "alt": "J.Crew product view 1"
+        },
+        {
+          "id": "img_006_2",
+          "url": "https://picsum.photos/800/1000?random=52",
+          "alt": "J.Crew product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=6",
+      "purchaseUrl": "https://example.com/j-crew-6",
+      "rating": 3.3,
+      "reviewCount": 356,
+      "isAvailable": false,
+      "colors": [
+        "Pink",
+        "Beige",
+        "Black"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "specifications": "Hand wash only, delicate care required",
+      "tags": [
+        "modern",
+        "comfortable",
+        "casual"
+      ]
+    },
+    {
+      "id": "prod_007",
+      "name": "Classic Pants",
+      "brand": "Everlane",
+      "category": "Shoes",
+      "price": 250.35,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Sold Out",
+      "images": [
+        {
+          "id": "img_007_1",
+          "url": "https://picsum.photos/800/1000?random=61",
+          "alt": "Everlane product view 1"
+        },
+        {
+          "id": "img_007_2",
+          "url": "https://picsum.photos/800/1000?random=62",
+          "alt": "Everlane product view 2"
+        },
+        {
+          "id": "img_007_3",
+          "url": "https://picsum.photos/800/1000?random=63",
+          "alt": "Everlane product view 3"
+        },
+        {
+          "id": "img_007_4",
+          "url": "https://picsum.photos/800/1000?random=64",
+          "alt": "Everlane product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=7",
+      "purchaseUrl": "https://example.com/everlane-7",
+      "rating": 3.1,
+      "reviewCount": 248,
+      "isAvailable": false,
+      "colors": [
+        "Pink"
+      ],
+      "sizes": [
+        "40",
+        "35",
+        "38",
+        "36",
+        "42",
+        "45"
+      ],
+      "description": "Luxurious and refined",
+      "specifications": "Wrinkle resistant, travel friendly",
+      "tags": [
+        "casual",
+        "stylish",
+        "versatile",
+        "formal",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_008",
+      "name": "Elegant Bag",
+      "brand": "Vince",
+      "category": "Accessories",
+      "price": 270.42,
+      "originalPrice": 306.05,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_008_1",
+          "url": "https://picsum.photos/800/1000?random=71",
+          "alt": "Vince product view 1"
+        },
+        {
+          "id": "img_008_2",
+          "url": "https://picsum.photos/800/1000?random=72",
+          "alt": "Vince product view 2"
+        },
+        {
+          "id": "img_008_3",
+          "url": "https://picsum.photos/800/1000?random=73",
+          "alt": "Vince product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=8",
+      "purchaseUrl": "https://example.com/vince-8",
+      "rating": 4.5,
+      "reviewCount": 132,
+      "isAvailable": true,
+      "colors": [
+        "Yellow",
+        "Gray"
+      ],
+      "sizes": [
+        "S",
+        "L",
+        "XS",
+        "M",
+        "One Size"
+      ],
+      "specifications": "Dry clean only, professional care",
+      "tags": [
+        "casual",
+        "versatile",
+        "trendy",
+        "affordable",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_009",
+      "name": "Elegant Dress",
+      "brand": "Reformation",
+      "category": "Tops",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_009_1",
+          "url": "https://picsum.photos/800/1000?random=81",
+          "alt": "Reformation product view 1"
+        },
+        {
+          "id": "img_009_2",
+          "url": "https://picsum.photos/800/1000?random=82",
+          "alt": "Reformation product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=9",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Light Blue",
+        "Tan",
+        "Navy"
+      ],
+      "sizes": [
+        "XL",
+        "M",
+        "XXL",
+        "S",
+        "XS",
+        "L"
+      ],
+      "description": "Essential wardrobe staple",
+      "tags": [
+        "versatile",
+        "casual",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_010",
+      "name": "Modern Blouse",
+      "brand": "Everlane",
+      "category": "Tops",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_010_1",
+          "url": "https://picsum.photos/800/1000?random=91",
+          "alt": "Everlane product view 1"
+        },
+        {
+          "id": "img_010_2",
+          "url": "https://picsum.photos/800/1000?random=92",
+          "alt": "Everlane product view 2"
+        },
+        {
+          "id": "img_010_3",
+          "url": "https://picsum.photos/800/1000?random=93",
+          "alt": "Everlane product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=10",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Pink",
+        "Black",
+        "Camel",
+        "Dark Blue"
+      ],
+      "sizes": [
+        "M",
+        "S",
+        "XS",
+        "XL",
+        "L",
+        "XXL"
+      ],
+      "description": "Perfect for everyday wear",
+      "tags": [
+        "stylish",
+        "modern",
+        "casual",
+        "luxury"
+      ]
+    },
+    {
+      "id": "prod_011",
+      "name": "Designer Bag",
+      "brand": "Mansur Gavriel",
+      "category": "Bottoms",
+      "price": 250.4,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_011_1",
+          "url": "https://picsum.photos/800/1000?random=101",
+          "alt": "Mansur Gavriel product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=11",
+      "purchaseUrl": "https://example.com/mansur-gavriel-11",
+      "rating": 5,
+      "reviewCount": 59,
+      "isAvailable": true,
+      "colors": [
+        "Burgundy",
+        "Brown"
+      ],
+      "sizes": [
+        "M",
+        "XXL",
+        "29",
+        "S",
+        "28",
+        "23"
+      ],
+      "description": "Timeless piece with modern appeal",
+      "tags": [
+        "affordable",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_012",
+      "name": "Minimalist Top",
+      "brand": "Rag & Bone",
+      "category": "Jewelry",
+      "price": 58.83,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_012_1",
+          "url": "https://picsum.photos/800/1000?random=111",
+          "alt": "Rag & Bone product view 1"
+        },
+        {
+          "id": "img_012_2",
+          "url": "https://picsum.photos/800/1000?random=112",
+          "alt": "Rag & Bone product view 2"
+        },
+        {
+          "id": "img_012_3",
+          "url": "https://picsum.photos/800/1000?random=113",
+          "alt": "Rag & Bone product view 3"
+        },
+        {
+          "id": "img_012_4",
+          "url": "https://picsum.photos/800/1000?random=114",
+          "alt": "Rag & Bone product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=12",
+      "purchaseUrl": "https://example.com/rag---bone-12",
+      "rating": 4,
+      "reviewCount": 99,
+      "isAvailable": true,
+      "colors": [
+        "Nude"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Sophisticated and elegant design",
+      "tags": [
+        "comfortable",
+        "casual",
+        "modern",
+        "classic"
+      ]
+    },
+    {
+      "id": "prod_013",
+      "name": "Modern Blouse",
+      "brand": "Theory",
+      "category": "Tops",
+      "price": 91.08,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_013_1",
+          "url": "https://picsum.photos/800/1000?random=121",
+          "alt": "Theory product view 1"
+        },
+        {
+          "id": "img_013_2",
+          "url": "https://picsum.photos/800/1000?random=122",
+          "alt": "Theory product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=13",
+      "purchaseUrl": "https://example.com/theory-13",
+      "rating": 3.2,
+      "reviewCount": 488,
+      "isAvailable": true,
+      "colors": [
+        "Cream",
+        "Nude",
+        "Purple"
+      ],
+      "sizes": [
+        "M",
+        "L",
+        "XXL",
+        "S",
+        "XL",
+        "XS"
+      ],
+      "description": "Sophisticated and elegant design",
+      "specifications": "UV protection, outdoor ready",
+      "tags": [
+        "affordable",
+        "casual"
+      ]
+    },
+    {
+      "id": "prod_014",
+      "name": "Minimalist Dress",
+      "brand": "Nike",
+      "category": "Bags",
+      "price": 322.49,
+      "originalPrice": 396.6,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_014_1",
+          "url": "https://picsum.photos/800/1000?random=131",
+          "alt": "Nike product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=14",
+      "purchaseUrl": "https://example.com/nike-14",
+      "rating": 4.3,
+      "reviewCount": 144,
+      "isAvailable": true,
+      "colors": [
+        "Blue",
+        "Orange",
+        "Beige",
+        "Camel"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "versatile",
+        "affordable",
+        "stylish",
+        "casual",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_015",
+      "name": "Vintage Sweater",
+      "brand": "Adidas",
+      "category": "Jewelry",
+      "price": 237.8,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_015_1",
+          "url": "https://picsum.photos/800/1000?random=141",
+          "alt": "Adidas product view 1"
+        },
+        {
+          "id": "img_015_2",
+          "url": "https://picsum.photos/800/1000?random=142",
+          "alt": "Adidas product view 2"
+        },
+        {
+          "id": "img_015_3",
+          "url": "https://picsum.photos/800/1000?random=143",
+          "alt": "Adidas product view 3"
+        },
+        {
+          "id": "img_015_4",
+          "url": "https://picsum.photos/800/1000?random=144",
+          "alt": "Adidas product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=15",
+      "purchaseUrl": "https://example.com/adidas-15",
+      "rating": 4.7,
+      "reviewCount": 249,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "Blue",
+        "Tan"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Luxurious and refined",
+      "specifications": "UV protection, outdoor ready",
+      "tags": [
+        "casual",
+        "formal",
+        "comfortable",
+        "classic"
+      ]
+    },
+    {
+      "id": "prod_016",
+      "name": "Essential Accessory",
+      "brand": "Common Projects",
+      "category": "Bags",
+      "price": 161.41,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_016_1",
+          "url": "https://picsum.photos/800/1000?random=151",
+          "alt": "Common Projects product view 1"
+        },
+        {
+          "id": "img_016_2",
+          "url": "https://picsum.photos/800/1000?random=152",
+          "alt": "Common Projects product view 2"
+        },
+        {
+          "id": "img_016_3",
+          "url": "https://picsum.photos/800/1000?random=153",
+          "alt": "Common Projects product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=16",
+      "purchaseUrl": "https://example.com/common-projects-16",
+      "rating": 5,
+      "reviewCount": 457,
+      "isAvailable": true,
+      "colors": [
+        "White"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Essential wardrobe staple",
+      "tags": [
+        "casual",
+        "modern",
+        "formal",
+        "classic",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_017",
+      "name": "Vintage Bag",
+      "brand": "Zara",
+      "category": "Shoes",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_017_1",
+          "url": "https://picsum.photos/800/1000?random=161",
+          "alt": "Zara product view 1"
+        },
+        {
+          "id": "img_017_2",
+          "url": "https://picsum.photos/800/1000?random=162",
+          "alt": "Zara product view 2"
+        },
+        {
+          "id": "img_017_3",
+          "url": "https://picsum.photos/800/1000?random=163",
+          "alt": "Zara product view 3"
+        },
+        {
+          "id": "img_017_4",
+          "url": "https://picsum.photos/800/1000?random=164",
+          "alt": "Zara product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=17",
+      "purchaseUrl": null,
+      "rating": 4.3,
+      "reviewCount": 124,
+      "isAvailable": true,
+      "colors": [
+        "Burgundy"
+      ],
+      "sizes": [
+        "40",
+        "45",
+        "39",
+        "38",
+        "42",
+        "44"
+      ],
+      "tags": [
+        "affordable",
+        "luxury",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_018",
+      "name": "Vintage Blouse",
+      "brand": "Common Projects",
+      "category": "Bottoms",
+      "price": 256.57,
+      "originalPrice": 318.01,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_018_1",
+          "url": "https://picsum.photos/800/1000?random=171",
+          "alt": "Common Projects product view 1"
+        },
+        {
+          "id": "img_018_2",
+          "url": "https://picsum.photos/800/1000?random=172",
+          "alt": "Common Projects product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=18",
+      "purchaseUrl": "https://example.com/common-projects-18",
+      "rating": 3.4,
+      "reviewCount": 473,
+      "isAvailable": true,
+      "colors": [
+        "Gray"
+      ],
+      "sizes": [
+        "30",
+        "26",
+        "XL",
+        "XS",
+        "24",
+        "S"
+      ],
+      "description": "High-quality materials and craftsmanship",
+      "tags": [
+        "stylish",
+        "trendy",
+        "casual",
+        "formal",
+        "affordable"
+      ]
+    },
+    {
+      "id": "prod_019",
+      "name": "Elegant Sweater",
+      "brand": "Max Mara",
+      "category": "Shoes",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_019_1",
+          "url": "https://picsum.photos/800/1000?random=181",
+          "alt": "Max Mara product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=19",
+      "purchaseUrl": null,
+      "rating": 4.7,
+      "reviewCount": 423,
+      "isAvailable": true,
+      "colors": [
+        "Burgundy",
+        "Brown",
+        "White"
+      ],
+      "sizes": [
+        "45",
+        "42",
+        "41",
+        "43",
+        "40",
+        "39"
+      ],
+      "description": "Classic silhouette with contemporary details",
+      "specifications": "Moisture wicking, performance fabric",
+      "tags": [
+        "trendy",
+        "casual",
+        "formal",
+        "modern",
+        "classic"
+      ]
+    },
+    {
+      "id": "prod_020",
+      "name": "Casual Bag",
+      "brand": "Adidas",
+      "category": "Jewelry",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_020_1",
+          "url": "https://picsum.photos/800/1000?random=191",
+          "alt": "Adidas product view 1"
+        },
+        {
+          "id": "img_020_2",
+          "url": "https://picsum.photos/800/1000?random=192",
+          "alt": "Adidas product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=20",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Light Blue",
+        "Tan",
+        "Nude"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "trendy",
+        "casual",
+        "classic",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_021",
+      "name": "Statement Shoes",
+      "brand": "Mejuri",
+      "category": "Shoes",
+      "price": 88.45,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Sold Out",
+      "images": [
+        {
+          "id": "img_021_1",
+          "url": "https://picsum.photos/800/1000?random=201",
+          "alt": "Mejuri product view 1"
+        },
+        {
+          "id": "img_021_2",
+          "url": "https://picsum.photos/800/1000?random=202",
+          "alt": "Mejuri product view 2"
+        },
+        {
+          "id": "img_021_3",
+          "url": "https://picsum.photos/800/1000?random=203",
+          "alt": "Mejuri product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=21",
+      "purchaseUrl": "https://example.com/mejuri-21",
+      "rating": 3.7,
+      "reviewCount": 488,
+      "isAvailable": false,
+      "colors": [
+        "Black",
+        "Camel"
+      ],
+      "sizes": [
+        "36",
+        "42",
+        "37",
+        "41",
+        "44",
+        "40"
+      ],
+      "tags": [
+        "classic",
+        "comfortable",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_022",
+      "name": "Minimalist Skirt",
+      "brand": "Ganni",
+      "category": "Shoes",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_022_1",
+          "url": "https://picsum.photos/800/1000?random=211",
+          "alt": "Ganni product view 1"
+        },
+        {
+          "id": "img_022_2",
+          "url": "https://picsum.photos/800/1000?random=212",
+          "alt": "Ganni product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=22",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Navy"
+      ],
+      "sizes": [
+        "36",
+        "35",
+        "39",
+        "40",
+        "37",
+        "38"
+      ],
+      "description": "Minimalist and clean design",
+      "specifications": "Breathable fabric, comfortable fit",
+      "tags": [
+        "trendy",
+        "comfortable",
+        "modern",
+        "versatile",
+        "luxury"
+      ]
+    },
+    {
+      "id": "prod_023",
+      "name": "Minimalist Jacket",
+      "brand": "Rag & Bone",
+      "category": "Dresses",
+      "price": 387.43,
+      "originalPrice": 459.41,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_023_1",
+          "url": "https://picsum.photos/800/1000?random=221",
+          "alt": "Rag & Bone product view 1"
+        },
+        {
+          "id": "img_023_2",
+          "url": "https://picsum.photos/800/1000?random=222",
+          "alt": "Rag & Bone product view 2"
+        },
+        {
+          "id": "img_023_3",
+          "url": "https://picsum.photos/800/1000?random=223",
+          "alt": "Rag & Bone product view 3"
+        },
+        {
+          "id": "img_023_4",
+          "url": "https://picsum.photos/800/1000?random=224",
+          "alt": "Rag & Bone product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=23",
+      "purchaseUrl": "https://example.com/rag---bone-23",
+      "rating": 4.8,
+      "reviewCount": 407,
+      "isAvailable": true,
+      "colors": [
+        "White",
+        "Brown",
+        "Yellow",
+        "Red"
+      ],
+      "sizes": [
+        "M",
+        "XS",
+        "XL",
+        "L",
+        "S"
+      ],
+      "specifications": "Stain resistant, easy care",
+      "tags": [
+        "casual",
+        "classic"
+      ]
+    },
+    {
+      "id": "prod_024",
+      "name": "Modern Dress",
+      "brand": "Stuart Weitzman",
+      "category": "Accessories",
+      "price": 209.73,
+      "originalPrice": 272.8,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_024_1",
+          "url": "https://picsum.photos/800/1000?random=231",
+          "alt": "Stuart Weitzman product view 1"
+        },
+        {
+          "id": "img_024_2",
+          "url": "https://picsum.photos/800/1000?random=232",
+          "alt": "Stuart Weitzman product view 2"
+        },
+        {
+          "id": "img_024_3",
+          "url": "https://picsum.photos/800/1000?random=233",
+          "alt": "Stuart Weitzman product view 3"
+        },
+        {
+          "id": "img_024_4",
+          "url": "https://picsum.photos/800/1000?random=234",
+          "alt": "Stuart Weitzman product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=24",
+      "purchaseUrl": "https://example.com/stuart-weitzman-24",
+      "rating": 3.8,
+      "reviewCount": 97,
+      "isAvailable": true,
+      "colors": [
+        "Black"
+      ],
+      "sizes": [
+        "One Size",
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "description": "Minimalist and clean design",
+      "specifications": "UV protection, outdoor ready",
+      "tags": [
+        "versatile",
+        "modern",
+        "luxury",
+        "comfortable",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_025",
+      "name": "Modern Top",
+      "brand": "Common Projects",
+      "category": "Dresses",
+      "price": 198,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_025_1",
+          "url": "https://picsum.photos/800/1000?random=241",
+          "alt": "Common Projects product view 1"
+        },
+        {
+          "id": "img_025_2",
+          "url": "https://picsum.photos/800/1000?random=242",
+          "alt": "Common Projects product view 2"
+        },
+        {
+          "id": "img_025_3",
+          "url": "https://picsum.photos/800/1000?random=243",
+          "alt": "Common Projects product view 3"
+        },
+        {
+          "id": "img_025_4",
+          "url": "https://picsum.photos/800/1000?random=244",
+          "alt": "Common Projects product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=25",
+      "purchaseUrl": "https://example.com/common-projects-25",
+      "rating": 3.1,
+      "reviewCount": 253,
+      "isAvailable": true,
+      "colors": [
+        "Camel",
+        "Burgundy",
+        "Brown",
+        "Dark Blue"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "Perfect for everyday wear",
+      "specifications": "UV protection, outdoor ready",
+      "tags": [
+        "classic",
+        "casual",
+        "luxury"
+      ]
+    },
+    {
+      "id": "prod_026",
+      "name": "Statement Dress",
+      "brand": "Common Projects",
+      "category": "Shoes",
+      "price": 166.76,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_026_1",
+          "url": "https://picsum.photos/800/1000?random=251",
+          "alt": "Common Projects product view 1"
+        },
+        {
+          "id": "img_026_2",
+          "url": "https://picsum.photos/800/1000?random=252",
+          "alt": "Common Projects product view 2"
+        },
+        {
+          "id": "img_026_3",
+          "url": "https://picsum.photos/800/1000?random=253",
+          "alt": "Common Projects product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=26",
+      "purchaseUrl": "https://example.com/common-projects-26",
+      "rating": 3.8,
+      "reviewCount": 413,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "Burgundy"
+      ],
+      "sizes": [
+        "38",
+        "40",
+        "43",
+        "45",
+        "42",
+        "36"
+      ],
+      "specifications": "Eco-friendly materials, sustainable",
+      "tags": [
+        "stylish",
+        "formal",
+        "comfortable",
+        "luxury",
+        "classic"
+      ]
+    },
+    {
+      "id": "prod_027",
+      "name": "Luxury Pants",
+      "brand": "Zara",
+      "category": "Accessories",
+      "price": 97.81,
+      "originalPrice": 116.99,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_027_1",
+          "url": "https://picsum.photos/800/1000?random=261",
+          "alt": "Zara product view 1"
+        },
+        {
+          "id": "img_027_2",
+          "url": "https://picsum.photos/800/1000?random=262",
+          "alt": "Zara product view 2"
+        },
+        {
+          "id": "img_027_3",
+          "url": "https://picsum.photos/800/1000?random=263",
+          "alt": "Zara product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=27",
+      "purchaseUrl": "https://example.com/zara-27",
+      "rating": 4.7,
+      "reviewCount": 459,
+      "isAvailable": true,
+      "colors": [
+        "Gray",
+        "Navy",
+        "Beige",
+        "Brown"
+      ],
+      "sizes": [
+        "One Size",
+        "XS",
+        "L",
+        "S",
+        "M"
+      ],
+      "description": "Timeless piece with modern appeal",
+      "specifications": "Dry clean only, professional care",
+      "tags": [
+        "trendy",
+        "modern",
+        "stylish",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_028",
+      "name": "Vintage Shoes",
+      "brand": "AllSaints",
+      "category": "Jewelry",
+      "price": 137.16,
+      "originalPrice": 165.22,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_028_1",
+          "url": "https://picsum.photos/800/1000?random=271",
+          "alt": "AllSaints product view 1"
+        },
+        {
+          "id": "img_028_2",
+          "url": "https://picsum.photos/800/1000?random=272",
+          "alt": "AllSaints product view 2"
+        },
+        {
+          "id": "img_028_3",
+          "url": "https://picsum.photos/800/1000?random=273",
+          "alt": "AllSaints product view 3"
+        },
+        {
+          "id": "img_028_4",
+          "url": "https://picsum.photos/800/1000?random=274",
+          "alt": "AllSaints product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=28",
+      "purchaseUrl": "https://example.com/allsaints-28",
+      "rating": 3.5,
+      "reviewCount": 493,
+      "isAvailable": true,
+      "colors": [
+        "Camel",
+        "Red",
+        "Burgundy"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "specifications": "Breathable fabric, comfortable fit",
+      "tags": [
+        "stylish",
+        "casual",
+        "luxury",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_029",
+      "name": "Vintage Top",
+      "brand": "Maje",
+      "category": "Accessories",
+      "price": 46.83,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_029_1",
+          "url": "https://picsum.photos/800/1000?random=281",
+          "alt": "Maje product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=29",
+      "purchaseUrl": "https://example.com/maje-29",
+      "rating": 3.1,
+      "reviewCount": 14,
+      "isAvailable": true,
+      "colors": [
+        "Dark Blue",
+        "Gray"
+      ],
+      "sizes": [
+        "One Size",
+        "S",
+        "XS",
+        "M",
+        "L"
+      ],
+      "description": "High-quality materials and craftsmanship",
+      "specifications": "Moisture wicking, performance fabric",
+      "tags": [
+        "affordable",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_030",
+      "name": "Vintage Accessory",
+      "brand": "Aritzia",
+      "category": "Tops",
+      "price": 150.57,
+      "originalPrice": 197.99,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_030_1",
+          "url": "https://picsum.photos/800/1000?random=291",
+          "alt": "Aritzia product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=30",
+      "purchaseUrl": "https://example.com/aritzia-30",
+      "rating": 4.1,
+      "reviewCount": 440,
+      "isAvailable": true,
+      "colors": [
+        "Navy",
+        "Black",
+        "Gray",
+        "Yellow"
+      ],
+      "sizes": [
+        "XS",
+        "XL",
+        "S",
+        "M",
+        "L",
+        "XXL"
+      ],
+      "description": "High-quality materials and craftsmanship",
+      "tags": [
+        "comfortable",
+        "modern",
+        "versatile",
+        "stylish",
+        "affordable"
+      ]
+    },
+    {
+      "id": "prod_031",
+      "name": "Statement Skirt",
+      "brand": "Nike",
+      "category": "Accessories",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_031_1",
+          "url": "https://picsum.photos/800/1000?random=301",
+          "alt": "Nike product view 1"
+        },
+        {
+          "id": "img_031_2",
+          "url": "https://picsum.photos/800/1000?random=302",
+          "alt": "Nike product view 2"
+        },
+        {
+          "id": "img_031_3",
+          "url": "https://picsum.photos/800/1000?random=303",
+          "alt": "Nike product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=31",
+      "purchaseUrl": null,
+      "rating": 4.8,
+      "reviewCount": 463,
+      "isAvailable": true,
+      "colors": [
+        "Gray",
+        "Pink",
+        "Purple",
+        "Burgundy"
+      ],
+      "sizes": [
+        "One Size",
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "tags": [
+        "trendy",
+        "comfortable",
+        "formal",
+        "classic"
+      ]
+    },
+    {
+      "id": "prod_032",
+      "name": "Essential Blouse",
+      "brand": "Ganni",
+      "category": "Bags",
+      "price": 128.07,
+      "originalPrice": 153.32,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_032_1",
+          "url": "https://picsum.photos/800/1000?random=311",
+          "alt": "Ganni product view 1"
+        },
+        {
+          "id": "img_032_2",
+          "url": "https://picsum.photos/800/1000?random=312",
+          "alt": "Ganni product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=32",
+      "purchaseUrl": "https://example.com/ganni-32",
+      "rating": 3.5,
+      "reviewCount": 421,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "White",
+        "Navy"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "stylish",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_033",
+      "name": "Modern Pants",
+      "brand": "Sandro",
+      "category": "Tops",
+      "price": 469.75,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_033_1",
+          "url": "https://picsum.photos/800/1000?random=321",
+          "alt": "Sandro product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=33",
+      "purchaseUrl": "https://example.com/sandro-33",
+      "rating": 3.6,
+      "reviewCount": 372,
+      "isAvailable": true,
+      "colors": [
+        "Gray",
+        "Orange",
+        "Nude",
+        "Navy"
+      ],
+      "sizes": [
+        "XXL",
+        "XL",
+        "L",
+        "M",
+        "S",
+        "XS"
+      ],
+      "description": "Statement piece for any occasion",
+      "specifications": "Wrinkle resistant, travel friendly",
+      "tags": [
+        "modern",
+        "formal",
+        "luxury",
+        "casual"
+      ]
+    },
+    {
+      "id": "prod_034",
+      "name": "Classic Accessory",
+      "brand": "Reformation",
+      "category": "Dresses",
+      "price": 282.63,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_034_1",
+          "url": "https://picsum.photos/800/1000?random=331",
+          "alt": "Reformation product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=34",
+      "purchaseUrl": "https://example.com/reformation-34",
+      "rating": 4.4,
+      "reviewCount": 126,
+      "isAvailable": true,
+      "colors": [
+        "Blue",
+        "Black",
+        "Orange"
+      ],
+      "sizes": [
+        "M",
+        "XS",
+        "XL",
+        "L",
+        "S"
+      ],
+      "description": "High-quality materials and craftsmanship",
+      "specifications": "Hand wash only, delicate care required",
+      "tags": [
+        "affordable",
+        "casual",
+        "formal",
+        "versatile",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_035",
+      "name": "Designer Accessory",
+      "brand": "Stuart Weitzman",
+      "category": "Shoes",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_035_1",
+          "url": "https://picsum.photos/800/1000?random=341",
+          "alt": "Stuart Weitzman product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=35",
+      "purchaseUrl": null,
+      "rating": 4.5,
+      "reviewCount": 107,
+      "isAvailable": true,
+      "colors": [
+        "Burgundy"
+      ],
+      "sizes": [
+        "41",
+        "35",
+        "44",
+        "36",
+        "39",
+        "37"
+      ],
+      "description": "Essential wardrobe staple",
+      "specifications": "Wrinkle resistant, travel friendly",
+      "tags": [
+        "trendy",
+        "versatile",
+        "stylish",
+        "classic",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_036",
+      "name": "Casual Jacket",
+      "brand": "H&M",
+      "category": "Dresses",
+      "price": 512.54,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_036_1",
+          "url": "https://picsum.photos/800/1000?random=351",
+          "alt": "H&M product view 1"
+        },
+        {
+          "id": "img_036_2",
+          "url": "https://picsum.photos/800/1000?random=352",
+          "alt": "H&M product view 2"
+        },
+        {
+          "id": "img_036_3",
+          "url": "https://picsum.photos/800/1000?random=353",
+          "alt": "H&M product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=36",
+      "purchaseUrl": "https://example.com/h-m-36",
+      "rating": 3.3,
+      "reviewCount": 210,
+      "isAvailable": true,
+      "colors": [
+        "Navy",
+        "Dark Blue"
+      ],
+      "sizes": [
+        "L",
+        "XL",
+        "XS",
+        "S",
+        "M"
+      ],
+      "tags": [
+        "casual",
+        "formal",
+        "comfortable",
+        "luxury",
+        "stylish"
+      ]
+    },
+    {
+      "id": "prod_037",
+      "name": "Classic Dress",
+      "brand": "Uniqlo",
+      "category": "Outerwear",
+      "price": 339.16,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_037_1",
+          "url": "https://picsum.photos/800/1000?random=361",
+          "alt": "Uniqlo product view 1"
+        },
+        {
+          "id": "img_037_2",
+          "url": "https://picsum.photos/800/1000?random=362",
+          "alt": "Uniqlo product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=37",
+      "purchaseUrl": "https://example.com/uniqlo-37",
+      "rating": 3.2,
+      "reviewCount": 189,
+      "isAvailable": true,
+      "colors": [
+        "Brown",
+        "Beige",
+        "Navy"
+      ],
+      "sizes": [
+        "XS",
+        "XXL",
+        "S",
+        "XL",
+        "M",
+        "L"
+      ],
+      "specifications": "Machine washable, premium materials",
+      "tags": [
+        "comfortable",
+        "classic"
+      ]
+    },
+    {
+      "id": "prod_038",
+      "name": "Vintage Pants",
+      "brand": "Theory",
+      "category": "Jewelry",
+      "price": 391.67,
+      "originalPrice": 529.66,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_038_1",
+          "url": "https://picsum.photos/800/1000?random=371",
+          "alt": "Theory product view 1"
+        },
+        {
+          "id": "img_038_2",
+          "url": "https://picsum.photos/800/1000?random=372",
+          "alt": "Theory product view 2"
+        },
+        {
+          "id": "img_038_3",
+          "url": "https://picsum.photos/800/1000?random=373",
+          "alt": "Theory product view 3"
+        },
+        {
+          "id": "img_038_4",
+          "url": "https://picsum.photos/800/1000?random=374",
+          "alt": "Theory product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=38",
+      "purchaseUrl": "https://example.com/theory-38",
+      "rating": 4,
+      "reviewCount": 152,
+      "isAvailable": true,
+      "colors": [
+        "Green"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Perfect for everyday wear",
+      "specifications": "Machine washable, premium materials",
+      "tags": [
+        "classic",
+        "stylish",
+        "modern",
+        "casual",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_039",
+      "name": "Essential Dress",
+      "brand": "Sezane",
+      "category": "Bottoms",
+      "price": 82.6,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_039_1",
+          "url": "https://picsum.photos/800/1000?random=381",
+          "alt": "Sezane product view 1"
+        },
+        {
+          "id": "img_039_2",
+          "url": "https://picsum.photos/800/1000?random=382",
+          "alt": "Sezane product view 2"
+        },
+        {
+          "id": "img_039_3",
+          "url": "https://picsum.photos/800/1000?random=383",
+          "alt": "Sezane product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=39",
+      "purchaseUrl": "https://example.com/sezane-39",
+      "rating": 3.7,
+      "reviewCount": 490,
+      "isAvailable": true,
+      "colors": [
+        "Purple",
+        "Cream",
+        "Pink",
+        "Orange"
+      ],
+      "sizes": [
+        "L",
+        "M",
+        "29",
+        "23",
+        "XXL",
+        "25"
+      ],
+      "description": "Statement piece for any occasion",
+      "specifications": "Pre-shrunk, colorfast, durable",
+      "tags": [
+        "trendy",
+        "comfortable",
+        "modern",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_040",
+      "name": "Vintage Bag",
+      "brand": "AllSaints",
+      "category": "Bottoms",
+      "price": 225.42,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_040_1",
+          "url": "https://picsum.photos/800/1000?random=391",
+          "alt": "AllSaints product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=40",
+      "purchaseUrl": "https://example.com/allsaints-40",
+      "rating": 4.1,
+      "reviewCount": 115,
+      "isAvailable": true,
+      "colors": [
+        "Green",
+        "Pink",
+        "Cream",
+        "Gray"
+      ],
+      "sizes": [
+        "28",
+        "XXL",
+        "L",
+        "24",
+        "S",
+        "XS"
+      ],
+      "specifications": "UV protection, outdoor ready",
+      "tags": [
+        "casual",
+        "modern",
+        "stylish",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_041",
+      "name": "Designer Skirt",
+      "brand": "Madewell",
+      "category": "Dresses",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_041_1",
+          "url": "https://picsum.photos/800/1000?random=401",
+          "alt": "Madewell product view 1"
+        },
+        {
+          "id": "img_041_2",
+          "url": "https://picsum.photos/800/1000?random=402",
+          "alt": "Madewell product view 2"
+        },
+        {
+          "id": "img_041_3",
+          "url": "https://picsum.photos/800/1000?random=403",
+          "alt": "Madewell product view 3"
+        },
+        {
+          "id": "img_041_4",
+          "url": "https://picsum.photos/800/1000?random=404",
+          "alt": "Madewell product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=41",
+      "purchaseUrl": null,
+      "rating": 3.5,
+      "reviewCount": 84,
+      "isAvailable": true,
+      "colors": [
+        "Navy",
+        "Green"
+      ],
+      "sizes": [
+        "XL",
+        "L",
+        "M",
+        "S",
+        "XS"
+      ],
+      "description": "Luxurious and refined",
+      "specifications": "Pre-shrunk, colorfast, durable",
+      "tags": [
+        "trendy",
+        "classic",
+        "versatile",
+        "stylish"
+      ]
+    },
+    {
+      "id": "prod_042",
+      "name": "Elegant Blouse",
+      "brand": "Mansur Gavriel",
+      "category": "Dresses",
+      "price": 297.49,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_042_1",
+          "url": "https://picsum.photos/800/1000?random=411",
+          "alt": "Mansur Gavriel product view 1"
+        },
+        {
+          "id": "img_042_2",
+          "url": "https://picsum.photos/800/1000?random=412",
+          "alt": "Mansur Gavriel product view 2"
+        },
+        {
+          "id": "img_042_3",
+          "url": "https://picsum.photos/800/1000?random=413",
+          "alt": "Mansur Gavriel product view 3"
+        },
+        {
+          "id": "img_042_4",
+          "url": "https://picsum.photos/800/1000?random=414",
+          "alt": "Mansur Gavriel product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=42",
+      "purchaseUrl": "https://example.com/mansur-gavriel-42",
+      "rating": 4.5,
+      "reviewCount": 445,
+      "isAvailable": true,
+      "colors": [
+        "Brown",
+        "Nude",
+        "Black"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "XL",
+        "L"
+      ],
+      "description": "Perfect for everyday wear",
+      "tags": [
+        "stylish",
+        "trendy",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_043",
+      "name": "Elegant Bag",
+      "brand": "Common Projects",
+      "category": "Jewelry",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_043_1",
+          "url": "https://picsum.photos/800/1000?random=421",
+          "alt": "Common Projects product view 1"
+        },
+        {
+          "id": "img_043_2",
+          "url": "https://picsum.photos/800/1000?random=422",
+          "alt": "Common Projects product view 2"
+        },
+        {
+          "id": "img_043_3",
+          "url": "https://picsum.photos/800/1000?random=423",
+          "alt": "Common Projects product view 3"
+        },
+        {
+          "id": "img_043_4",
+          "url": "https://picsum.photos/800/1000?random=424",
+          "alt": "Common Projects product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=43",
+      "purchaseUrl": null,
+      "rating": 3.6,
+      "reviewCount": 313,
+      "isAvailable": true,
+      "colors": [
+        "Black"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "luxury",
+        "formal",
+        "affordable",
+        "casual",
+        "classic"
+      ]
+    },
+    {
+      "id": "prod_044",
+      "name": "Modern Jacket",
+      "brand": "Nike",
+      "category": "Bags",
+      "price": 287.8,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_044_1",
+          "url": "https://picsum.photos/800/1000?random=431",
+          "alt": "Nike product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=44",
+      "purchaseUrl": "https://example.com/nike-44",
+      "rating": 3.7,
+      "reviewCount": 60,
+      "isAvailable": true,
+      "colors": [
+        "Red",
+        "Nude",
+        "Light Blue",
+        "Black"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "casual",
+        "formal",
+        "comfortable",
+        "classic",
+        "versatile"
+      ]
+    },
+    {
+      "id": "prod_045",
+      "name": "Vintage Blouse",
+      "brand": "Ganni",
+      "category": "Jewelry",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_045_1",
+          "url": "https://picsum.photos/800/1000?random=441",
+          "alt": "Ganni product view 1"
+        },
+        {
+          "id": "img_045_2",
+          "url": "https://picsum.photos/800/1000?random=442",
+          "alt": "Ganni product view 2"
+        },
+        {
+          "id": "img_045_3",
+          "url": "https://picsum.photos/800/1000?random=443",
+          "alt": "Ganni product view 3"
+        },
+        {
+          "id": "img_045_4",
+          "url": "https://picsum.photos/800/1000?random=444",
+          "alt": "Ganni product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=45",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Pink",
+        "Burgundy",
+        "Red",
+        "Yellow"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "High-quality materials and craftsmanship",
+      "tags": [
+        "stylish",
+        "classic",
+        "comfortable",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_046",
+      "name": "Elegant Blouse",
+      "brand": "Isabel Marant",
+      "category": "Shoes",
+      "price": 508.73,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Sold Out",
+      "images": [
+        {
+          "id": "img_046_1",
+          "url": "https://picsum.photos/800/1000?random=451",
+          "alt": "Isabel Marant product view 1"
+        },
+        {
+          "id": "img_046_2",
+          "url": "https://picsum.photos/800/1000?random=452",
+          "alt": "Isabel Marant product view 2"
+        },
+        {
+          "id": "img_046_3",
+          "url": "https://picsum.photos/800/1000?random=453",
+          "alt": "Isabel Marant product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=46",
+      "purchaseUrl": "https://example.com/isabel-marant-46",
+      "rating": 4.1,
+      "reviewCount": 127,
+      "isAvailable": false,
+      "colors": [
+        "Green",
+        "Camel"
+      ],
+      "sizes": [
+        "41",
+        "39",
+        "42",
+        "35",
+        "38",
+        "43"
+      ],
+      "description": "Perfect for everyday wear",
+      "tags": [
+        "trendy",
+        "affordable",
+        "formal",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_047",
+      "name": "Luxury Shoes",
+      "brand": "J.Crew",
+      "category": "Outerwear",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_047_1",
+          "url": "https://picsum.photos/800/1000?random=461",
+          "alt": "J.Crew product view 1"
+        },
+        {
+          "id": "img_047_2",
+          "url": "https://picsum.photos/800/1000?random=462",
+          "alt": "J.Crew product view 2"
+        },
+        {
+          "id": "img_047_3",
+          "url": "https://picsum.photos/800/1000?random=463",
+          "alt": "J.Crew product view 3"
+        },
+        {
+          "id": "img_047_4",
+          "url": "https://picsum.photos/800/1000?random=464",
+          "alt": "J.Crew product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=47",
+      "purchaseUrl": null,
+      "rating": 3.8,
+      "reviewCount": 49,
+      "isAvailable": true,
+      "colors": [
+        "Tan",
+        "Blue",
+        "Gray",
+        "Pink"
+      ],
+      "sizes": [
+        "L",
+        "M",
+        "XS",
+        "S",
+        "XL",
+        "XXL"
+      ],
+      "description": "Comfortable and versatile",
+      "specifications": "Eco-friendly materials, sustainable",
+      "tags": [
+        "comfortable",
+        "classic",
+        "formal",
+        "versatile"
+      ]
+    },
+    {
+      "id": "prod_048",
+      "name": "Designer Pants",
+      "brand": "Max Mara",
+      "category": "Dresses",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_048_1",
+          "url": "https://picsum.photos/800/1000?random=471",
+          "alt": "Max Mara product view 1"
+        },
+        {
+          "id": "img_048_2",
+          "url": "https://picsum.photos/800/1000?random=472",
+          "alt": "Max Mara product view 2"
+        },
+        {
+          "id": "img_048_3",
+          "url": "https://picsum.photos/800/1000?random=473",
+          "alt": "Max Mara product view 3"
+        },
+        {
+          "id": "img_048_4",
+          "url": "https://picsum.photos/800/1000?random=474",
+          "alt": "Max Mara product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=48",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Burgundy",
+        "Nude"
+      ],
+      "sizes": [
+        "XL",
+        "L",
+        "M",
+        "S",
+        "XS"
+      ],
+      "description": "Timeless piece with modern appeal",
+      "tags": [
+        "trendy",
+        "casual",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_049",
+      "name": "Casual Shoes",
+      "brand": "Levi's",
+      "category": "Jewelry",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_049_1",
+          "url": "https://picsum.photos/800/1000?random=481",
+          "alt": "Levi's product view 1"
+        },
+        {
+          "id": "img_049_2",
+          "url": "https://picsum.photos/800/1000?random=482",
+          "alt": "Levi's product view 2"
+        },
+        {
+          "id": "img_049_3",
+          "url": "https://picsum.photos/800/1000?random=483",
+          "alt": "Levi's product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=49",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Beige",
+        "Black"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "stylish",
+        "luxury",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_050",
+      "name": "Statement Sweater",
+      "brand": "Sezane",
+      "category": "Dresses",
+      "price": 492.86,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_050_1",
+          "url": "https://picsum.photos/800/1000?random=491",
+          "alt": "Sezane product view 1"
+        },
+        {
+          "id": "img_050_2",
+          "url": "https://picsum.photos/800/1000?random=492",
+          "alt": "Sezane product view 2"
+        },
+        {
+          "id": "img_050_3",
+          "url": "https://picsum.photos/800/1000?random=493",
+          "alt": "Sezane product view 3"
+        },
+        {
+          "id": "img_050_4",
+          "url": "https://picsum.photos/800/1000?random=494",
+          "alt": "Sezane product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=50",
+      "purchaseUrl": "https://example.com/sezane-50",
+      "rating": 3.2,
+      "reviewCount": 349,
+      "isAvailable": true,
+      "colors": [
+        "Green"
+      ],
+      "sizes": [
+        "XL",
+        "L",
+        "M",
+        "S",
+        "XS"
+      ],
+      "tags": [
+        "stylish",
+        "versatile",
+        "affordable",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_051",
+      "name": "Essential Blouse",
+      "brand": "Stuart Weitzman",
+      "category": "Accessories",
+      "price": 190.07,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_051_1",
+          "url": "https://picsum.photos/800/1000?random=501",
+          "alt": "Stuart Weitzman product view 1"
+        },
+        {
+          "id": "img_051_2",
+          "url": "https://picsum.photos/800/1000?random=502",
+          "alt": "Stuart Weitzman product view 2"
+        },
+        {
+          "id": "img_051_3",
+          "url": "https://picsum.photos/800/1000?random=503",
+          "alt": "Stuart Weitzman product view 3"
+        },
+        {
+          "id": "img_051_4",
+          "url": "https://picsum.photos/800/1000?random=504",
+          "alt": "Stuart Weitzman product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=51",
+      "purchaseUrl": "https://example.com/stuart-weitzman-51",
+      "rating": 4.6,
+      "reviewCount": 496,
+      "isAvailable": true,
+      "colors": [
+        "Pink"
+      ],
+      "sizes": [
+        "One Size",
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "description": "Sophisticated and elegant design",
+      "tags": [
+        "casual",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_052",
+      "name": "Essential Jacket",
+      "brand": "Mejuri",
+      "category": "Jewelry",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_052_1",
+          "url": "https://picsum.photos/800/1000?random=511",
+          "alt": "Mejuri product view 1"
+        },
+        {
+          "id": "img_052_2",
+          "url": "https://picsum.photos/800/1000?random=512",
+          "alt": "Mejuri product view 2"
+        },
+        {
+          "id": "img_052_3",
+          "url": "https://picsum.photos/800/1000?random=513",
+          "alt": "Mejuri product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=52",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Green"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Minimalist and clean design",
+      "specifications": "Wrinkle resistant, travel friendly",
+      "tags": [
+        "comfortable",
+        "luxury"
+      ]
+    },
+    {
+      "id": "prod_053",
+      "name": "Designer Shoes",
+      "brand": "Uniqlo",
+      "category": "Accessories",
+      "price": 58.47,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_053_1",
+          "url": "https://picsum.photos/800/1000?random=521",
+          "alt": "Uniqlo product view 1"
+        },
+        {
+          "id": "img_053_2",
+          "url": "https://picsum.photos/800/1000?random=522",
+          "alt": "Uniqlo product view 2"
+        },
+        {
+          "id": "img_053_3",
+          "url": "https://picsum.photos/800/1000?random=523",
+          "alt": "Uniqlo product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=53",
+      "purchaseUrl": "https://example.com/uniqlo-53",
+      "rating": 3.4,
+      "reviewCount": 248,
+      "isAvailable": true,
+      "colors": [
+        "Red",
+        "Brown"
+      ],
+      "sizes": [
+        "XS",
+        "One Size",
+        "L",
+        "M",
+        "S"
+      ],
+      "description": "Statement piece for any occasion",
+      "specifications": "Breathable fabric, comfortable fit",
+      "tags": [
+        "luxury",
+        "casual",
+        "versatile"
+      ]
+    },
+    {
+      "id": "prod_054",
+      "name": "Classic Sweater",
+      "brand": "Sezane",
+      "category": "Shoes",
+      "price": 58.11,
+      "originalPrice": 65.73,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_054_1",
+          "url": "https://picsum.photos/800/1000?random=531",
+          "alt": "Sezane product view 1"
+        },
+        {
+          "id": "img_054_2",
+          "url": "https://picsum.photos/800/1000?random=532",
+          "alt": "Sezane product view 2"
+        },
+        {
+          "id": "img_054_3",
+          "url": "https://picsum.photos/800/1000?random=533",
+          "alt": "Sezane product view 3"
+        },
+        {
+          "id": "img_054_4",
+          "url": "https://picsum.photos/800/1000?random=534",
+          "alt": "Sezane product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=54",
+      "purchaseUrl": "https://example.com/sezane-54",
+      "rating": 4.5,
+      "reviewCount": 18,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "Beige",
+        "Pink",
+        "Dark Blue"
+      ],
+      "sizes": [
+        "41",
+        "35",
+        "36",
+        "37",
+        "45",
+        "42"
+      ],
+      "description": "High-quality materials and craftsmanship",
+      "tags": [
+        "luxury",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_055",
+      "name": "Designer Sweater",
+      "brand": "Madewell",
+      "category": "Bottoms",
+      "price": 306.19,
+      "originalPrice": 397.83,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_055_1",
+          "url": "https://picsum.photos/800/1000?random=541",
+          "alt": "Madewell product view 1"
+        },
+        {
+          "id": "img_055_2",
+          "url": "https://picsum.photos/800/1000?random=542",
+          "alt": "Madewell product view 2"
+        },
+        {
+          "id": "img_055_3",
+          "url": "https://picsum.photos/800/1000?random=543",
+          "alt": "Madewell product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=55",
+      "purchaseUrl": "https://example.com/madewell-55",
+      "rating": 4.2,
+      "reviewCount": 343,
+      "isAvailable": true,
+      "colors": [
+        "Orange"
+      ],
+      "sizes": [
+        "L",
+        "24",
+        "28",
+        "XL",
+        "XXL",
+        "XS"
+      ],
+      "tags": [
+        "casual",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_056",
+      "name": "Classic Sweater",
+      "brand": "Ganni",
+      "category": "Bottoms",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_056_1",
+          "url": "https://picsum.photos/800/1000?random=551",
+          "alt": "Ganni product view 1"
+        },
+        {
+          "id": "img_056_2",
+          "url": "https://picsum.photos/800/1000?random=552",
+          "alt": "Ganni product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=56",
+      "purchaseUrl": null,
+      "rating": 3.3,
+      "reviewCount": 383,
+      "isAvailable": true,
+      "colors": [
+        "Navy",
+        "Black"
+      ],
+      "sizes": [
+        "L",
+        "24",
+        "26",
+        "M",
+        "S",
+        "30"
+      ],
+      "tags": [
+        "versatile",
+        "trendy",
+        "luxury"
+      ]
+    },
+    {
+      "id": "prod_057",
+      "name": "Vintage Bag",
+      "brand": "Acne Studios",
+      "category": "Bottoms",
+      "price": 95.07,
+      "originalPrice": 144.78,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_057_1",
+          "url": "https://picsum.photos/800/1000?random=561",
+          "alt": "Acne Studios product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=57",
+      "purchaseUrl": "https://example.com/acne-studios-57",
+      "rating": 3.3,
+      "reviewCount": 381,
+      "isAvailable": true,
+      "colors": [
+        "Cream",
+        "Camel",
+        "Purple",
+        "Nude"
+      ],
+      "sizes": [
+        "23",
+        "30",
+        "XL",
+        "XS",
+        "26",
+        "S"
+      ],
+      "description": "Minimalist and clean design",
+      "tags": [
+        "casual",
+        "stylish"
+      ]
+    },
+    {
+      "id": "prod_058",
+      "name": "Designer Accessory",
+      "brand": "Ganni",
+      "category": "Jewelry",
+      "price": 225.75,
+      "originalPrice": 281.32,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_058_1",
+          "url": "https://picsum.photos/800/1000?random=571",
+          "alt": "Ganni product view 1"
+        },
+        {
+          "id": "img_058_2",
+          "url": "https://picsum.photos/800/1000?random=572",
+          "alt": "Ganni product view 2"
+        },
+        {
+          "id": "img_058_3",
+          "url": "https://picsum.photos/800/1000?random=573",
+          "alt": "Ganni product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=58",
+      "purchaseUrl": "https://example.com/ganni-58",
+      "rating": 3,
+      "reviewCount": 108,
+      "isAvailable": true,
+      "colors": [
+        "Nude",
+        "Black",
+        "White"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Sophisticated and elegant design",
+      "specifications": "Machine washable, premium materials",
+      "tags": [
+        "versatile",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_059",
+      "name": "Luxury Jacket",
+      "brand": "Mejuri",
+      "category": "Tops",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_059_1",
+          "url": "https://picsum.photos/800/1000?random=581",
+          "alt": "Mejuri product view 1"
+        },
+        {
+          "id": "img_059_2",
+          "url": "https://picsum.photos/800/1000?random=582",
+          "alt": "Mejuri product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=59",
+      "purchaseUrl": null,
+      "rating": 3.8,
+      "reviewCount": 14,
+      "isAvailable": true,
+      "colors": [
+        "Beige",
+        "Green",
+        "Yellow"
+      ],
+      "sizes": [
+        "XL",
+        "XS",
+        "L",
+        "S",
+        "XXL",
+        "M"
+      ],
+      "description": "Essential wardrobe staple",
+      "tags": [
+        "casual",
+        "trendy",
+        "versatile"
+      ]
+    },
+    {
+      "id": "prod_060",
+      "name": "Modern Blouse",
+      "brand": "Equipment",
+      "category": "Jewelry",
+      "price": 368.07,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_060_1",
+          "url": "https://picsum.photos/800/1000?random=591",
+          "alt": "Equipment product view 1"
+        },
+        {
+          "id": "img_060_2",
+          "url": "https://picsum.photos/800/1000?random=592",
+          "alt": "Equipment product view 2"
+        },
+        {
+          "id": "img_060_3",
+          "url": "https://picsum.photos/800/1000?random=593",
+          "alt": "Equipment product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=60",
+      "purchaseUrl": "https://example.com/equipment-60",
+      "rating": 3.8,
+      "reviewCount": 89,
+      "isAvailable": true,
+      "colors": [
+        "Purple"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "casual",
+        "modern",
+        "affordable",
+        "classic"
+      ]
+    },
+    {
+      "id": "prod_061",
+      "name": "Minimalist Dress",
+      "brand": "Frame",
+      "category": "Shoes",
+      "price": 205.97,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_061_1",
+          "url": "https://picsum.photos/800/1000?random=601",
+          "alt": "Frame product view 1"
+        },
+        {
+          "id": "img_061_2",
+          "url": "https://picsum.photos/800/1000?random=602",
+          "alt": "Frame product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=61",
+      "purchaseUrl": "https://example.com/frame-61",
+      "rating": 4,
+      "reviewCount": 317,
+      "isAvailable": true,
+      "colors": [
+        "White"
+      ],
+      "sizes": [
+        "45",
+        "44",
+        "43",
+        "42",
+        "41",
+        "40"
+      ],
+      "description": "Comfortable and versatile",
+      "tags": [
+        "versatile",
+        "comfortable",
+        "formal",
+        "stylish"
+      ]
+    },
+    {
+      "id": "prod_062",
+      "name": "Statement Jacket",
+      "brand": "J.Crew",
+      "category": "Dresses",
+      "price": 475.93,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_062_1",
+          "url": "https://picsum.photos/800/1000?random=611",
+          "alt": "J.Crew product view 1"
+        },
+        {
+          "id": "img_062_2",
+          "url": "https://picsum.photos/800/1000?random=612",
+          "alt": "J.Crew product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=62",
+      "purchaseUrl": "https://example.com/j-crew-62",
+      "rating": 3.9,
+      "reviewCount": 104,
+      "isAvailable": true,
+      "colors": [
+        "Black"
+      ],
+      "sizes": [
+        "L",
+        "M",
+        "XL",
+        "S",
+        "XS"
+      ],
+      "description": "Classic silhouette with contemporary details",
+      "specifications": "Wrinkle resistant, travel friendly",
+      "tags": [
+        "formal",
+        "stylish",
+        "comfortable",
+        "affordable"
+      ]
+    },
+    {
+      "id": "prod_063",
+      "name": "Statement Sweater",
+      "brand": "Mejuri",
+      "category": "Accessories",
+      "price": 126.95,
+      "originalPrice": 198.95,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_063_1",
+          "url": "https://picsum.photos/800/1000?random=621",
+          "alt": "Mejuri product view 1"
+        },
+        {
+          "id": "img_063_2",
+          "url": "https://picsum.photos/800/1000?random=622",
+          "alt": "Mejuri product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=63",
+      "purchaseUrl": "https://example.com/mejuri-63",
+      "rating": 4.1,
+      "reviewCount": 79,
+      "isAvailable": true,
+      "colors": [
+        "Burgundy",
+        "Purple",
+        "White",
+        "Pink"
+      ],
+      "sizes": [
+        "M",
+        "One Size",
+        "XS",
+        "S",
+        "L"
+      ],
+      "tags": [
+        "versatile",
+        "comfortable",
+        "trendy",
+        "casual"
+      ]
+    },
+    {
+      "id": "prod_064",
+      "name": "Statement Bag",
+      "brand": "Levi's",
+      "category": "Dresses",
+      "price": 136.53,
+      "originalPrice": 153.43,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_064_1",
+          "url": "https://picsum.photos/800/1000?random=631",
+          "alt": "Levi's product view 1"
+        },
+        {
+          "id": "img_064_2",
+          "url": "https://picsum.photos/800/1000?random=632",
+          "alt": "Levi's product view 2"
+        },
+        {
+          "id": "img_064_3",
+          "url": "https://picsum.photos/800/1000?random=633",
+          "alt": "Levi's product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=64",
+      "purchaseUrl": "https://example.com/levi-s-64",
+      "rating": 4.1,
+      "reviewCount": 404,
+      "isAvailable": true,
+      "colors": [
+        "Light Blue",
+        "Orange",
+        "Gray"
+      ],
+      "sizes": [
+        "L",
+        "XL",
+        "M",
+        "S",
+        "XS"
+      ],
+      "specifications": "Machine washable, premium materials",
+      "tags": [
+        "stylish",
+        "casual",
+        "modern",
+        "affordable",
+        "luxury"
+      ]
+    },
+    {
+      "id": "prod_065",
+      "name": "Elegant Dress",
+      "brand": "COS",
+      "category": "Bags",
+      "price": 290.36,
+      "originalPrice": 393.49,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_065_1",
+          "url": "https://picsum.photos/800/1000?random=641",
+          "alt": "COS product view 1"
+        },
+        {
+          "id": "img_065_2",
+          "url": "https://picsum.photos/800/1000?random=642",
+          "alt": "COS product view 2"
+        },
+        {
+          "id": "img_065_3",
+          "url": "https://picsum.photos/800/1000?random=643",
+          "alt": "COS product view 3"
+        },
+        {
+          "id": "img_065_4",
+          "url": "https://picsum.photos/800/1000?random=644",
+          "alt": "COS product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=65",
+      "purchaseUrl": "https://example.com/cos-65",
+      "rating": 4.7,
+      "reviewCount": 126,
+      "isAvailable": true,
+      "colors": [
+        "Brown",
+        "Blue",
+        "Light Blue"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "High-quality materials and craftsmanship",
+      "tags": [
+        "stylish",
+        "modern",
+        "comfortable",
+        "versatile"
+      ]
+    },
+    {
+      "id": "prod_066",
+      "name": "Elegant Sweater",
+      "brand": "Common Projects",
+      "category": "Shoes",
+      "price": 419.86,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_066_1",
+          "url": "https://picsum.photos/800/1000?random=651",
+          "alt": "Common Projects product view 1"
+        },
+        {
+          "id": "img_066_2",
+          "url": "https://picsum.photos/800/1000?random=652",
+          "alt": "Common Projects product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=66",
+      "purchaseUrl": "https://example.com/common-projects-66",
+      "rating": 3.1,
+      "reviewCount": 338,
+      "isAvailable": true,
+      "colors": [
+        "Yellow",
+        "Purple"
+      ],
+      "sizes": [
+        "41",
+        "37",
+        "36",
+        "39",
+        "44",
+        "40"
+      ],
+      "tags": [
+        "affordable",
+        "casual",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_067",
+      "name": "Minimalist Dress",
+      "brand": "Banana Republic",
+      "category": "Bags",
+      "price": 169,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_067_1",
+          "url": "https://picsum.photos/800/1000?random=661",
+          "alt": "Banana Republic product view 1"
+        },
+        {
+          "id": "img_067_2",
+          "url": "https://picsum.photos/800/1000?random=662",
+          "alt": "Banana Republic product view 2"
+        },
+        {
+          "id": "img_067_3",
+          "url": "https://picsum.photos/800/1000?random=663",
+          "alt": "Banana Republic product view 3"
+        },
+        {
+          "id": "img_067_4",
+          "url": "https://picsum.photos/800/1000?random=664",
+          "alt": "Banana Republic product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=67",
+      "purchaseUrl": "https://example.com/banana-republic-67",
+      "rating": 4.7,
+      "reviewCount": 163,
+      "isAvailable": true,
+      "colors": [
+        "Beige"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "casual",
+        "versatile"
+      ]
+    },
+    {
+      "id": "prod_068",
+      "name": "Vintage Shoes",
+      "brand": "Equipment",
+      "category": "Bags",
+      "price": 205.31,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_068_1",
+          "url": "https://picsum.photos/800/1000?random=671",
+          "alt": "Equipment product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=68",
+      "purchaseUrl": "https://example.com/equipment-68",
+      "rating": 4.6,
+      "reviewCount": 15,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "White"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "High-quality materials and craftsmanship",
+      "tags": [
+        "versatile",
+        "modern",
+        "formal",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_069",
+      "name": "Vintage Accessory",
+      "brand": "Everlane",
+      "category": "Jewelry",
+      "price": 118.97,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_069_1",
+          "url": "https://picsum.photos/800/1000?random=681",
+          "alt": "Everlane product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=69",
+      "purchaseUrl": "https://example.com/everlane-69",
+      "rating": 3.2,
+      "reviewCount": 4,
+      "isAvailable": true,
+      "colors": [
+        "Brown",
+        "Blue",
+        "Orange"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "formal",
+        "affordable",
+        "casual",
+        "classic"
+      ]
+    },
+    {
+      "id": "prod_070",
+      "name": "Elegant Blouse",
+      "brand": "Common Projects",
+      "category": "Bottoms",
+      "price": 516.68,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_070_1",
+          "url": "https://picsum.photos/800/1000?random=691",
+          "alt": "Common Projects product view 1"
+        },
+        {
+          "id": "img_070_2",
+          "url": "https://picsum.photos/800/1000?random=692",
+          "alt": "Common Projects product view 2"
+        },
+        {
+          "id": "img_070_3",
+          "url": "https://picsum.photos/800/1000?random=693",
+          "alt": "Common Projects product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=70",
+      "purchaseUrl": "https://example.com/common-projects-70",
+      "rating": 3.5,
+      "reviewCount": 55,
+      "isAvailable": true,
+      "colors": [
+        "Red"
+      ],
+      "sizes": [
+        "29",
+        "30",
+        "25",
+        "M",
+        "24",
+        "L"
+      ],
+      "description": "Perfect for everyday wear",
+      "specifications": "Dry clean only, professional care",
+      "tags": [
+        "casual",
+        "classic",
+        "trendy",
+        "stylish",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_071",
+      "name": "Vintage Dress",
+      "brand": "Acne Studios",
+      "category": "Shoes",
+      "price": 188.2,
+      "originalPrice": 213.09,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_071_1",
+          "url": "https://picsum.photos/800/1000?random=701",
+          "alt": "Acne Studios product view 1"
+        },
+        {
+          "id": "img_071_2",
+          "url": "https://picsum.photos/800/1000?random=702",
+          "alt": "Acne Studios product view 2"
+        },
+        {
+          "id": "img_071_3",
+          "url": "https://picsum.photos/800/1000?random=703",
+          "alt": "Acne Studios product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=71",
+      "purchaseUrl": "https://example.com/acne-studios-71",
+      "rating": 3.7,
+      "reviewCount": 81,
+      "isAvailable": true,
+      "colors": [
+        "Cream",
+        "Camel",
+        "Beige"
+      ],
+      "sizes": [
+        "43",
+        "41",
+        "40",
+        "39",
+        "38",
+        "37"
+      ],
+      "tags": [
+        "stylish",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_072",
+      "name": "Modern Accessory",
+      "brand": "Ganni",
+      "category": "Bottoms",
+      "price": 384.05,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_072_1",
+          "url": "https://picsum.photos/800/1000?random=711",
+          "alt": "Ganni product view 1"
+        },
+        {
+          "id": "img_072_2",
+          "url": "https://picsum.photos/800/1000?random=712",
+          "alt": "Ganni product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=72",
+      "purchaseUrl": "https://example.com/ganni-72",
+      "rating": 4.7,
+      "reviewCount": 97,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "Beige",
+        "Blue",
+        "Pink"
+      ],
+      "sizes": [
+        "28",
+        "XS",
+        "24",
+        "S",
+        "XL",
+        "27"
+      ],
+      "specifications": "Moisture wicking, performance fabric",
+      "tags": [
+        "comfortable",
+        "modern",
+        "formal",
+        "versatile"
+      ]
+    },
+    {
+      "id": "prod_073",
+      "name": "Essential Top",
+      "brand": "Theory",
+      "category": "Bottoms",
+      "price": 79.93,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_073_1",
+          "url": "https://picsum.photos/800/1000?random=721",
+          "alt": "Theory product view 1"
+        },
+        {
+          "id": "img_073_2",
+          "url": "https://picsum.photos/800/1000?random=722",
+          "alt": "Theory product view 2"
+        },
+        {
+          "id": "img_073_3",
+          "url": "https://picsum.photos/800/1000?random=723",
+          "alt": "Theory product view 3"
+        },
+        {
+          "id": "img_073_4",
+          "url": "https://picsum.photos/800/1000?random=724",
+          "alt": "Theory product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=73",
+      "purchaseUrl": "https://example.com/theory-73",
+      "rating": 3.6,
+      "reviewCount": 325,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "Beige",
+        "Yellow",
+        "Gray"
+      ],
+      "sizes": [
+        "28",
+        "XS",
+        "S",
+        "29",
+        "23",
+        "M"
+      ],
+      "description": "Perfect for everyday wear",
+      "tags": [
+        "modern",
+        "stylish",
+        "casual",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_074",
+      "name": "Classic Jacket",
+      "brand": "Aritzia",
+      "category": "Jewelry",
+      "price": 181.36,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_074_1",
+          "url": "https://picsum.photos/800/1000?random=731",
+          "alt": "Aritzia product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=74",
+      "purchaseUrl": "https://example.com/aritzia-74",
+      "rating": 3.9,
+      "reviewCount": 367,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "Cream",
+        "Yellow"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "trendy",
+        "stylish",
+        "luxury",
+        "casual"
+      ]
+    },
+    {
+      "id": "prod_075",
+      "name": "Statement Skirt",
+      "brand": "Adidas",
+      "category": "Bags",
+      "price": 439.88,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_075_1",
+          "url": "https://picsum.photos/800/1000?random=741",
+          "alt": "Adidas product view 1"
+        },
+        {
+          "id": "img_075_2",
+          "url": "https://picsum.photos/800/1000?random=742",
+          "alt": "Adidas product view 2"
+        },
+        {
+          "id": "img_075_3",
+          "url": "https://picsum.photos/800/1000?random=743",
+          "alt": "Adidas product view 3"
+        },
+        {
+          "id": "img_075_4",
+          "url": "https://picsum.photos/800/1000?random=744",
+          "alt": "Adidas product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=75",
+      "purchaseUrl": "https://example.com/adidas-75",
+      "rating": 4.4,
+      "reviewCount": 32,
+      "isAvailable": true,
+      "colors": [
+        "White",
+        "Cream"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Essential wardrobe staple",
+      "tags": [
+        "trendy",
+        "formal",
+        "stylish",
+        "luxury",
+        "casual"
+      ]
+    },
+    {
+      "id": "prod_076",
+      "name": "Classic Accessory",
+      "brand": "Uniqlo",
+      "category": "Accessories",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_076_1",
+          "url": "https://picsum.photos/800/1000?random=751",
+          "alt": "Uniqlo product view 1"
+        },
+        {
+          "id": "img_076_2",
+          "url": "https://picsum.photos/800/1000?random=752",
+          "alt": "Uniqlo product view 2"
+        },
+        {
+          "id": "img_076_3",
+          "url": "https://picsum.photos/800/1000?random=753",
+          "alt": "Uniqlo product view 3"
+        },
+        {
+          "id": "img_076_4",
+          "url": "https://picsum.photos/800/1000?random=754",
+          "alt": "Uniqlo product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=76",
+      "purchaseUrl": null,
+      "rating": 3.2,
+      "reviewCount": 430,
+      "isAvailable": true,
+      "colors": [
+        "Beige"
+      ],
+      "sizes": [
+        "M",
+        "S",
+        "One Size",
+        "L",
+        "XS"
+      ],
+      "description": "High-quality materials and craftsmanship",
+      "tags": [
+        "versatile",
+        "stylish",
+        "luxury",
+        "classic",
+        "casual"
+      ]
+    },
+    {
+      "id": "prod_077",
+      "name": "Vintage Bag",
+      "brand": "Theory",
+      "category": "Shoes",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_077_1",
+          "url": "https://picsum.photos/800/1000?random=761",
+          "alt": "Theory product view 1"
+        },
+        {
+          "id": "img_077_2",
+          "url": "https://picsum.photos/800/1000?random=762",
+          "alt": "Theory product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=77",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Pink",
+        "Tan"
+      ],
+      "sizes": [
+        "41",
+        "36",
+        "40",
+        "42",
+        "43",
+        "45"
+      ],
+      "description": "High-quality materials and craftsmanship",
+      "specifications": "Pre-shrunk, colorfast, durable",
+      "tags": [
+        "stylish",
+        "comfortable",
+        "classic"
+      ]
+    },
+    {
+      "id": "prod_078",
+      "name": "Minimalist Bag",
+      "brand": "Uniqlo",
+      "category": "Dresses",
+      "price": 208.01,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Sold Out",
+      "images": [
+        {
+          "id": "img_078_1",
+          "url": "https://picsum.photos/800/1000?random=771",
+          "alt": "Uniqlo product view 1"
+        },
+        {
+          "id": "img_078_2",
+          "url": "https://picsum.photos/800/1000?random=772",
+          "alt": "Uniqlo product view 2"
+        },
+        {
+          "id": "img_078_3",
+          "url": "https://picsum.photos/800/1000?random=773",
+          "alt": "Uniqlo product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=78",
+      "purchaseUrl": "https://example.com/uniqlo-78",
+      "rating": 4,
+      "reviewCount": 91,
+      "isAvailable": false,
+      "colors": [
+        "Gray",
+        "Blue",
+        "Dark Blue"
+      ],
+      "sizes": [
+        "S",
+        "L",
+        "XL",
+        "M",
+        "XS"
+      ],
+      "description": "Sophisticated and elegant design",
+      "tags": [
+        "casual",
+        "classic",
+        "trendy",
+        "formal",
+        "affordable"
+      ]
+    },
+    {
+      "id": "prod_079",
+      "name": "Statement Jacket",
+      "brand": "Rag & Bone",
+      "category": "Bags",
+      "price": 482.32,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_079_1",
+          "url": "https://picsum.photos/800/1000?random=781",
+          "alt": "Rag & Bone product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=79",
+      "purchaseUrl": "https://example.com/rag---bone-79",
+      "rating": 3.2,
+      "reviewCount": 15,
+      "isAvailable": true,
+      "colors": [
+        "Brown",
+        "Pink",
+        "Dark Blue",
+        "Nude"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "stylish",
+        "luxury",
+        "comfortable",
+        "affordable"
+      ]
+    },
+    {
+      "id": "prod_080",
+      "name": "Elegant Accessory",
+      "brand": "Stuart Weitzman",
+      "category": "Dresses",
+      "price": 256.02,
+      "originalPrice": 403.93,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_080_1",
+          "url": "https://picsum.photos/800/1000?random=791",
+          "alt": "Stuart Weitzman product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=80",
+      "purchaseUrl": "https://example.com/stuart-weitzman-80",
+      "rating": 4.9,
+      "reviewCount": 111,
+      "isAvailable": true,
+      "colors": [
+        "Beige"
+      ],
+      "sizes": [
+        "L",
+        "M",
+        "S",
+        "XL",
+        "XS"
+      ],
+      "tags": [
+        "affordable",
+        "comfortable",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_081",
+      "name": "Vintage Dress",
+      "brand": "Madewell",
+      "category": "Jewelry",
+      "price": 217.76,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_081_1",
+          "url": "https://picsum.photos/800/1000?random=801",
+          "alt": "Madewell product view 1"
+        },
+        {
+          "id": "img_081_2",
+          "url": "https://picsum.photos/800/1000?random=802",
+          "alt": "Madewell product view 2"
+        },
+        {
+          "id": "img_081_3",
+          "url": "https://picsum.photos/800/1000?random=803",
+          "alt": "Madewell product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=81",
+      "purchaseUrl": "https://example.com/madewell-81",
+      "rating": 3.1,
+      "reviewCount": 312,
+      "isAvailable": true,
+      "colors": [
+        "Cream"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Statement piece for any occasion",
+      "tags": [
+        "stylish",
+        "versatile",
+        "casual",
+        "luxury",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_082",
+      "name": "Luxury Top",
+      "brand": "H&M",
+      "category": "Bottoms",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_082_1",
+          "url": "https://picsum.photos/800/1000?random=811",
+          "alt": "H&M product view 1"
+        },
+        {
+          "id": "img_082_2",
+          "url": "https://picsum.photos/800/1000?random=812",
+          "alt": "H&M product view 2"
+        },
+        {
+          "id": "img_082_3",
+          "url": "https://picsum.photos/800/1000?random=813",
+          "alt": "H&M product view 3"
+        },
+        {
+          "id": "img_082_4",
+          "url": "https://picsum.photos/800/1000?random=814",
+          "alt": "H&M product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=82",
+      "purchaseUrl": null,
+      "rating": 3.2,
+      "reviewCount": 406,
+      "isAvailable": true,
+      "colors": [
+        "White",
+        "Cream",
+        "Green",
+        "Black"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "XL",
+        "26",
+        "25",
+        "28"
+      ],
+      "description": "Comfortable and versatile",
+      "tags": [
+        "casual",
+        "versatile"
+      ]
+    },
+    {
+      "id": "prod_083",
+      "name": "Modern Bag",
+      "brand": "Zara",
+      "category": "Bags",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_083_1",
+          "url": "https://picsum.photos/800/1000?random=821",
+          "alt": "Zara product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=83",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Burgundy",
+        "Orange",
+        "Beige",
+        "Dark Blue"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Classic silhouette with contemporary details",
+      "specifications": "Machine washable, premium materials",
+      "tags": [
+        "versatile",
+        "classic",
+        "affordable",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_084",
+      "name": "Elegant Dress",
+      "brand": "H&M",
+      "category": "Tops",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_084_1",
+          "url": "https://picsum.photos/800/1000?random=831",
+          "alt": "H&M product view 1"
+        },
+        {
+          "id": "img_084_2",
+          "url": "https://picsum.photos/800/1000?random=832",
+          "alt": "H&M product view 2"
+        },
+        {
+          "id": "img_084_3",
+          "url": "https://picsum.photos/800/1000?random=833",
+          "alt": "H&M product view 3"
+        },
+        {
+          "id": "img_084_4",
+          "url": "https://picsum.photos/800/1000?random=834",
+          "alt": "H&M product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=84",
+      "purchaseUrl": null,
+      "rating": 4.8,
+      "reviewCount": 312,
+      "isAvailable": true,
+      "colors": [
+        "Purple",
+        "Yellow",
+        "Brown"
+      ],
+      "sizes": [
+        "XXL",
+        "XS",
+        "S",
+        "XL",
+        "L",
+        "M"
+      ],
+      "specifications": "UV protection, outdoor ready",
+      "tags": [
+        "casual",
+        "stylish"
+      ]
+    },
+    {
+      "id": "prod_085",
+      "name": "Designer Bag",
+      "brand": "Madewell",
+      "category": "Tops",
+      "price": 44.61,
+      "originalPrice": 52.06,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_085_1",
+          "url": "https://picsum.photos/800/1000?random=841",
+          "alt": "Madewell product view 1"
+        },
+        {
+          "id": "img_085_2",
+          "url": "https://picsum.photos/800/1000?random=842",
+          "alt": "Madewell product view 2"
+        },
+        {
+          "id": "img_085_3",
+          "url": "https://picsum.photos/800/1000?random=843",
+          "alt": "Madewell product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=85",
+      "purchaseUrl": "https://example.com/madewell-85",
+      "rating": 3.7,
+      "reviewCount": 459,
+      "isAvailable": true,
+      "colors": [
+        "Green",
+        "Purple",
+        "Blue",
+        "Black"
+      ],
+      "sizes": [
+        "L",
+        "S",
+        "XS",
+        "M",
+        "XL",
+        "XXL"
+      ],
+      "tags": [
+        "casual",
+        "affordable",
+        "luxury",
+        "comfortable",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_086",
+      "name": "Designer Pants",
+      "brand": "Rag & Bone",
+      "category": "Tops",
+      "price": 245.16,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_086_1",
+          "url": "https://picsum.photos/800/1000?random=851",
+          "alt": "Rag & Bone product view 1"
+        },
+        {
+          "id": "img_086_2",
+          "url": "https://picsum.photos/800/1000?random=852",
+          "alt": "Rag & Bone product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=86",
+      "purchaseUrl": "https://example.com/rag---bone-86",
+      "rating": 3.6,
+      "reviewCount": 414,
+      "isAvailable": true,
+      "colors": [
+        "Yellow",
+        "Camel"
+      ],
+      "sizes": [
+        "XL",
+        "L",
+        "M",
+        "XXL",
+        "S",
+        "XS"
+      ],
+      "tags": [
+        "stylish",
+        "affordable",
+        "versatile"
+      ]
+    },
+    {
+      "id": "prod_087",
+      "name": "Modern Sweater",
+      "brand": "J.Crew",
+      "category": "Bags",
+      "price": 276.05,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_087_1",
+          "url": "https://picsum.photos/800/1000?random=861",
+          "alt": "J.Crew product view 1"
+        },
+        {
+          "id": "img_087_2",
+          "url": "https://picsum.photos/800/1000?random=862",
+          "alt": "J.Crew product view 2"
+        },
+        {
+          "id": "img_087_3",
+          "url": "https://picsum.photos/800/1000?random=863",
+          "alt": "J.Crew product view 3"
+        },
+        {
+          "id": "img_087_4",
+          "url": "https://picsum.photos/800/1000?random=864",
+          "alt": "J.Crew product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=87",
+      "purchaseUrl": "https://example.com/j-crew-87",
+      "rating": 4.3,
+      "reviewCount": 349,
+      "isAvailable": true,
+      "colors": [
+        "Cream"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "specifications": "Dry clean only, professional care",
+      "tags": [
+        "casual",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_088",
+      "name": "Minimalist Blouse",
+      "brand": "Uniqlo",
+      "category": "Accessories",
+      "price": 469.88,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_088_1",
+          "url": "https://picsum.photos/800/1000?random=871",
+          "alt": "Uniqlo product view 1"
+        },
+        {
+          "id": "img_088_2",
+          "url": "https://picsum.photos/800/1000?random=872",
+          "alt": "Uniqlo product view 2"
+        },
+        {
+          "id": "img_088_3",
+          "url": "https://picsum.photos/800/1000?random=873",
+          "alt": "Uniqlo product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=88",
+      "purchaseUrl": "https://example.com/uniqlo-88",
+      "rating": 3.9,
+      "reviewCount": 373,
+      "isAvailable": true,
+      "colors": [
+        "Burgundy",
+        "Yellow",
+        "Blue",
+        "Navy"
+      ],
+      "sizes": [
+        "M",
+        "One Size",
+        "L",
+        "XS",
+        "S"
+      ],
+      "description": "Minimalist and clean design",
+      "tags": [
+        "stylish",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_089",
+      "name": "Casual Top",
+      "brand": "Acne Studios",
+      "category": "Bottoms",
+      "price": 422.4,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_089_1",
+          "url": "https://picsum.photos/800/1000?random=881",
+          "alt": "Acne Studios product view 1"
+        },
+        {
+          "id": "img_089_2",
+          "url": "https://picsum.photos/800/1000?random=882",
+          "alt": "Acne Studios product view 2"
+        },
+        {
+          "id": "img_089_3",
+          "url": "https://picsum.photos/800/1000?random=883",
+          "alt": "Acne Studios product view 3"
+        },
+        {
+          "id": "img_089_4",
+          "url": "https://picsum.photos/800/1000?random=884",
+          "alt": "Acne Studios product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=89",
+      "purchaseUrl": "https://example.com/acne-studios-89",
+      "rating": 3.1,
+      "reviewCount": 120,
+      "isAvailable": true,
+      "colors": [
+        "Gray",
+        "Beige"
+      ],
+      "sizes": [
+        "S",
+        "XS",
+        "24",
+        "XXL",
+        "26",
+        "28"
+      ],
+      "tags": [
+        "trendy",
+        "affordable",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_090",
+      "name": "Essential Shoes",
+      "brand": "Sandro",
+      "category": "Dresses",
+      "price": 327.91,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_090_1",
+          "url": "https://picsum.photos/800/1000?random=891",
+          "alt": "Sandro product view 1"
+        },
+        {
+          "id": "img_090_2",
+          "url": "https://picsum.photos/800/1000?random=892",
+          "alt": "Sandro product view 2"
+        },
+        {
+          "id": "img_090_3",
+          "url": "https://picsum.photos/800/1000?random=893",
+          "alt": "Sandro product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=90",
+      "purchaseUrl": "https://example.com/sandro-90",
+      "rating": 4.2,
+      "reviewCount": 281,
+      "isAvailable": true,
+      "colors": [
+        "Brown"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "L",
+        "XL",
+        "M"
+      ],
+      "description": "High-quality materials and craftsmanship",
+      "specifications": "Eco-friendly materials, sustainable",
+      "tags": [
+        "affordable",
+        "classic",
+        "casual",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_091",
+      "name": "Classic Shoes",
+      "brand": "Adidas",
+      "category": "Tops",
+      "price": 489.84,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_091_1",
+          "url": "https://picsum.photos/800/1000?random=901",
+          "alt": "Adidas product view 1"
+        },
+        {
+          "id": "img_091_2",
+          "url": "https://picsum.photos/800/1000?random=902",
+          "alt": "Adidas product view 2"
+        },
+        {
+          "id": "img_091_3",
+          "url": "https://picsum.photos/800/1000?random=903",
+          "alt": "Adidas product view 3"
+        },
+        {
+          "id": "img_091_4",
+          "url": "https://picsum.photos/800/1000?random=904",
+          "alt": "Adidas product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=91",
+      "purchaseUrl": "https://example.com/adidas-91",
+      "rating": 3.2,
+      "reviewCount": 274,
+      "isAvailable": true,
+      "colors": [
+        "Camel"
+      ],
+      "sizes": [
+        "XS",
+        "XXL",
+        "S",
+        "M",
+        "XL",
+        "L"
+      ],
+      "specifications": "Dry clean only, professional care",
+      "tags": [
+        "casual",
+        "trendy",
+        "modern",
+        "formal",
+        "luxury"
+      ]
+    },
+    {
+      "id": "prod_092",
+      "name": "Statement Dress",
+      "brand": "Nike",
+      "category": "Bottoms",
+      "price": 362.73,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_092_1",
+          "url": "https://picsum.photos/800/1000?random=911",
+          "alt": "Nike product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=92",
+      "purchaseUrl": "https://example.com/nike-92",
+      "rating": 3.2,
+      "reviewCount": 101,
+      "isAvailable": true,
+      "colors": [
+        "Black"
+      ],
+      "sizes": [
+        "S",
+        "30",
+        "29",
+        "XL",
+        "24",
+        "L"
+      ],
+      "tags": [
+        "casual",
+        "formal",
+        "versatile",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_093",
+      "name": "Elegant Pants",
+      "brand": "Equipment",
+      "category": "Bottoms",
+      "price": 223.48,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_093_1",
+          "url": "https://picsum.photos/800/1000?random=921",
+          "alt": "Equipment product view 1"
+        },
+        {
+          "id": "img_093_2",
+          "url": "https://picsum.photos/800/1000?random=922",
+          "alt": "Equipment product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=93",
+      "purchaseUrl": "https://example.com/equipment-93",
+      "rating": 4.5,
+      "reviewCount": 452,
+      "isAvailable": true,
+      "colors": [
+        "Gray",
+        "Dark Blue",
+        "Green",
+        "Light Blue"
+      ],
+      "sizes": [
+        "XXL",
+        "29",
+        "L",
+        "30",
+        "26",
+        "S"
+      ],
+      "description": "Luxurious and refined",
+      "tags": [
+        "classic",
+        "affordable"
+      ]
+    },
+    {
+      "id": "prod_094",
+      "name": "Essential Blouse",
+      "brand": "Isabel Marant",
+      "category": "Bags",
+      "price": 375.12,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Sold Out",
+      "images": [
+        {
+          "id": "img_094_1",
+          "url": "https://picsum.photos/800/1000?random=931",
+          "alt": "Isabel Marant product view 1"
+        },
+        {
+          "id": "img_094_2",
+          "url": "https://picsum.photos/800/1000?random=932",
+          "alt": "Isabel Marant product view 2"
+        },
+        {
+          "id": "img_094_3",
+          "url": "https://picsum.photos/800/1000?random=933",
+          "alt": "Isabel Marant product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=94",
+      "purchaseUrl": "https://example.com/isabel-marant-94",
+      "rating": 3,
+      "reviewCount": 86,
+      "isAvailable": false,
+      "colors": [
+        "White",
+        "Light Blue",
+        "Yellow"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "specifications": "Hand wash only, delicate care required",
+      "tags": [
+        "modern",
+        "luxury"
+      ]
+    },
+    {
+      "id": "prod_095",
+      "name": "Elegant Bag",
+      "brand": "AllSaints",
+      "category": "Bottoms",
+      "price": 280.19,
+      "originalPrice": 412.84,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_095_1",
+          "url": "https://picsum.photos/800/1000?random=941",
+          "alt": "AllSaints product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=95",
+      "purchaseUrl": "https://example.com/allsaints-95",
+      "rating": 4.9,
+      "reviewCount": 483,
+      "isAvailable": true,
+      "colors": [
+        "Camel",
+        "Navy",
+        "Black",
+        "Pink"
+      ],
+      "sizes": [
+        "L",
+        "M",
+        "23",
+        "XXL",
+        "26",
+        "30"
+      ],
+      "description": "Classic silhouette with contemporary details",
+      "specifications": "Stain resistant, easy care",
+      "tags": [
+        "formal",
+        "modern",
+        "casual"
+      ]
+    },
+    {
+      "id": "prod_096",
+      "name": "Modern Sweater",
+      "brand": "Everlane",
+      "category": "Bottoms",
+      "price": 399.99,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_096_1",
+          "url": "https://picsum.photos/800/1000?random=951",
+          "alt": "Everlane product view 1"
+        },
+        {
+          "id": "img_096_2",
+          "url": "https://picsum.photos/800/1000?random=952",
+          "alt": "Everlane product view 2"
+        },
+        {
+          "id": "img_096_3",
+          "url": "https://picsum.photos/800/1000?random=953",
+          "alt": "Everlane product view 3"
+        },
+        {
+          "id": "img_096_4",
+          "url": "https://picsum.photos/800/1000?random=954",
+          "alt": "Everlane product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=96",
+      "purchaseUrl": "https://example.com/everlane-96",
+      "rating": 4.2,
+      "reviewCount": 180,
+      "isAvailable": true,
+      "colors": [
+        "White",
+        "Black"
+      ],
+      "sizes": [
+        "XS",
+        "29",
+        "26",
+        "24",
+        "S",
+        "XXL"
+      ],
+      "specifications": "Moisture wicking, performance fabric",
+      "tags": [
+        "affordable",
+        "luxury",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_097",
+      "name": "Casual Blouse",
+      "brand": "Levi's",
+      "category": "Shoes",
+      "price": 71.75,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Sold Out",
+      "images": [
+        {
+          "id": "img_097_1",
+          "url": "https://picsum.photos/800/1000?random=961",
+          "alt": "Levi's product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=97",
+      "purchaseUrl": "https://example.com/levi-s-97",
+      "rating": 4.4,
+      "reviewCount": 77,
+      "isAvailable": false,
+      "colors": [
+        "Yellow",
+        "Green",
+        "Light Blue",
+        "Pink"
+      ],
+      "sizes": [
+        "37",
+        "38",
+        "44",
+        "36",
+        "42",
+        "45"
+      ],
+      "tags": [
+        "stylish",
+        "modern",
+        "trendy",
+        "affordable"
+      ]
+    },
+    {
+      "id": "prod_098",
+      "name": "Modern Skirt",
+      "brand": "Sandro",
+      "category": "Jewelry",
+      "price": 44.26,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_098_1",
+          "url": "https://picsum.photos/800/1000?random=971",
+          "alt": "Sandro product view 1"
+        },
+        {
+          "id": "img_098_2",
+          "url": "https://picsum.photos/800/1000?random=972",
+          "alt": "Sandro product view 2"
+        },
+        {
+          "id": "img_098_3",
+          "url": "https://picsum.photos/800/1000?random=973",
+          "alt": "Sandro product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=98",
+      "purchaseUrl": "https://example.com/sandro-98",
+      "rating": 4.1,
+      "reviewCount": 231,
+      "isAvailable": true,
+      "colors": [
+        "Navy"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Comfortable and versatile",
+      "specifications": "Hand wash only, delicate care required",
+      "tags": [
+        "stylish",
+        "versatile",
+        "trendy",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_099",
+      "name": "Modern Bag",
+      "brand": "Madewell",
+      "category": "Bottoms",
+      "price": 172.94,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_099_1",
+          "url": "https://picsum.photos/800/1000?random=981",
+          "alt": "Madewell product view 1"
+        },
+        {
+          "id": "img_099_2",
+          "url": "https://picsum.photos/800/1000?random=982",
+          "alt": "Madewell product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=99",
+      "purchaseUrl": "https://example.com/madewell-99",
+      "rating": 3.8,
+      "reviewCount": 268,
+      "isAvailable": true,
+      "colors": [
+        "Yellow",
+        "Brown",
+        "Red"
+      ],
+      "sizes": [
+        "XXL",
+        "S",
+        "M",
+        "24",
+        "23",
+        "27"
+      ],
+      "description": "Timeless piece with modern appeal",
+      "specifications": "UV protection, outdoor ready",
+      "tags": [
+        "stylish",
+        "versatile",
+        "modern",
+        "affordable"
+      ]
+    },
+    {
+      "id": "prod_100",
+      "name": "Casual Accessory",
+      "brand": "Aritzia",
+      "category": "Bottoms",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_100_1",
+          "url": "https://picsum.photos/800/1000?random=991",
+          "alt": "Aritzia product view 1"
+        },
+        {
+          "id": "img_100_2",
+          "url": "https://picsum.photos/800/1000?random=992",
+          "alt": "Aritzia product view 2"
+        },
+        {
+          "id": "img_100_3",
+          "url": "https://picsum.photos/800/1000?random=993",
+          "alt": "Aritzia product view 3"
+        },
+        {
+          "id": "img_100_4",
+          "url": "https://picsum.photos/800/1000?random=994",
+          "alt": "Aritzia product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=100",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Cream"
+      ],
+      "sizes": [
+        "S",
+        "29",
+        "M",
+        "28",
+        "XL",
+        "L"
+      ],
+      "specifications": "Wrinkle resistant, travel friendly",
+      "tags": [
+        "casual",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_101",
+      "name": "Elegant Dress",
+      "brand": "Rag & Bone",
+      "category": "Jewelry",
+      "price": 187.89,
+      "originalPrice": 244.35,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_101_1",
+          "url": "https://picsum.photos/800/1000?random=1001",
+          "alt": "Rag & Bone product view 1"
+        },
+        {
+          "id": "img_101_2",
+          "url": "https://picsum.photos/800/1000?random=1002",
+          "alt": "Rag & Bone product view 2"
+        },
+        {
+          "id": "img_101_3",
+          "url": "https://picsum.photos/800/1000?random=1003",
+          "alt": "Rag & Bone product view 3"
+        },
+        {
+          "id": "img_101_4",
+          "url": "https://picsum.photos/800/1000?random=1004",
+          "alt": "Rag & Bone product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=101",
+      "purchaseUrl": "https://example.com/rag---bone-101",
+      "rating": 5,
+      "reviewCount": 75,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "Light Blue"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "modern",
+        "comfortable",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_102",
+      "name": "Casual Skirt",
+      "brand": "Maje",
+      "category": "Accessories",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_102_1",
+          "url": "https://picsum.photos/800/1000?random=1011",
+          "alt": "Maje product view 1"
+        },
+        {
+          "id": "img_102_2",
+          "url": "https://picsum.photos/800/1000?random=1012",
+          "alt": "Maje product view 2"
+        },
+        {
+          "id": "img_102_3",
+          "url": "https://picsum.photos/800/1000?random=1013",
+          "alt": "Maje product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=102",
+      "purchaseUrl": null,
+      "rating": 4.4,
+      "reviewCount": 489,
+      "isAvailable": true,
+      "colors": [
+        "Beige"
+      ],
+      "sizes": [
+        "M",
+        "One Size",
+        "L",
+        "XS",
+        "S"
+      ],
+      "specifications": "Hand wash only, delicate care required",
+      "tags": [
+        "classic",
+        "comfortable",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_103",
+      "name": "Designer Dress",
+      "brand": "Mejuri",
+      "category": "Tops",
+      "price": 266.99,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_103_1",
+          "url": "https://picsum.photos/800/1000?random=1021",
+          "alt": "Mejuri product view 1"
+        },
+        {
+          "id": "img_103_2",
+          "url": "https://picsum.photos/800/1000?random=1022",
+          "alt": "Mejuri product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=103",
+      "purchaseUrl": "https://example.com/mejuri-103",
+      "rating": 4.8,
+      "reviewCount": 433,
+      "isAvailable": true,
+      "colors": [
+        "Tan"
+      ],
+      "sizes": [
+        "S",
+        "L",
+        "M",
+        "XL",
+        "XXL",
+        "XS"
+      ],
+      "tags": [
+        "versatile",
+        "comfortable",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_104",
+      "name": "Casual Dress",
+      "brand": "Max Mara",
+      "category": "Shoes",
+      "price": 333.18,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_104_1",
+          "url": "https://picsum.photos/800/1000?random=1031",
+          "alt": "Max Mara product view 1"
+        },
+        {
+          "id": "img_104_2",
+          "url": "https://picsum.photos/800/1000?random=1032",
+          "alt": "Max Mara product view 2"
+        },
+        {
+          "id": "img_104_3",
+          "url": "https://picsum.photos/800/1000?random=1033",
+          "alt": "Max Mara product view 3"
+        },
+        {
+          "id": "img_104_4",
+          "url": "https://picsum.photos/800/1000?random=1034",
+          "alt": "Max Mara product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=104",
+      "purchaseUrl": "https://example.com/max-mara-104",
+      "rating": 4.5,
+      "reviewCount": 190,
+      "isAvailable": true,
+      "colors": [
+        "Gray",
+        "Brown",
+        "Navy"
+      ],
+      "sizes": [
+        "35",
+        "43",
+        "38",
+        "44",
+        "41",
+        "40"
+      ],
+      "description": "Sophisticated and elegant design",
+      "tags": [
+        "casual",
+        "formal",
+        "comfortable",
+        "stylish",
+        "versatile"
+      ]
+    },
+    {
+      "id": "prod_105",
+      "name": "Modern Jacket",
+      "brand": "Equipment",
+      "category": "Shoes",
+      "price": 67.85,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_105_1",
+          "url": "https://picsum.photos/800/1000?random=1041",
+          "alt": "Equipment product view 1"
+        },
+        {
+          "id": "img_105_2",
+          "url": "https://picsum.photos/800/1000?random=1042",
+          "alt": "Equipment product view 2"
+        },
+        {
+          "id": "img_105_3",
+          "url": "https://picsum.photos/800/1000?random=1043",
+          "alt": "Equipment product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=105",
+      "purchaseUrl": "https://example.com/equipment-105",
+      "rating": 4.6,
+      "reviewCount": 480,
+      "isAvailable": true,
+      "colors": [
+        "Black"
+      ],
+      "sizes": [
+        "36",
+        "37",
+        "40",
+        "45",
+        "43",
+        "38"
+      ],
+      "specifications": "Eco-friendly materials, sustainable",
+      "tags": [
+        "casual",
+        "formal",
+        "versatile",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_106",
+      "name": "Classic Accessory",
+      "brand": "Levi's",
+      "category": "Bags",
+      "price": 274.41,
+      "originalPrice": 354.49,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_106_1",
+          "url": "https://picsum.photos/800/1000?random=1051",
+          "alt": "Levi's product view 1"
+        },
+        {
+          "id": "img_106_2",
+          "url": "https://picsum.photos/800/1000?random=1052",
+          "alt": "Levi's product view 2"
+        },
+        {
+          "id": "img_106_3",
+          "url": "https://picsum.photos/800/1000?random=1053",
+          "alt": "Levi's product view 3"
+        },
+        {
+          "id": "img_106_4",
+          "url": "https://picsum.photos/800/1000?random=1054",
+          "alt": "Levi's product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=106",
+      "purchaseUrl": "https://example.com/levi-s-106",
+      "rating": 3.4,
+      "reviewCount": 338,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "Orange",
+        "Burgundy"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "formal",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_107",
+      "name": "Minimalist Pants",
+      "brand": "Sandro",
+      "category": "Bottoms",
+      "price": 288.87,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Sold Out",
+      "images": [
+        {
+          "id": "img_107_1",
+          "url": "https://picsum.photos/800/1000?random=1061",
+          "alt": "Sandro product view 1"
+        },
+        {
+          "id": "img_107_2",
+          "url": "https://picsum.photos/800/1000?random=1062",
+          "alt": "Sandro product view 2"
+        },
+        {
+          "id": "img_107_3",
+          "url": "https://picsum.photos/800/1000?random=1063",
+          "alt": "Sandro product view 3"
+        },
+        {
+          "id": "img_107_4",
+          "url": "https://picsum.photos/800/1000?random=1064",
+          "alt": "Sandro product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=107",
+      "purchaseUrl": "https://example.com/sandro-107",
+      "rating": 3.8,
+      "reviewCount": 76,
+      "isAvailable": false,
+      "colors": [
+        "Black"
+      ],
+      "sizes": [
+        "27",
+        "XS",
+        "26",
+        "25",
+        "XL",
+        "XXL"
+      ],
+      "description": "Minimalist and clean design",
+      "tags": [
+        "stylish",
+        "luxury"
+      ]
+    },
+    {
+      "id": "prod_108",
+      "name": "Statement Shoes",
+      "brand": "Ganni",
+      "category": "Bags",
+      "price": 312,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_108_1",
+          "url": "https://picsum.photos/800/1000?random=1071",
+          "alt": "Ganni product view 1"
+        },
+        {
+          "id": "img_108_2",
+          "url": "https://picsum.photos/800/1000?random=1072",
+          "alt": "Ganni product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=108",
+      "purchaseUrl": "https://example.com/ganni-108",
+      "rating": 3.8,
+      "reviewCount": 24,
+      "isAvailable": true,
+      "colors": [
+        "Green"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "stylish",
+        "casual",
+        "luxury",
+        "trendy"
+      ]
+    },
+    {
+      "id": "prod_109",
+      "name": "Minimalist Skirt",
+      "brand": "Banana Republic",
+      "category": "Bags",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_109_1",
+          "url": "https://picsum.photos/800/1000?random=1081",
+          "alt": "Banana Republic product view 1"
+        },
+        {
+          "id": "img_109_2",
+          "url": "https://picsum.photos/800/1000?random=1082",
+          "alt": "Banana Republic product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=109",
+      "purchaseUrl": null,
+      "rating": 3,
+      "reviewCount": 0,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "Orange",
+        "Light Blue"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "tags": [
+        "casual",
+        "affordable"
+      ]
+    },
+    {
+      "id": "prod_110",
+      "name": "Luxury Shoes",
+      "brand": "Mejuri",
+      "category": "Bags",
+      "price": null,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_110_1",
+          "url": "https://picsum.photos/800/1000?random=1091",
+          "alt": "Mejuri product view 1"
+        },
+        {
+          "id": "img_110_2",
+          "url": "https://picsum.photos/800/1000?random=1092",
+          "alt": "Mejuri product view 2"
+        },
+        {
+          "id": "img_110_3",
+          "url": "https://picsum.photos/800/1000?random=1093",
+          "alt": "Mejuri product view 3"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=110",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Green",
+        "Brown"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "High-quality materials and craftsmanship",
+      "specifications": "Dry clean only, professional care",
+      "tags": [
+        "modern",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_111",
+      "name": "Luxury Top",
+      "brand": "Reformation",
+      "category": "Shoes",
+      "price": 210.01,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_111_1",
+          "url": "https://picsum.photos/800/1000?random=1101",
+          "alt": "Reformation product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=111",
+      "purchaseUrl": "https://example.com/reformation-111",
+      "rating": 3.8,
+      "reviewCount": 166,
+      "isAvailable": true,
+      "colors": [
+        "Gray",
+        "Light Blue",
+        "Red",
+        "Tan"
+      ],
+      "sizes": [
+        "35",
+        "43",
+        "39",
+        "44",
+        "36",
+        "45"
+      ],
+      "specifications": "Stain resistant, easy care",
+      "tags": [
+        "casual",
+        "versatile",
+        "affordable",
+        "trendy",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_112",
+      "name": "Luxury Pants",
+      "brand": "Max Mara",
+      "category": "Jewelry",
+      "price": 310.39,
+      "originalPrice": 440.07,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_112_1",
+          "url": "https://picsum.photos/800/1000?random=1111",
+          "alt": "Max Mara product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=112",
+      "purchaseUrl": "https://example.com/max-mara-112",
+      "rating": 4.6,
+      "reviewCount": 400,
+      "isAvailable": true,
+      "colors": [
+        "Brown",
+        "Purple",
+        "Dark Blue"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Timeless piece with modern appeal",
+      "tags": [
+        "versatile",
+        "classic",
+        "casual"
+      ]
+    },
+    {
+      "id": "prod_113",
+      "name": "Essential Accessory",
+      "brand": "Madewell",
+      "category": "Accessories",
+      "price": 108.06,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_113_1",
+          "url": "https://picsum.photos/800/1000?random=1121",
+          "alt": "Madewell product view 1"
+        },
+        {
+          "id": "img_113_2",
+          "url": "https://picsum.photos/800/1000?random=1122",
+          "alt": "Madewell product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=113",
+      "purchaseUrl": "https://example.com/madewell-113",
+      "rating": 3.8,
+      "reviewCount": 406,
+      "isAvailable": true,
+      "colors": [
+        "Gray",
+        "Navy"
+      ],
+      "sizes": [
+        "One Size",
+        "L",
+        "XS",
+        "S",
+        "M"
+      ],
+      "tags": [
+        "casual",
+        "stylish"
+      ]
+    },
+    {
+      "id": "prod_114",
+      "name": "Casual Top",
+      "brand": "COS",
+      "category": "Bottoms",
+      "price": 448.87,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_114_1",
+          "url": "https://picsum.photos/800/1000?random=1131",
+          "alt": "COS product view 1"
+        },
+        {
+          "id": "img_114_2",
+          "url": "https://picsum.photos/800/1000?random=1132",
+          "alt": "COS product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=114",
+      "purchaseUrl": "https://example.com/cos-114",
+      "rating": 4.8,
+      "reviewCount": 417,
+      "isAvailable": true,
+      "colors": [
+        "White",
+        "Pink",
+        "Tan",
+        "Gray"
+      ],
+      "sizes": [
+        "23",
+        "XXL",
+        "30",
+        "XS",
+        "26",
+        "29"
+      ],
+      "description": "Perfect for everyday wear",
+      "specifications": "Wrinkle resistant, travel friendly",
+      "tags": [
+        "classic",
+        "modern",
+        "affordable"
+      ]
+    },
+    {
+      "id": "prod_115",
+      "name": "Elegant Accessory",
+      "brand": "Madewell",
+      "category": "Dresses",
+      "price": 288.26,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_115_1",
+          "url": "https://picsum.photos/800/1000?random=1141",
+          "alt": "Madewell product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=115",
+      "purchaseUrl": "https://example.com/madewell-115",
+      "rating": 3.3,
+      "reviewCount": 32,
+      "isAvailable": true,
+      "colors": [
+        "Orange",
+        "Red"
+      ],
+      "sizes": [
+        "XL",
+        "L",
+        "M",
+        "S",
+        "XS"
+      ],
+      "tags": [
+        "casual",
+        "trendy",
+        "formal"
+      ]
+    },
+    {
+      "id": "prod_116",
+      "name": "Elegant Blouse",
+      "brand": "Equipment",
+      "category": "Tops",
+      "price": 333.97,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_116_1",
+          "url": "https://picsum.photos/800/1000?random=1151",
+          "alt": "Equipment product view 1"
+        },
+        {
+          "id": "img_116_2",
+          "url": "https://picsum.photos/800/1000?random=1152",
+          "alt": "Equipment product view 2"
+        },
+        {
+          "id": "img_116_3",
+          "url": "https://picsum.photos/800/1000?random=1153",
+          "alt": "Equipment product view 3"
+        },
+        {
+          "id": "img_116_4",
+          "url": "https://picsum.photos/800/1000?random=1154",
+          "alt": "Equipment product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=116",
+      "purchaseUrl": "https://example.com/equipment-116",
+      "rating": 3.7,
+      "reviewCount": 335,
+      "isAvailable": true,
+      "colors": [
+        "Light Blue"
+      ],
+      "sizes": [
+        "M",
+        "XS",
+        "L",
+        "S",
+        "XXL",
+        "XL"
+      ],
+      "tags": [
+        "classic",
+        "casual",
+        "modern",
+        "affordable"
+      ]
+    },
+    {
+      "id": "prod_117",
+      "name": "Modern Accessory",
+      "brand": "Reformation",
+      "category": "Dresses",
+      "price": 158.07,
+      "originalPrice": 243.63,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_117_1",
+          "url": "https://picsum.photos/800/1000?random=1161",
+          "alt": "Reformation product view 1"
+        },
+        {
+          "id": "img_117_2",
+          "url": "https://picsum.photos/800/1000?random=1162",
+          "alt": "Reformation product view 2"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=117",
+      "purchaseUrl": "https://example.com/reformation-117",
+      "rating": 3,
+      "reviewCount": 16,
+      "isAvailable": true,
+      "colors": [
+        "Navy"
+      ],
+      "sizes": [
+        "XS",
+        "L",
+        "XL",
+        "M",
+        "S"
+      ],
+      "description": "Minimalist and clean design",
+      "tags": [
+        "comfortable",
+        "stylish",
+        "luxury",
+        "casual",
+        "affordable"
+      ]
+    },
+    {
+      "id": "prod_118",
+      "name": "Luxury Accessory",
+      "brand": "Theory",
+      "category": "Shoes",
+      "price": 506.92,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_118_1",
+          "url": "https://picsum.photos/800/1000?random=1171",
+          "alt": "Theory product view 1"
+        },
+        {
+          "id": "img_118_2",
+          "url": "https://picsum.photos/800/1000?random=1172",
+          "alt": "Theory product view 2"
+        },
+        {
+          "id": "img_118_3",
+          "url": "https://picsum.photos/800/1000?random=1173",
+          "alt": "Theory product view 3"
+        },
+        {
+          "id": "img_118_4",
+          "url": "https://picsum.photos/800/1000?random=1174",
+          "alt": "Theory product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=118",
+      "purchaseUrl": "https://example.com/theory-118",
+      "rating": 3.7,
+      "reviewCount": 383,
+      "isAvailable": true,
+      "colors": [
+        "Pink",
+        "Black",
+        "White",
+        "Burgundy"
+      ],
+      "sizes": [
+        "42",
+        "40",
+        "44",
+        "39",
+        "38",
+        "41"
+      ],
+      "description": "Comfortable and versatile",
+      "specifications": "Pre-shrunk, colorfast, durable",
+      "tags": [
+        "stylish",
+        "comfortable",
+        "modern"
+      ]
+    },
+    {
+      "id": "prod_119",
+      "name": "Luxury Skirt",
+      "brand": "Sandro",
+      "category": "Bags",
+      "price": 362.32,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_119_1",
+          "url": "https://picsum.photos/800/1000?random=1181",
+          "alt": "Sandro product view 1"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=119",
+      "purchaseUrl": "https://example.com/sandro-119",
+      "rating": 4.4,
+      "reviewCount": 214,
+      "isAvailable": true,
+      "colors": [
+        "Beige",
+        "Cream",
+        "Yellow",
+        "Dark Blue"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "description": "Classic silhouette with contemporary details",
+      "tags": [
+        "stylish",
+        "trendy",
+        "comfortable"
+      ]
+    },
+    {
+      "id": "prod_120",
+      "name": "Casual Pants",
+      "brand": "Aritzia",
+      "category": "Tops",
+      "price": 188.21,
+      "originalPrice": null,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_120_1",
+          "url": "https://picsum.photos/800/1000?random=1191",
+          "alt": "Aritzia product view 1"
+        },
+        {
+          "id": "img_120_2",
+          "url": "https://picsum.photos/800/1000?random=1192",
+          "alt": "Aritzia product view 2"
+        },
+        {
+          "id": "img_120_3",
+          "url": "https://picsum.photos/800/1000?random=1193",
+          "alt": "Aritzia product view 3"
+        },
+        {
+          "id": "img_120_4",
+          "url": "https://picsum.photos/800/1000?random=1194",
+          "alt": "Aritzia product view 4"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=120",
+      "purchaseUrl": "https://example.com/aritzia-120",
+      "rating": 3.2,
+      "reviewCount": 481,
+      "isAvailable": true,
+      "colors": [
+        "Gray",
+        "Purple"
+      ],
+      "sizes": [
+        "XS",
+        "XL",
+        "S",
+        "XXL",
+        "M",
+        "L"
+      ],
+      "tags": [
+        "casual",
+        "luxury"
+      ]
+    },
+    {
+      "id": "prod_121",
+      "name": "Orphan Reformation Dresses",
+      "brand": "Reformation",
+      "category": "Dresses",
+      "price": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_121_1",
+          "url": "https://picsum.photos/800/1000?random=1201",
+          "alt": "Reformation Dresses product"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=121",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Gray"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "This product is not featured in any FitPics yet",
+      "tags": [
+        "new",
+        "unfeatured",
+        "orphan"
+      ]
+    },
+    {
+      "id": "prod_122",
+      "name": "Orphan Mansur Gavriel Shoes",
+      "brand": "Mansur Gavriel",
+      "category": "Shoes",
+      "price": 105.15,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_122_1",
+          "url": "https://picsum.photos/800/1000?random=1211",
+          "alt": "Mansur Gavriel Shoes product"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=122",
+      "purchaseUrl": "https://example.com/mansur gavriel-122",
+      "rating": 3.6,
+      "reviewCount": 189,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Gray"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "This product is not featured in any FitPics yet",
+      "tags": [
+        "new",
+        "unfeatured",
+        "orphan"
+      ]
+    },
+    {
+      "id": "prod_123",
+      "name": "Orphan Reformation Shoes",
+      "brand": "Reformation",
+      "category": "Shoes",
+      "price": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_123_1",
+          "url": "https://picsum.photos/800/1000?random=1221",
+          "alt": "Reformation Shoes product"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=123",
+      "purchaseUrl": null,
+      "rating": 4.4,
+      "reviewCount": 21,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Gray"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "This product is not featured in any FitPics yet",
+      "tags": [
+        "new",
+        "unfeatured",
+        "orphan"
+      ]
+    },
+    {
+      "id": "prod_124",
+      "name": "Orphan Uniqlo Bottoms",
+      "brand": "Uniqlo",
+      "category": "Bottoms",
+      "price": 74.44,
+      "currency": "USD",
+      "priceStatus": "Sold Out",
+      "images": [
+        {
+          "id": "img_124_1",
+          "url": "https://picsum.photos/800/1000?random=1231",
+          "alt": "Uniqlo Bottoms product"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=124",
+      "purchaseUrl": "https://example.com/uniqlo-124",
+      "rating": 4.6,
+      "reviewCount": 75,
+      "isAvailable": false,
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Gray"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "This product is not featured in any FitPics yet",
+      "tags": [
+        "new",
+        "unfeatured",
+        "orphan"
+      ]
+    },
+    {
+      "id": "prod_125",
+      "name": "Orphan Uniqlo Accessories",
+      "brand": "Uniqlo",
+      "category": "Accessories",
+      "price": 92.98,
+      "currency": "USD",
+      "priceStatus": "Sold Out",
+      "images": [
+        {
+          "id": "img_125_1",
+          "url": "https://picsum.photos/800/1000?random=1241",
+          "alt": "Uniqlo Accessories product"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=125",
+      "purchaseUrl": "https://example.com/uniqlo-125",
+      "rating": 3.4,
+      "reviewCount": 106,
+      "isAvailable": false,
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Gray"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "This product is not featured in any FitPics yet",
+      "tags": [
+        "new",
+        "unfeatured",
+        "orphan"
+      ]
+    },
+    {
+      "id": "prod_126",
+      "name": "Orphan H&M Accessories",
+      "brand": "H&M",
+      "category": "Accessories",
+      "price": 419.45,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "images": [
+        {
+          "id": "img_126_1",
+          "url": "https://picsum.photos/800/1000?random=1251",
+          "alt": "H&M Accessories product"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=126",
+      "purchaseUrl": "https://example.com/h&m-126",
+      "rating": 4.7,
+      "reviewCount": 131,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Gray"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "This product is not featured in any FitPics yet",
+      "tags": [
+        "new",
+        "unfeatured",
+        "orphan"
+      ]
+    },
+    {
+      "id": "prod_127",
+      "name": "Orphan Reformation Outerwear",
+      "brand": "Reformation",
+      "category": "Outerwear",
+      "price": null,
+      "currency": "USD",
+      "priceStatus": "TBD",
+      "images": [
+        {
+          "id": "img_127_1",
+          "url": "https://picsum.photos/800/1000?random=1261",
+          "alt": "Reformation Outerwear product"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=127",
+      "purchaseUrl": null,
+      "rating": null,
+      "reviewCount": 0,
+      "isAvailable": false,
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Gray"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "This product is not featured in any FitPics yet",
+      "tags": [
+        "new",
+        "unfeatured",
+        "orphan"
+      ]
+    },
+    {
+      "id": "prod_128",
+      "name": "Orphan Ganni Shoes",
+      "brand": "Ganni",
+      "category": "Shoes",
+      "price": 155.53,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_128_1",
+          "url": "https://picsum.photos/800/1000?random=1271",
+          "alt": "Ganni Shoes product"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=128",
+      "purchaseUrl": "https://example.com/ganni-128",
+      "rating": 4.4,
+      "reviewCount": 103,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Gray"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "This product is not featured in any FitPics yet",
+      "tags": [
+        "new",
+        "unfeatured",
+        "orphan"
+      ]
+    },
+    {
+      "id": "prod_129",
+      "name": "Orphan Mansur Gavriel Accessories",
+      "brand": "Mansur Gavriel",
+      "category": "Accessories",
+      "price": 512.42,
+      "currency": "USD",
+      "priceStatus": "Sale",
+      "images": [
+        {
+          "id": "img_129_1",
+          "url": "https://picsum.photos/800/1000?random=1281",
+          "alt": "Mansur Gavriel Accessories product"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=129",
+      "purchaseUrl": "https://example.com/mansur gavriel-129",
+      "rating": 3.6,
+      "reviewCount": 134,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Gray"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "This product is not featured in any FitPics yet",
+      "tags": [
+        "new",
+        "unfeatured",
+        "orphan"
+      ]
+    },
+    {
+      "id": "prod_130",
+      "name": "Orphan Ganni Tops",
+      "brand": "Ganni",
+      "category": "Tops",
+      "price": null,
+      "currency": "USD",
+      "priceStatus": "N/A",
+      "images": [
+        {
+          "id": "img_130_1",
+          "url": "https://picsum.photos/800/1000?random=1291",
+          "alt": "Ganni Tops product"
+        }
+      ],
+      "imageUrl": "https://picsum.photos/400/400?random=130",
+      "purchaseUrl": null,
+      "rating": 4.4,
+      "reviewCount": 31,
+      "isAvailable": true,
+      "colors": [
+        "Black",
+        "White",
+        "Navy",
+        "Gray"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "description": "This product is not featured in any FitPics yet",
+      "tags": [
+        "new",
+        "unfeatured",
+        "orphan"
+      ]
+    }
+  ]
+}

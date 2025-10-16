@@ -48,8 +48,31 @@ export default function FitPicGrid({
 }: Props) {
   const numColumns = getNumColumns();
   
-  const renderFitPic = ({ item }: { item: FitPic }) => {
-    return <FitPicCard fitpic={item} onPress={onFitPicPress} />;
+  // Transform data into rows for proper row-first rendering
+  const dataInRows = React.useMemo(() => {
+    const rows: FitPic[][] = [];
+    for (let i = 0; i < fitpics.length; i += numColumns) {
+      rows.push(fitpics.slice(i, i + numColumns));
+    }
+    return rows;
+  }, [fitpics, numColumns]);
+  
+  const renderRow = ({ item: row }: { item: FitPic[] }) => {
+    return (
+      <View style={styles.row}>
+        {row.map((fitpic, index) => (
+          <View key={fitpic.id} style={styles.column}>
+            <FitPicCard fitpic={fitpic} onPress={onFitPicPress} />
+          </View>
+        ))}
+        {/* Fill empty columns if the last row is incomplete */}
+        {row.length < numColumns && 
+          Array.from({ length: numColumns - row.length }).map((_, index) => (
+            <View key={`empty-${index}`} style={styles.column} />
+          ))
+        }
+      </View>
+    );
   };
 
   const renderEmpty = () => (
@@ -84,11 +107,9 @@ export default function FitPicGrid({
   return (
     <View style={[styles.container, style]}>
       <FlatList
-        data={fitpics}
-        renderItem={renderFitPic}
-        keyExtractor={(item) => item.id}
-        numColumns={numColumns}
-        columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
+        data={dataInRows}
+        renderItem={renderRow}
+        keyExtractor={(item, index) => `row-${index}`}
         contentContainerStyle={[
           styles.contentContainer,
           fitpics.length === 0 && !loading && styles.emptyContentContainer
@@ -130,9 +151,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   row: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 6,
     marginBottom: 8,
+  },
+  column: {
+    flex: 1,
+    marginHorizontal: 4,
   },
   emptyContainer: {
     alignItems: 'center',

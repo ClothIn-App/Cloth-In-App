@@ -6,19 +6,23 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import SegmentedTabs from "../../components/SegmentedTabs";
-import FitPicGrid from "../../src/components/FitPicGrid";
+import MasonryGrid from "../../src/components/MasonryGrid";
 import FitPicDetailModal from "../../src/components/FitPicDetailModal";
+import ProductDetailModal from "../../src/components/ProductDetailModal";
 import StreakModal from "../../components/StreakModal";
-import { useFitPicFeed } from "../../src/hooks/useFitPicFeed";
+import { useMixedFeed } from "../../src/hooks/useMixedFeed";
 import type { FitPic } from "../../src/types/fitpic";
+import type { ProductSearchResult } from "../../src/types/search";
 
 export default function HomeScreen() {
   const [tab, setTab] = useState<"forYou" | "following">("forYou");
   const [selectedFitPic, setSelectedFitPic] = useState<FitPic | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductSearchResult | null>(null);
   const [streakModalVisible, setStreakModalVisible] = useState(false);
   
   const {
     fitpics,
+    products,
     loading,
     refreshing,
     hasMore,
@@ -27,7 +31,7 @@ export default function HomeScreen() {
     loadMore,
     handleLike,
     handleSave,
-  } = useFitPicFeed(tab);
+  } = useMixedFeed(tab);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} edges={["top"]}>
@@ -63,15 +67,17 @@ export default function HomeScreen() {
           ]}
         />
       </View>
-      <FitPicGrid
+      <MasonryGrid
         fitpics={fitpics}
+        products={products}
         loading={loading}
         refreshing={refreshing}
         onRefresh={refresh}
         onLoadMore={loadMore}
         onFitPicPress={setSelectedFitPic}
-        emptyMessage="No fit pics yet"
-        emptySubtitle="Discover amazing styles from the community!"
+        onProductPress={setSelectedProduct}
+        emptyMessage="No content yet"
+        emptySubtitle="Discover amazing styles and products from the community!"
       />
       
       {/* FitPic Detail Modal */}
@@ -79,8 +85,23 @@ export default function HomeScreen() {
         fitpic={selectedFitPic}
         visible={!!selectedFitPic}
         onClose={() => setSelectedFitPic(null)}
-        onLike={handleLike}
-        onSave={handleSave}
+        onLike={(fitpic) => handleLike(fitpic.id)}
+        onSave={(fitpic) => handleSave(fitpic.id)}
+        onProductPress={setSelectedProduct}
+      />
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        visible={!!selectedProduct}
+        onClose={() => {
+          console.log('Home - closing product modal');
+          setSelectedProduct(null);
+        }}
+        onFitPicPress={(fitpic) => {
+          console.log('Home - fitpic pressed from product modal:', fitpic.id);
+          setSelectedFitPic(fitpic);
+        }}
       />
 
       {/* Streak Modal */}

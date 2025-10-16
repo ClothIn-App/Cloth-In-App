@@ -8,7 +8,6 @@ import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
-  Image,
   ScrollView,
   Pressable,
   StyleSheet,
@@ -19,6 +18,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
+import ImageWithLoader from './ImageWithLoader';
 import EmojiReaction from './EmojiReaction';
 import EmojiPicker from './EmojiPicker';
 import type { FitPic, EmojiReaction as EmojiReactionType } from '../types/fitpic';
@@ -165,9 +165,10 @@ export default function FitPicDetail({
         </View>
         {/* Author Info */}
         <View style={styles.authorSection}>
-          <Image
+          <ImageWithLoader
             source={{ uri: fitpic.author.avatarUrl || 'https://via.placeholder.com/40' }}
             style={styles.avatar}
+            showSkeleton={false}
           />
           <View style={styles.authorInfo}>
             <Text style={styles.username}>@{fitpic.author.username}</Text>
@@ -178,7 +179,7 @@ export default function FitPicDetail({
 
         {/* Photo Carousel */}
         <View style={styles.photoContainer}>
-          <Image
+          <ImageWithLoader
             source={{ uri: currentPhoto?.url }}
             style={styles.photo}
             resizeMode="cover"
@@ -287,9 +288,10 @@ export default function FitPicDetail({
                 style={styles.productItem}
                 onPress={() => onProductPress?.(product)}
               >
-                <Image
+                <ImageWithLoader
                   source={{ uri: product.imageUrl || 'https://via.placeholder.com/60' }}
                   style={styles.productImage}
+                  showSkeleton={false}
                 />
                 <View style={styles.productInfo}>
                   <Text style={styles.productName}>{product.name}</Text>

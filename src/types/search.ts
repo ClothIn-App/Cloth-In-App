@@ -22,18 +22,42 @@ export type UserSearchResult = {
   verified?: boolean;
 };
 
+export type ProductImage = {
+  id: string;
+  url: string;
+  alt?: string;
+};
+
+export type ProductPriceStatus = 'Fixed' | 'Sale' | 'Sold Out' | 'TBD' | 'N/A';
+
+export type ProductReaction = {
+  emoji: string;
+  count: number;
+  users: string[]; // user IDs who reacted with this emoji
+};
+
 export type ProductSearchResult = {
   id: string;
   name: string;
   brand?: string;
   category?: string;
-  price?: number;
+  price?: number | null;
+  originalPrice?: number;
   currency?: string;
+  priceStatus?: ProductPriceStatus;
+  images?: ProductImage[];
   imageUrl?: string;
-  purchaseUrl?: string;
-  rating?: number;
+  purchaseUrl?: string | null;
+  rating?: number | null;
   reviewCount?: number;
   isAvailable?: boolean;
+  colors?: string[];
+  sizes?: string[];
+  description?: string;
+  specifications?: string;
+  tags?: string[];
+  reactions?: ProductReaction[];
+  userReactions?: string[]; // emojis the current user has reacted with
 };
 
 export type HashtagSearchResult = {
