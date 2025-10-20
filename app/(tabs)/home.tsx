@@ -1,38 +1,13 @@
 // app/tabs/index.tsx
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React from "react";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import SegmentedTabs from "../../components/SegmentedTabs";
-import MasonryGrid from "../../src/components/MasonryGrid";
-import FitPicDetailModal from "../../src/components/FitPicDetailModal";
-import ProductDetailModal from "../../src/components/ProductDetailModal";
-import StreakModal from "../../components/StreakModal";
-import { useMixedFeed } from "../../src/hooks/useMixedFeed";
-import type { FitPic } from "../../src/types/fitpic";
-import type { ProductSearchResult } from "../../src/types/search";
+import MasonryGrid from "../../components/home/grid";
 
 export default function HomeScreen() {
-  const [tab, setTab] = useState<"forYou" | "following">("forYou");
-  const [selectedFitPic, setSelectedFitPic] = useState<FitPic | null>(null);
-  const [selectedProduct, setSelectedProduct] = useState<ProductSearchResult | null>(null);
-  const [streakModalVisible, setStreakModalVisible] = useState(false);
-  
-  const {
-    fitpics,
-    products,
-    loading,
-    refreshing,
-    hasMore,
-    error,
-    refresh,
-    loadMore,
-    handleLike,
-    handleSave,
-  } = useMixedFeed(tab);
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} edges={["top"]}>
       <StatusBar style="dark" />
@@ -42,7 +17,6 @@ export default function HomeScreen() {
         <Text style={styles.appTitle}>ClothIn</Text>
         <View style={styles.headerRight}>
           <TouchableOpacity 
-            onPress={() => setStreakModalVisible(true)} 
             style={styles.streakButton}
           >
             <Ionicons name="flame" size={24} color="#FF6B35" />
@@ -57,58 +31,8 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <View style={{ paddingHorizontal: 16, paddingBottom: 8 }}>
-        <SegmentedTabs
-          value={tab}
-          onChange={setTab}
-          options={[
-            { key: "forYou", label: "For You" },
-            { key: "following", label: "Following" },
-          ]}
-        />
-      </View>
-      <MasonryGrid
-        fitpics={fitpics}
-        products={products}
-        loading={loading}
-        refreshing={refreshing}
-        onRefresh={refresh}
-        onLoadMore={loadMore}
-        onFitPicPress={setSelectedFitPic}
-        onProductPress={setSelectedProduct}
-        emptyMessage="No content yet"
-        emptySubtitle="Discover amazing styles and products from the community!"
-      />
-      
-      {/* FitPic Detail Modal */}
-      <FitPicDetailModal
-        fitpic={selectedFitPic}
-        visible={!!selectedFitPic}
-        onClose={() => setSelectedFitPic(null)}
-        onLike={(fitpic) => handleLike(fitpic.id)}
-        onSave={(fitpic) => handleSave(fitpic.id)}
-        onProductPress={setSelectedProduct}
-      />
-
-      {/* Product Detail Modal */}
-      <ProductDetailModal
-        product={selectedProduct}
-        visible={!!selectedProduct}
-        onClose={() => {
-          console.log('Home - closing product modal');
-          setSelectedProduct(null);
-        }}
-        onFitPicPress={(fitpic) => {
-          console.log('Home - fitpic pressed from product modal:', fitpic.id);
-          setSelectedFitPic(fitpic);
-        }}
-      />
-
-      {/* Streak Modal */}
-      <StreakModal
-        visible={streakModalVisible}
-        onClose={() => setStreakModalVisible(false)}
-      />
+      {/* Masonry Grid with Mock Images */}
+      <MasonryGrid />
     </SafeAreaView>
   );
 }

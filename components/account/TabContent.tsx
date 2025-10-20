@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { useThemeColor } from "../../hooks/useThemeColor";
 import { ThemedText } from "../ThemedText";
 import FitPicGrid from "../../src/components/FitPicGrid";
-import FitPicDetailModal from "../../src/components/FitPicDetailModal";
+// FitPicDetailModal removed - will be reimplemented later
 import { useUserFitPics } from "../../src/hooks/useUserFitPics";
 import type { FitPic } from "../../src/types/fitpic";
 
@@ -55,14 +55,7 @@ export default function TabContent({ activeKey, userId }: Props) {
           style={{ margin: 12 }}
         />
         
-        {/* FitPic Detail Modal */}
-        <FitPicDetailModal
-          fitpic={selectedFitPic}
-          visible={!!selectedFitPic}
-          onClose={() => setSelectedFitPic(null)}
-          onLike={handleLike}
-          onSave={handleSave}
-        />
+        {/* FitPic Detail Modal removed - will be reimplemented later */}
       </View>
     );
   }

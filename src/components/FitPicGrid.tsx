@@ -14,7 +14,7 @@ import {
   RefreshControl,
   Dimensions,
 } from 'react-native';
-import FitPicCard from './FitPicCard';
+// FitPicCard removed - using simple placeholder
 import type { FitPic } from '../types/fitpic';
 
 type Props = {
@@ -62,7 +62,10 @@ export default function FitPicGrid({
       <View style={styles.row}>
         {row.map((fitpic, index) => (
           <View key={fitpic.id} style={styles.column}>
-            <FitPicCard fitpic={fitpic} onPress={onFitPicPress} />
+            {/* Simple placeholder for deleted FitPicCard */}
+            <View style={styles.placeholderCard}>
+              <Text style={styles.placeholderText}>FitPic Card</Text>
+            </View>
           </View>
         ))}
         {/* Fill empty columns if the last row is incomplete */}
@@ -192,5 +195,18 @@ const styles = StyleSheet.create({
   footerLoader: {
     alignItems: 'center',
     paddingVertical: 16,
+  },
+  placeholderCard: {
+    backgroundColor: '#e5e7eb',
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 120,
+  },
+  placeholderText: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
   },
 });
