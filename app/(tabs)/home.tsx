@@ -5,7 +5,7 @@ import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import MasonryGrid from "../../components/home/grid";
+import MasonryGrid from "../../components/masonry-grid";
 
 export default function HomeScreen() {
   return (

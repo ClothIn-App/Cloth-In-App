@@ -66,14 +66,14 @@ const SIDE_PADDING = 16;        // horizontal padding around the grid
 //
 // NOTE: If your actual files have different names, update these requires accordingly.
 const LOCAL_IMAGES: ImageSourcePropType[] = [
-  require("../../assets/mock-images/abheet-singh-sachdeva-VYc45RkdeuA-unsplash.jpg"),
-  require("../../assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg"),
-  require("../../assets/mock-images/evgeni-tcherkasski-hegb9Y8dKos-unsplash.jpg"),
-  require("../../assets/mock-images/joshua-kettle-q8DovYzpoR8-unsplash.jpg"),
-  require("../../assets/mock-images/masood-aslami-sSw20FmZvX4-unsplash.jpg"),
-  require("../../assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg"),
-  require("../../assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg"),
-  require("../../assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg"),
+  require("../assets/mock-images/abheet-singh-sachdeva-VYc45RkdeuA-unsplash.jpg"),
+  require("../assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg"),
+  require("../assets/mock-images/evgeni-tcherkasski-hegb9Y8dKos-unsplash.jpg"),
+  require("../assets/mock-images/joshua-kettle-q8DovYzpoR8-unsplash.jpg"),
+  require("../assets/mock-images/masood-aslami-sSw20FmZvX4-unsplash.jpg"),
+  require("../assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg"),
+  require("../assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg"),
+  require("../assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg"),
 ];
 
 // ───────────────────────────────────────────────────────────────────────────────
