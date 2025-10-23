@@ -1,0 +1,110 @@
+{
+  "fitpics": [
+    {
+      "id": "abheet-singh-fitpic",
+      "title": "Casual Street Style",
+      "description": "Perfect weekend look with comfortable sneakers and a classic hoodie",
+      "imagePath": "assets/mock-images/abheet-singh-sachdeva-VYc45RkdeuA-unsplash.jpg",
+      "featuredProducts": [
+        "c-d-x-product",
+        "daniel-korpai-product"
+      ],
+      "likes": 42,
+      "author": "abheet_singh",
+      "createdAt": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": "evgeni-tcherkasski-1-fitpic",
+      "title": "Minimalist Vibes",
+      "description": "Clean and simple outfit for a modern look",
+      "imagePath": "assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg",
+      "featuredProducts": [
+        "giorgio-trovato-product",
+        "mohammad-metri-product"
+      ],
+      "likes": 28,
+      "author": "evgeni_tcherkasski",
+      "createdAt": "2024-01-14T14:20:00Z"
+    },
+    {
+      "id": "evgeni-tcherkasski-2-fitpic",
+      "title": "Athletic Performance",
+      "description": "Ready for any workout with this performance-focused outfit",
+      "imagePath": "assets/mock-images/evgeni-tcherkasski-hegb9Y8dKos-unsplash.jpg",
+      "featuredProducts": [
+        "joan-tran-product",
+        "rachit-tank-product"
+      ],
+      "likes": 35,
+      "author": "evgeni_tcherkasski",
+      "createdAt": "2024-01-13T09:15:00Z"
+    },
+    {
+      "id": "joshua-kettle-fitpic",
+      "title": "Vintage Denim Look",
+      "description": "Classic denim jacket paired with premium leather boots",
+      "imagePath": "assets/mock-images/joshua-kettle-q8DovYzpoR8-unsplash.jpg",
+      "featuredProducts": [
+        "domino-studio-product",
+        "fernando-andrade-product",
+        "mohammad-metri-product"
+      ],
+      "likes": 67,
+      "author": "joshua_kettle",
+      "createdAt": "2024-01-12T16:45:00Z"
+    },
+    {
+      "id": "masood-aslami-fitpic",
+      "title": "Smart Casual",
+      "description": "Professional yet comfortable look for the modern workplace",
+      "imagePath": "assets/mock-images/masood-aslami-sSw20FmZvX4-unsplash.jpg",
+      "featuredProducts": [
+        "giorgio-trovato-product"
+      ],
+      "likes": 23,
+      "author": "masood_aslami",
+      "createdAt": "2024-01-11T11:30:00Z"
+    },
+    {
+      "id": "nikita-pishchugin-fitpic",
+      "title": "Tech-Forward Style",
+      "description": "Combining fashion with technology for the modern lifestyle",
+      "imagePath": "assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg",
+      "featuredProducts": [
+        "rachit-tank-product",
+        "daniel-korpai-product"
+      ],
+      "likes": 51,
+      "author": "nikita_pishchugin",
+      "createdAt": "2024-01-10T13:20:00Z"
+    },
+    {
+      "id": "quiet-studio-fitpic",
+      "title": "Urban Explorer",
+      "description": "Ready for city adventures with this versatile outfit",
+      "imagePath": "assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg",
+      "featuredProducts": [
+        "c-d-x-product",
+        "giorgio-trovato-product",
+        "mohammad-metri-product"
+      ],
+      "likes": 39,
+      "author": "quiet_studio",
+      "createdAt": "2024-01-09T15:10:00Z"
+    },
+    {
+      "id": "samsung-memory-fitpic",
+      "title": "Active Lifestyle",
+      "description": "Perfect for those who stay active and connected",
+      "imagePath": "assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg",
+      "featuredProducts": [
+        "joan-tran-product",
+        "rachit-tank-product",
+        "c-d-x-product"
+      ],
+      "likes": 44,
+      "author": "samsung_memory",
+      "createdAt": "2024-01-08T12:00:00Z"
+    }
+  ]
+}
