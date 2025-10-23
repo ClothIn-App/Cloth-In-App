@@ -29,13 +29,22 @@ export default function ProfileHeader({ me, counts }: Props) {
         <ThemedText type="title" style={{ fontSize: 20, fontWeight: "600" }}>
           My Profile
         </ThemedText>
-        <TouchableOpacity 
-          onPress={() => router.push("../user-settings")}
-          style={{ padding: 8 }}
-          hitSlop={8}
-        >
-          <Ionicons name="settings-outline" size={24} color="#000" />
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row", gap: 8 }}>
+          <TouchableOpacity 
+            onPress={() => router.push("../profile-edit")}
+            style={{ padding: 8 }}
+            hitSlop={8}
+          >
+            <Ionicons name="create-outline" size={24} color="#000" />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => router.push("../user-settings")}
+            style={{ padding: 8 }}
+            hitSlop={8}
+          >
+            <Ionicons name="settings-outline" size={24} color="#000" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>
