@@ -5,7 +5,7 @@ import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import MasonryGrid from "../../components/masonry-grid";
+import Home_Grid from "../../components/home/home-grid";
 
 export default function HomeScreen() {
   return (
@@ -31,8 +31,8 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {/* Masonry Grid with Mock Images */}
-      <MasonryGrid />
+      {/* Home Grid with Feed Data */}
+      <Home_Grid />
     </SafeAreaView>
   );
 }

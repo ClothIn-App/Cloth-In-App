@@ -1,56 +1,110 @@
-import React from "react";
-import MasonryGrid from "./MasonryGrid"; // the generic 2-col grid you already have
-import FitPic_Cover from "./fitpic-cover";
-import Product_Cover, { PRODUCT_LABEL_HEIGHT } from "@/components/covers/Product_Cover";
-import type { FeedItem } from "@/types/feed";
+import React, { useState, useEffect, useCallback } from "react";
+import { RefreshControl } from "react-native";
+import MasonryGrid from "../masonry-grid";
+import FitPic_Cover from "../home/fitpic-cover";
+import Product_Cover, { PRODUCT_LABEL_HEIGHT } from "../home/product-cover";
+import type { FeedItem } from "../../src/types/feed";
+import { buildHomeFeed } from "../../src/utils/normalizeFeed";
+
+// add at top-level of file (outside component)
+function shuffle<T>(arr: T[]) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 type Props = {
-  data: FeedItem[];
-  gutter?: number;
-  contentPadding?: number;
-  columns?: number; // default 2
-};
-
-// helper for fitpic height from intrinsic
-const fitpicHeight = (columnWidth: number, w?: number, h?: number) => {
-  if (!w || !h) return columnWidth; // safe square placeholder if missing
-  return Math.round(columnWidth * (h / w));
+  dataOverride?: FeedItem[]; // optional: pass your own data (e.g., for testing)
+  columns?: number;          // default 2
+  gutter?: number;           // default 8
+  contentPadding?: number;   // default 12
 };
 
 export default function Home_Grid({
-  data,
+  dataOverride,
+  columns = 2,
   gutter = 8,
   contentPadding = 12,
-  columns = 2,
 }: Props) {
+  const baseData: FeedItem[] = dataOverride ?? [];
+  const [refreshing, setRefreshing] = useState(false);
+  const [data, setData] = useState<FeedItem[]>([]);
+
+  useEffect(() => {
+    if (dataOverride) {
+      setData(shuffle(dataOverride));
+    } else {
+      // Async build from local JSON + require() map
+      buildHomeFeed().then((feedData) => {
+        setData(shuffle(feedData));
+      });
+    }
+  }, [dataOverride]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      if (dataOverride) {
+        setData(shuffle(dataOverride));
+      } else {
+        buildHomeFeed().then((feedData) => {
+          setData(shuffle(feedData));
+        });
+      }
+      setRefreshing(false);
+    }, 300);
+  }, [dataOverride]);
+
+  if (data.length === 0) {
+    return null; // or a loading placeholder
+  }
+
   return (
-    <MasonryGrid
+    <MasonryGrid<FeedItem>
       data={data}
       columns={columns}
       gutter={gutter}
       contentPadding={contentPadding}
-      /**
-       * Provide (tileHeight, render) to the generic grid so it can lay out
-       * properly before/while images load.
-       */
-      getItemHeight={(item, columnWidth) => {
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      // Height rules:
+      // - FitPics: variable height by aspect ratio (full image shown)
+      // - Products: always square image + fixed label block
+      getItemHeight={(item: FeedItem, colW: number) => {
         if (item.type === "fitpic") {
-          return fitpicHeight(columnWidth, item.width, item.height);
+          const aspectRatio =
+            item.height && item.width ? item.height / item.width : 1;
+          return Math.round(colW * aspectRatio);
         }
-        // product: square image + fixed label box
-        return columnWidth + PRODUCT_LABEL_HEIGHT;
+        // product
+        return colW + PRODUCT_LABEL_HEIGHT;
       }}
-      renderItem={(item, columnWidth) => {
+      renderItem={(item: FeedItem, colW: number) => {
         if (item.type === "fitpic") {
-          const h = fitpicHeight(columnWidth, item.width, item.height);
-          return <FitPic_Cover width={columnWidth} height={h} uri={item.uri} />;
+          const aspectRatio =
+            item.height && item.width ? item.height / item.width : 1;
+          const scaledH = Math.round(colW * aspectRatio);
+          return (
+            <FitPic_Cover
+              width={colW}
+              height={scaledH}
+              source={item.source}
+            />
+          );
         }
+        // product
         return (
           <Product_Cover
-            width={columnWidth}
-            uri={item.uri}
+            width={colW}
+            source={item.source}
             brand={item.brand}
             name={item.name}
+            price={item.price}
+            salePrice={item.salePrice}
           />
         );
       }}
