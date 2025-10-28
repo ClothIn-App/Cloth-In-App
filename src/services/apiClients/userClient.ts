@@ -5,7 +5,7 @@ import {
   setUserEndpoint,
   SetUserPayload,
   SetUserResponse,
-} from '../../../src/services/endpoints'
+} from '../endpoints'
 
 // function-style
 export async function getUser(userId: string) {
@@ -22,7 +22,7 @@ export async function setUser(userId: string, payload: SetUserPayload) {
 }
 
 // object-style
-export const userApiClient = { getUser };
+export const userApiClient = { getUser, setUser };
 
 export type { GetUserResponse };
 
