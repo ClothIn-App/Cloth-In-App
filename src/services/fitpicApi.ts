@@ -18,8 +18,10 @@ import {
   FitPicSortOptions
 } from '../types/fitpic';
 
-// Import mock data
-import fitpicsData from '../mocks/fitpics.json';
+// Mock data structure (replacing deleted JSON file)
+const fitpicsData = {
+  fitpics: []
+};
 
 // Simulate API delay
 const API_DELAY = 800; // ms

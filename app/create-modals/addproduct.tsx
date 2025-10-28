@@ -5,14 +5,14 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 
-import { useAddProductContext, AddProductProvider } from '../../src/create/product/addproductcontext';
-import CategorySelect from '../../src/create/product/categoryselect';
-import BrandSelect from '../../src/create/product/brandselect';
-import ProductName from '../../src/create/product/productname';
-import SpecificationsDescription from '../../src/create/product/specificationsdescription';
-import ProductLink from '../../src/create/product/link';
-import ProductPhotos from '../../src/create/product/productphotos';
-import AddPrice from '../../src/create/product/addprice';
+import { useAddProductContext, AddProductProvider } from '../../components/create/product/addproductcontext';
+import CategorySelect from '../../components/create/product/categoryselect';
+import BrandSelect from '../../components/create/product/brandselect';
+import ProductName from '../../components/create/product/productname';
+import SpecificationsDescription from '../../components/create/product/specificationsdescription';
+import ProductLink from '../../components/create/product/link';
+import ProductPhotos from '../../components/create/product/productphotos';
+import AddPrice from '../../components/create/product/addprice';
 
 function AddProductContent() {
   const router = useRouter();

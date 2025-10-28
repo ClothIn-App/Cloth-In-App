@@ -12,7 +12,7 @@ export default function Survey() {
   const { auth } = useAuth();
 
   const handleSkip = () => {
-    router.replace('/(tabs)');
+    router.replace('/(tabs)' as any);
   };
 
   const handleSubmit = async (finalResponses: SurveyResponses) => {
@@ -20,7 +20,7 @@ export default function Survey() {
     if (uid) {
       await userClient.setUser(uid, { survey: finalResponses } as any);
     }
-    router.replace('/(tabs)');
+    router.replace('/(tabs)' as any);
   };
 
   return (

@@ -46,6 +46,15 @@ export default function RootLayout() {
               animation: 'slide_from_right',
             }}
           />
+          <Stack.Screen
+            name="search-modal"
+            options={{
+              headerShown: false,
+              presentation: 'card',
+              gestureEnabled: true,
+              animation: 'slide_from_right',
+            }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </AuthProvider>

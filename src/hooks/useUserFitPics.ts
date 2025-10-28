@@ -46,8 +46,8 @@ export const useUserFitPics = (userId: string) => {
         setState(prev => ({
           ...prev,
           fitpics: refresh ? response.fitpics : [...prev.fitpics, ...response.fitpics],
-          hasMore: response.pagination.hasMore,
-          nextCursor: response.pagination.nextCursor,
+          hasMore: response.pagination?.hasMore ?? false,
+          nextCursor: response.pagination?.nextCursor,
           loading: false,
           refreshing: false,
           error: null,

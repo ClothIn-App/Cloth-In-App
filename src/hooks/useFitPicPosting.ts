@@ -6,8 +6,8 @@
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useDrafts } from '../create/draftcontext';
-import { usePost } from '../create/post/postcontext';
+import { useDrafts } from '../../components/create/draftcontext';
+import { usePost } from '../../components/create/post/postcontext';
 import { createFitPic } from '../services/fitpicApi';
 import { uploadPhotos, type PhotoUploadRequest } from '../services/photoUploadService';
 import type { CreateFitPicRequest } from '../types/fitpic';
