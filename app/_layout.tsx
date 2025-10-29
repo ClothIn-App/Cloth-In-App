@@ -55,6 +55,24 @@ export default function RootLayout() {
               animation: 'slide_from_right',
             }}
           />
+          <Stack.Screen
+            name="fitpic-detail"
+            options={{
+              headerShown: false,
+              presentation: 'card',
+              gestureEnabled: true,
+              animation: 'fade_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="product-detail"
+            options={{
+              headerShown: false,
+              presentation: 'card',
+              gestureEnabled: true,
+              animation: 'fade_from_bottom',
+            }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </AuthProvider>

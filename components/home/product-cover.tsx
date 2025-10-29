@@ -1,5 +1,6 @@
 import React from "react";
-import { Image, View, Text } from "react-native";
+import { View, Text } from "react-native";
+import ProgressiveImage from "../common/ProgressiveImage";
 
 export const PRODUCT_LABEL_HEIGHT = 50;
 
@@ -12,6 +13,7 @@ type Props = {
   salePrice?: number | string | null;
   outlined?: boolean;          // show subtle border
   showLabel?: boolean;         // show brand/name box
+  sharedTransitionTag?: string;
 };
 
 const formatPrice = (v?: number | string | null) =>
@@ -26,6 +28,7 @@ export default function Product_Cover({
   salePrice = null,
   outlined = true,
   showLabel = true,
+  sharedTransitionTag,
 }: Props) {
   const priceText = formatPrice(salePrice ?? price);
   const showPrice = Boolean(priceText);
@@ -42,7 +45,11 @@ export default function Product_Cover({
     >
       {/* Image (square) */}
       <View style={{ width: "100%", height: width }}>
-        <Image source={source} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
+        <ProgressiveImage 
+          source={source} 
+          style={{ width: "100%", height: "100%" }} 
+          contentFit="cover"
+        />
 
         {/* Top-left price badge */}
         {showPrice && (
