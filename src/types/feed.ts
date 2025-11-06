@@ -11,8 +11,7 @@ export interface BaseFeedItem {
 // FitPic specific data
 export interface FitPicItem extends BaseFeedItem {
   type: 'fitpic';
-  title: string;
-  description: string;
+  caption: string;
   featuredProducts: string[]; // Array of product IDs
   likes: number;
   author: string;
@@ -41,12 +40,11 @@ export type FeedItem = FitPicItem | ProductItem;
 // Raw data types from JSON files
 export interface RawFitPic {
   id: string;
-  title: string;
-  description: string;
+  author: string;
+  caption: string;
   imagePath: string;
   featuredProducts: string[];
   likes: number;
-  author: string;
   createdAt: string;
 }
 
