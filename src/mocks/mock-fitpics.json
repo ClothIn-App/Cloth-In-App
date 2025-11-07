@@ -18,12 +18,25 @@
         "joan-tran-product"
       ],
       "likes": 42,
-      "createdAt": "2024-01-15T10:30:00Z"
+      "createdAt": "2024-01-15T10:30:00Z",
+      "reactions": {
+        "counts": {
+          "LIKE": 25,
+          "THUMBS_UP": 12,
+          "FIRE": 5,
+          "DISLIKE": 0
+        },
+        "userReacted": {
+          "LIKE": false,
+          "THUMBS_UP": false,
+          "FIRE": false,
+          "DISLIKE": false
+        }
+      }
     },
     {
       "id": "evgeni-tcherkasski-1-fitpic",
       "author": "evgeni_tcherkasski",
-      "caption": "Clean and simple outfit for a modern look",
       "imagePath": "assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg",
       "featuredProducts": [
         "giorgio-trovato-product",
@@ -37,7 +50,21 @@
         "daniel-korpai-product"
       ],
       "likes": 28,
-      "createdAt": "2024-01-14T14:20:00Z"
+      "createdAt": "2024-01-14T14:20:00Z",
+      "reactions": {
+        "counts": {
+          "LIKE": 15,
+          "THUMBS_UP": 8,
+          "FIRE": 3,
+          "DISLIKE": 2
+        },
+        "userReacted": {
+          "LIKE": true,
+          "THUMBS_UP": false,
+          "FIRE": false,
+          "DISLIKE": false
+        }
+      }
     },
     {
       "id": "evgeni-tcherkasski-2-fitpic",
@@ -55,7 +82,21 @@
         "giorgio-trovato-product"
       ],
       "likes": 35,
-      "createdAt": "2024-01-13T09:15:00Z"
+      "createdAt": "2024-01-13T09:15:00Z",
+      "reactions": {
+        "counts": {
+          "LIKE": 20,
+          "THUMBS_UP": 10,
+          "FIRE": 4,
+          "DISLIKE": 1
+        },
+        "userReacted": {
+          "LIKE": false,
+          "THUMBS_UP": true,
+          "FIRE": false,
+          "DISLIKE": false
+        }
+      }
     },
     {
       "id": "joshua-kettle-fitpic",
@@ -74,7 +115,21 @@
         "c-d-x-product"
       ],
       "likes": 67,
-      "createdAt": "2024-01-12T16:45:00Z"
+      "createdAt": "2024-01-12T16:45:00Z",
+      "reactions": {
+        "counts": {
+          "LIKE": 40,
+          "THUMBS_UP": 20,
+          "FIRE": 7,
+          "DISLIKE": 0
+        },
+        "userReacted": {
+          "LIKE": false,
+          "THUMBS_UP": false,
+          "FIRE": true,
+          "DISLIKE": false
+        }
+      }
     },
     {
       "id": "masood-aslami-fitpic",
@@ -90,12 +145,25 @@
         "rachit-tank-product"
       ],
       "likes": 23,
-      "createdAt": "2024-01-11T11:30:00Z"
+      "createdAt": "2024-01-11T11:30:00Z",
+      "reactions": {
+        "counts": {
+          "LIKE": 12,
+          "THUMBS_UP": 8,
+          "FIRE": 2,
+          "DISLIKE": 1
+        },
+        "userReacted": {
+          "LIKE": false,
+          "THUMBS_UP": false,
+          "FIRE": false,
+          "DISLIKE": false
+        }
+      }
     },
     {
       "id": "nikita-pishchugin-fitpic",
       "author": "nikita_pishchugin",
-      "caption": "Combining fashion with technology for the modern lifestyle",
       "imagePath": "assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg",
       "featuredProducts": [
         "rachit-tank-product",
@@ -106,7 +174,21 @@
         "daniel-korpai-product"
       ],
       "likes": 51,
-      "createdAt": "2024-01-10T13:20:00Z"
+      "createdAt": "2024-01-10T13:20:00Z",
+      "reactions": {
+        "counts": {
+          "LIKE": 30,
+          "THUMBS_UP": 15,
+          "FIRE": 6,
+          "DISLIKE": 0
+        },
+        "userReacted": {
+          "LIKE": true,
+          "THUMBS_UP": false,
+          "FIRE": false,
+          "DISLIKE": false
+        }
+      }
     },
     {
       "id": "quiet-studio-fitpic",
@@ -122,7 +204,21 @@
         "c-d-x-product"
       ],
       "likes": 39,
-      "createdAt": "2024-01-09T15:10:00Z"
+      "createdAt": "2024-01-09T15:10:00Z",
+      "reactions": {
+        "counts": {
+          "LIKE": 22,
+          "THUMBS_UP": 12,
+          "FIRE": 5,
+          "DISLIKE": 0
+        },
+        "userReacted": {
+          "LIKE": false,
+          "THUMBS_UP": false,
+          "FIRE": false,
+          "DISLIKE": false
+        }
+      }
     },
     {
       "id": "samsung-memory-fitpic",
@@ -136,7 +232,21 @@
       ],
       "featuredProductIds": [],
       "likes": 44,
-      "createdAt": "2024-01-08T12:00:00Z"
+      "createdAt": "2024-01-08T12:00:00Z",
+      "reactions": {
+        "counts": {
+          "LIKE": 26,
+          "THUMBS_UP": 13,
+          "FIRE": 5,
+          "DISLIKE": 0
+        },
+        "userReacted": {
+          "LIKE": false,
+          "THUMBS_UP": false,
+          "FIRE": false,
+          "DISLIKE": false
+        }
+      }
     }
   ]
 }

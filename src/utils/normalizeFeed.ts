@@ -55,6 +55,7 @@ const normalizeFitPic = async (rawFitPic: any): Promise<FitPicItem> => {
     likes: rawFitPic.likes,
     author: rawFitPic.author,
     createdAt: rawFitPic.createdAt,
+    reactions: rawFitPic.reactions,
     ...dimensions
   };
 };

@@ -15,6 +15,7 @@ export interface FitPicItem extends BaseFeedItem {
   featuredProducts: string[]; // Array of product IDs
   likes: number;
   author: string;
+  reactions: Reactions;
   // Intrinsic dimensions for proper grid layout
   width?: number;
   height?: number;
@@ -37,6 +38,24 @@ export interface ProductItem extends BaseFeedItem {
 // Union type for all possible feed items
 export type FeedItem = FitPicItem | ProductItem;
 
+// Reaction types
+export type ReactionKey = 'LIKE' | 'THUMBS_UP' | 'FIRE' | 'DISLIKE';
+
+export interface Reactions {
+  counts: {
+    LIKE: number;
+    THUMBS_UP: number;
+    FIRE: number;
+    DISLIKE: number;
+  };
+  userReacted: {
+    LIKE: boolean;
+    THUMBS_UP: boolean;
+    FIRE: boolean;
+    DISLIKE: boolean;
+  };
+}
+
 // Raw data types from JSON files
 export interface RawFitPic {
   id: string;
@@ -46,6 +65,7 @@ export interface RawFitPic {
   featuredProducts: string[];
   likes: number;
   createdAt: string;
+  reactions: Reactions;
 }
 
 export interface RawProduct {
