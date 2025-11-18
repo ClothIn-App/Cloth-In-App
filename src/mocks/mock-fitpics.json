@@ -17,7 +17,6 @@
         "giorgio-trovato-product",
         "joan-tran-product"
       ],
-      "likes": 42,
       "createdAt": "2024-01-15T10:30:00Z",
       "reactions": {
         "counts": {
@@ -25,14 +24,77 @@
           "THUMBS_UP": 12,
           "FIRE": 5,
           "DISLIKE": 0
-        },
-        "userReacted": {
-          "LIKE": false,
-          "THUMBS_UP": false,
-          "FIRE": false,
-          "DISLIKE": false
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "fashion_lover",
+          "text": "This outfit looks amazing! Love the color combination",
+          "createdAt": "2024-01-15T11:00:00Z",
+          "like": 8,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "abheet_singh",
+              "text": "Thanks! The hoodie is super comfortable too",
+              "createdAt": "2024-01-15T11:15:00Z",
+              "like": 5,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c1.1.1",
+                  "user": "fashion_lover",
+                  "text": "I need to get one! What brand is it?",
+                  "createdAt": "2024-01-15T11:30:00Z",
+                  "like": 3,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "style_enthusiast",
+          "text": "Where did you get those sneakers? They're perfect!",
+          "createdAt": "2024-01-15T12:30:00Z",
+          "like": 6,
+          "dislike": 0,
+          "replies": []
+        },
+        {
+          "id": "c3",
+          "user": "outfit_inspirer",
+          "text": "Perfect weekend vibes! 🔥",
+          "createdAt": "2024-01-16T09:20:00Z",
+          "like": 12,
+          "dislike": 1,
+          "replies": [
+            {
+              "id": "c3.1",
+              "user": "weekend_warrior",
+              "text": "Totally agree! This is goals",
+              "createdAt": "2024-01-16T10:00:00Z",
+              "like": 4,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c3.1.1",
+                  "user": "outfit_inspirer",
+                  "text": "Right? Perfect for lazy Sundays!",
+                  "createdAt": "2024-01-16T10:15:00Z",
+                  "like": 2,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "evgeni-tcherkasski-1-fitpic",
@@ -49,7 +111,6 @@
         "c-d-x-product",
         "daniel-korpai-product"
       ],
-      "likes": 28,
       "createdAt": "2024-01-14T14:20:00Z",
       "reactions": {
         "counts": {
@@ -57,14 +118,9 @@
           "THUMBS_UP": 8,
           "FIRE": 3,
           "DISLIKE": 2
-        },
-        "userReacted": {
-          "LIKE": true,
-          "THUMBS_UP": false,
-          "FIRE": false,
-          "DISLIKE": false
         }
-      }
+      },
+      "comments": []
     },
     {
       "id": "evgeni-tcherkasski-2-fitpic",
@@ -81,7 +137,6 @@
         "mohammad-metri-product",
         "giorgio-trovato-product"
       ],
-      "likes": 35,
       "createdAt": "2024-01-13T09:15:00Z",
       "reactions": {
         "counts": {
@@ -89,14 +144,48 @@
           "THUMBS_UP": 10,
           "FIRE": 4,
           "DISLIKE": 1
-        },
-        "userReacted": {
-          "LIKE": false,
-          "THUMBS_UP": true,
-          "FIRE": false,
-          "DISLIKE": false
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "fitness_fanatic",
+          "text": "This is exactly what I need for my morning runs!",
+          "createdAt": "2024-01-13T10:00:00Z",
+          "like": 7,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "evgeni_tcherkasski",
+              "text": "The material is breathable and perfect for workouts",
+              "createdAt": "2024-01-13T10:30:00Z",
+              "like": 4,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c1.1.1",
+                  "user": "fitness_fanatic",
+                  "text": "That's exactly what I'm looking for! Thanks for the tip",
+                  "createdAt": "2024-01-13T11:00:00Z",
+                  "like": 2,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "active_lifestyle",
+          "text": "Love the performance-focused design!",
+          "createdAt": "2024-01-13T14:45:00Z",
+          "like": 5,
+          "dislike": 0,
+          "replies": []
+        }
+      ]
     },
     {
       "id": "joshua-kettle-fitpic",
@@ -113,8 +202,7 @@
         "fernando-andrade-product",
         "mohammad-metri-product",
         "c-d-x-product"
-      ],
-      "likes": 67,
+      ], 
       "createdAt": "2024-01-12T16:45:00Z",
       "reactions": {
         "counts": {
@@ -122,14 +210,104 @@
           "THUMBS_UP": 20,
           "FIRE": 7,
           "DISLIKE": 0
-        },
-        "userReacted": {
-          "LIKE": false,
-          "THUMBS_UP": false,
-          "FIRE": true,
-          "DISLIKE": false
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "vintage_collector",
+          "text": "That denim jacket is a classic! Where did you find it?",
+          "createdAt": "2024-01-12T17:30:00Z",
+          "like": 15,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "joshua_kettle",
+              "text": "Found it at a local vintage shop, it's one of my favorites!",
+              "createdAt": "2024-01-12T18:00:00Z",
+              "like": 9,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c1.1.1",
+                  "user": "vintage_collector",
+                  "text": "Lucky find! I'll have to check out some local shops",
+                  "createdAt": "2024-01-12T18:30:00Z",
+                  "like": 3,
+                  "dislike": 0,
+                  "replies": []
+                },
+                {
+                  "id": "c1.1.2",
+                  "user": "thrift_hunter",
+                  "text": "Vintage shops are the best for unique pieces!",
+                  "createdAt": "2024-01-12T19:00:00Z",
+                  "like": 4,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            },
+            {
+              "id": "c1.2",
+              "user": "denim_lover",
+              "text": "Great find! The fit looks perfect",
+              "createdAt": "2024-01-12T18:15:00Z",
+              "like": 6,
+              "dislike": 0,
+              "replies": []
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "boot_enthusiast",
+          "text": "Those boots are 🔥! Premium quality for sure",
+          "createdAt": "2024-01-12T19:00:00Z",
+          "like": 10,
+          "dislike": 0,
+          "replies": []
+        },
+        {
+          "id": "c3",
+          "user": "style_curator",
+          "text": "Perfect pairing of denim and leather. Timeless combo!",
+          "createdAt": "2024-01-13T08:00:00Z",
+          "like": 8,
+          "dislike": 1,
+          "replies": []
+        },
+        {
+          "id": "c4",
+          "user": "fashion_forward",
+          "text": "This whole look is on point!",
+          "createdAt": "2024-01-13T10:20:00Z",
+          "like": 11,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c4.1",
+              "user": "outfit_inspirer",
+              "text": "Agreed! Taking notes for my next outfit",
+              "createdAt": "2024-01-13T11:00:00Z",
+              "like": 5,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c4.1.1",
+                  "user": "fashion_forward",
+                  "text": "Glad I could inspire! Can't wait to see what you put together",
+                  "createdAt": "2024-01-13T11:30:00Z",
+                  "like": 2,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "masood-aslami-fitpic",
@@ -144,7 +322,6 @@
         "daniel-korpai-product",
         "rachit-tank-product"
       ],
-      "likes": 23,
       "createdAt": "2024-01-11T11:30:00Z",
       "reactions": {
         "counts": {
@@ -152,14 +329,9 @@
           "THUMBS_UP": 8,
           "FIRE": 2,
           "DISLIKE": 1
-        },
-        "userReacted": {
-          "LIKE": false,
-          "THUMBS_UP": false,
-          "FIRE": false,
-          "DISLIKE": false
         }
-      }
+      },
+      "comments": []
     },
     {
       "id": "nikita-pishchugin-fitpic",
@@ -173,7 +345,6 @@
         "rachit-tank-product",
         "daniel-korpai-product"
       ],
-      "likes": 51,
       "createdAt": "2024-01-10T13:20:00Z",
       "reactions": {
         "counts": {
@@ -181,14 +352,77 @@
           "THUMBS_UP": 15,
           "FIRE": 6,
           "DISLIKE": 0
-        },
-        "userReacted": {
-          "LIKE": true,
-          "THUMBS_UP": false,
-          "FIRE": false,
-          "DISLIKE": false
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "minimalist_style",
+          "text": "Clean and simple. Love this aesthetic!",
+          "createdAt": "2024-01-10T14:00:00Z",
+          "like": 9,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "nikita_pishchugin",
+              "text": "Thanks! Less is more sometimes",
+              "createdAt": "2024-01-10T14:30:00Z",
+              "like": 6,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c1.1.1",
+                  "user": "minimalist_style",
+                  "text": "Absolutely! That's my philosophy too",
+                  "createdAt": "2024-01-10T15:00:00Z",
+                  "like": 3,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "casual_wear",
+          "text": "Perfect everyday look. Where can I get that tank?",
+          "createdAt": "2024-01-10T16:20:00Z",
+          "like": 7,
+          "dislike": 0,
+          "replies": []
+        },
+        {
+          "id": "c3",
+          "user": "style_simple",
+          "text": "This is exactly my style! So versatile",
+          "createdAt": "2024-01-11T09:00:00Z",
+          "like": 10,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c3.1",
+              "user": "fashion_basics",
+              "text": "Same here! Simple but effective",
+              "createdAt": "2024-01-11T10:00:00Z",
+              "like": 5,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c3.1.1",
+                  "user": "style_simple",
+                  "text": "Exactly! Sometimes the simplest looks are the best",
+                  "createdAt": "2024-01-11T10:30:00Z",
+                  "like": 2,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "quiet-studio-fitpic",
@@ -203,7 +437,6 @@
       "featuredProductIds": [
         "c-d-x-product"
       ],
-      "likes": 39,
       "createdAt": "2024-01-09T15:10:00Z",
       "reactions": {
         "counts": {
@@ -211,14 +444,48 @@
           "THUMBS_UP": 12,
           "FIRE": 5,
           "DISLIKE": 0
-        },
-        "userReacted": {
-          "LIKE": false,
-          "THUMBS_UP": false,
-          "FIRE": false,
-          "DISLIKE": false
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "city_explorer",
+          "text": "Ready for adventure! This outfit is perfect for exploring",
+          "createdAt": "2024-01-09T16:00:00Z",
+          "like": 8,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "quiet_studio",
+              "text": "Exactly! Comfortable and stylish for long walks",
+              "createdAt": "2024-01-09T16:30:00Z",
+              "like": 5,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c1.1.1",
+                  "user": "city_explorer",
+                  "text": "Perfect! I'm planning a city trip soon, this gives me ideas",
+                  "createdAt": "2024-01-09T17:00:00Z",
+                  "like": 3,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "urban_style",
+          "text": "Love the versatility of this look!",
+          "createdAt": "2024-01-10T08:00:00Z",
+          "like": 6,
+          "dislike": 0,
+          "replies": []
+        }
+      ]
     },
     {
       "id": "samsung-memory-fitpic",
@@ -231,7 +498,6 @@
         "c-d-x-product"
       ],
       "featuredProductIds": [],
-      "likes": 44,
       "createdAt": "2024-01-08T12:00:00Z",
       "reactions": {
         "counts": {
@@ -239,14 +505,9 @@
           "THUMBS_UP": 13,
           "FIRE": 5,
           "DISLIKE": 0
-        },
-        "userReacted": {
-          "LIKE": false,
-          "THUMBS_UP": false,
-          "FIRE": false,
-          "DISLIKE": false
         }
-      }
+      },
+      "comments": []
     }
   ]
 }
