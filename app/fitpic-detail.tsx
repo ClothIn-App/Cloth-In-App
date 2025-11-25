@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { StyleSheet, View, TouchableOpacity, ScrollView, RefreshControl, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, ScrollView, RefreshControl, KeyboardAvoidingView, Platform, ActionSheetIOS, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -102,6 +102,50 @@ export default function FitPicDetailScreen() {
     setReplyTarget(comment);
   };
 
+  // Handle more options action sheet
+  const openMoreOptions = () => {
+    const username = fitpic?.author ?? "user";
+
+    if (Platform.OS === "android") {
+      Alert.alert(
+        "More Options",
+        "",
+        [
+          { text: `Follow @${username}`, onPress: () => {
+            // TODO: Follow user
+          } },
+          { text: "Save Post", onPress: () => {
+            // TODO: Save post
+          } },
+          { text: "Report", style: "destructive", onPress: () => {
+            // TODO: Report post
+          } },
+          { text: "Cancel", style: "cancel" }
+        ]
+      );
+      return;
+    }
+
+    // iOS ActionSheet
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", `Follow @${username}`, "Save Post", "Report"],
+        destructiveButtonIndex: 3,
+        cancelButtonIndex: 0,
+        userInterfaceStyle: "light"
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 1) {
+          // TODO: Follow user
+        } else if (buttonIndex === 2) {
+          // TODO: Save post
+        } else if (buttonIndex === 3) {
+          // TODO: Report post
+        }
+      }
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Custom Header - Fixed */}
@@ -112,6 +156,13 @@ export default function FitPicDetailScreen() {
           activeOpacity={0.7}
         >
           <Ionicons name="chevron-back-outline" size={28} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity 
+          onPress={openMoreOptions} 
+          style={styles.moreButton}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="ellipsis-horizontal" size={24} color="#000" />
         </TouchableOpacity>
       </View>
 
@@ -137,7 +188,13 @@ export default function FitPicDetailScreen() {
           }
         >
           {/* User Information */}
-          {fitpic && <FitPicModalUser author={fitpic.author} />}
+          {fitpic && (
+            <FitPicModalUser
+              author={fitpic.author}
+              createdAt={fitpic.createdAt}
+              location={fitpic.location}
+            />
+          )}
 
           {/* Media */}
           {fitpic && (
@@ -213,6 +270,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 12,
     paddingVertical: 4,
     backgroundColor: '#fff',
@@ -220,6 +278,9 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 4,
+  },
+  moreButton: {
+    padding: 6,
   },
   keyboardAvoidingView: {
     flex: 1,

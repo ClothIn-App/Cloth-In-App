@@ -29,6 +29,7 @@ export interface FitPicItem extends BaseFeedItem {
   author: string;
   reactions: Reactions;
   comments?: CommentType[]; // Optional comments array
+  location?: string; // Optional location string (e.g., "New York, NY")
   // Intrinsic dimensions for proper grid layout
   width?: number;
   height?: number;
@@ -70,6 +71,7 @@ export interface RawFitPic {
   featuredProductIds?: string[];
   likes: number;
   createdAt: string;
+  location?: string; // Optional location string (e.g., "New York, NY")
   reactions: Reactions;
   comments?: any[]; // Raw comments from JSON (will be normalized)
 }

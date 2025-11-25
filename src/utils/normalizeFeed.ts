@@ -70,6 +70,7 @@ const normalizeFitPic = async (rawFitPic: any): Promise<FitPicItem> => {
     likes: rawFitPic.likes,
     author: rawFitPic.author,
     createdAt: rawFitPic.createdAt,
+    location: rawFitPic.location,
     reactions: rawFitPic.reactions,
     comments: rawFitPic.comments ? rawFitPic.comments.map(normalizeComment) : undefined,
     ...dimensions

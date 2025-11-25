@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Image, StyleSheet, Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '../../hooks/useThemeColor';
 
 type AuthorInfo = {
@@ -11,10 +12,12 @@ type AuthorInfo = {
 
 type Props = {
   author: string | AuthorInfo;
+  createdAt?: string;
+  location?: string;
 };
 
-export default function FitPicModalUser({ author }: Props) {
-  const muted = useThemeColor({}, 'mutedText');
+export default function FitPicModalUser({ author, createdAt, location }: Props) {
+  const muted = useThemeColor({}, 'mutedText') || '#999';
 
   // Normalize author data - handle both string (username) and object formats
   const authorData: AuthorInfo = typeof author === 'string'
@@ -29,6 +32,24 @@ export default function FitPicModalUser({ author }: Props) {
   const username = authorData.username;
   const displayName = authorData.displayName;
   const avatarUrl = authorData.avatarUrl;
+
+  // Format date helper: "2024-01-13T10:30:00Z" -> "Jan 13"
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const month = monthNames[date.getMonth()];
+      const day = date.getDate();
+      return `${month} ${day}`;
+    } catch (error) {
+      return '';
+    }
+  };
+
+  // Check if we have metadata to display
+  const hasDate = !!createdAt;
+  const hasLocation = !!location;
+  const hasMetadata = hasDate || hasLocation;
 
   return (
     <View style={styles.container}>
@@ -51,6 +72,28 @@ export default function FitPicModalUser({ author }: Props) {
           </>
         ) : (
           <Text style={styles.username}>@{username}</Text>
+        )}
+        {hasMetadata && (
+          <View style={styles.metadataContainer}>
+            {hasDate && (
+              <Text style={[styles.metaText, { color: muted }]}>
+                {formatDate(createdAt!)}
+              </Text>
+            )}
+            {hasDate && hasLocation && (
+              <Text style={[styles.metaText, { color: muted, marginHorizontal: 4 }]}>
+                ·
+              </Text>
+            )}
+            {hasLocation && (
+              <View style={styles.locationContainer}>
+                <Ionicons name="pin-sharp" size={12} color={muted} style={styles.pinIcon} />
+                <Text style={[styles.metaText, { color: muted }]}>
+                  {location}
+                </Text>
+              </View>
+            )}
+          </View>
         )}
       </View>
     </View>
@@ -86,6 +129,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
     color: '#000',
+  },
+  metaText: {
+    fontSize: 12,
+  },
+  metadataContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pinIcon: {
+    marginRight: 3,
   },
 });
 

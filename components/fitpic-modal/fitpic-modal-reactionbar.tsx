@@ -1,6 +1,6 @@
 // components/fitpic-modal/fitpic-modal-reactionbar.tsx
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,10 @@ type Props = {
   onShare?: () => void;
   /** Optional: if you already track user's choice outside, pass it in */
   initialSelected?: ReactionKey | null;
+  /** Optional: controlled saved/bookmark state */
+  isSaved?: boolean;
+  /** Optional: callback when save state changes */
+  onToggleSave?: (nextSaved: boolean) => void;
 };
 
 /**
@@ -41,9 +45,21 @@ export default function MockFitPicReactionBar({
   onChange,
   onShare,
   initialSelected = null,
+  isSaved: isSavedProp,
+  onToggleSave,
 }: Props) {
   // Single-reaction selection (client-only, optimistic)
   const [selected, setSelected] = useState<ReactionKey | null>(initialSelected);
+  
+  // Save/bookmark state (uncontrolled by default, controlled if isSaved prop is provided)
+  const [saved, setSaved] = useState<boolean>(isSavedProp ?? false);
+  
+  // Sync internal state with controlled prop if provided
+  useEffect(() => {
+    if (isSavedProp !== undefined) {
+      setSaved(isSavedProp);
+    }
+  }, [isSavedProp]);
 
   // Small pop animation per reaction
   const pops = useMemo(
@@ -82,6 +98,14 @@ export default function MockFitPicReactionBar({
 
     animatePop(key);
     onChange({ counts: nextCounts });
+  };
+
+  const handleSavePress = () => {
+    const next = !saved;
+    setSaved(next);
+    if (onToggleSave) {
+      onToggleSave(next);
+    }
   };
 
   const handleShare = async () => {
@@ -128,10 +152,28 @@ export default function MockFitPicReactionBar({
         })}
       </View>
 
-      {/* Share (right) */}
-      <TouchableOpacity style={styles.shareButton} onPress={handleShare} activeOpacity={0.8}>
-        <Ionicons name="share-outline" size={20} color="#222" />
-      </TouchableOpacity>
+      {/* Save & Share (right) */}
+      <View style={styles.rightActions}>
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={handleSavePress}
+          activeOpacity={0.8}
+        >
+          <Ionicons
+            name={saved ? "bookmark" : "bookmark-outline"}
+            size={20}
+            color={saved ? "#111" : "#222"}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.shareButton}
+          onPress={handleShare}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="share-outline" size={20} color="#222" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -169,6 +211,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#555",
+  },
+  rightActions: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  saveButton: {
+    padding: 8,
+    borderRadius: 18,
+    marginRight: 4,
   },
   shareButton: {
     padding: 8,

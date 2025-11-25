@@ -18,6 +18,7 @@
         "joan-tran-product"
       ],
       "createdAt": "2024-01-15T10:30:00Z",
+      "location": "New York, NY",
       "reactions": {
         "counts": {
           "LIKE": 25,
@@ -112,6 +113,7 @@
         "daniel-korpai-product"
       ],
       "createdAt": "2024-01-14T14:20:00Z",
+      "location": "Los Angeles, CA",
       "reactions": {
         "counts": {
           "LIKE": 15,
@@ -138,6 +140,7 @@
         "giorgio-trovato-product"
       ],
       "createdAt": "2024-01-13T09:15:00Z",
+      "location": "Toronto, Canada",
       "reactions": {
         "counts": {
           "LIKE": 20,
@@ -204,6 +207,7 @@
         "c-d-x-product"
       ], 
       "createdAt": "2024-01-12T16:45:00Z",
+      "location": "Paris, France",
       "reactions": {
         "counts": {
           "LIKE": 40,
@@ -323,6 +327,7 @@
         "rachit-tank-product"
       ],
       "createdAt": "2024-01-11T11:30:00Z",
+      "location": "Tokyo, Japan",
       "reactions": {
         "counts": {
           "LIKE": 12,
