@@ -192,14 +192,14 @@ const styles = StyleSheet.create({
   reactionsContainer: {
     flexDirection: "row",
     alignItems: "center",
-    columnGap: 14,
-    flexShrink: 1,
+    columnGap: 4,
   },
   reactionButton: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    width: 58,
     paddingVertical: 4,
-    paddingHorizontal: 8,
     borderRadius: 16,
     backgroundColor: "transparent",
   },
@@ -211,6 +211,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#555",
+    minWidth: 0,
   },
   rightActions: {
     flexDirection: "row",

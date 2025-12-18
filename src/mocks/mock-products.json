@@ -5,80 +5,180 @@
       "name": "Classic White Sneakers",
       "brand": "Urban Steps",
       "price": 89.99,
-      "salePrice": null,
       "imagePath": "assets/mock-products/c-d-x-PDX_a_82obo-unsplash.jpg",
-      "category": "Footwear",
-      "description": "Clean and versatile white sneakers perfect for everyday wear"
+      "description": "Clean and versatile white sneakers perfect for everyday wear",
+      "specs": "Additional details about this product.",
+      "productUrl": "https://example.com/product/c-d-x-product",
+      "images": [
+        "assets/mock-products/c-d-x-PDX_a_82obo-unsplash.jpg",
+        "assets/mock-products/daniel-korpai-hbTKIbuMmBI-unsplash.jpg",
+        "assets/mock-products/fernando-andrade-potCPE_Cw8A-unsplash.jpg"
+      ],
+      "reactions": {
+        "counts": {
+          "LIKE": 247,
+          "THUMBS_UP": 89,
+          "FIRE": 156,
+          "DISLIKE": 12
+        }
+      }
     },
     {
       "id": "daniel-korpai-product",
       "name": "Minimalist Black Hoodie",
       "brand": "Streetwear Co",
       "price": 65.00,
-      "salePrice": null,
       "imagePath": "assets/mock-products/daniel-korpai-hbTKIbuMmBI-unsplash.jpg",
-      "category": "Tops",
-      "description": "Essential black hoodie with clean lines and comfortable fit"
+      "description": "Essential black hoodie with clean lines and comfortable fit",
+      "specs": "Additional details about this product.",
+      "productUrl": "https://example.com/product/daniel-korpai-product",
+      "images": [
+        "assets/mock-products/daniel-korpai-hbTKIbuMmBI-unsplash.jpg",
+        "assets/mock-products/domino-studio-164_6wVEHfI-unsplash.jpg"
+      ],
+      "reactions": {
+        "counts": {
+          "LIKE": 183,
+          "THUMBS_UP": 45,
+          "FIRE": 298,
+          "DISLIKE": 7
+        }
+      }
     },
     {
       "id": "domino-studio-product",
       "name": "Vintage Denim Jacket",
       "brand": "Retro Threads",
       "price": 120.00,
-      "salePrice": 95.00,
       "imagePath": "assets/mock-products/domino-studio-164_6wVEHfI-unsplash.jpg",
-      "category": "Outerwear",
-      "description": "Classic vintage denim jacket with authentic distressed finish"
+      "description": "Classic vintage denim jacket with authentic distressed finish",
+      "specs": "Additional details about this product.",
+      "productUrl": "https://example.com/product/domino-studio-product",
+      "images": [
+        "assets/mock-products/domino-studio-164_6wVEHfI-unsplash.jpg",
+        "assets/mock-products/giorgio-trovato-K62u25Jk6vo-unsplash.jpg",
+        "assets/mock-products/joan-tran-reEySFadyJQ-unsplash.jpg"
+      ],
+      "reactions": {
+        "counts": {
+          "LIKE": 312,
+          "THUMBS_UP": 127,
+          "FIRE": 201,
+          "DISLIKE": 23
+        }
+      }
     },
     {
       "id": "fernando-andrade-product",
       "name": "Premium Leather Boots",
       "brand": "Craft & Co",
       "price": 180.00,
-      "salePrice": null,
       "imagePath": "assets/mock-products/fernando-andrade-potCPE_Cw8A-unsplash.jpg",
-      "category": "Footwear",
-      "description": "Handcrafted leather boots with superior quality and durability"
+      "description": "Handcrafted leather boots with superior quality and durability",
+      "specs": "Additional details about this product.",
+      "productUrl": "https://example.com/product/fernando-andrade-product",
+      "images": [
+        "assets/mock-products/fernando-andrade-potCPE_Cw8A-unsplash.jpg",
+        "assets/mock-products/mohammad-metri-E-0ON3VGrBc-unsplash.jpg"
+      ],
+      "reactions": {
+        "counts": {
+          "LIKE": 95,
+          "THUMBS_UP": 234,
+          "FIRE": 67,
+          "DISLIKE": 4
+        }
+      }
     },
     {
       "id": "giorgio-trovato-product",
       "name": "Casual Button-Up Shirt",
       "brand": "Modern Basics",
       "price": 45.00,
-      "salePrice": null,
       "imagePath": "assets/mock-products/giorgio-trovato-K62u25Jk6vo-unsplash.jpg",
-      "category": "Tops",
-      "description": "Versatile button-up shirt perfect for casual and smart-casual looks"
+      "description": "Versatile button-up shirt perfect for casual and smart-casual looks",
+      "specs": "Additional details about this product.",
+      "productUrl": "https://example.com/product/giorgio-trovato-product",
+      "images": [
+        "assets/mock-products/giorgio-trovato-K62u25Jk6vo-unsplash.jpg",
+        "assets/mock-products/rachit-tank-2cFZ_FB08UM-unsplash.jpg",
+        "assets/mock-products/c-d-x-PDX_a_82obo-unsplash.jpg"
+      ],
+      "reactions": {
+        "counts": {
+          "LIKE": 156,
+          "THUMBS_UP": 78,
+          "FIRE": 42,
+          "DISLIKE": 19
+        }
+      }
     },
     {
       "id": "joan-tran-product",
       "name": "Athletic Performance Tee",
       "brand": "ActiveWear",
       "price": 32.00,
-      "salePrice": null,
       "imagePath": "assets/mock-products/joan-tran-reEySFadyJQ-unsplash.jpg",
-      "category": "Tops",
-      "description": "Moisture-wicking performance t-shirt for active lifestyles"
+      "description": "Moisture-wicking performance t-shirt for active lifestyles",
+      "specs": "Additional details about this product.",
+      "productUrl": "https://example.com/product/joan-tran-product",
+      "images": [
+        "assets/mock-products/joan-tran-reEySFadyJQ-unsplash.jpg",
+        "assets/mock-products/fernando-andrade-potCPE_Cw8A-unsplash.jpg"
+      ],
+      "reactions": {
+        "counts": {
+          "LIKE": 78,
+          "THUMBS_UP": 145,
+          "FIRE": 189,
+          "DISLIKE": 8
+        }
+      }
     },
     {
       "id": "mohammad-metri-product",
       "name": "Designer Sunglasses",
       "brand": "Luxe Optics",
       "price": 150.00,
-      "salePrice": null,
       "imagePath": "assets/mock-products/mohammad-metri-E-0ON3VGrBc-unsplash.jpg",
-      "category": "Accessories",
-      "description": "Premium sunglasses with UV protection and stylish design"
+      "description": "Premium sunglasses with UV protection and stylish design",
+      "specs": "Additional details about this product.",
+      "productUrl": "https://example.com/product/mohammad-metri-product",
+      "images": [
+        "assets/mock-products/mohammad-metri-E-0ON3VGrBc-unsplash.jpg",
+        "assets/mock-products/rachit-tank-2cFZ_FB08UM-unsplash.jpg",
+        "assets/mock-products/domino-studio-164_6wVEHfI-unsplash.jpg"
+      ],
+      "reactions": {
+        "counts": {
+          "LIKE": 267,
+          "THUMBS_UP": 56,
+          "FIRE": 134,
+          "DISLIKE": 31
+        }
+      }
     },
     {
       "id": "rachit-tank-product",
       "name": "Smart Watch",
       "brand": "TechWear",
       "price": 200.00,
-      "salePrice": null,
       "imagePath": "assets/mock-products/rachit-tank-2cFZ_FB08UM-unsplash.jpg",
-      "category": "Accessories",
-      "description": "Advanced smartwatch with fitness tracking and connectivity features"
+      "description": "Advanced smartwatch with fitness tracking and connectivity features",
+      "specs": "Additional details about this product.",
+      "productUrl": "https://example.com/product/rachit-tank-product",
+      "images": [
+        "assets/mock-products/rachit-tank-2cFZ_FB08UM-unsplash.jpg",
+        "assets/mock-products/mohammad-metri-E-0ON3VGrBc-unsplash.jpg"
+      ],
+      "reactions": {
+        "counts": {
+          "LIKE": 198,
+          "THUMBS_UP": 287,
+          "FIRE": 112,
+          "DISLIKE": 15
+        }
+      }
     }
   ]
 }
