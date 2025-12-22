@@ -7,7 +7,7 @@
       "price": 89.99,
       "imagePath": "assets/mock-products/c-d-x-PDX_a_82obo-unsplash.jpg",
       "description": "Clean and versatile white sneakers perfect for everyday wear",
-      "specs": "Additional details about this product.",
+      "details": "These sneakers feature a comfortable cushioned insole that provides all-day support for walking, commuting, or light activities. The upper is made from premium canvas material that's breathable and easy to clean with a damp cloth. Runs true to size with a slightly roomy toe box, making them ideal for those with wider feet. The rubber outsole offers excellent grip on both dry and wet surfaces. For best results, spot clean as needed and air dry to maintain the pristine white appearance.",
       "productUrl": "https://example.com/product/c-d-x-product",
       "images": [
         "assets/mock-products/c-d-x-PDX_a_82obo-unsplash.jpg",
@@ -30,7 +30,7 @@
       "price": 65.00,
       "imagePath": "assets/mock-products/daniel-korpai-hbTKIbuMmBI-unsplash.jpg",
       "description": "Essential black hoodie with clean lines and comfortable fit",
-      "specs": "Additional details about this product.",
+      "details": "Crafted from a soft cotton-polyester blend that provides warmth without bulk. The relaxed fit drapes comfortably and works well for layering or wearing solo. Features a double-needle stitched hem and cuffs for durability. The kangaroo pocket offers functional storage while maintaining the minimalist aesthetic. Machine washable on cold with similar colors, tumble dry low to prevent shrinking.",
       "productUrl": "https://example.com/product/daniel-korpai-product",
       "images": [
         "assets/mock-products/daniel-korpai-hbTKIbuMmBI-unsplash.jpg",
@@ -52,7 +52,7 @@
       "price": 120.00,
       "imagePath": "assets/mock-products/domino-studio-164_6wVEHfI-unsplash.jpg",
       "description": "Classic vintage denim jacket with authentic distressed finish",
-      "specs": "Additional details about this product.",
+      "details": "Made from 100% cotton denim that has been carefully processed to achieve an authentic vintage look with natural fade patterns and strategic distressing. The jacket features a regular fit that works well over t-shirts or layered over hoodies for cooler weather. Pre-shrunk construction ensures consistent sizing wash after wash. Metal hardware and reinforced stitching at stress points guarantee long-lasting durability. For care, machine wash inside out on cold with similar colors to preserve the finish, then line dry or tumble dry on low heat. The denim will continue to develop character and softness with each wear.",
       "productUrl": "https://example.com/product/domino-studio-product",
       "images": [
         "assets/mock-products/domino-studio-164_6wVEHfI-unsplash.jpg",
@@ -75,7 +75,7 @@
       "price": 180.00,
       "imagePath": "assets/mock-products/fernando-andrade-potCPE_Cw8A-unsplash.jpg",
       "description": "Handcrafted leather boots with superior quality and durability",
-      "specs": "Additional details about this product.",
+      "details": "Constructed from full-grain leather that molds to your foot over time for a personalized fit. The Goodyear welt construction allows for resoling, extending the boot's lifespan for years of wear. Features a cushioned leather insole and a durable rubber outsole with deep treads for traction. Expect a break-in period of 1-2 weeks of regular wear for optimal comfort. Sizing runs slightly large; consider going down half a size for a snug fit. Regular conditioning with leather cream will maintain the rich finish and prevent cracking. These boots are built to last and develop a beautiful patina with age.",
       "productUrl": "https://example.com/product/fernando-andrade-product",
       "images": [
         "assets/mock-products/fernando-andrade-potCPE_Cw8A-unsplash.jpg",
@@ -97,7 +97,7 @@
       "price": 45.00,
       "imagePath": "assets/mock-products/giorgio-trovato-K62u25Jk6vo-unsplash.jpg",
       "description": "Versatile button-up shirt perfect for casual and smart-casual looks",
-      "specs": "Additional details about this product.",
+      "details": "Lightweight cotton fabric with a slight stretch for comfort and ease of movement throughout the day. The classic fit provides enough room without looking boxy, and the collar maintains its shape even after multiple washes. Works equally well tucked into chinos for business casual or left untucked with jeans for weekend wear. The subtle pattern adds visual interest without being too bold. Machine washable and wrinkle-resistant, making it perfect for travel or daily office wear.",
       "productUrl": "https://example.com/product/giorgio-trovato-product",
       "images": [
         "assets/mock-products/giorgio-trovato-K62u25Jk6vo-unsplash.jpg",
@@ -120,7 +120,7 @@
       "price": 32.00,
       "imagePath": "assets/mock-products/joan-tran-reEySFadyJQ-unsplash.jpg",
       "description": "Moisture-wicking performance t-shirt for active lifestyles",
-      "specs": "Additional details about this product.",
+      "details": "Advanced synthetic fabric blend pulls sweat away from your skin and dries quickly, keeping you cool and comfortable during intense workouts. The athletic fit moves with your body without restriction, and flatlock seams prevent chafing during repetitive motions. UPF 30+ protection shields your skin from harmful UV rays during outdoor activities. Antimicrobial treatment reduces odor-causing bacteria, so it stays fresh longer between washes. Perfect for running, gym sessions, or any high-intensity training. Machine wash cold and hang dry to maintain performance properties.",
       "productUrl": "https://example.com/product/joan-tran-product",
       "images": [
         "assets/mock-products/joan-tran-reEySFadyJQ-unsplash.jpg",
@@ -142,7 +142,7 @@
       "price": 150.00,
       "imagePath": "assets/mock-products/mohammad-metri-E-0ON3VGrBc-unsplash.jpg",
       "description": "Premium sunglasses with UV protection and stylish design",
-      "specs": "Additional details about this product.",
+      "details": "Polarized lenses eliminate glare from reflective surfaces like water, snow, and roads, providing crystal-clear vision and reducing eye strain. Full UV400 protection blocks 100% of harmful UVA and UVB rays. The lightweight acetate frame sits comfortably without pinching, and the spring hinges provide a secure fit. Available in multiple lens tint options to suit different lighting conditions. Includes a protective case and microfiber cleaning cloth. The classic aviator-inspired design never goes out of style and complements both casual and dressy outfits.",
       "productUrl": "https://example.com/product/mohammad-metri-product",
       "images": [
         "assets/mock-products/mohammad-metri-E-0ON3VGrBc-unsplash.jpg",
@@ -165,7 +165,7 @@
       "price": 200.00,
       "imagePath": "assets/mock-products/rachit-tank-2cFZ_FB08UM-unsplash.jpg",
       "description": "Advanced smartwatch with fitness tracking and connectivity features",
-      "specs": "Additional details about this product.",
+      "details": "Comprehensive health monitoring includes heart rate tracking, sleep analysis, step counting, and workout detection across 50+ activity modes. The always-on display is bright and readable in direct sunlight, and the touchscreen remains responsive even when wet. Water resistant up to 50 meters, so you can wear it swimming or in the shower. Battery life lasts up to 7 days with normal use or up to 14 days in battery saver mode. Seamlessly pairs with both iOS and Android devices via Bluetooth, sending notifications, calls, and app alerts directly to your wrist. The lightweight design is comfortable for 24/7 wear, and interchangeable bands let you customize the look for any occasion.",
       "productUrl": "https://example.com/product/rachit-tank-product",
       "images": [
         "assets/mock-products/rachit-tank-2cFZ_FB08UM-unsplash.jpg",

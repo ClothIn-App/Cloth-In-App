@@ -7,6 +7,8 @@ import { ProductHeader } from "@/components/product-modal/ProductHeader";
 import { ProductMedia } from "@/components/product-modal/ProductMedia";
 import { ProductSummary } from "@/components/product-modal/ProductSummary";
 import { ProductReactionsRow } from "@/components/product-modal/ProductReactionsRow";
+import { ProductDescription } from "@/components/product-modal/ProductDescription";
+import { ProductFitPicCarousel } from "@/components/product-modal/ProductFitPicCarousel";
 import type { Reactions } from "@/src/types/feed";
 
 const DEFAULT_REACTIONS: Reactions = { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } };
@@ -61,17 +63,22 @@ export default function ProductDetailModal() {
           price={product.price}
           productUrl={product.productUrl}
         />
-        <ProductReactionsRow
-          reactions={reactions}
-          onChange={(newReactions) => {
-            setReactions(newReactions);
-            // later: persist to API
-          }}
-          productId={product.id}
+        <View style={styles.reactionsWrapper}>
+          <ProductReactionsRow
+            reactions={reactions}
+            onChange={(newReactions) => {
+              setReactions(newReactions);
+              // later: persist to API
+            }}
+            productId={product.id}
+          />
+        </View>
+        <ProductDescription
+          description={product.description}
+          details={(product as any).details}
         />
+        <ProductFitPicCarousel fitpics={featuredFitPics} />
         {/* Later we will add:
-            - ProductDescription
-            - ProductFitPicCarousel (using featuredFitPics)
             - ProductCommentsSection
         */}
       </ScrollView>
@@ -86,6 +93,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 24,
+  },
+  reactionsWrapper: {
+    marginTop: -12,
   },
 });
 
