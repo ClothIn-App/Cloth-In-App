@@ -24,6 +24,7 @@ export type Product = {
   productUrl?: string;
   images?: string[];
   reactions?: Reactions;
+  comments?: FitPicComment[]; // Product comments use the same structure as FitPic comments
 };
 
 // Comment type for FitPic comments (matching mock structure)

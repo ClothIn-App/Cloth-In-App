@@ -21,7 +21,85 @@
           "FIRE": 156,
           "DISLIKE": 12
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "sneaker_head",
+          "text": "True to size? I'm usually a 10.5 but have wide feet",
+          "createdAt": "2024-01-20T10:30:00Z",
+          "like": 12,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "comfort_seeker",
+              "text": "I have wide feet too and went with my normal size. The roomy toe box is perfect!",
+              "createdAt": "2024-01-20T11:00:00Z",
+              "like": 8,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c1.1.1",
+                  "user": "sneaker_head",
+                  "text": "Thanks! That's exactly what I needed to know",
+                  "createdAt": "2024-01-20T11:30:00Z",
+                  "like": 3,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            },
+            {
+              "id": "c1.2",
+              "user": "shoe_expert",
+              "text": "I'd stick with 10.5. The canvas upper stretches a bit after wear",
+              "createdAt": "2024-01-20T12:00:00Z",
+              "like": 5,
+              "dislike": 0,
+              "replies": []
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "daily_walker",
+          "text": "How do these hold up for daily wear? Need something durable",
+          "createdAt": "2024-01-21T09:15:00Z",
+          "like": 9,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c2.1",
+              "user": "longtime_owner",
+              "text": "Had mine for 6 months of daily use. Still look great with regular cleaning",
+              "createdAt": "2024-01-21T10:00:00Z",
+              "like": 7,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c2.1.1",
+                  "user": "daily_walker",
+                  "text": "Perfect! That's the durability I'm looking for",
+                  "createdAt": "2024-01-21T10:30:00Z",
+                  "like": 2,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "user": "style_conscious",
+          "text": "Love the clean look! Are they easy to keep white?",
+          "createdAt": "2024-01-22T14:20:00Z",
+          "like": 6,
+          "dislike": 0,
+          "replies": []
+        }
+      ]
     },
     {
       "id": "daniel-korpai-product",
@@ -43,7 +121,85 @@
           "FIRE": 298,
           "DISLIKE": 7
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "hoodie_lover",
+          "text": "How's the material quality? Is it soft or more on the rough side?",
+          "createdAt": "2024-01-18T11:00:00Z",
+          "like": 15,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "fabric_expert",
+              "text": "Super soft! The cotton-poly blend feels great against the skin",
+              "createdAt": "2024-01-18T11:30:00Z",
+              "like": 10,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c1.1.1",
+                  "user": "hoodie_lover",
+                  "text": "Awesome, that's what I was hoping for",
+                  "createdAt": "2024-01-18T12:00:00Z",
+                  "like": 4,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "fit_question",
+          "text": "Does it shrink after washing? Should I size up?",
+          "createdAt": "2024-01-19T09:20:00Z",
+          "like": 11,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c2.1",
+              "user": "careful_washer",
+              "text": "I wash cold and dry low - no shrinking issues at all",
+              "createdAt": "2024-01-19T10:00:00Z",
+              "like": 8,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c2.1.1",
+                  "user": "fit_question",
+                  "text": "Good to know, thanks for the tip!",
+                  "createdAt": "2024-01-19T10:30:00Z",
+                  "like": 3,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "user": "layering_pro",
+          "text": "Perfect for layering! Works great under jackets",
+          "createdAt": "2024-01-20T15:45:00Z",
+          "like": 7,
+          "dislike": 0,
+          "replies": []
+        },
+        {
+          "id": "c4",
+          "user": "minimalist_style",
+          "text": "Love the clean design. No logos or branding is perfect",
+          "createdAt": "2024-01-21T08:00:00Z",
+          "like": 9,
+          "dislike": 0,
+          "replies": []
+        }
+      ]
     },
     {
       "id": "domino-studio-product",
@@ -66,7 +222,85 @@
           "FIRE": 201,
           "DISLIKE": 23
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "denim_collector",
+          "text": "Is the distressing authentic or does it look manufactured?",
+          "createdAt": "2024-01-17T13:00:00Z",
+          "like": 18,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "vintage_expert",
+              "text": "The distressing looks very natural. The fade patterns are well done",
+              "createdAt": "2024-01-17T13:30:00Z",
+              "like": 12,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c1.1.1",
+                  "user": "denim_collector",
+                  "text": "Thanks! That's important to me - hate when it looks fake",
+                  "createdAt": "2024-01-17T14:00:00Z",
+                  "like": 5,
+                  "dislike": 0,
+                  "replies": []
+                },
+                {
+                  "id": "c1.1.2",
+                  "user": "quality_checker",
+                  "text": "I agree, the distressing is subtle and looks authentic",
+                  "createdAt": "2024-01-17T14:30:00Z",
+                  "like": 4,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "fit_concern",
+          "text": "How's the fit? I'm between sizes - should I go up or down?",
+          "createdAt": "2024-01-18T10:15:00Z",
+          "like": 14,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c2.1",
+              "user": "size_helper",
+              "text": "I'd go with your regular size. The regular fit is true to size",
+              "createdAt": "2024-01-18T11:00:00Z",
+              "like": 9,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c2.1.1",
+                  "user": "fit_concern",
+                  "text": "Perfect, thanks for the advice!",
+                  "createdAt": "2024-01-18T11:30:00Z",
+                  "like": 3,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "user": "care_question",
+          "text": "Will washing it fade the vintage look?",
+          "createdAt": "2024-01-19T16:20:00Z",
+          "like": 8,
+          "dislike": 0,
+          "replies": []
+        }
+      ]
     },
     {
       "id": "fernando-andrade-product",
@@ -88,7 +322,94 @@
           "FIRE": 67,
           "DISLIKE": 4
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "boot_buyer",
+          "text": "How long is the break-in period? Are they comfortable from day one?",
+          "createdAt": "2024-01-16T09:00:00Z",
+          "like": 22,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "boot_owner",
+              "text": "Took about 2 weeks for me. First few days were a bit stiff but totally worth it",
+              "createdAt": "2024-01-16T09:30:00Z",
+              "like": 15,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c1.1.1",
+                  "user": "boot_buyer",
+                  "text": "Good to know! I'll plan for that break-in period",
+                  "createdAt": "2024-01-16T10:00:00Z",
+                  "like": 6,
+                  "dislike": 0,
+                  "replies": []
+                },
+                {
+                  "id": "c1.1.2",
+                  "user": "leather_expert",
+                  "text": "The full-grain leather molds perfectly after break-in. Best boots I own",
+                  "createdAt": "2024-01-16T10:30:00Z",
+                  "like": 8,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "size_question",
+          "text": "I'm a 9.5 - should I go down to 9?",
+          "createdAt": "2024-01-17T11:45:00Z",
+          "like": 16,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c2.1",
+              "user": "size_expert",
+              "text": "Yes, definitely go down half a size. They run large",
+              "createdAt": "2024-01-17T12:15:00Z",
+              "like": 11,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c2.1.1",
+                  "user": "size_question",
+                  "text": "Thanks! Ordering a 9 now",
+                  "createdAt": "2024-01-17T12:45:00Z",
+                  "like": 4,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "user": "quality_seeker",
+          "text": "Is the Goodyear welt worth it? Can you really resole these?",
+          "createdAt": "2024-01-18T14:00:00Z",
+          "like": 13,
+          "dislike": 0,
+          "replies": []
+        },
+        {
+          "id": "c4",
+          "user": "care_guide",
+          "text": "What leather conditioner do you recommend?",
+          "createdAt": "2024-01-19T10:30:00Z",
+          "like": 7,
+          "dislike": 0,
+          "replies": []
+        }
+      ]
     },
     {
       "id": "giorgio-trovato-product",
@@ -111,7 +432,56 @@
           "FIRE": 42,
           "DISLIKE": 19
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "office_wear",
+          "text": "Is this appropriate for business casual? The description says yes but want to confirm",
+          "createdAt": "2024-01-19T08:00:00Z",
+          "like": 10,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "business_casual_pro",
+              "text": "Yes! I wear it to the office all the time. Looks professional when tucked in",
+              "createdAt": "2024-01-19T08:30:00Z",
+              "like": 7,
+              "dislike": 0,
+              "replies": []
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "wrinkle_concern",
+          "text": "How wrinkle-resistant is it really? Can I pack it for travel?",
+          "createdAt": "2024-01-20T12:00:00Z",
+          "like": 8,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c2.1",
+              "user": "traveler",
+              "text": "I've packed it multiple times. Comes out with minimal wrinkles, just hang it up",
+              "createdAt": "2024-01-20T12:30:00Z",
+              "like": 5,
+              "dislike": 0,
+              "replies": []
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "user": "fit_question",
+          "text": "Does the collar stay crisp after washing?",
+          "createdAt": "2024-01-21T15:20:00Z",
+          "like": 6,
+          "dislike": 0,
+          "replies": []
+        }
+      ]
     },
     {
       "id": "joan-tran-product",
@@ -133,7 +503,56 @@
           "FIRE": 189,
           "DISLIKE": 8
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "runner",
+          "text": "Does it really wick moisture well? I sweat a lot during runs",
+          "createdAt": "2024-01-18T07:00:00Z",
+          "like": 14,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "marathon_training",
+              "text": "Yes! The fabric dries super fast. I wear it for long runs and it stays comfortable",
+              "createdAt": "2024-01-18T07:30:00Z",
+              "like": 9,
+              "dislike": 0,
+              "replies": []
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "odor_question",
+          "text": "How effective is the antimicrobial treatment? Does it really reduce smell?",
+          "createdAt": "2024-01-19T13:00:00Z",
+          "like": 11,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c2.1",
+              "user": "gym_regular",
+              "text": "I've worn it multiple times between washes and it stays fresh. Much better than cotton",
+              "createdAt": "2024-01-19T13:30:00Z",
+              "like": 7,
+              "dislike": 0,
+              "replies": []
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "user": "fit_concern",
+          "text": "Is the athletic fit tight or more relaxed?",
+          "createdAt": "2024-01-20T10:15:00Z",
+          "like": 8,
+          "dislike": 0,
+          "replies": []
+        }
+      ]
     },
     {
       "id": "mohammad-metri-product",
@@ -156,7 +575,65 @@
           "FIRE": 134,
           "DISLIKE": 31
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "sun_protection",
+          "text": "Is the UV400 protection legit? I need serious sun protection",
+          "createdAt": "2024-01-17T11:00:00Z",
+          "like": 16,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "optics_expert",
+              "text": "Yes, full UV400 blocks all UVA and UVB. These are legit protective",
+              "createdAt": "2024-01-17T11:30:00Z",
+              "like": 10,
+              "dislike": 0,
+              "replies": []
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "glare_question",
+          "text": "How much does the polarization help with driving?",
+          "createdAt": "2024-01-18T14:30:00Z",
+          "like": 12,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c2.1",
+              "user": "daily_driver",
+              "text": "Huge difference! No more glare from other cars or wet roads",
+              "createdAt": "2024-01-18T15:00:00Z",
+              "like": 8,
+              "dislike": 0,
+              "replies": []
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "user": "fit_question",
+          "text": "Do they pinch at the temples? I have a wider head",
+          "createdAt": "2024-01-19T09:45:00Z",
+          "like": 9,
+          "dislike": 0,
+          "replies": []
+        },
+        {
+          "id": "c4",
+          "user": "style_lover",
+          "text": "Love the aviator design! Classic and timeless",
+          "createdAt": "2024-01-20T16:00:00Z",
+          "like": 7,
+          "dislike": 0,
+          "replies": []
+        }
+      ]
     },
     {
       "id": "rachit-tank-product",
@@ -178,7 +655,75 @@
           "FIRE": 112,
           "DISLIKE": 15
         }
-      }
+      },
+      "comments": [
+        {
+          "id": "c1",
+          "user": "battery_concern",
+          "text": "Does it really last 7 days? My current watch dies after 2 days",
+          "createdAt": "2024-01-16T10:00:00Z",
+          "like": 20,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c1.1",
+              "user": "longtime_user",
+              "text": "Yes! I get a full week easily. The battery is impressive",
+              "createdAt": "2024-01-16T10:30:00Z",
+              "like": 13,
+              "dislike": 0,
+              "replies": [
+                {
+                  "id": "c1.1.1",
+                  "user": "battery_concern",
+                  "text": "That's amazing! Definitely upgrading now",
+                  "createdAt": "2024-01-16T11:00:00Z",
+                  "like": 5,
+                  "dislike": 0,
+                  "replies": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "user": "swimmer",
+          "text": "Can you actually swim with it? 50m water resistance sounds good but want to confirm",
+          "createdAt": "2024-01-17T08:30:00Z",
+          "like": 15,
+          "dislike": 0,
+          "replies": [
+            {
+              "id": "c2.1",
+              "user": "pool_regular",
+              "text": "I swim with it 3x a week. No issues at all, fully waterproof",
+              "createdAt": "2024-01-17T09:00:00Z",
+              "like": 10,
+              "dislike": 0,
+              "replies": []
+            }
+          ]
+        },
+        {
+          "id": "c3",
+          "user": "fitness_tracker",
+          "text": "How accurate is the heart rate monitoring?",
+          "createdAt": "2024-01-18T12:00:00Z",
+          "like": 11,
+          "dislike": 0,
+          "replies": []
+        },
+        {
+          "id": "c4",
+          "user": "compatibility",
+          "text": "Works with both iPhone and Android? That's rare!",
+          "createdAt": "2024-01-19T14:20:00Z",
+          "like": 8,
+          "dislike": 0,
+          "replies": []
+        }
+      ]
     }
   ]
 }
