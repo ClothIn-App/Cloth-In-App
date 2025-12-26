@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { RefreshControl } from "react-native";
+import { RefreshControl, TouchableOpacity } from "react-native";
+import { router } from "expo-router";
 import MasonryGrid from "../masonry-grid";
 import FitPic_Cover from "../home/fitpic-cover";
 import Product_Cover, { PRODUCT_LABEL_HEIGHT } from "../home/product-cover";
@@ -84,28 +85,48 @@ export default function Home_Grid({
         return colW + PRODUCT_LABEL_HEIGHT;
       }}
       renderItem={(item: FeedItem, colW: number) => {
+        const handlePress = () => {
+          if (item.type === "fitpic") {
+            router.push({
+              pathname: "/fitpic-detail",
+              params: { id: item.id },
+            });
+          } else {
+            router.push({
+              pathname: "/product-detail",
+              params: { id: item.id },
+            });
+          }
+        };
+
         if (item.type === "fitpic") {
           const aspectRatio =
             item.height && item.width ? item.height / item.width : 1;
           const scaledH = Math.round(colW * aspectRatio);
           return (
-            <FitPic_Cover
-              width={colW}
-              height={scaledH}
-              source={item.source}
-            />
+            <TouchableOpacity onPress={handlePress} activeOpacity={0.9}>
+              <FitPic_Cover
+                width={colW}
+                height={scaledH}
+                source={item.source}
+                sharedTransitionTag={`fitpic-${item.id}`}
+              />
+            </TouchableOpacity>
           );
         }
         // product
         return (
-          <Product_Cover
-            width={colW}
-            source={item.source}
-            brand={item.brand}
-            name={item.name}
-            price={item.price}
-            salePrice={item.salePrice}
-          />
+          <TouchableOpacity onPress={handlePress} activeOpacity={0.9}>
+            <Product_Cover
+              width={colW}
+              source={item.source}
+              brand={item.brand}
+              name={item.name}
+              price={item.price}
+              salePrice={item.salePrice}
+              sharedTransitionTag={`product-${item.id}`}
+            />
+          </TouchableOpacity>
         );
       }}
       keyExtractor={(item: FeedItem) => item.id}

@@ -8,14 +8,28 @@ export interface BaseFeedItem {
   createdAt: string;
 }
 
+// Comment type for FitPic comments
+export interface CommentType {
+  id: string;
+  user: string;
+  text: string;
+  createdAt: string;
+  likes: number;
+  dislikes: number;
+  replies: CommentType[];
+}
+
 // FitPic specific data
 export interface FitPicItem extends BaseFeedItem {
   type: 'fitpic';
-  title: string;
-  description: string;
+  caption: string;
   featuredProducts: string[]; // Array of product IDs
+  featuredProductIds?: string[]; // Array of featured product IDs (may be different from featuredProducts)
   likes: number;
   author: string;
+  reactions: Reactions;
+  comments?: CommentType[]; // Optional comments array
+  location?: string; // Optional location string (e.g., "New York, NY")
   // Intrinsic dimensions for proper grid layout
   width?: number;
   height?: number;
@@ -38,16 +52,28 @@ export interface ProductItem extends BaseFeedItem {
 // Union type for all possible feed items
 export type FeedItem = FitPicItem | ProductItem;
 
+// Reaction types
+export type ReactionKey = 'LIKE' | 'THUMBS_UP' | 'FIRE' | 'DISLIKE';
+
+export type ReactionCounts = Record<ReactionKey, number>;
+
+export interface Reactions {
+  counts: ReactionCounts;
+}
+
 // Raw data types from JSON files
 export interface RawFitPic {
   id: string;
-  title: string;
-  description: string;
+  author: string;
+  caption: string;
   imagePath: string;
   featuredProducts: string[];
+  featuredProductIds?: string[];
   likes: number;
-  author: string;
   createdAt: string;
+  location?: string; // Optional location string (e.g., "New York, NY")
+  reactions: Reactions;
+  comments?: any[]; // Raw comments from JSON (will be normalized)
 }
 
 export interface RawProduct {

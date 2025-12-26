@@ -3,6 +3,7 @@ import {
   FeedItem, 
   FitPicItem, 
   ProductItem, 
+  RawFitPic,
   RawFitPicsData, 
   RawProductsData 
 } from '../types/feed';
@@ -11,7 +12,7 @@ import { FITPIC_ASSETS, PRODUCT_ASSETS } from '../maps/images';
 // Load raw data from JSON files
 const loadRawData = async () => {
   const [fitpicsData, productsData] = await Promise.all([
-    import('../mocks/mock-fitpics.json') as Promise<{ default: RawFitPicsData }>,
+    import('../mocks/mock-fitpics.json') as unknown as Promise<{ default: RawFitPicsData }>,
     import('../mocks/mock-products.json') as Promise<{ default: RawProductsData }>
   ]);
 
@@ -37,6 +38,19 @@ const getImageDimensions = async (source: any): Promise<{ width: number; height:
   return undefined;
 };
 
+// Recursive helper to normalize comments (convert 'like' to 'likes', 'dislike' to 'dislikes')
+const normalizeComment = (rawComment: any): any => {
+  return {
+    id: rawComment.id,
+    user: rawComment.user,
+    text: rawComment.text,
+    createdAt: rawComment.createdAt,
+    likes: rawComment.likes ?? rawComment.like ?? 0,
+    dislikes: rawComment.dislikes ?? rawComment.dislike ?? 0,
+    replies: (rawComment.replies || []).map(normalizeComment),
+  };
+};
+
 // Convert raw FitPic data to FitPicItem
 const normalizeFitPic = async (rawFitPic: any): Promise<FitPicItem> => {
   const source = FITPIC_ASSETS[rawFitPic.id];
@@ -50,12 +64,15 @@ const normalizeFitPic = async (rawFitPic: any): Promise<FitPicItem> => {
     id: rawFitPic.id,
     type: 'fitpic',
     source,
-    title: rawFitPic.title,
-    description: rawFitPic.description,
+    caption: rawFitPic.caption,
     featuredProducts: rawFitPic.featuredProducts,
+    featuredProductIds: rawFitPic.featuredProductIds,
     likes: rawFitPic.likes,
     author: rawFitPic.author,
     createdAt: rawFitPic.createdAt,
+    location: rawFitPic.location,
+    reactions: rawFitPic.reactions,
+    comments: rawFitPic.comments ? rawFitPic.comments.map(normalizeComment) : undefined,
     ...dimensions
   };
 };

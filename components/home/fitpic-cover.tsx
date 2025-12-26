@@ -1,18 +1,24 @@
 import React from "react";
-import { Image, View, Text } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // or: import Ionicons from "react-native-vector-icons/Ionicons";
+import { View, Text } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import ProgressiveImage from "../common/ProgressiveImage";
 
 type Props = {
   width: number;
   height: number;
   source: any;                 // local require(...) or { uri }
   tagCount?: number;           // number of featured products
+  sharedTransitionTag?: string;
 };
 
-export default function FitPic_Cover({ width, height, source, tagCount = 0 }: Props) {
+export default function FitPic_Cover({ width, height, source, tagCount = 0, sharedTransitionTag }: Props) {
   return (
     <View style={{ width, height, borderRadius: 12, overflow: "hidden", backgroundColor: "#fff" }}>
-      <Image source={source} style={{ width, height }} resizeMode="contain" />
+      <ProgressiveImage 
+        source={source} 
+        style={{ width, height }} 
+        contentFit="contain"
+      />
       {/* Bottom-left overlay: pricetag icon + count */}
       <View
         style={{
