@@ -101,6 +101,14 @@ function SettingsContent() {
           
           <Pressable 
             style={styles.settingItem}
+            onPress={() => router.push('/profile-edit')}
+          >
+            <Text style={styles.settingItemText}>Edit Profile</Text>
+            <Text style={styles.settingItemArrow}>›</Text>
+          </Pressable>
+          
+          <Pressable 
+            style={styles.settingItem}
             onPress={handleLogout}
           >
             <Text style={styles.settingItemText}>Log Out</Text>
