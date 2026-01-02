@@ -1,0 +1,414 @@
+{
+  "users": [
+    {
+      "id": "user_1",
+      "uid": "u_jane_doe",
+      "username": "janedoe",
+      "displayName": "Jane Doe",
+      "avatarUrl": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+      "bio": "Fashion enthusiast and style blogger",
+      "isFollowing": false,
+      "followerCount": 1243,
+      "verified": false
+    },
+    {
+      "id": "user_2",
+      "uid": "u_alice_smith",
+      "username": "alicesmith",
+      "displayName": "Alice Smith",
+      "avatarUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+      "bio": "Sustainable fashion advocate",
+      "isFollowing": true,
+      "followerCount": 5678,
+      "verified": true
+    },
+    {
+      "id": "user_3",
+      "uid": "u_bob_wilson",
+      "username": "bobwilson",
+      "displayName": "Bob Wilson",
+      "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+      "bio": "Streetwear collector",
+      "isFollowing": false,
+      "followerCount": 892,
+      "verified": false
+    },
+    {
+      "id": "user_4",
+      "uid": "u_sarah_jones",
+      "username": "sarahjones",
+      "displayName": "Sarah Jones",
+      "avatarUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
+      "bio": "Minimalist style | Coffee lover",
+      "isFollowing": false,
+      "followerCount": 3456,
+      "verified": false
+    },
+    {
+      "id": "user_5",
+      "uid": "u_mike_chen",
+      "username": "mikechen",
+      "displayName": "Mike Chen",
+      "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+      "bio": "Tech meets fashion",
+      "isFollowing": true,
+      "followerCount": 12345,
+      "verified": true
+    }
+  ],
+  "fitpics": [
+    {
+      "id": "abheet-singh-fitpic",
+      "authorId": "u_jane_doe",
+      "author": {
+        "uid": "u_jane_doe",
+        "username": "janedoe",
+        "displayName": "Jane Doe",
+        "avatarUrl": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+      },
+      "photos": [
+        {
+          "id": "ph_summer_1",
+          "url": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800&h=1000&fit=crop",
+          "thumbnailUrl": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=400&fit=crop",
+          "index": 0,
+          "isCover": true
+        }
+      ],
+      "caption": "Summer vibes with this flowy dress! Perfect for those warm days ☀️ #summer #fashion",
+      "products": [
+        {
+          "id": "c-d-x-product",
+          "name": "Floral Summer Dress",
+          "brand": "Sunny Days",
+          "category": "Dresses",
+          "price": 89.99,
+          "currency": "USD",
+          "imageUrl": "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=300&h=400&fit=crop"
+        }
+      ],
+      "createdAt": "2024-06-15T14:30:00Z",
+      "engagement": {
+        "likes": 127,
+        "saves": 23,
+        "comments": 8
+      },
+      "hashtags": ["summer", "fashion", "dress", "style"]
+    },
+    {
+      "id": "evgeni-tcherkasski-1-fitpic",
+      "authorId": "u_bob_wilson",
+      "author": {
+        "uid": "u_bob_wilson",
+        "username": "bobwilson",
+        "displayName": "Bob Wilson",
+        "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+      },
+      "photos": [
+        {
+          "id": "ph_street_1",
+          "url": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&h=1000&fit=crop",
+          "thumbnailUrl": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=300&h=400&fit=crop",
+          "index": 0,
+          "isCover": true
+        }
+      ],
+      "caption": "Streetwear essentials for the weekend 🏙️ #streetwear #urbanstyle",
+      "products": [
+        {
+          "id": "daniel-korpai-product",
+          "name": "Classic White Sneakers",
+          "brand": "Urban Steps",
+          "category": "Footwear",
+          "price": 89.99,
+          "currency": "USD",
+          "imageUrl": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=400&fit=crop"
+        }
+      ],
+      "createdAt": "2024-06-14T10:20:00Z",
+      "engagement": {
+        "likes": 234,
+        "saves": 45,
+        "comments": 12
+      },
+      "hashtags": ["streetwear", "urbanstyle", "sneakers", "weekend"]
+    },
+    {
+      "id": "joshua-kettle-fitpic",
+      "authorId": "u_sarah_jones",
+      "author": {
+        "uid": "u_sarah_jones",
+        "username": "sarahjones",
+        "displayName": "Sarah Jones",
+        "avatarUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
+      },
+      "photos": [
+        {
+          "id": "ph_minimal_1",
+          "url": "https://images.unsplash.com/photo-1485968579580-b6d5be0bb2f8?w=800&h=1000&fit=crop",
+          "thumbnailUrl": "https://images.unsplash.com/photo-1485968579580-b6d5be0bb2f8?w=300&h=400&fit=crop",
+          "index": 0,
+          "isCover": true
+        }
+      ],
+      "caption": "Less is more ✨ Minimalist style for everyday elegance",
+      "products": [
+        {
+          "id": "domino-studio-product",
+          "name": "Classic White Shirt",
+          "brand": "Minimalist Co",
+          "category": "Tops",
+          "price": 59.99,
+          "currency": "USD",
+          "imageUrl": "https://images.unsplash.com/photo-1603252109303-2751441dd157?w=300&h=400&fit=crop"
+        }
+      ],
+      "createdAt": "2024-06-13T16:45:00Z",
+      "engagement": {
+        "likes": 189,
+        "saves": 34,
+        "comments": 6
+      },
+      "hashtags": ["minimalist", "style", "elegant", "fashion"]
+    },
+    {
+      "id": "masood-aslami-fitpic",
+      "authorId": "u_alice_smith",
+      "author": {
+        "uid": "u_alice_smith",
+        "username": "alicesmith",
+        "displayName": "Alice Smith",
+        "avatarUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+      },
+      "photos": [
+        {
+          "id": "ph_bag_1",
+          "url": "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=800&h=1000&fit=crop",
+          "thumbnailUrl": "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=300&h=400&fit=crop",
+          "index": 0,
+          "isCover": true
+        }
+      ],
+      "caption": "New designer bag that goes with everything! 💼 #designer #bags #luxury",
+      "products": [
+        {
+          "id": "fernando-andrade-product",
+          "name": "Designer Leather Tote",
+          "brand": "Luxury Bags",
+          "category": "Accessories",
+          "price": 299.99,
+          "currency": "USD",
+          "imageUrl": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=400&fit=crop"
+        }
+      ],
+      "createdAt": "2024-06-12T11:15:00Z",
+      "engagement": {
+        "likes": 456,
+        "saves": 78,
+        "comments": 23
+      },
+      "hashtags": ["designer", "bags", "luxury", "accessories"]
+    },
+    {
+      "id": "nikita-pishchugin-fitpic",
+      "authorId": "u_mike_chen",
+      "author": {
+        "uid": "u_mike_chen",
+        "username": "mikechen",
+        "displayName": "Mike Chen",
+        "avatarUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
+      },
+      "photos": [
+        {
+          "id": "ph_athletic_1",
+          "url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=1000&fit=crop",
+          "thumbnailUrl": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop",
+          "index": 0,
+          "isCover": true
+        }
+      ],
+      "caption": "Morning run fit 🏃‍♂️ Comfort meets style #athleticwear #fitness",
+      "products": [
+        {
+          "id": "giorgio-trovato-product",
+          "name": "Nike Running Sneakers",
+          "brand": "Nike",
+          "category": "Footwear",
+          "price": 129.99,
+          "currency": "USD",
+          "imageUrl": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=400&fit=crop"
+        }
+      ],
+      "createdAt": "2024-06-11T08:00:00Z",
+      "engagement": {
+        "likes": 312,
+        "saves": 56,
+        "comments": 15
+      },
+      "hashtags": ["athleticwear", "fitness", "nike", "running"]
+    },
+    {
+      "id": "quiet-studio-fitpic",
+      "authorId": "u_jane_doe",
+      "author": {
+        "uid": "u_jane_doe",
+        "username": "janedoe",
+        "displayName": "Jane Doe",
+        "avatarUrl": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+      },
+      "photos": [
+        {
+          "id": "ph_vintage_1",
+          "url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=1000&fit=crop",
+          "thumbnailUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop",
+          "index": 0,
+          "isCover": true
+        }
+      ],
+      "caption": "Vintage tee find! Love the retro vibes 🕶️ #vintage #thrifted",
+      "products": [
+        {
+          "id": "joan-tran-product",
+          "name": "Vintage Band Tee",
+          "brand": "Retro Threads",
+          "category": "Tops",
+          "price": 39.99,
+          "currency": "USD",
+          "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop"
+        }
+      ],
+      "createdAt": "2024-06-10T13:20:00Z",
+      "engagement": {
+        "likes": 178,
+        "saves": 29,
+        "comments": 9
+      },
+      "hashtags": ["vintage", "thrifted", "retro", "tee"]
+    }
+  ],
+  "products": [
+    {
+      "id": "c-d-x-product",
+      "name": "Floral Summer Dress",
+      "brand": "Sunny Days",
+      "category": "Dresses",
+      "price": 89.99,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "imageUrl": "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=300&h=400&fit=crop",
+      "purchaseUrl": "https://example.com/product/dress-1",
+      "rating": 4.5,
+      "reviewCount": 127,
+      "isAvailable": true,
+      "tags": ["summer", "dress", "floral", "casual"]
+    },
+    {
+      "id": "daniel-korpai-product",
+      "name": "Classic White Sneakers",
+      "brand": "Urban Steps",
+      "category": "Footwear",
+      "price": 89.99,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "imageUrl": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=400&fit=crop",
+      "purchaseUrl": "https://example.com/product/sneakers-1",
+      "rating": 4.8,
+      "reviewCount": 234,
+      "isAvailable": true,
+      "tags": ["sneakers", "white", "casual", "footwear"]
+    },
+    {
+      "id": "fernando-andrade-product",
+      "name": "Designer Leather Tote",
+      "brand": "Luxury Bags",
+      "category": "Accessories",
+      "price": 299.99,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "imageUrl": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=400&fit=crop",
+      "purchaseUrl": "https://example.com/product/bag-1",
+      "rating": 4.9,
+      "reviewCount": 89,
+      "isAvailable": true,
+      "tags": ["designer", "bags", "luxury", "leather"]
+    },
+    {
+      "id": "domino-studio-product",
+      "name": "Classic White Shirt",
+      "brand": "Minimalist Co",
+      "category": "Tops",
+      "price": 59.99,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "imageUrl": "https://images.unsplash.com/photo-1603252109303-2751441dd157?w=300&h=400&fit=crop",
+      "purchaseUrl": "https://example.com/product/shirt-1",
+      "rating": 4.6,
+      "reviewCount": 156,
+      "isAvailable": true,
+      "tags": ["shirt", "white", "minimalist", "classic"]
+    },
+    {
+      "id": "giorgio-trovato-product",
+      "name": "Nike Running Sneakers",
+      "brand": "Nike",
+      "category": "Footwear",
+      "price": 129.99,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "imageUrl": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=400&fit=crop",
+      "purchaseUrl": "https://example.com/product/sneakers-2",
+      "rating": 4.7,
+      "reviewCount": 312,
+      "isAvailable": true,
+      "tags": ["nike", "sneakers", "running", "athletic"]
+    },
+    {
+      "id": "joan-tran-product",
+      "name": "Vintage Band Tee",
+      "brand": "Retro Threads",
+      "category": "Tops",
+      "price": 39.99,
+      "currency": "USD",
+      "priceStatus": "Fixed",
+      "imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop",
+      "purchaseUrl": "https://example.com/product/tee-1",
+      "rating": 4.4,
+      "reviewCount": 98,
+      "isAvailable": true,
+      "tags": ["vintage", "tee", "retro", "band"]
+    }
+  ],
+  "hashtags": [
+    {
+      "tag": "summer",
+      "postCount": 1234,
+      "isTrending": true,
+      "trendDirection": "up"
+    },
+    {
+      "tag": "fashion",
+      "postCount": 5678,
+      "isTrending": true,
+      "trendDirection": "up"
+    },
+    {
+      "tag": "streetwear",
+      "postCount": 2345,
+      "isTrending": false,
+      "trendDirection": "stable"
+    },
+    {
+      "tag": "minimalist",
+      "postCount": 890,
+      "isTrending": false,
+      "trendDirection": "down"
+    },
+    {
+      "tag": "designer",
+      "postCount": 3456,
+      "isTrending": true,
+      "trendDirection": "up"
+    }
+  ]
+}
+
