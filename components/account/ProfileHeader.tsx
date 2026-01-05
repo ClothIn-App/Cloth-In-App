@@ -2,25 +2,24 @@ import React, { useState } from "react";
 import { Image, View, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useThemeColor } from "../../hooks/useThemeColor";
-import type { ProfileCounts, ProfileMe } from "../../src/types/account";
+import type { ProfileMe } from "../../src/types/account";
 import { ThemedText } from "../ThemedText";
 import FollowersModal from "./FollowersModal";
 import FollowingModal from "./FollowingModal";
 import { Ionicons } from "@expo/vector-icons";
 
-type Props = { me?: ProfileMe; counts?: ProfileCounts };
+type Props = { me?: ProfileMe };
 
-export default function ProfileHeader({ me, counts }: Props) {
+export default function ProfileHeader({ me }: Props) {
   const router = useRouter();
   const muted = useThemeColor({}, "mutedText");
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
 
-  const name = me?.displayName ?? "My Account";
-  const handle = me?.username ?? "username";
-  const posts = counts?.posts ?? 0;
-  const following = counts?.following ?? 0;
-  const followers = counts?.followers ?? 0;
+  const name = me?.username ? `@${me.username}` : "@username";
+  const posts = (me as any)?.fitpics?.postedIds?.length ?? 0;
+  const following = (me as any)?.following?.total ?? 0;
+  const followers = (me as any)?.followers?.total ?? 0;
 
   return (
     <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 }}>
@@ -60,7 +59,6 @@ export default function ProfileHeader({ me, counts }: Props) {
         />
         <View style={{ flex: 1 }}>
           <ThemedText style={{ fontSize: 16, fontWeight: "600" }}>{name}</ThemedText>
-          <ThemedText style={{ color: muted, fontSize: 14 }}>@{handle}</ThemedText>
         </View>
       </View>
 
@@ -78,12 +76,12 @@ export default function ProfileHeader({ me, counts }: Props) {
       <FollowersModal
         visible={showFollowersModal}
         onClose={() => setShowFollowersModal(false)}
-        userId={me?.uid}
+        userId={(me as any)?.id ?? me?.uid}
       />
       <FollowingModal
         visible={showFollowingModal}
         onClose={() => setShowFollowingModal(false)}
-        userId={me?.uid}
+        userId={(me as any)?.id ?? me?.uid}
       />
     </View>
   );

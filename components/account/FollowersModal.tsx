@@ -13,40 +13,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useThemeColor } from "../../hooks/useThemeColor";
 import { ThemedText } from "../ThemedText";
 import type { FollowerUser } from "../../src/types/account";
+import usersData from "../../src/mocks/mock-users.json";
+import session from "../../src/mocks/mock-session.json";
 
 type Props = {
   visible: boolean;
   onClose: () => void;
   userId?: string;
 };
-
-// Mock data for now - replace with actual API call
-const mockFollowers: FollowerUser[] = [
-  {
-    uid: "u_1",
-    displayName: "Alice Johnson",
-    username: "alice_j",
-    avatarUrl: "https://placehold.co/60x60",
-    bio: "Fashion enthusiast",
-    isFollowing: false,
-  },
-  {
-    uid: "u_2", 
-    displayName: "Bob Smith",
-    username: "bobsmith",
-    avatarUrl: "https://placehold.co/60x60",
-    bio: "Style blogger",
-    isFollowing: true,
-  },
-  {
-    uid: "u_3",
-    displayName: "Carol Davis", 
-    username: "carol_d",
-    avatarUrl: "https://placehold.co/60x60",
-    bio: "Fashion designer",
-    isFollowing: false,
-  },
-];
 
 export default function FollowersModal({ visible, onClose, userId }: Props) {
   const [followers, setFollowers] = useState<FollowerUser[]>([]);
@@ -65,11 +39,47 @@ export default function FollowersModal({ visible, onClose, userId }: Props) {
 
   const loadFollowers = async () => {
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setFollowers(mockFollowers);
+    try {
+      const users = usersData as Record<string, any>;
+      
+      // Load the profile user
+      const profileUser = users[userId!];
+      if (!profileUser) {
+        setFollowers([]);
+        return;
+      }
+      
+      // Get current user ID for follow status
+      const currentUserId = session.currentUserId;
+      const currentUser = users[currentUserId];
+      const currentUserFollowingIds = new Set(
+        currentUser?.following?.userIds ?? []
+      );
+
+      // Build list from profileUser.followers.userIds
+      const followerIds = profileUser.followers?.userIds ?? [];
+      const hydratedFollowers: FollowerUser[] = followerIds
+        .map((followerId: string): FollowerUser | null => {
+          const user = users[followerId];
+          if (!user) return null;
+          
+          return {
+            uid: user.id,
+            username: user.username,
+            avatarUrl: user.avatarUrl,
+            bio: user.bio,
+            isFollowing: currentUserFollowingIds.has(user.id),
+          } as FollowerUser;
+        })
+        .filter((item: FollowerUser | null): item is FollowerUser => item !== null);
+
+      setFollowers(hydratedFollowers);
+    } catch (error) {
+      console.error("Error loading followers:", error);
+      setFollowers([]);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   const handleFollowToggle = (followerId: string) => {
@@ -90,9 +100,6 @@ export default function FollowersModal({ visible, onClose, userId }: Props) {
       />
       <View style={styles.userInfo}>
         <ThemedText style={styles.displayName}>
-          {item.displayName || item.username}
-        </ThemedText>
-        <ThemedText style={[styles.username, { color: mutedTextColor }]}>
           @{item.username}
         </ThemedText>
         {item.bio && (

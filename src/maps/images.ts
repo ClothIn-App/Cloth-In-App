@@ -2,14 +2,14 @@ import { ImageSourcePropType } from 'react-native';
 
 // FitPic asset mappings - maps JSON IDs to require() statements
 export const FITPIC_ASSETS: Record<string, ImageSourcePropType> = {
-  'abheet-singh-fitpic': require('../../assets/mock-images/abheet-singh-sachdeva-VYc45RkdeuA-unsplash.jpg'),
-  'evgeni-tcherkasski-1-fitpic': require('../../assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg'),
-  'evgeni-tcherkasski-2-fitpic': require('../../assets/mock-images/evgeni-tcherkasski-hegb9Y8dKos-unsplash.jpg'),
-  'joshua-kettle-fitpic': require('../../assets/mock-images/joshua-kettle-q8DovYzpoR8-unsplash.jpg'),
-  'masood-aslami-fitpic': require('../../assets/mock-images/masood-aslami-sSw20FmZvX4-unsplash.jpg'),
-  'nikita-pishchugin-fitpic': require('../../assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg'),
-  'quiet-studio-fitpic': require('../../assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg'),
-  'samsung-memory-fitpic': require('../../assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg'),
+  'FP_1': require('../../assets/mock-images/abheet-singh-sachdeva-VYc45RkdeuA-unsplash.jpg'),
+  'FP_2': require('../../assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg'),
+  'FP_3': require('../../assets/mock-images/evgeni-tcherkasski-hegb9Y8dKos-unsplash.jpg'),
+  'FP_4': require('../../assets/mock-images/joshua-kettle-q8DovYzpoR8-unsplash.jpg'),
+  'FP_5': require('../../assets/mock-images/masood-aslami-sSw20FmZvX4-unsplash.jpg'),
+  'FP_6': require('../../assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg'),
+  'FP_7': require('../../assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg'),
+  'FP_8': require('../../assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg'),
 };
 
 // Product asset mappings - maps JSON IDs to require() statements

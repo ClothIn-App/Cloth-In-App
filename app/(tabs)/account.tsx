@@ -8,12 +8,13 @@ import TabSwitcher from "../../components/account/TabSwitcher";
 
 import { getAccountTabs } from "../../constants/accountTabs";
 import useAccountData from "../../src/hooks/useAccountData";
+import session from "../../src/mocks/mock-session.json";
 
 export default function AccountScreen() {
   const insets = useSafeAreaInsets();
 
   // TODO: pull from your real auth context
-  const userId = "u_demo";
+  const userId = session.currentUserId;
 
   const { data, loading, error, refetch } = useAccountData(userId);
 
@@ -55,7 +56,7 @@ export default function AccountScreen() {
       style={{ flex: 1, paddingBottom: insets.bottom }}
       edges={["top", "bottom"]}
     >
-      <ProfileHeader me={data.me} counts={data.counts} />
+      <ProfileHeader me={data.me} />
       <TabSwitcher tabs={tabList} activeKey={activeKey} onChange={setActiveKey} />
       <TabContent activeKey={activeKey} userId={userId} />
     </SafeAreaView>

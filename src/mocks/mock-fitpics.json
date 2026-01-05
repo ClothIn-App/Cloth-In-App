@@ -1,8 +1,8 @@
 {
   "fitpics": [
     {
-      "id": "abheet-singh-fitpic",
-      "author": "abheet_singh",
+      "id": "FP_1",
+      "author": "u_001",
       "caption": "Perfect weekend look with comfortable sneakers and a classic hoodie",
       "imagePath": "assets/mock-images/abheet-singh-sachdeva-VYc45RkdeuA-unsplash.jpg",
       "featuredProducts": [
@@ -38,7 +38,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "abheet_singh",
+              "user": "u_001",
               "text": "Thanks! The hoodie is super comfortable too",
               "createdAt": "2024-01-15T11:15:00Z",
               "like": 5,
@@ -98,8 +98,8 @@
       ]
     },
     {
-      "id": "evgeni-tcherkasski-1-fitpic",
-      "author": "evgeni_tcherkasski",
+      "id": "FP_2",
+      "author": "u_002",
       "imagePath": "assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg",
       "featuredProducts": [
         "giorgio-trovato-product",
@@ -125,8 +125,8 @@
       "comments": []
     },
     {
-      "id": "evgeni-tcherkasski-2-fitpic",
-      "author": "evgeni_tcherkasski",
+      "id": "FP_3",
+      "author": "u_002",
       "caption": "Ready for any workout with this performance-focused outfit",
       "imagePath": "assets/mock-images/evgeni-tcherkasski-hegb9Y8dKos-unsplash.jpg",
       "featuredProducts": [
@@ -160,7 +160,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "evgeni_tcherkasski",
+              "user": "u_002",
               "text": "The material is breathable and perfect for workouts",
               "createdAt": "2024-01-13T10:30:00Z",
               "like": 4,
@@ -191,8 +191,8 @@
       ]
     },
     {
-      "id": "joshua-kettle-fitpic",
-      "author": "joshua_kettle",
+      "id": "FP_4",
+      "author": "u_003",
       "caption": "Classic denim jacket paired with premium leather boots",
       "imagePath": "assets/mock-images/joshua-kettle-q8DovYzpoR8-unsplash.jpg",
       "featuredProducts": [
@@ -205,7 +205,7 @@
         "fernando-andrade-product",
         "mohammad-metri-product",
         "c-d-x-product"
-      ], 
+      ],
       "createdAt": "2024-01-12T16:45:00Z",
       "location": "Paris, France",
       "reactions": {
@@ -227,7 +227,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "joshua_kettle",
+              "user": "u_003",
               "text": "Found it at a local vintage shop, it's one of my favorites!",
               "createdAt": "2024-01-12T18:00:00Z",
               "like": 9,
@@ -314,8 +314,8 @@
       ]
     },
     {
-      "id": "masood-aslami-fitpic",
-      "author": "masood_aslami",
+      "id": "FP_5",
+      "author": "u_004",
       "caption": "Professional yet comfortable look for the modern workplace",
       "imagePath": "assets/mock-images/masood-aslami-sSw20FmZvX4-unsplash.jpg",
       "featuredProducts": [
@@ -339,8 +339,8 @@
       "comments": []
     },
     {
-      "id": "nikita-pishchugin-fitpic",
-      "author": "nikita_pishchugin",
+      "id": "FP_6",
+      "author": "u_005",
       "imagePath": "assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg",
       "featuredProducts": [
         "rachit-tank-product",
@@ -370,7 +370,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "nikita_pishchugin",
+              "user": "u_005",
               "text": "Thanks! Less is more sometimes",
               "createdAt": "2024-01-10T14:30:00Z",
               "like": 6,
@@ -430,8 +430,8 @@
       ]
     },
     {
-      "id": "quiet-studio-fitpic",
-      "author": "quiet_studio",
+      "id": "FP_7",
+      "author": "u_006",
       "caption": "Ready for city adventures with this versatile outfit",
       "imagePath": "assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg",
       "featuredProducts": [
@@ -462,7 +462,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "quiet_studio",
+              "user": "u_006",
               "text": "Exactly! Comfortable and stylish for long walks",
               "createdAt": "2024-01-09T16:30:00Z",
               "like": 5,
@@ -493,8 +493,8 @@
       ]
     },
     {
-      "id": "samsung-memory-fitpic",
-      "author": "samsung_memory",
+      "id": "FP_8",
+      "author": "u_007",
       "caption": "Perfect for those who stay active and connected",
       "imagePath": "assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg",
       "featuredProducts": [
