@@ -13,40 +13,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useThemeColor } from "../../hooks/useThemeColor";
 import { ThemedText } from "../ThemedText";
 import type { FollowingUser } from "../../src/types/account";
+import usersData from "../../src/mocks/mock-users.json";
+import session from "../../src/mocks/mock-session.json";
 
 type Props = {
   visible: boolean;
   onClose: () => void;
   userId?: string;
 };
-
-// Mock data for now - replace with actual API call
-const mockFollowing: FollowingUser[] = [
-  {
-    uid: "u_4",
-    displayName: "Emma Wilson",
-    username: "emma_w",
-    avatarUrl: "https://placehold.co/60x60",
-    bio: "Fashion influencer",
-    isFollowing: true,
-  },
-  {
-    uid: "u_5", 
-    displayName: "David Brown",
-    username: "davidb",
-    avatarUrl: "https://placehold.co/60x60",
-    bio: "Style consultant",
-    isFollowing: true,
-  },
-  {
-    uid: "u_6",
-    displayName: "Sarah Miller", 
-    username: "sarah_m",
-    avatarUrl: "https://placehold.co/60x60",
-    bio: "Fashion photographer",
-    isFollowing: true,
-  },
-];
 
 export default function FollowingModal({ visible, onClose, userId }: Props) {
   const [following, setFollowing] = useState<FollowingUser[]>([]);
@@ -65,18 +39,54 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
 
   const loadFollowing = async () => {
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setFollowing(mockFollowing);
+    try {
+      const users = usersData as Record<string, any>;
+      
+      // Load the profile user
+      const profileUser = users[userId!];
+      if (!profileUser) {
+        setFollowing([]);
+        return;
+      }
+      
+      // Get current user ID for follow status
+      const currentUserId = session.currentUserId;
+      const currentUser = users[currentUserId];
+      const currentUserFollowingIds = new Set(
+        currentUser?.following?.userIds ?? []
+      );
+
+      // Build list from profileUser.following.userIds
+      const followingIds = profileUser.following?.userIds ?? [];
+      const hydratedFollowing: FollowingUser[] = followingIds
+        .map((followingId: string): FollowingUser | null => {
+          const user = users[followingId];
+          if (!user) return null;
+          
+          return {
+            uid: user.id,
+            username: user.username,
+            avatarUrl: user.avatarUrl,
+            bio: user.bio,
+            isFollowing: currentUserFollowingIds.has(user.id),
+          } as FollowingUser;
+        })
+        .filter((item: FollowingUser | null): item is FollowingUser => item !== null);
+
+      setFollowing(hydratedFollowing);
+    } catch (error) {
+      console.error("Error loading following:", error);
+      setFollowing([]);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
-  const handleUnfollow = (followingId: string) => {
+  const handleFollowToggle = (targetUserId: string) => {
     setFollowing(prev => 
       prev.map(user => 
-        user.uid === followingId 
-          ? { ...user, isFollowing: false }
+        user.uid === targetUserId 
+          ? { ...user, isFollowing: !user.isFollowing }
           : user
       )
     );
@@ -90,9 +100,6 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
       />
       <View style={styles.userInfo}>
         <ThemedText style={styles.displayName}>
-          {item.displayName || item.username}
-        </ThemedText>
-        <ThemedText style={[styles.username, { color: mutedTextColor }]}>
           @{item.username}
         </ThemedText>
         {item.bio && (
@@ -105,17 +112,19 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
         style={[
           styles.unfollowButton,
           { 
-            backgroundColor: backgroundColor,
+            backgroundColor: item.isFollowing ? borderColor : textColor,
             borderColor: borderColor 
           }
         ]}
-        onPress={() => handleUnfollow(item.uid)}
+        onPress={() => handleFollowToggle(item.uid)}
       >
         <Text style={[
           styles.unfollowButtonText,
-          { color: textColor }
+          { 
+            color: item.isFollowing ? textColor : backgroundColor 
+          }
         ]}>
-          Following
+          {item.isFollowing ? "Following" : "Follow"}
         </Text>
       </TouchableOpacity>
     </View>

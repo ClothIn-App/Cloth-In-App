@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { userClient } from "../services/apiClients";
-import type { AccountData, ProfileCounts, ProfileMe } from "../types/account";
+import type { AccountData } from "../types/account";
+import usersData from "../mocks/mock-users.json";
 
 export default function useAccountData(userId: string) {
   const [data, setData] = useState<AccountData>({});
@@ -14,25 +14,19 @@ export default function useAccountData(userId: string) {
     setError(null);
 
     try {
-      const res = await userClient.getUser(userId);
+      // Load user from mock-users.json
+      const user = (usersData as Record<string, any>)[userId];
+      
       if (reqRef.current === myReq) {
-        const me: ProfileMe = {
-          uid: res.user.uid,
-          displayName: res.user.displayName ?? undefined,
-          username: res.user.username ?? "username",
-          avatarUrl: res.user.avatarUrl ?? undefined,
-          bio: res.user.bio ?? undefined,
-          accountType: (res.user as any).accountType,
-        };
-        const counts: ProfileCounts | undefined = res.user.counts
-          ? {
-              posts: res.user.counts.posts,
-              following: res.user.counts.following,
-              followers: res.user.counts.followers,
-            }
-          : undefined;
+        if (!user) {
+          setError(new Error(`User ${userId} not found`));
+          return;
+        }
 
-        setData({ me, counts });
+        // Return user object as-is
+        const me = user as any;
+
+        setData({ me });
       }
     } catch (e) {
       if (reqRef.current === myReq) setError(e);
