@@ -65,10 +65,12 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
           
           return {
             uid: user.id,
+            displayName: user.displayName,
             username: user.username,
             avatarUrl: user.avatarUrl,
             bio: user.bio,
             isFollowing: currentUserFollowingIds.has(user.id),
+            isPrivateAccount: !!user?.privacy?.isPrivateAccount,
           } as FollowingUser;
         })
         .filter((item: FollowingUser | null): item is FollowingUser => item !== null);
@@ -92,43 +94,46 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
     );
   };
 
-  const renderFollowing = ({ item }: { item: FollowingUser }) => (
-    <View style={[styles.followingItem, { borderBottomColor: borderColor }]}>
-      <Image
-        source={{ uri: item.avatarUrl || "https://placehold.co/60x60" }}
-        style={styles.avatar}
-      />
-      <View style={styles.userInfo}>
-        <ThemedText style={styles.displayName}>
-          @{item.username}
-        </ThemedText>
-        {item.bio && (
-          <ThemedText style={[styles.bio, { color: mutedTextColor }]}>
-            {item.bio}
+  const renderFollowing = ({ item }: { item: FollowingUser }) => {
+    const shouldShowDisplayName = !!item.isFollowing || !item.isPrivateAccount;
+    return (
+      <View style={[styles.followingItem, { borderBottomColor: borderColor }]}>
+        <Image
+          source={{ uri: item.avatarUrl || "https://placehold.co/60x60" }}
+          style={styles.avatar}
+        />
+        <View style={[styles.userInfo, !shouldShowDisplayName && styles.centerVertically]}>
+          <ThemedText style={styles.username}>
+            @{item.username}
           </ThemedText>
-        )}
+          {shouldShowDisplayName && !!item.displayName && (
+            <ThemedText style={[styles.displayName, { color: mutedTextColor }]}>
+              {item.displayName}
+            </ThemedText>
+          )}
+        </View>
+        <TouchableOpacity
+          style={[
+            styles.unfollowButton,
+            { 
+              backgroundColor: item.isFollowing ? borderColor : textColor,
+              borderColor: borderColor 
+            }
+          ]}
+          onPress={() => handleFollowToggle(item.uid)}
+        >
+          <Text style={[
+            styles.unfollowButtonText,
+            { 
+              color: item.isFollowing ? textColor : backgroundColor 
+            }
+          ]}>
+            {item.isFollowing ? "Following" : "Follow"}
+          </Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        style={[
-          styles.unfollowButton,
-          { 
-            backgroundColor: item.isFollowing ? borderColor : textColor,
-            borderColor: borderColor 
-          }
-        ]}
-        onPress={() => handleFollowToggle(item.uid)}
-      >
-        <Text style={[
-          styles.unfollowButtonText,
-          { 
-            color: item.isFollowing ? textColor : backgroundColor 
-          }
-        ]}>
-          {item.isFollowing ? "Following" : "Follow"}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
+    );
+  };
 
   return (
     <Modal
@@ -239,16 +244,12 @@ const styles = StyleSheet.create({
   userInfo: {
     flex: 1,
   },
-  displayName: {
+  username: {
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 2,
   },
-  username: {
-    fontSize: 14,
-    marginBottom: 2,
-  },
-  bio: {
+  displayName: {
     fontSize: 14,
   },
   unfollowButton: {
@@ -260,5 +261,8 @@ const styles = StyleSheet.create({
   unfollowButtonText: {
     fontSize: 14,
     fontWeight: "600",
+  },
+  centerVertically: {
+    justifyContent: "center",
   },
 });

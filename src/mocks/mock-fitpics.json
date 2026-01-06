@@ -2,7 +2,7 @@
   "fitpics": [
     {
       "id": "FP_1",
-      "author": "u_001",
+      "author": "u_1",
       "caption": "Perfect weekend look with comfortable sneakers and a classic hoodie",
       "imagePath": "assets/mock-images/abheet-singh-sachdeva-VYc45RkdeuA-unsplash.jpg",
       "featuredProducts": [
@@ -38,7 +38,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "u_001",
+              "user": "u_1",
               "text": "Thanks! The hoodie is super comfortable too",
               "createdAt": "2024-01-15T11:15:00Z",
               "like": 5,
@@ -99,7 +99,7 @@
     },
     {
       "id": "FP_2",
-      "author": "u_002",
+      "author": "u_2",
       "imagePath": "assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg",
       "featuredProducts": [
         "P_5",
@@ -126,7 +126,7 @@
     },
     {
       "id": "FP_3",
-      "author": "u_002",
+      "author": "u_2",
       "caption": "Ready for any workout with this performance-focused outfit",
       "imagePath": "assets/mock-images/evgeni-tcherkasski-hegb9Y8dKos-unsplash.jpg",
       "featuredProducts": [
@@ -160,7 +160,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "u_002",
+              "user": "u_2",
               "text": "The material is breathable and perfect for workouts",
               "createdAt": "2024-01-13T10:30:00Z",
               "like": 4,
@@ -192,7 +192,7 @@
     },
     {
       "id": "FP_4",
-      "author": "u_003",
+      "author": "u_3",
       "caption": "Classic denim jacket paired with premium leather boots",
       "imagePath": "assets/mock-images/joshua-kettle-q8DovYzpoR8-unsplash.jpg",
       "featuredProducts": [
@@ -227,7 +227,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "u_003",
+              "user": "u_3",
               "text": "Found it at a local vintage shop, it's one of my favorites!",
               "createdAt": "2024-01-12T18:00:00Z",
               "like": 9,
@@ -315,7 +315,7 @@
     },
     {
       "id": "FP_5",
-      "author": "u_004",
+      "author": "u_4",
       "caption": "Professional yet comfortable look for the modern workplace",
       "imagePath": "assets/mock-images/masood-aslami-sSw20FmZvX4-unsplash.jpg",
       "featuredProducts": [
@@ -340,7 +340,7 @@
     },
     {
       "id": "FP_6",
-      "author": "u_005",
+      "author": "u_5",
       "imagePath": "assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg",
       "featuredProducts": [
         "P_8",
@@ -370,7 +370,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "u_005",
+              "user": "u_5",
               "text": "Thanks! Less is more sometimes",
               "createdAt": "2024-01-10T14:30:00Z",
               "like": 6,
@@ -431,7 +431,7 @@
     },
     {
       "id": "FP_7",
-      "author": "u_006",
+      "author": "u_6",
       "caption": "Ready for city adventures with this versatile outfit",
       "imagePath": "assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg",
       "featuredProducts": [
@@ -462,7 +462,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "u_006",
+              "user": "u_6",
               "text": "Exactly! Comfortable and stylish for long walks",
               "createdAt": "2024-01-09T16:30:00Z",
               "like": 5,
@@ -494,7 +494,7 @@
     },
     {
       "id": "FP_8",
-      "author": "u_007",
+      "author": "u_7",
       "caption": "Perfect for those who stay active and connected",
       "imagePath": "assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg",
       "featuredProducts": [

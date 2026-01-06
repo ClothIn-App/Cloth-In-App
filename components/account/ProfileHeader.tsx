@@ -17,7 +17,8 @@ export default function ProfileHeader({ me }: Props) {
   const [showFollowingModal, setShowFollowingModal] = useState(false);
 
   const name = me?.username ? `@${me.username}` : "@username";
-  const posts = (me as any)?.fitpics?.postedIds?.length ?? 0;
+  const displayName = me?.displayName ?? "";
+  const fitpics = (me as any)?.fitpics?.total ?? 0;
   const following = (me as any)?.following?.total ?? 0;
   const followers = (me as any)?.followers?.total ?? 0;
 
@@ -59,11 +60,16 @@ export default function ProfileHeader({ me }: Props) {
         />
         <View style={{ flex: 1 }}>
           <ThemedText style={{ fontSize: 16, fontWeight: "600" }}>{name}</ThemedText>
+          {!!displayName && (
+            <ThemedText style={{ fontSize: 14, marginTop: 2 }}>
+              {displayName}
+            </ThemedText>
+          )}
         </View>
       </View>
 
       <View style={{ flexDirection: "row", gap: 16, marginTop: 8 }}>
-        <ThemedText style={{ fontSize: 14 }}>Posts {posts}</ThemedText>
+        <ThemedText style={{ fontSize: 14 }}>FitPics {fitpics}</ThemedText>
         <TouchableOpacity onPress={() => setShowFollowingModal(true)}>
           <ThemedText style={{ fontSize: 14 }}>Following {following}</ThemedText>
         </TouchableOpacity>
