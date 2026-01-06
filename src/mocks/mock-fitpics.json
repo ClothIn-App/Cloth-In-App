@@ -6,16 +6,16 @@
       "caption": "Perfect weekend look with comfortable sneakers and a classic hoodie",
       "imagePath": "assets/mock-images/abheet-singh-sachdeva-VYc45RkdeuA-unsplash.jpg",
       "featuredProducts": [
-        "c-d-x-product",
-        "daniel-korpai-product"
+        "P_1",
+        "P_2"
       ],
       "featuredProductIds": [
-        "c-d-x-product",
-        "daniel-korpai-product",
-        "domino-studio-product",
-        "fernando-andrade-product",
-        "giorgio-trovato-product",
-        "joan-tran-product"
+        "P_1",
+        "P_2",
+        "P_3",
+        "P_4",
+        "P_5",
+        "P_6"
       ],
       "createdAt": "2024-01-15T10:30:00Z",
       "location": "New York, NY",
@@ -69,7 +69,7 @@
         {
           "id": "c3",
           "user": "outfit_inspirer",
-          "text": "Perfect weekend vibes! 🔥",
+          "text": "Perfect weekend vibes! \ud83d\udd25",
           "createdAt": "2024-01-16T09:20:00Z",
           "like": 12,
           "dislike": 1,
@@ -102,15 +102,15 @@
       "author": "u_002",
       "imagePath": "assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg",
       "featuredProducts": [
-        "giorgio-trovato-product",
-        "mohammad-metri-product"
+        "P_5",
+        "P_7"
       ],
       "featuredProductIds": [
-        "giorgio-trovato-product",
-        "mohammad-metri-product",
-        "rachit-tank-product",
-        "c-d-x-product",
-        "daniel-korpai-product"
+        "P_5",
+        "P_7",
+        "P_8",
+        "P_1",
+        "P_2"
       ],
       "createdAt": "2024-01-14T14:20:00Z",
       "location": "Los Angeles, CA",
@@ -130,14 +130,14 @@
       "caption": "Ready for any workout with this performance-focused outfit",
       "imagePath": "assets/mock-images/evgeni-tcherkasski-hegb9Y8dKos-unsplash.jpg",
       "featuredProducts": [
-        "joan-tran-product",
-        "rachit-tank-product"
+        "P_6",
+        "P_8"
       ],
       "featuredProductIds": [
-        "joan-tran-product",
-        "rachit-tank-product",
-        "mohammad-metri-product",
-        "giorgio-trovato-product"
+        "P_6",
+        "P_8",
+        "P_7",
+        "P_5"
       ],
       "createdAt": "2024-01-13T09:15:00Z",
       "location": "Toronto, Canada",
@@ -196,15 +196,15 @@
       "caption": "Classic denim jacket paired with premium leather boots",
       "imagePath": "assets/mock-images/joshua-kettle-q8DovYzpoR8-unsplash.jpg",
       "featuredProducts": [
-        "domino-studio-product",
-        "fernando-andrade-product",
-        "mohammad-metri-product"
+        "P_3",
+        "P_4",
+        "P_7"
       ],
       "featuredProductIds": [
-        "domino-studio-product",
-        "fernando-andrade-product",
-        "mohammad-metri-product",
-        "c-d-x-product"
+        "P_3",
+        "P_4",
+        "P_7",
+        "P_1"
       ],
       "createdAt": "2024-01-12T16:45:00Z",
       "location": "Paris, France",
@@ -267,7 +267,7 @@
         {
           "id": "c2",
           "user": "boot_enthusiast",
-          "text": "Those boots are 🔥! Premium quality for sure",
+          "text": "Those boots are \ud83d\udd25! Premium quality for sure",
           "createdAt": "2024-01-12T19:00:00Z",
           "like": 10,
           "dislike": 0,
@@ -319,12 +319,12 @@
       "caption": "Professional yet comfortable look for the modern workplace",
       "imagePath": "assets/mock-images/masood-aslami-sSw20FmZvX4-unsplash.jpg",
       "featuredProducts": [
-        "giorgio-trovato-product"
+        "P_5"
       ],
       "featuredProductIds": [
-        "giorgio-trovato-product",
-        "daniel-korpai-product",
-        "rachit-tank-product"
+        "P_5",
+        "P_2",
+        "P_8"
       ],
       "createdAt": "2024-01-11T11:30:00Z",
       "location": "Tokyo, Japan",
@@ -343,12 +343,12 @@
       "author": "u_005",
       "imagePath": "assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg",
       "featuredProducts": [
-        "rachit-tank-product",
-        "daniel-korpai-product"
+        "P_8",
+        "P_2"
       ],
       "featuredProductIds": [
-        "rachit-tank-product",
-        "daniel-korpai-product"
+        "P_8",
+        "P_2"
       ],
       "createdAt": "2024-01-10T13:20:00Z",
       "reactions": {
@@ -435,12 +435,12 @@
       "caption": "Ready for city adventures with this versatile outfit",
       "imagePath": "assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg",
       "featuredProducts": [
-        "c-d-x-product",
-        "giorgio-trovato-product",
-        "mohammad-metri-product"
+        "P_1",
+        "P_5",
+        "P_7"
       ],
       "featuredProductIds": [
-        "c-d-x-product"
+        "P_1"
       ],
       "createdAt": "2024-01-09T15:10:00Z",
       "reactions": {
@@ -498,9 +498,9 @@
       "caption": "Perfect for those who stay active and connected",
       "imagePath": "assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg",
       "featuredProducts": [
-        "joan-tran-product",
-        "rachit-tank-product",
-        "c-d-x-product"
+        "P_6",
+        "P_8",
+        "P_1"
       ],
       "featuredProductIds": [],
       "createdAt": "2024-01-08T12:00:00Z",

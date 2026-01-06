@@ -2,7 +2,7 @@
   "u_001": {
     "id": "u_001",
     "username": "abheet_singh",
-    "bio": "Fashion enthusiast sharing my style journey ✨",
+    "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_001.jpg",
     "coverUrl": "https://example.com/covers/u_001.jpg",
     "createdAt": "2023-08-25T20:04:02.339Z",
@@ -60,13 +60,13 @@
     "closet": {
       "total": 7,
       "productIds": [
-        "daniel-korpai-product",
-        "c-d-x-product",
-        "domino-studio-product",
-        "rachit-tank-product",
-        "mohammad-metri-product",
-        "fernando-andrade-product",
-        "giorgio-trovato-product"
+        "P_2",
+        "P_1",
+        "P_3",
+        "P_8",
+        "P_7",
+        "P_4",
+        "P_5"
       ]
     },
     "followers": {
@@ -94,7 +94,7 @@
   "u_002": {
     "id": "u_002",
     "username": "evgeni_tcherkasski",
-    "bio": "Fashion enthusiast sharing my style journey ✨",
+    "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_002.jpg",
     "coverUrl": "https://example.com/covers/u_002.jpg",
     "createdAt": "2023-11-13T22:32:54.937Z",
@@ -143,9 +143,9 @@
     "closet": {
       "total": 3,
       "productIds": [
-        "joan-tran-product",
-        "c-d-x-product",
-        "daniel-korpai-product"
+        "P_6",
+        "P_1",
+        "P_2"
       ]
     },
     "followers": {
@@ -168,7 +168,7 @@
   "u_003": {
     "id": "u_003",
     "username": "joshua_kettle",
-    "bio": "Fashion enthusiast sharing my style journey ✨",
+    "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_003.jpg",
     "coverUrl": "https://example.com/covers/u_003.jpg",
     "createdAt": "2024-01-06T07:20:01.574Z",
@@ -221,13 +221,13 @@
     "closet": {
       "total": 7,
       "productIds": [
-        "fernando-andrade-product",
-        "joan-tran-product",
-        "mohammad-metri-product",
-        "domino-studio-product",
-        "rachit-tank-product",
-        "daniel-korpai-product",
-        "c-d-x-product"
+        "P_4",
+        "P_6",
+        "P_7",
+        "P_3",
+        "P_8",
+        "P_2",
+        "P_1"
       ]
     },
     "followers": {
@@ -257,7 +257,7 @@
   "u_004": {
     "id": "u_004",
     "username": "masood_aslami",
-    "bio": "Fashion enthusiast sharing my style journey ✨",
+    "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_004.jpg",
     "coverUrl": "https://example.com/covers/u_004.jpg",
     "createdAt": "2023-11-08T04:46:21.935Z",
@@ -311,12 +311,12 @@
     "closet": {
       "total": 6,
       "productIds": [
-        "rachit-tank-product",
-        "domino-studio-product",
-        "fernando-andrade-product",
-        "daniel-korpai-product",
-        "giorgio-trovato-product",
-        "c-d-x-product"
+        "P_8",
+        "P_3",
+        "P_4",
+        "P_2",
+        "P_5",
+        "P_1"
       ]
     },
     "followers": {
@@ -343,7 +343,7 @@
   "u_005": {
     "id": "u_005",
     "username": "nikita_pishchugin",
-    "bio": "Fashion enthusiast sharing my style journey ✨",
+    "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_005.jpg",
     "coverUrl": "https://example.com/covers/u_005.jpg",
     "createdAt": "2023-03-21T11:49:09.986Z",
@@ -383,9 +383,9 @@
     "closet": {
       "total": 3,
       "productIds": [
-        "rachit-tank-product",
-        "joan-tran-product",
-        "mohammad-metri-product"
+        "P_8",
+        "P_6",
+        "P_7"
       ]
     },
     "followers": {
@@ -414,7 +414,7 @@
   "u_006": {
     "id": "u_006",
     "username": "quiet_studio",
-    "bio": "Fashion enthusiast sharing my style journey ✨",
+    "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_006.jpg",
     "coverUrl": "https://example.com/covers/u_006.jpg",
     "createdAt": "2023-08-28T19:13:46.925Z",
@@ -471,9 +471,9 @@
     "closet": {
       "total": 3,
       "productIds": [
-        "mohammad-metri-product",
-        "c-d-x-product",
-        "daniel-korpai-product"
+        "P_7",
+        "P_1",
+        "P_2"
       ]
     },
     "followers": {
@@ -501,7 +501,7 @@
   "u_007": {
     "id": "u_007",
     "username": "samsung_memory",
-    "bio": "Fashion enthusiast sharing my style journey ✨",
+    "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_007.jpg",
     "coverUrl": "https://example.com/covers/u_007.jpg",
     "createdAt": "2023-12-27T23:51:36.569Z",
@@ -553,10 +553,10 @@
     "closet": {
       "total": 4,
       "productIds": [
-        "daniel-korpai-product",
-        "c-d-x-product",
-        "mohammad-metri-product",
-        "joan-tran-product"
+        "P_2",
+        "P_1",
+        "P_7",
+        "P_6"
       ]
     },
     "followers": {
@@ -582,7 +582,7 @@
   "u_008": {
     "id": "u_008",
     "username": "current_user",
-    "bio": "Building my style one fitpic at a time 👔✨",
+    "bio": "Building my style one fitpic at a time \ud83d\udc54\u2728",
     "avatarUrl": "https://example.com/avatars/u_008.jpg",
     "coverUrl": "https://example.com/covers/u_008.jpg",
     "createdAt": "2023-03-02T12:27:45.462Z",
@@ -632,12 +632,12 @@
     "closet": {
       "total": 6,
       "productIds": [
-        "fernando-andrade-product",
-        "domino-studio-product",
-        "joan-tran-product",
-        "mohammad-metri-product",
-        "rachit-tank-product",
-        "daniel-korpai-product"
+        "P_4",
+        "P_3",
+        "P_6",
+        "P_7",
+        "P_8",
+        "P_2"
       ]
     },
     "followers": {

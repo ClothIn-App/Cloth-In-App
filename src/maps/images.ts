@@ -14,14 +14,14 @@ export const FITPIC_ASSETS: Record<string, ImageSourcePropType> = {
 
 // Product asset mappings - maps JSON IDs to require() statements
 export const PRODUCT_ASSETS: Record<string, ImageSourcePropType> = {
-  'c-d-x-product': require('../../assets/mock-products/c-d-x-PDX_a_82obo-unsplash.jpg'),
-  'daniel-korpai-product': require('../../assets/mock-products/daniel-korpai-hbTKIbuMmBI-unsplash.jpg'),
-  'domino-studio-product': require('../../assets/mock-products/domino-studio-164_6wVEHfI-unsplash.jpg'),
-  'fernando-andrade-product': require('../../assets/mock-products/fernando-andrade-potCPE_Cw8A-unsplash.jpg'),
-  'giorgio-trovato-product': require('../../assets/mock-products/giorgio-trovato-K62u25Jk6vo-unsplash.jpg'),
-  'joan-tran-product': require('../../assets/mock-products/joan-tran-reEySFadyJQ-unsplash.jpg'),
-  'mohammad-metri-product': require('../../assets/mock-products/mohammad-metri-E-0ON3VGrBc-unsplash.jpg'),
-  'rachit-tank-product': require('../../assets/mock-products/rachit-tank-2cFZ_FB08UM-unsplash.jpg'),
+  'P_1': require('../../assets/mock-products/c-d-x-PDX_a_82obo-unsplash.jpg'),
+  'P_2': require('../../assets/mock-products/daniel-korpai-hbTKIbuMmBI-unsplash.jpg'),
+  'P_3': require('../../assets/mock-products/domino-studio-164_6wVEHfI-unsplash.jpg'),
+  'P_4': require('../../assets/mock-products/fernando-andrade-potCPE_Cw8A-unsplash.jpg'),
+  'P_5': require('../../assets/mock-products/giorgio-trovato-K62u25Jk6vo-unsplash.jpg'),
+  'P_6': require('../../assets/mock-products/joan-tran-reEySFadyJQ-unsplash.jpg'),
+  'P_7': require('../../assets/mock-products/mohammad-metri-E-0ON3VGrBc-unsplash.jpg'),
+  'P_8': require('../../assets/mock-products/rachit-tank-2cFZ_FB08UM-unsplash.jpg'),
 };
 
 // Helper function to get asset by ID and type
