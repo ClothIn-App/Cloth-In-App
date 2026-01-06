@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { Image, View, TouchableOpacity } from "react-native";
+import { Image, View, TouchableOpacity, Text } from "react-native";
 import { useRouter } from "expo-router";
-import { useThemeColor } from "../../hooks/useThemeColor";
 import type { ProfileMe } from "../../src/types/account";
-import { ThemedText } from "../ThemedText";
 import FollowersModal from "./FollowersModal";
 import FollowingModal from "./FollowingModal";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,7 +10,6 @@ type Props = { me?: ProfileMe };
 
 export default function ProfileHeader({ me }: Props) {
   const router = useRouter();
-  const muted = useThemeColor({}, "mutedText");
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
 
@@ -26,23 +23,23 @@ export default function ProfileHeader({ me }: Props) {
     <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 }}>
       {/* My Profile Header */}
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-        <ThemedText type="title" style={{ fontSize: 20, fontWeight: "600" }}>
+        <Text style={{ fontSize: 20, fontWeight: "600", color: '#11181C' }}>
           My Profile
-        </ThemedText>
+        </Text>
         <View style={{ flexDirection: "row", gap: 8 }}>
           <TouchableOpacity 
             onPress={() => router.push("../profile-edit")}
             style={{ padding: 8 }}
             hitSlop={8}
           >
-            <Ionicons name="create-outline" size={24} color="#000" />
+            <Ionicons name="create-outline" size={24} color="#11181C" />
           </TouchableOpacity>
           <TouchableOpacity 
             onPress={() => router.push("../user-settings")}
             style={{ padding: 8 }}
             hitSlop={8}
           >
-            <Ionicons name="settings-outline" size={24} color="#000" />
+            <Ionicons name="settings-outline" size={24} color="#11181C" />
           </TouchableOpacity>
         </View>
       </View>
@@ -59,22 +56,22 @@ export default function ProfileHeader({ me }: Props) {
           }}
         />
         <View style={{ flex: 1 }}>
-          <ThemedText style={{ fontSize: 16, fontWeight: "600" }}>{name}</ThemedText>
+          <Text style={{ fontSize: 16, fontWeight: "600", color: '#11181C' }}>{name}</Text>
           {!!displayName && (
-            <ThemedText style={{ fontSize: 14, marginTop: 2 }}>
+            <Text style={{ fontSize: 14, marginTop: 2, color: '#11181C' }}>
               {displayName}
-            </ThemedText>
+            </Text>
           )}
         </View>
       </View>
 
       <View style={{ flexDirection: "row", gap: 16, marginTop: 8 }}>
-        <ThemedText style={{ fontSize: 14 }}>FitPics {fitpics}</ThemedText>
+        <Text style={{ fontSize: 14, color: '#11181C' }}>FitPics {fitpics}</Text>
         <TouchableOpacity onPress={() => setShowFollowingModal(true)}>
-          <ThemedText style={{ fontSize: 14 }}>Following {following}</ThemedText>
+          <Text style={{ fontSize: 14, color: '#11181C' }}>Following {following}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setShowFollowersModal(true)}>
-          <ThemedText style={{ fontSize: 14 }}>Followers {followers}</ThemedText>
+          <Text style={{ fontSize: 14, color: '#11181C' }}>Followers {followers}</Text>
         </TouchableOpacity>
       </View>
 

@@ -1,7 +1,6 @@
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import type { AccountTab } from "../../constants/accountTabs";
-import { useThemeColor } from "../../hooks/useThemeColor";
 
 type Props = {
   tabs: AccountTab[];
@@ -10,10 +9,10 @@ type Props = {
 };
 
 export default function TabSwitcher({ tabs, activeKey, onChange }: Props) {
-  const activeBg = useThemeColor({}, "pillActive");
-  const inactiveBg = useThemeColor({}, "pillInactive");
-  const border = useThemeColor({}, "border");
-  const text = useThemeColor({}, "text");
+  const activeBg = '#E1E1E6';
+  const inactiveBg = '#F2F2F5';
+  const border = '#E3E3E7';
+  const text = '#11181C';
 
   return (
     <View style={{ paddingVertical: 8 }}>

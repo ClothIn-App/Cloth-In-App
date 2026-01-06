@@ -10,8 +10,6 @@ import {
   StyleSheet 
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useThemeColor } from "../../hooks/useThemeColor";
-import { ThemedText } from "../ThemedText";
 import type { FollowingUser } from "../../src/types/account";
 import usersData from "../../src/mocks/mock-users.json";
 import session from "../../src/mocks/mock-session.json";
@@ -26,10 +24,10 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
   const [following, setFollowing] = useState<FollowingUser[]>([]);
   const [loading, setLoading] = useState(false);
   
-  const backgroundColor = useThemeColor({}, "background");
-  const textColor = useThemeColor({}, "text");
-  const borderColor = useThemeColor({}, "border");
-  const mutedTextColor = useThemeColor({}, "mutedText");
+  const backgroundColor = '#FFFFFF';
+  const textColor = '#11181C';
+  const borderColor = '#E3E3E7';
+  const mutedTextColor = '#666A70';
 
   useEffect(() => {
     if (visible && userId) {
@@ -103,13 +101,13 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
           style={styles.avatar}
         />
         <View style={[styles.userInfo, !shouldShowDisplayName && styles.centerVertically]}>
-          <ThemedText style={styles.username}>
+          <Text style={[styles.username, { color: textColor }]}>
             @{item.username}
-          </ThemedText>
+          </Text>
           {shouldShowDisplayName && !!item.displayName && (
-            <ThemedText style={[styles.displayName, { color: mutedTextColor }]}>
+            <Text style={[styles.displayName, { color: mutedTextColor }]}>
               {item.displayName}
-            </ThemedText>
+            </Text>
           )}
         </View>
         <TouchableOpacity
@@ -147,23 +145,23 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={[styles.closeButtonText, { color: textColor }]}>Done</Text>
           </TouchableOpacity>
-          <ThemedText style={styles.title}>Following</ThemedText>
+          <Text style={[styles.title, { color: textColor }]}>Following</Text>
           <View style={styles.placeholder} />
         </View>
 
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator />
-            <ThemedText style={{ marginTop: 8, color: mutedTextColor }}>
+            <Text style={{ marginTop: 8, color: mutedTextColor }}>
               Loading following...
-            </ThemedText>
+            </Text>
           </View>
         ) : following.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <ThemedText style={styles.emptyTitle}>Not following anyone</ThemedText>
-            <ThemedText style={[styles.emptySubtitle, { color: mutedTextColor }]}>
+            <Text style={[styles.emptyTitle, { color: textColor }]}>Not following anyone</Text>
+            <Text style={[styles.emptySubtitle, { color: mutedTextColor }]}>
               When you follow people, they'll appear here.
-            </ThemedText>
+            </Text>
           </View>
         ) : (
           <FlatList

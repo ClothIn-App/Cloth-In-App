@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { View } from "react-native";
-import { useThemeColor } from "../../hooks/useThemeColor";
-import { ThemedText } from "../ThemedText";
+import { View, Text } from "react-native";
 import FitPicGrid from "../../src/components/FitPicGrid";
 // FitPicDetailModal removed - will be reimplemented later
 import { useUserFitPics } from "../../src/hooks/useUserFitPics";
@@ -23,8 +21,8 @@ const messages: Record<string, { title: string; subtitle?: string }> = {
 export default function TabContent({ activeKey, userId }: Props) {
   const [selectedFitPic, setSelectedFitPic] = useState<FitPic | null>(null);
   const msg = messages[activeKey] ?? { title: "Nothing here (yet)" };
-  const border = useThemeColor({}, "border");
-  const muted = useThemeColor({}, "mutedText");
+  const border = '#E3E3E7';
+  const muted = '#666A70';
 
   // Load user's FitPics for the fitpics tab
   const {
@@ -74,13 +72,13 @@ export default function TabContent({ activeKey, userId }: Props) {
         padding: 16,
       }}
     >
-      <ThemedText style={{ fontSize: 16, fontWeight: "600", marginBottom: 4 }}>
+      <Text style={{ fontSize: 16, fontWeight: "600", marginBottom: 4, color: '#11181C' }}>
         {msg.title}
-      </ThemedText>
+      </Text>
       {msg.subtitle ? (
-        <ThemedText style={{ color: muted, textAlign: "center" }}>
+        <Text style={{ color: muted, textAlign: "center" }}>
           {msg.subtitle}
-        </ThemedText>
+        </Text>
       ) : null}
     </View>
   );
