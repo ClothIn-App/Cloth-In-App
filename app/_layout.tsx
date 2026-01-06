@@ -56,6 +56,15 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="search-results"
+            options={{
+              headerShown: false,
+              presentation: 'card',
+              gestureEnabled: true,
+              animation: 'slide_from_right',
+            }}
+          />
+          <Stack.Screen
             name="fitpic-detail"
             options={{
               headerShown: false,

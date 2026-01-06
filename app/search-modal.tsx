@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -11,71 +11,173 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import trendingSearchesData from '../src/mocks/trendingSearches.json';
+import { getSuggestions, getTrending, getRecents, clearRecents, type RecentSearchItem } from '../src/services/searchApi';
+import type { SearchSuggestion } from '../src/types/search';
 
 export default function SearchModalScreen() {
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const [showTrending, setShowTrending] = useState(true);
+  const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
+  const [trending, setTrending] = useState<SearchSuggestion[]>([]);
+  const [recents, setRecents] = useState<RecentSearchItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [suggestionsError, setSuggestionsError] = useState<string | null>(null);
+  const [isNoConnection, setIsNoConnection] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Mock search suggestions based on query
-  const getSearchSuggestions = (searchQuery: string) => {
-    if (!searchQuery.trim()) return [];
-    
-    return trendingSearchesData.filter(item =>
-      item.toLowerCase().includes(searchQuery.toLowerCase())
-    ).slice(0, 8);
-  };
+  const isEmpty = query.trim() === '';
 
-  const suggestions = getSearchSuggestions(query);
+  // Load recents and trending for empty state
+  useEffect(() => {
+    if (isEmpty) {
+      loadEmptyState();
+    }
+  }, []);
 
-  const handleSearchPress = () => {
-    if (query.trim()) {
-      // Perform search
-      console.log('Searching for:', query);
+  const loadEmptyState = async () => {
+    try {
+      const [recentsData, trendingData] = await Promise.all([
+        getRecents(),
+        getTrending(),
+      ]);
+      setRecents(recentsData.filter(item => item.type === 'query').slice(0, 5));
+      setTrending(trendingData);
+    } catch (error) {
+      console.error('Error loading empty state:', error);
     }
   };
 
-  const handleSuggestionPress = (suggestion: string) => {
-    setQuery(suggestion);
-    searchInputRef.current?.focus();
+  // Debounced search suggestions
+  const loadSuggestions = useCallback(async (searchQuery: string) => {
+    if (!searchQuery.trim()) {
+      setSuggestions([]);
+      setSuggestionsError(null);
+      setIsNoConnection(false);
+      await loadEmptyState();
+      return;
+    }
+
+    setLoading(true);
+    setSuggestionsError(null);
+    setIsNoConnection(false);
+    try {
+      const results = await getSuggestions(searchQuery);
+      setSuggestions(results);
+    } catch (error) {
+      console.error('Error loading suggestions:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load suggestions';
+      setSuggestionsError(errorMessage);
+      setIsNoConnection(errorMessage.toLowerCase().includes('connection') || errorMessage.toLowerCase().includes('internet'));
+      setSuggestions([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Debounce handler
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      loadSuggestions(query);
+    }, 300);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [query, loadSuggestions]);
+
+  const handleSearchPress = () => {
+    if (query.trim()) {
+      // Navigate to search results page
+      router.push({
+        pathname: '/search-results',
+        params: { q: query.trim() },
+      });
+    }
+  };
+
+  const handleSuggestionPress = (suggestion: SearchSuggestion | string) => {
+    // Handle both SearchSuggestion type and legacy string type
+    const suggestionText = typeof suggestion === 'string' 
+      ? suggestion.trim() 
+      : suggestion.text.trim();
+    
+    router.push({
+      pathname: '/search-results',
+      params: { q: suggestionText },
+    });
   };
 
   const handleQueryChange = (text: string) => {
     setQuery(text);
-    setShowTrending(text.trim() === '');
   };
 
   const handleFocus = () => {
     setIsFocused(true);
-    setShowTrending(query.trim() === '');
   };
 
   const handleBlur = () => {
     setIsFocused(false);
   };
 
-  const renderTrendingItem = ({ item }: { item: string }) => (
+  const handleClearRecents = async () => {
+    try {
+      await clearRecents();
+      // Reload empty state to refresh recents list
+      await loadEmptyState();
+    } catch (error) {
+      console.error('Error clearing recents:', error);
+    }
+  };
+
+  const renderRecentItem = ({ item }: { item: RecentSearchItem }) => {
+    if (item.type !== 'query') return null;
+    return (
+      <TouchableOpacity
+        style={styles.suggestionItem}
+        onPress={() => handleSuggestionPress({ id: `recent-${item.text}`, text: item.text, type: 'recent' })}
+      >
+        <Ionicons name="time-outline" size={16} color="#666A70" style={styles.suggestionIcon} />
+        <Text style={styles.suggestionText}>{item.text}</Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderTrendingItem = ({ item }: { item: SearchSuggestion }) => (
     <TouchableOpacity
       style={styles.suggestionItem}
       onPress={() => handleSuggestionPress(item)}
     >
       <Ionicons name="trending-up" size={16} color="#666A70" style={styles.trendingIcon} />
-      <Text style={styles.suggestionText}>{item}</Text>
+      <Text style={styles.suggestionText}>{item.text}</Text>
     </TouchableOpacity>
   );
 
-  const renderSuggestionItem = ({ item }: { item: string }) => (
-    <TouchableOpacity
-      style={styles.suggestionItem}
-      onPress={() => handleSuggestionPress(item)}
-    >
-      <Ionicons name="search" size={16} color="#666A70" style={styles.suggestionIcon} />
-      <Text style={styles.suggestionText}>{item}</Text>
-    </TouchableOpacity>
-  );
+  const renderSuggestionItem = ({ item }: { item: SearchSuggestion }) => {
+    let iconName = 'search';
+    if (item.type === 'recent') {
+      iconName = 'time-outline';
+    } else if (item.type === 'trending') {
+      iconName = 'trending-up';
+    }
+
+    return (
+      <TouchableOpacity
+        style={styles.suggestionItem}
+        onPress={() => handleSuggestionPress(item)}
+      >
+        <Ionicons name={iconName as any} size={16} color="#666A70" style={styles.suggestionIcon} />
+        <Text style={styles.suggestionText}>{item.text}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -105,7 +207,8 @@ export default function SearchModalScreen() {
               style={styles.clearButton}
               onPress={() => {
                 setQuery('');
-                setShowTrending(true);
+                setSuggestions([]);
+                loadEmptyState();
                 searchInputRef.current?.blur();
               }}
             >
@@ -117,28 +220,81 @@ export default function SearchModalScreen() {
       
       {/* Content Area */}
       <View style={styles.contentContainer}>
-        {showTrending ? (
-          <View style={styles.trendingContainer}>
-            <Text style={styles.trendingTitle}>Trending Searches</Text>
-            <FlatList
-              data={trendingSearchesData}
-              renderItem={renderTrendingItem}
-              keyExtractor={(item, index) => `trending-${index}`}
-              showsVerticalScrollIndicator={false}
-            />
+        {isEmpty ? (
+          <View style={styles.emptyStateContainer}>
+            {/* Recents Section */}
+            {recents.length > 0 && (
+              <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>Recent</Text>
+                  <TouchableOpacity onPress={handleClearRecents} style={styles.clearRecentsButton}>
+                    <Text style={styles.clearRecentsButtonText}>Clear</Text>
+                  </TouchableOpacity>
+                </View>
+                <FlatList
+                  data={recents}
+                  renderItem={renderRecentItem}
+                  keyExtractor={(item, index) => `recent-${index}`}
+                  showsVerticalScrollIndicator={false}
+                />
+              </View>
+            )}
+            
+            {/* Trending Section */}
+            {trending.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Trending</Text>
+                <FlatList
+                  data={trending}
+                  renderItem={renderTrendingItem}
+                  keyExtractor={(item) => item.id}
+                  showsVerticalScrollIndicator={false}
+                />
+              </View>
+            )}
           </View>
         ) : (
           <View style={styles.suggestionsContainer}>
-            {suggestions.length > 0 && (
+            {loading ? (
+              <View style={styles.loadingContainer}>
+                <Text style={styles.loadingText}>Searching...</Text>
+              </View>
+            ) : suggestionsError ? (
+              <View style={styles.errorContainer}>
+                <Ionicons 
+                  name={isNoConnection ? "cloud-offline-outline" : "alert-circle-outline"} 
+                  size={40} 
+                  color="#ef4444" 
+                />
+                <Text style={styles.errorTitle}>
+                  {isNoConnection ? 'No Connection' : 'Error'}
+                </Text>
+                <Text style={styles.errorMessage}>
+                  {isNoConnection 
+                    ? 'Please check your internet connection.'
+                    : suggestionsError}
+                </Text>
+                <TouchableOpacity 
+                  style={styles.retryButton} 
+                  onPress={() => loadSuggestions(query)}
+                >
+                  <Text style={styles.retryButtonText}>Try Again</Text>
+                </TouchableOpacity>
+              </View>
+            ) : suggestions.length > 0 ? (
               <>
                 <Text style={styles.suggestionsTitle}>Suggestions</Text>
                 <FlatList
                   data={suggestions}
                   renderItem={renderSuggestionItem}
-                  keyExtractor={(item, index) => `suggestion-${index}`}
+                  keyExtractor={(item) => item.id}
                   showsVerticalScrollIndicator={false}
                 />
               </>
+            ) : (
+              <View style={styles.emptySuggestions}>
+                <Text style={styles.emptyText}>No suggestions found</Text>
+              </View>
             )}
           </View>
         )}
@@ -192,15 +348,32 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
   },
-  trendingContainer: {
+  emptyStateContainer: {
     flex: 1,
     paddingTop: 20,
   },
-  trendingTitle: {
+  section: {
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#11181C',
-    marginBottom: 16,
+  },
+  clearRecentsButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  clearRecentsButtonText: {
+    fontSize: 14,
+    color: '#666A70',
+    fontWeight: '500',
   },
   trendingIcon: {
     marginRight: 12,
@@ -215,6 +388,22 @@ const styles = StyleSheet.create({
     color: '#11181C',
     marginBottom: 16,
   },
+  loadingContainer: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 14,
+    color: '#666A70',
+  },
+  emptySuggestions: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#666A70',
+  },
   suggestionItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -227,5 +416,34 @@ const styles = StyleSheet.create({
   suggestionText: {
     fontSize: 16,
     color: '#11181C',
+  },
+  errorContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#11181C',
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: '#666A70',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: '#11181C',
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
