@@ -66,7 +66,6 @@ const normalizeFitPic = async (rawFitPic: any): Promise<FitPicItem> => {
     source,
     caption: rawFitPic.caption,
     featuredProducts: rawFitPic.featuredProducts,
-    featuredProductIds: rawFitPic.featuredProductIds,
     likes: rawFitPic.likes,
     author: rawFitPic.author,
     createdAt: rawFitPic.createdAt,

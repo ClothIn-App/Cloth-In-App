@@ -19,24 +19,26 @@ export default function FitPic_Cover({ width, height, source, tagCount = 0, shar
         style={{ width, height }} 
         contentFit="contain"
       />
-      {/* Bottom-left overlay: pricetag icon + count */}
-      <View
-        style={{
-          position: "absolute",
-          left: 8,
-          bottom: 8,
-          paddingHorizontal: 10,
-          paddingVertical: 6,
-          borderRadius: 999,
-          backgroundColor: "rgba(0,0,0,0.65)",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 6,
-        }}
-      >
-        <Ionicons name="pricetag-outline" size={14} color="#fff" />
-        <Text style={{ color: "#fff", fontWeight: "700", fontSize: 12 }}>{tagCount}</Text>
-      </View>
+      {/* Bottom-left overlay: pricetag icon + count - only show when tagCount > 0 */}
+      {tagCount > 0 && (
+        <View
+          style={{
+            position: "absolute",
+            left: 8,
+            bottom: 8,
+            paddingHorizontal: 10,
+            paddingVertical: 6,
+            borderRadius: 999,
+            backgroundColor: "rgba(0,0,0,0.65)",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          <Ionicons name="pricetag-outline" size={14} color="#fff" />
+          <Text style={{ color: "#fff", fontWeight: "700", fontSize: 12 }}>{tagCount}</Text>
+        </View>
+      )}
     </View>
   );
 }

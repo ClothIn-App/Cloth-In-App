@@ -5,18 +5,17 @@
       "author": "u_1",
       "caption": "Perfect weekend look with comfortable sneakers and a classic hoodie",
       "imagePath": "assets/mock-images/abheet-singh-sachdeva-VYc45RkdeuA-unsplash.jpg",
-      "featuredProducts": [
-        "P_1",
-        "P_2"
-      ],
-      "featuredProductIds": [
-        "P_1",
-        "P_2",
-        "P_3",
-        "P_4",
-        "P_5",
-        "P_6"
-      ],
+      "featuredProducts": {
+        "total": 6,
+        "productIds": [
+          "P_1",
+          "P_2",
+          "P_3",
+          "P_4",
+          "P_5",
+          "P_6"
+        ]
+      },
       "createdAt": "2024-01-15T10:30:00Z",
       "location": "New York, NY",
       "reactions": {
@@ -101,17 +100,16 @@
       "id": "FP_2",
       "author": "u_2",
       "imagePath": "assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg",
-      "featuredProducts": [
-        "P_5",
-        "P_7"
-      ],
-      "featuredProductIds": [
-        "P_5",
-        "P_7",
-        "P_8",
-        "P_1",
-        "P_2"
-      ],
+      "featuredProducts": {
+        "total": 5,
+        "productIds": [
+          "P_5",
+          "P_7",
+          "P_8",
+          "P_1",
+          "P_2"
+        ]
+      },
       "createdAt": "2024-01-14T14:20:00Z",
       "location": "Los Angeles, CA",
       "reactions": {
@@ -129,16 +127,15 @@
       "author": "u_2",
       "caption": "Ready for any workout with this performance-focused outfit",
       "imagePath": "assets/mock-images/evgeni-tcherkasski-hegb9Y8dKos-unsplash.jpg",
-      "featuredProducts": [
-        "P_6",
-        "P_8"
-      ],
-      "featuredProductIds": [
-        "P_6",
-        "P_8",
-        "P_7",
-        "P_5"
-      ],
+      "featuredProducts": {
+        "total": 4,
+        "productIds": [
+          "P_6",
+          "P_8",
+          "P_7",
+          "P_5"
+        ]
+      },
       "createdAt": "2024-01-13T09:15:00Z",
       "location": "Toronto, Canada",
       "reactions": {
@@ -195,17 +192,15 @@
       "author": "u_3",
       "caption": "Classic denim jacket paired with premium leather boots",
       "imagePath": "assets/mock-images/joshua-kettle-q8DovYzpoR8-unsplash.jpg",
-      "featuredProducts": [
-        "P_3",
-        "P_4",
-        "P_7"
-      ],
-      "featuredProductIds": [
-        "P_3",
-        "P_4",
-        "P_7",
-        "P_1"
-      ],
+      "featuredProducts": {
+        "total": 4,
+        "productIds": [
+          "P_3",
+          "P_4",
+          "P_7",
+          "P_1"
+        ]
+      },
       "createdAt": "2024-01-12T16:45:00Z",
       "location": "Paris, France",
       "reactions": {
@@ -318,14 +313,14 @@
       "author": "u_4",
       "caption": "Professional yet comfortable look for the modern workplace",
       "imagePath": "assets/mock-images/masood-aslami-sSw20FmZvX4-unsplash.jpg",
-      "featuredProducts": [
-        "P_5"
-      ],
-      "featuredProductIds": [
-        "P_5",
-        "P_2",
-        "P_8"
-      ],
+      "featuredProducts": {
+        "total": 3,
+        "productIds": [
+          "P_5",
+          "P_2",
+          "P_8"
+        ]
+      },
       "createdAt": "2024-01-11T11:30:00Z",
       "location": "Tokyo, Japan",
       "reactions": {
@@ -342,14 +337,13 @@
       "id": "FP_6",
       "author": "u_5",
       "imagePath": "assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg",
-      "featuredProducts": [
-        "P_8",
-        "P_2"
-      ],
-      "featuredProductIds": [
-        "P_8",
-        "P_2"
-      ],
+      "featuredProducts": {
+        "total": 2,
+        "productIds": [
+          "P_8",
+          "P_2"
+        ]
+      },
       "createdAt": "2024-01-10T13:20:00Z",
       "reactions": {
         "counts": {
@@ -434,14 +428,12 @@
       "author": "u_6",
       "caption": "Ready for city adventures with this versatile outfit",
       "imagePath": "assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg",
-      "featuredProducts": [
-        "P_1",
-        "P_5",
-        "P_7"
-      ],
-      "featuredProductIds": [
-        "P_1"
-      ],
+      "featuredProducts": {
+        "total": 1,
+        "productIds": [
+          "P_1"
+        ]
+      },
       "createdAt": "2024-01-09T15:10:00Z",
       "reactions": {
         "counts": {
@@ -497,12 +489,10 @@
       "author": "u_7",
       "caption": "Perfect for those who stay active and connected",
       "imagePath": "assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg",
-      "featuredProducts": [
-        "P_6",
-        "P_8",
-        "P_1"
-      ],
-      "featuredProductIds": [],
+      "featuredProducts": {
+        "total": 0,
+        "productIds": []
+      },
       "createdAt": "2024-01-08T12:00:00Z",
       "reactions": {
         "counts": {

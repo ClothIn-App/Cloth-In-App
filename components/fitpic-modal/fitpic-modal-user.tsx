@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Image, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '../../hooks/useThemeColor';
+import mockUsers from '../../src/mocks/mock-users.json';
 
 type AuthorInfo = {
   uid: string;
@@ -16,22 +17,29 @@ type Props = {
   location?: string;
 };
 
+// Helper to look up user by ID from mock data
+const getUserById = (userId: string): { username: string; avatarUrl?: string } | null => {
+  const user = (mockUsers as Record<string, { username: string; avatarUrl?: string }>)[userId];
+  return user || null;
+};
+
 export default function FitPicModalUser({ author, createdAt, location }: Props) {
   const muted = useThemeColor({}, 'mutedText') || '#999';
 
-  // Normalize author data - handle both string (username) and object formats
-  const authorData: AuthorInfo = typeof author === 'string'
-    ? {
-        uid: '',
-        username: author,
-        displayName: undefined,
-        avatarUrl: undefined,
-      }
-    : author;
+  // Normalize author data - handle both string (authorId) and object formats
+  let username: string;
+  let avatarUrl: string | undefined;
 
-  const username = authorData.username;
-  const displayName = authorData.displayName;
-  const avatarUrl = authorData.avatarUrl;
+  if (typeof author === 'string') {
+    // author is an authorId (e.g., "u_1") - look up user data
+    const userData = getUserById(author);
+    username = userData?.username ?? author;
+    avatarUrl = userData?.avatarUrl;
+  } else {
+    // author is already an AuthorInfo object
+    username = author.username;
+    avatarUrl = author.avatarUrl;
+  }
 
   // Format date helper: "2024-01-13T10:30:00Z" -> "Jan 13"
   const formatDate = (dateString: string): string => {
@@ -65,14 +73,7 @@ export default function FitPicModalUser({ author, createdAt, location }: Props) 
         />
       </View>
       <View style={styles.userInfo}>
-        {displayName ? (
-          <>
-            <Text style={styles.displayName}>{displayName}</Text>
-            <Text style={[styles.username, { color: muted }]}>@{username}</Text>
-          </>
-        ) : (
-          <Text style={styles.username}>@{username}</Text>
-        )}
+        <Text style={styles.username}>@{username}</Text>
         {hasMetadata && (
           <View style={styles.metadataContainer}>
             {hasDate && (
