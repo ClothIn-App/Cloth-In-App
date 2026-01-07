@@ -227,7 +227,7 @@ export default function FitPicDetailScreen() {
           {/* Featured Products */}
           {fitpic && (
             <FitPicFeaturedProductsSection
-              featuredProductIds={fitpic.featuredProductIds}
+              featuredProductIds={fitpic.featuredProducts?.productIds}
               onOpenProduct={(productId) => {
                 router.push({
                   pathname: '/product-detail',

@@ -33,19 +33,19 @@ export default function AccountScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={{ flex: 1, alignItems: "center", justifyContent: "center" }} edges={["top", "bottom"]}>
+      <SafeAreaView style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: '#FFFFFF' }} edges={["top", "bottom"]}>
         <ActivityIndicator />
-        <Text style={{ marginTop: 8 }}>Loading…</Text>
+        <Text style={{ marginTop: 8, color: '#11181C' }}>Loading…</Text>
       </SafeAreaView>
     );
   }
 
   if (error) {
     return (
-      <SafeAreaView style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 16 }} edges={["top", "bottom"]}>
-        <Text style={{ fontSize: 18, marginBottom: 8 }}>Couldn’t load account.</Text>
+      <SafeAreaView style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 16, backgroundColor: '#FFFFFF' }} edges={["top", "bottom"]}>
+        <Text style={{ fontSize: 18, marginBottom: 8, color: '#11181C' }}>Couldn't load account.</Text>
         <TouchableOpacity onPress={refetch}>
-          <Text style={{ textDecorationLine: "underline" }}>Try again</Text>
+          <Text style={{ textDecorationLine: "underline", color: '#11181C' }}>Try again</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -53,7 +53,7 @@ export default function AccountScreen() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, paddingBottom: insets.bottom }}
+      style={{ flex: 1, paddingBottom: insets.bottom, backgroundColor: '#FFFFFF' }}
       edges={["top", "bottom"]}
     >
       <ProfileHeader me={data.me} />

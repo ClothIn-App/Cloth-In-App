@@ -43,9 +43,11 @@ export type FitPic = {
   author: string;
   caption?: string;
   imagePath: string;
-  featuredProducts: string[];
-  featuredProductIds?: string[];
-  productsUsed: string[]; // MUST be present and used to link products to fitpics (derived from featuredProductIds or featuredProducts)
+  featuredProducts: {
+    total: number;
+    productIds: string[];
+  };
+  productsUsed: string[]; // MUST be present and used to link products to fitpics (derived from featuredProducts.productIds)
   createdAt: string;
   location?: string;
   reactions: Reactions;

@@ -1,7 +1,8 @@
 {
-  "u_001": {
-    "id": "u_001",
+  "u_1": {
+    "id": "u_1",
     "username": "abheet_singh",
+    "displayName": "Abheet Singh",
     "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_001.jpg",
     "coverUrl": "https://example.com/covers/u_001.jpg",
@@ -53,6 +54,7 @@
       ]
     },
     "fitpics": {
+      "total": 1,
       "postedIds": [
         "FP_1"
       ]
@@ -72,28 +74,29 @@
     "followers": {
       "total": 6,
       "userIds": [
-        "u_002",
-        "u_003",
-        "u_005",
-        "u_006",
-        "u_007",
-        "u_008"
+        "u_2",
+        "u_3",
+        "u_5",
+        "u_6",
+        "u_7",
+        "u_8"
       ]
     },
     "following": {
       "total": 5,
       "userIds": [
-        "u_002",
-        "u_003",
-        "u_004",
-        "u_005",
-        "u_008"
+        "u_2",
+        "u_3",
+        "u_4",
+        "u_5",
+        "u_8"
       ]
     }
   },
-  "u_002": {
-    "id": "u_002",
+  "u_2": {
+    "id": "u_2",
     "username": "evgeni_tcherkasski",
+    "displayName": "Evgeni Tcherkasski",
     "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_002.jpg",
     "coverUrl": "https://example.com/covers/u_002.jpg",
@@ -135,6 +138,7 @@
       ]
     },
     "fitpics": {
+      "total": 2,
       "postedIds": [
         "FP_2",
         "FP_3"
@@ -151,23 +155,24 @@
     "followers": {
       "total": 2,
       "userIds": [
-        "u_001",
-        "u_008"
+        "u_1",
+        "u_8"
       ]
     },
     "following": {
       "total": 4,
       "userIds": [
-        "u_001",
-        "u_003",
-        "u_006",
-        "u_008"
+        "u_1",
+        "u_3",
+        "u_6",
+        "u_8"
       ]
     }
   },
-  "u_003": {
-    "id": "u_003",
+  "u_3": {
+    "id": "u_3",
     "username": "joshua_kettle",
+    "displayName": "Joshua Kettle",
     "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_003.jpg",
     "coverUrl": "https://example.com/covers/u_003.jpg",
@@ -214,6 +219,7 @@
       ]
     },
     "fitpics": {
+      "total": 1,
       "postedIds": [
         "FP_4"
       ]
@@ -233,30 +239,31 @@
     "followers": {
       "total": 7,
       "userIds": [
-        "u_001",
-        "u_002",
-        "u_004",
-        "u_005",
-        "u_006",
-        "u_007",
-        "u_008"
+        "u_1",
+        "u_2",
+        "u_4",
+        "u_5",
+        "u_6",
+        "u_7",
+        "u_8"
       ]
     },
     "following": {
       "total": 6,
       "userIds": [
-        "u_001",
-        "u_004",
-        "u_005",
-        "u_006",
-        "u_007",
-        "u_008"
+        "u_1",
+        "u_4",
+        "u_5",
+        "u_6",
+        "u_7",
+        "u_8"
       ]
     }
   },
-  "u_004": {
-    "id": "u_004",
+  "u_4": {
+    "id": "u_4",
     "username": "masood_aslami",
+    "displayName": "Masood Aslami",
     "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_004.jpg",
     "coverUrl": "https://example.com/covers/u_004.jpg",
@@ -304,6 +311,7 @@
       ]
     },
     "fitpics": {
+      "total": 1,
       "postedIds": [
         "FP_5"
       ]
@@ -322,27 +330,28 @@
     "followers": {
       "total": 5,
       "userIds": [
-        "u_001",
-        "u_003",
-        "u_005",
-        "u_006",
-        "u_008"
+        "u_1",
+        "u_3",
+        "u_5",
+        "u_6",
+        "u_8"
       ]
     },
     "following": {
       "total": 5,
       "userIds": [
-        "u_003",
-        "u_005",
-        "u_006",
-        "u_007",
-        "u_008"
+        "u_3",
+        "u_5",
+        "u_6",
+        "u_7",
+        "u_8"
       ]
     }
   },
-  "u_005": {
-    "id": "u_005",
+  "u_5": {
+    "id": "u_5",
     "username": "nikita_pishchugin",
+    "displayName": "Nikita Pishchugin",
     "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_005.jpg",
     "coverUrl": "https://example.com/covers/u_005.jpg",
@@ -376,6 +385,7 @@
       ]
     },
     "fitpics": {
+      "total": 1,
       "postedIds": [
         "FP_6"
       ]
@@ -391,29 +401,30 @@
     "followers": {
       "total": 6,
       "userIds": [
-        "u_001",
-        "u_003",
-        "u_004",
-        "u_006",
-        "u_007",
-        "u_008"
+        "u_1",
+        "u_3",
+        "u_4",
+        "u_6",
+        "u_7",
+        "u_8"
       ]
     },
     "following": {
       "total": 6,
       "userIds": [
-        "u_001",
-        "u_003",
-        "u_004",
-        "u_006",
-        "u_007",
-        "u_008"
+        "u_1",
+        "u_3",
+        "u_4",
+        "u_6",
+        "u_7",
+        "u_8"
       ]
     }
   },
-  "u_006": {
-    "id": "u_006",
+  "u_6": {
+    "id": "u_6",
     "username": "quiet_studio",
+    "displayName": "Quiet Studio",
     "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_006.jpg",
     "coverUrl": "https://example.com/covers/u_006.jpg",
@@ -464,6 +475,7 @@
       ]
     },
     "fitpics": {
+      "total": 1,
       "postedIds": [
         "FP_7"
       ]
@@ -479,28 +491,29 @@
     "followers": {
       "total": 5,
       "userIds": [
-        "u_002",
-        "u_003",
-        "u_004",
-        "u_005",
-        "u_008"
+        "u_2",
+        "u_3",
+        "u_4",
+        "u_5",
+        "u_8"
       ]
     },
     "following": {
       "total": 6,
       "userIds": [
-        "u_001",
-        "u_003",
-        "u_004",
-        "u_005",
-        "u_007",
-        "u_008"
+        "u_1",
+        "u_3",
+        "u_4",
+        "u_5",
+        "u_7",
+        "u_8"
       ]
     }
   },
-  "u_007": {
-    "id": "u_007",
+  "u_7": {
+    "id": "u_7",
     "username": "samsung_memory",
+    "displayName": "Samsung Memory",
     "bio": "Fashion enthusiast sharing my style journey \u2728",
     "avatarUrl": "https://example.com/avatars/u_007.jpg",
     "coverUrl": "https://example.com/covers/u_007.jpg",
@@ -546,6 +559,7 @@
       ]
     },
     "fitpics": {
+      "total": 1,
       "postedIds": [
         "FP_8"
       ]
@@ -562,26 +576,27 @@
     "followers": {
       "total": 5,
       "userIds": [
-        "u_003",
-        "u_004",
-        "u_005",
-        "u_006",
-        "u_008"
+        "u_3",
+        "u_4",
+        "u_5",
+        "u_6",
+        "u_8"
       ]
     },
     "following": {
       "total": 4,
       "userIds": [
-        "u_001",
-        "u_003",
-        "u_005",
-        "u_008"
+        "u_1",
+        "u_3",
+        "u_5",
+        "u_8"
       ]
     }
   },
-  "u_008": {
-    "id": "u_008",
+  "u_8": {
+    "id": "u_8",
     "username": "current_user",
+    "displayName": "Current User",
     "bio": "Building my style one fitpic at a time \ud83d\udc54\u2728",
     "avatarUrl": "https://example.com/avatars/u_008.jpg",
     "coverUrl": "https://example.com/covers/u_008.jpg",
@@ -627,6 +642,7 @@
       ]
     },
     "fitpics": {
+      "total": 0,
       "postedIds": []
     },
     "closet": {
@@ -643,25 +659,25 @@
     "followers": {
       "total": 7,
       "userIds": [
-        "u_001",
-        "u_002",
-        "u_003",
-        "u_004",
-        "u_005",
-        "u_006",
-        "u_007"
+        "u_1",
+        "u_2",
+        "u_3",
+        "u_4",
+        "u_5",
+        "u_6",
+        "u_7"
       ]
     },
     "following": {
       "total": 7,
       "userIds": [
-        "u_001",
-        "u_002",
-        "u_003",
-        "u_004",
-        "u_005",
-        "u_006",
-        "u_007"
+        "u_1",
+        "u_2",
+        "u_3",
+        "u_4",
+        "u_5",
+        "u_6",
+        "u_7"
       ]
     }
   }

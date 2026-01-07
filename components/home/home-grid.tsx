@@ -109,6 +109,7 @@ export default function Home_Grid({
                 width={colW}
                 height={scaledH}
                 source={item.source}
+                tagCount={item.featuredProducts?.total ?? 0}
                 sharedTransitionTag={`fitpic-${item.id}`}
               />
             </TouchableOpacity>

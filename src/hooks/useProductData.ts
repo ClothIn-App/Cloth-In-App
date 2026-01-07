@@ -48,10 +48,10 @@ export function useProductData(productId: string | undefined): UseProductDataRes
       ? rawProduct.comments.map(normalizeComment)
       : [];
 
-    // Map fitpics to add productsUsed field (derived from featuredProductIds or featuredProducts)
+    // Map fitpics to add productsUsed field (derived from featuredProducts.productIds)
     const allFitPics: FitPic[] = fitpicsData.fitpics.map((fp: any) => ({
       ...fp,
-      productsUsed: fp.featuredProductIds || fp.featuredProducts,
+      productsUsed: fp.featuredProducts?.productIds || [],
     })) as FitPic[];
 
     // Filter fitpics that include this product id in productsUsed

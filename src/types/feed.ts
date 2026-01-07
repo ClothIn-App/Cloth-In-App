@@ -23,8 +23,10 @@ export interface CommentType {
 export interface FitPicItem extends BaseFeedItem {
   type: 'fitpic';
   caption: string;
-  featuredProducts: string[]; // Array of product IDs
-  featuredProductIds?: string[]; // Array of featured product IDs (may be different from featuredProducts)
+  featuredProducts: {
+    total: number;
+    productIds: string[];
+  };
   likes: number;
   author: string;
   reactions: Reactions;
@@ -67,8 +69,10 @@ export interface RawFitPic {
   author: string;
   caption: string;
   imagePath: string;
-  featuredProducts: string[];
-  featuredProductIds?: string[];
+  featuredProducts: {
+    total: number;
+    productIds: string[];
+  };
   likes: number;
   createdAt: string;
   location?: string; // Optional location string (e.g., "New York, NY")

@@ -37,7 +37,7 @@ export function transformFitPicToSearchResult(fitpic: any): FitPicSearchResult {
       isCover: true,
     }] : [],
     caption: fitpic.caption || '',
-    products: (fitpic.featuredProductIds || []).map((productId: string) => {
+    products: (fitpic.featuredProducts?.productIds || []).map((productId: string) => {
       const product = productsData.products.find((p: any) => p.id === productId);
       if (!product) return null;
       const productImageSource = PRODUCT_ASSETS[productId];

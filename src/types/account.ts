@@ -23,6 +23,7 @@ export type FollowerUser = {
   avatarUrl?: string;
   bio?: string;
   isFollowing?: boolean;
+  isPrivateAccount?: boolean;
 };
 
 export type FollowingUser = {
@@ -32,6 +33,7 @@ export type FollowingUser = {
   avatarUrl?: string;
   bio?: string;
   isFollowing?: boolean;
+  isPrivateAccount?: boolean;
 };
 
 // Convenience aggregate used by the hook

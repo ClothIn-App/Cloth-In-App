@@ -10,8 +10,6 @@ import {
   StyleSheet 
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useThemeColor } from "../../hooks/useThemeColor";
-import { ThemedText } from "../ThemedText";
 import type { FollowerUser } from "../../src/types/account";
 import usersData from "../../src/mocks/mock-users.json";
 import session from "../../src/mocks/mock-session.json";
@@ -26,10 +24,10 @@ export default function FollowersModal({ visible, onClose, userId }: Props) {
   const [followers, setFollowers] = useState<FollowerUser[]>([]);
   const [loading, setLoading] = useState(false);
   
-  const backgroundColor = useThemeColor({}, "background");
-  const textColor = useThemeColor({}, "text");
-  const borderColor = useThemeColor({}, "border");
-  const mutedTextColor = useThemeColor({}, "mutedText");
+  const backgroundColor = '#FFFFFF';
+  const textColor = '#11181C';
+  const borderColor = '#E3E3E7';
+  const mutedTextColor = '#666A70';
 
   useEffect(() => {
     if (visible && userId) {
@@ -65,10 +63,12 @@ export default function FollowersModal({ visible, onClose, userId }: Props) {
           
           return {
             uid: user.id,
+            displayName: user.displayName,
             username: user.username,
             avatarUrl: user.avatarUrl,
             bio: user.bio,
             isFollowing: currentUserFollowingIds.has(user.id),
+            isPrivateAccount: !!user?.privacy?.isPrivateAccount,
           } as FollowerUser;
         })
         .filter((item: FollowerUser | null): item is FollowerUser => item !== null);
@@ -92,43 +92,46 @@ export default function FollowersModal({ visible, onClose, userId }: Props) {
     );
   };
 
-  const renderFollower = ({ item }: { item: FollowerUser }) => (
-    <View style={[styles.followerItem, { borderBottomColor: borderColor }]}>
-      <Image
-        source={{ uri: item.avatarUrl || "https://placehold.co/60x60" }}
-        style={styles.avatar}
-      />
-      <View style={styles.userInfo}>
-        <ThemedText style={styles.displayName}>
-          @{item.username}
-        </ThemedText>
-        {item.bio && (
-          <ThemedText style={[styles.bio, { color: mutedTextColor }]}>
-            {item.bio}
-          </ThemedText>
-        )}
+  const renderFollower = ({ item }: { item: FollowerUser }) => {
+    const shouldShowDisplayName = !!item.isFollowing || !item.isPrivateAccount;
+    return (
+      <View style={[styles.followerItem, { borderBottomColor: borderColor }]}>
+        <Image
+          source={{ uri: item.avatarUrl || "https://placehold.co/60x60" }}
+          style={styles.avatar}
+        />
+        <View style={[styles.userInfo, !shouldShowDisplayName && styles.centerVertically]}>
+          <Text style={[styles.username, { color: textColor }]}>
+            @{item.username}
+          </Text>
+          {shouldShowDisplayName && !!item.displayName && (
+            <Text style={[styles.displayName, { color: mutedTextColor }]}>
+              {item.displayName}
+            </Text>
+          )}
+        </View>
+        <TouchableOpacity
+          style={[
+            styles.followButton,
+            { 
+              backgroundColor: item.isFollowing ? borderColor : textColor,
+              borderColor: borderColor 
+            }
+          ]}
+          onPress={() => handleFollowToggle(item.uid)}
+        >
+          <Text style={[
+            styles.followButtonText,
+            { 
+              color: item.isFollowing ? textColor : backgroundColor 
+            }
+          ]}>
+            {item.isFollowing ? "Following" : "Follow"}
+          </Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        style={[
-          styles.followButton,
-          { 
-            backgroundColor: item.isFollowing ? borderColor : textColor,
-            borderColor: borderColor 
-          }
-        ]}
-        onPress={() => handleFollowToggle(item.uid)}
-      >
-        <Text style={[
-          styles.followButtonText,
-          { 
-            color: item.isFollowing ? textColor : backgroundColor 
-          }
-        ]}>
-          {item.isFollowing ? "Following" : "Follow"}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
+    );
+  };
 
   return (
     <Modal
@@ -142,23 +145,23 @@ export default function FollowersModal({ visible, onClose, userId }: Props) {
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={[styles.closeButtonText, { color: textColor }]}>Done</Text>
           </TouchableOpacity>
-          <ThemedText style={styles.title}>Followers</ThemedText>
+          <Text style={[styles.title, { color: textColor }]}>Followers</Text>
           <View style={styles.placeholder} />
         </View>
 
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator />
-            <ThemedText style={{ marginTop: 8, color: mutedTextColor }}>
+            <Text style={{ marginTop: 8, color: mutedTextColor }}>
               Loading followers...
-            </ThemedText>
+            </Text>
           </View>
         ) : followers.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <ThemedText style={styles.emptyTitle}>No followers yet</ThemedText>
-            <ThemedText style={[styles.emptySubtitle, { color: mutedTextColor }]}>
+            <Text style={[styles.emptyTitle, { color: textColor }]}>No followers yet</Text>
+            <Text style={[styles.emptySubtitle, { color: mutedTextColor }]}>
               When people follow you, they'll appear here.
-            </ThemedText>
+            </Text>
           </View>
         ) : (
           <FlatList
@@ -239,16 +242,12 @@ const styles = StyleSheet.create({
   userInfo: {
     flex: 1,
   },
-  displayName: {
+  username: {
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 2,
   },
-  username: {
-    fontSize: 14,
-    marginBottom: 2,
-  },
-  bio: {
+  displayName: {
     fontSize: 14,
   },
   followButton: {
@@ -260,5 +259,8 @@ const styles = StyleSheet.create({
   followButtonText: {
     fontSize: 14,
     fontWeight: "600",
+  },
+  centerVertically: {
+    justifyContent: "center",
   },
 });
