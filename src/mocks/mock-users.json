@@ -646,14 +646,16 @@
       "postedIds": []
     },
     "closet": {
-      "total": 6,
+      "total": 8,
       "productIds": [
-        "P_4",
+        "P_1",
+        "P_2",
         "P_3",
+        "P_4",
+        "P_5",
         "P_6",
         "P_7",
-        "P_8",
-        "P_2"
+        "P_8"
       ]
     },
     "followers": {
