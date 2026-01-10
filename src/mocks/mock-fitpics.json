@@ -3,7 +3,7 @@
     {
       "id": "FP_1",
       "author": "u_1",
-      "caption": "Perfect weekend look with comfortable sneakers and a classic hoodie",
+      "caption": "Perfect weekend look with comfortable sneakers and a classic hoodie #streetwear #sneakers #hoodie #weekend #casual",
       "imagePath": "assets/mock-images/abheet-singh-sachdeva-VYc45RkdeuA-unsplash.jpg",
       "featuredProducts": {
         "total": 6,
@@ -99,6 +99,7 @@
     {
       "id": "FP_2",
       "author": "u_2",
+      "caption": "Streetwear essentials for the urban explorer #streetwear #urban #sneakers #hoodie #casual",
       "imagePath": "assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg",
       "featuredProducts": {
         "total": 5,
@@ -125,7 +126,7 @@
     {
       "id": "FP_3",
       "author": "u_2",
-      "caption": "Ready for any workout with this performance-focused outfit",
+      "caption": "Ready for any workout with this performance-focused outfit #athleticwear #fitness #activewear #workout #sporty",
       "imagePath": "assets/mock-images/evgeni-tcherkasski-hegb9Y8dKos-unsplash.jpg",
       "featuredProducts": {
         "total": 4,
@@ -190,7 +191,7 @@
     {
       "id": "FP_4",
       "author": "u_3",
-      "caption": "Classic denim jacket paired with premium leather boots",
+      "caption": "Classic denim jacket paired with premium leather boots #denim #vintage #boots #leather #retro",
       "imagePath": "assets/mock-images/joshua-kettle-q8DovYzpoR8-unsplash.jpg",
       "featuredProducts": {
         "total": 4,
@@ -311,7 +312,7 @@
     {
       "id": "FP_5",
       "author": "u_4",
-      "caption": "Professional yet comfortable look for the modern workplace",
+      "caption": "Professional yet comfortable look for the modern workplace #workwear #professional #casual #office #business",
       "imagePath": "assets/mock-images/masood-aslami-sSw20FmZvX4-unsplash.jpg",
       "featuredProducts": {
         "total": 3,
@@ -336,6 +337,7 @@
     {
       "id": "FP_6",
       "author": "u_5",
+      "caption": "Minimalist streetwear style with clean lines #minimalist #streetwear #clean #simple #hoodie",
       "imagePath": "assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg",
       "featuredProducts": {
         "total": 2,
@@ -426,7 +428,7 @@
     {
       "id": "FP_7",
       "author": "u_6",
-      "caption": "Ready for city adventures with this versatile outfit",
+      "caption": "Ready for city adventures with this versatile outfit featuring classic white sneakers #city #sneakers #urban #versatile #classic",
       "imagePath": "assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg",
       "featuredProducts": {
         "total": 1,
@@ -487,11 +489,13 @@
     {
       "id": "FP_8",
       "author": "u_7",
-      "caption": "Perfect for those who stay active and connected",
+      "caption": "Tech meets style - smartwatch and modern accessories #techwear #smartwatch #modern #tech #gadgets",
       "imagePath": "assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg",
       "featuredProducts": {
-        "total": 0,
-        "productIds": []
+        "total": 1,
+        "productIds": [
+          "P_8"
+        ]
       },
       "createdAt": "2024-01-08T12:00:00Z",
       "reactions": {

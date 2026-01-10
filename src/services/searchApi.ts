@@ -8,7 +8,20 @@
 
 // Re-export types
 export type { RecentSearchItem } from './search/recentsStorage';
-export type { SearchTopResponse } from './search/types';
+export type { 
+  SearchTopResponse,
+  CategorySearchResponse,
+  UserSearchFilters,
+  FitPicSearchFilters,
+  ProductSearchFilters,
+  HashtagSearchFilters,
+  UserSortBy,
+  FitPicSortBy,
+  ProductSortBy,
+  HashtagSortBy,
+  SearchMetadata,
+  HashtagDetailResponse,
+} from './search/types';
 
 // Re-export dev config
 export { DEV_SIMULATE_ERROR } from './search/devConfig';
@@ -16,5 +29,13 @@ export { DEV_SIMULATE_ERROR } from './search/devConfig';
 // Re-export recents storage functions
 export { getRecents, addRecent, clearRecents } from './search/recentsStorage';
 
-// Re-export search functions
+// Re-export basic search functions
 export { getTrending, getSuggestions, searchTop } from './search/mockSearch';
+
+// Re-export category-specific search functions
+export {
+  searchUsers,
+  searchFitPics,
+  searchProducts,
+  searchHashtags,
+} from './search/categorySearch';
