@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,72 +6,227 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
+  FlatList,
+  RefreshControl,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { searchTop, type SearchTopResponse } from '../src/services/searchApi';
-import type { SearchResult } from '../src/types/search';
+import { 
+  searchTop, 
+  searchUsers, 
+  searchFitPics, 
+  searchProducts, 
+  searchHashtags,
+  type SearchTopResponse,
+  type CategorySearchResponse,
+} from '../src/services/searchApi';
+import type { 
+  SearchResult,
+  UserSearchResult,
+  FitPicSearchResult,
+  ProductSearchResult,
+  HashtagSearchResult,
+} from '../src/types/search';
+import SearchTabs, { type SearchTabKey } from '../components/search/SearchTabs';
+import SearchAnalytics from '../components/search/SearchAnalytics';
 import ProfilesPreview from '../components/search/ProfilesPreview';
 import FitPicsPreview from '../components/search/FitPicsPreview';
 import ProductsPreview from '../components/search/ProductsPreview';
+import HashtagsPreview from '../components/search/HashtagsPreview';
+
+type CategoryResults = 
+  | CategorySearchResponse<UserSearchResult>
+  | CategorySearchResponse<FitPicSearchResult>
+  | CategorySearchResponse<ProductSearchResult>
+  | CategorySearchResponse<HashtagSearchResult>;
 
 export default function SearchResultsScreen() {
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ q?: string }>();
-  const [loading, setLoading] = useState(true);
+  const params = useLocalSearchParams<{ q?: string; category?: string }>();
+  const [activeTab, setActiveTab] = useState<SearchTabKey>('top');
+  
+  // Top results state
+  const [topResults, setTopResults] = useState<SearchTopResponse | null>(null);
+  const [loadingTop, setLoadingTop] = useState(true);
+  
+  // Category-specific states
+  const [categoryResults, setCategoryResults] = useState<CategoryResults | null>(null);
+  const [loadingCategory, setLoadingCategory] = useState(false);
+  
+  // Error state
   const [error, setError] = useState<string | null>(null);
   const [isNoConnection, setIsNoConnection] = useState(false);
-  const [searchData, setSearchData] = useState<SearchTopResponse | null>(null);
 
   // Handle both string and array params (Expo Router can return arrays)
   const query = typeof params.q === 'string' ? params.q : (Array.isArray(params.q) ? params.q[0] : '') || '';
+  const initialCategory = params.category as SearchTabKey | undefined;
 
+  // Initialize with category from params if provided
   useEffect(() => {
-    // Debug: Log the query to verify it's being received
-    console.log('SearchResults: Received query param:', params.q, 'Processed query:', query);
-    
+    if (initialCategory && ['top', 'profiles', 'fitpics', 'products', 'hashtags'].includes(initialCategory)) {
+      setActiveTab(initialCategory as SearchTabKey);
+    }
+  }, [initialCategory]);
+
+  // Load top results on mount
+  useEffect(() => {
     if (!query.trim()) {
-      setLoading(false);
+      setLoadingTop(false);
       setError('No search query provided');
       return;
     }
 
-    loadSearchResults();
+    loadTopResults();
   }, [query]);
 
-  const loadSearchResults = async () => {
-    setLoading(true);
+  // Load category-specific results when tab changes
+  useEffect(() => {
+    if (activeTab !== 'top' && query.trim()) {
+      loadCategoryResults(activeTab);
+    }
+  }, [activeTab, query]);
+
+  const loadTopResults = async () => {
+    setLoadingTop(true);
     setError(null);
     setIsNoConnection(false);
 
     try {
-      console.log('SearchResults: Calling searchTop with query:', query);
       const results = await searchTop(query);
-      console.log('SearchResults: Received results:', {
-        users: results.results.users.length,
-        fitpics: results.results.fitpics.length,
-        products: results.results.products.length,
-        totalEstimate: results.totalEstimate,
-      });
-      setSearchData(results);
+      setTopResults(results);
     } catch (err) {
-      console.error('SearchResults: Error loading results:', err);
+      console.error('SearchResults: Error loading top results:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to load search results';
       setError(errorMessage);
-      // Check if it's a connection error
       setIsNoConnection(errorMessage.toLowerCase().includes('connection') || errorMessage.toLowerCase().includes('internet'));
     } finally {
-      setLoading(false);
+      setLoadingTop(false);
     }
   };
 
-  const handleSeeAll = (section: 'profiles' | 'fitpics' | 'products') => {
-    // Placeholder for future "See all" pages
-    console.log(`See all ${section} for query: ${query}`);
+  const loadCategoryResults = async (category: SearchTabKey) => {
+    setLoadingCategory(true);
+    setError(null);
+    setIsNoConnection(false);
+
+    try {
+      let results: CategoryResults;
+      
+      switch (category) {
+        case 'profiles':
+          results = await searchUsers(query, {}, 'relevance', null);
+          break;
+        case 'fitpics':
+          results = await searchFitPics(query, {}, 'relevance', null);
+          break;
+        case 'products':
+          results = await searchProducts(query, {}, 'relevance', null);
+          break;
+        case 'hashtags':
+          results = await searchHashtags(query, {}, 'relevance', null);
+          break;
+        default:
+          return;
+      }
+      
+      setCategoryResults(results);
+    } catch (err) {
+      console.error(`SearchResults: Error loading ${category} results:`, err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load search results';
+      setError(errorMessage);
+      setIsNoConnection(errorMessage.toLowerCase().includes('connection') || errorMessage.toLowerCase().includes('internet'));
+    } finally {
+      setLoadingCategory(false);
+    }
   };
 
-  if (loading) {
+  const handleTabChange = (tab: SearchTabKey) => {
+    setActiveTab(tab);
+    setCategoryResults(null); // Clear previous category results
+  };
+
+  const handleSeeAll = (section: 'profiles' | 'fitpics' | 'products' | 'hashtags') => {
+    // Navigate to category-specific "See All" page
+    router.push({
+      pathname: `/search-${section}`,
+      params: { q: query },
+    });
+  };
+
+  const handleRefresh = useCallback(() => {
+    if (activeTab === 'top') {
+      loadTopResults();
+    } else {
+      loadCategoryResults(activeTab);
+    }
+  }, [activeTab, query]);
+
+  // Tab definitions with counts
+  const getTabs = () => {
+    const tabs = [
+      { key: 'top' as SearchTabKey, label: 'Top', count: topResults?.totalEstimate },
+      { key: 'profiles' as SearchTabKey, label: 'Profiles', count: topResults?.results.users.length },
+      { key: 'fitpics' as SearchTabKey, label: 'FitPics', count: topResults?.results.fitpics.length },
+      { key: 'products' as SearchTabKey, label: 'Products', count: topResults?.results.products.length },
+      { key: 'hashtags' as SearchTabKey, label: 'Hashtags', count: topResults?.results.hashtags.length },
+    ];
+
+    // Update count for active category tab if we have category results
+    if (categoryResults && activeTab !== 'top') {
+      const tabIndex = tabs.findIndex(t => t.key === activeTab);
+      if (tabIndex !== -1) {
+        tabs[tabIndex].count = categoryResults.totalEstimate;
+      }
+    }
+
+    return tabs;
+  };
+
+  // Render category-specific content
+  const renderCategoryContent = () => {
+    if (!categoryResults) return null;
+
+    switch (activeTab) {
+      case 'profiles':
+        return (
+          <ProfilesPreview
+            users={(categoryResults as CategorySearchResponse<UserSearchResult>).items}
+            onSeeAll={() => handleSeeAll('profiles')}
+          />
+        );
+      
+      case 'fitpics':
+        return (
+          <FitPicsPreview
+            fitpics={(categoryResults as CategorySearchResponse<FitPicSearchResult>).items}
+            onSeeAll={() => handleSeeAll('fitpics')}
+          />
+        );
+      
+      case 'products':
+        return (
+          <ProductsPreview
+            products={(categoryResults as CategorySearchResponse<ProductSearchResult>).items}
+            onSeeAll={() => handleSeeAll('products')}
+          />
+        );
+      
+      case 'hashtags':
+        return (
+          <HashtagsPreview
+            hashtags={(categoryResults as CategorySearchResponse<HashtagSearchResult>).items}
+            onSeeAll={() => handleSeeAll('hashtags')}
+          />
+        );
+      
+      default:
+        return null;
+    }
+  };
+
+  // Loading state
+  if (loadingTop && !topResults) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.header}>
@@ -89,7 +244,8 @@ export default function SearchResultsScreen() {
     );
   }
 
-  if (error) {
+  // Error state
+  if (error && !topResults) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.header}>
@@ -115,7 +271,7 @@ export default function SearchResultsScreen() {
               ? 'Please check your internet connection and try again.'
               : error}
           </Text>
-          <TouchableOpacity style={styles.retryButton} onPress={loadSearchResults}>
+          <TouchableOpacity style={styles.retryButton} onPress={loadTopResults}>
             <Text style={styles.retryButtonText}>Try Again</Text>
           </TouchableOpacity>
         </View>
@@ -123,7 +279,8 @@ export default function SearchResultsScreen() {
     );
   }
 
-  if (!searchData || searchData.totalEstimate === 0) {
+  // Empty state (no results)
+  if (topResults && topResults.totalEstimate === 0 && activeTab === 'top') {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.header}>
@@ -147,10 +304,22 @@ export default function SearchResultsScreen() {
     );
   }
 
-  const { results } = searchData;
+  const tabs = getTabs();
+  const isTopTab = activeTab === 'top';
+  const isLoading = isTopTab ? loadingTop : loadingCategory;
+  const hasResults = isTopTab 
+    ? topResults && topResults.totalEstimate > 0
+    : categoryResults && categoryResults.totalEstimate > 0;
+  
+  const analytics = isTopTab && topResults
+    ? { totalResults: topResults.totalEstimate, searchTime: topResults.searchTime, query }
+    : categoryResults
+    ? { totalResults: categoryResults.totalEstimate, searchTime: categoryResults.searchTime, query }
+    : null;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#11181C" />
@@ -161,28 +330,72 @@ export default function SearchResultsScreen() {
         <View style={styles.headerRight} />
       </View>
 
-      <ScrollView 
+      {/* Tabs */}
+      <SearchTabs
+        tabs={tabs}
+        activeKey={activeTab}
+        onChange={handleTabChange}
+      />
+
+      {/* Search Analytics */}
+      {analytics && hasResults && (
+        <SearchAnalytics
+          totalResults={analytics.totalResults}
+          searchTime={analytics.searchTime}
+          query={analytics.query}
+        />
+      )}
+
+      {/* Content */}
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={handleRefresh}
+            tintColor="#11181C"
+            colors={['#11181C']}
+          />
+        }
       >
-        {/* Profiles Preview Section - Always render */}
-        <ProfilesPreview
-          users={results.users}
-          onSeeAll={() => handleSeeAll('profiles')}
-        />
-
-        {/* FitPics Preview Section - Always render */}
-        <FitPicsPreview
-          fitpics={results.fitpics}
-          onSeeAll={() => handleSeeAll('fitpics')}
-        />
-
-        {/* Products Preview Section - Always render */}
-        <ProductsPreview
-          products={results.products}
-          onSeeAll={() => handleSeeAll('products')}
-        />
+        {isLoading && !hasResults ? (
+          <View style={styles.loadingContent}>
+            <ActivityIndicator size="large" color="#11181C" />
+            <Text style={styles.loadingText}>Loading...</Text>
+          </View>
+        ) : isTopTab && topResults ? (
+          <>
+            {/* Top Results - Show all categories */}
+            <ProfilesPreview
+              users={topResults.results.users}
+              onSeeAll={() => handleSeeAll('profiles')}
+            />
+            <FitPicsPreview
+              fitpics={topResults.results.fitpics}
+              onSeeAll={() => handleSeeAll('fitpics')}
+            />
+            <ProductsPreview
+              products={topResults.results.products}
+              onSeeAll={() => handleSeeAll('products')}
+            />
+            <HashtagsPreview
+              hashtags={topResults.results.hashtags}
+              onSeeAll={() => handleSeeAll('hashtags')}
+            />
+          </>
+        ) : categoryResults && categoryResults.totalEstimate > 0 ? (
+          renderCategoryContent()
+        ) : categoryResults && categoryResults.totalEstimate === 0 ? (
+          <View style={styles.emptyCategoryContainer}>
+            <Ionicons name="search-outline" size={48} color="#9ca3af" />
+            <Text style={styles.emptyTitle}>No {activeTab} found</Text>
+            <Text style={styles.emptyMessage}>
+              Try a different search or check other tabs
+            </Text>
+          </View>
+        ) : null}
       </ScrollView>
     </View>
   );
@@ -228,6 +441,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 60,
   },
+  loadingContent: {
+    paddingVertical: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
@@ -271,6 +489,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     paddingVertical: 60,
   },
+  emptyCategoryContainer: {
+    paddingVertical: 60,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   emptyTitle: {
     fontSize: 20,
     fontWeight: '600',
@@ -290,4 +514,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-

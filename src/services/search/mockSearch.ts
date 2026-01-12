@@ -10,13 +10,14 @@ import type {
 } from '../../types/search';
 import type { SearchTopResponse } from './types';
 import trendingSearchesData from '../../mocks/trendingSearches.json';
-import searchResultsData from '../../mocks/searchResults.json';
 import searchSuggestionsData from '../../mocks/searchSuggestions.json';
 import fitpicsData from '../../mocks/mock-fitpics.json';
 import productsData from '../../mocks/mock-products.json';
+import usersData from '../../mocks/mock-users.json';
 import { DEV_SIMULATE_ERROR } from './devConfig';
 import { transformFitPicToSearchResult, transformProductToSearchResult } from './mappers';
 import { getRecents } from './recentsStorage';
+import type { UserSearchResult } from '../../types/search';
 
 // Simulate API delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -188,51 +189,107 @@ export async function searchTop(q: string): Promise<SearchTopResponse> {
     };
   }
   
-  // Use canonical mock data for FitPics and Products to ensure consistency with Home feed
-  // Users and Hashtags still use searchResults.json (they don't have detail screens)
-  const allResults = searchResultsData;
+  // Helper function for word-based matching
+  const matchesQuery = (queryLower: string, text: string | undefined | null): boolean => {
+    if (!text) return false;
+    const textLower = text.toLowerCase();
+    if (textLower.includes(queryLower)) return true;
+    const queryWords = queryLower.split(/[\s_]+/).filter(w => w.length > 0);
+    const textWords = textLower.split(/[\s_]+/).filter(w => w.length > 0);
+    for (const queryWord of queryWords) {
+      for (const textWord of textWords) {
+        if (textWord.includes(queryWord) || queryWord.includes(textWord)) return true;
+      }
+    }
+    return false;
+  };
   
-  // Filter users from searchResults.json (unchanged)
-  const users = allResults.users.filter(user => 
-    user.username.toLowerCase().includes(queryLower) ||
-    user.displayName?.toLowerCase().includes(queryLower) ||
-    user.bio?.toLowerCase().includes(queryLower)
-  );
+  // Use ONLY canonical mock data for consistency with Home feed
+  // Filter users from canonical mock-users.json with enhanced matching
+  const users: UserSearchResult[] = Object.values(usersData as Record<string, any>)
+    .filter((user: any) => {
+      const usernameMatch = matchesQuery(queryLower, user.username);
+      const displayNameMatch = matchesQuery(queryLower, user.displayName);
+      const bioMatch = matchesQuery(queryLower, user.bio);
+      const displayNameWords = (user.displayName || '').toLowerCase().split(/\s+/);
+      const nameMatch = displayNameWords.some(name => name.includes(queryLower) || queryLower.includes(name));
+      return usernameMatch || displayNameMatch || bioMatch || nameMatch;
+    })
+    .map((user: any): UserSearchResult => ({
+      id: user.id,
+      uid: user.id,
+      username: user.username,
+      displayName: user.displayName,
+      avatarUrl: user.avatarUrl,
+      bio: user.bio,
+      isFollowing: false,
+      followerCount: user.followers?.total || 0,
+      verified: user.isVerified || false,
+    }));
   
-  // Filter FitPics from canonical mock data
+  // Filter FitPics from canonical mock data with enhanced matching (includes products)
   const canonicalFitpics = fitpicsData.fitpics.filter(fitpic => {
-    const captionMatch = fitpic.caption?.toLowerCase().includes(queryLower) || false;
-    const authorMatch = fitpic.author?.toLowerCase().includes(queryLower) || false;
-    // Extract hashtags from caption for matching
+    const captionMatch = matchesQuery(queryLower, fitpic.caption);
+    const authorMatch = matchesQuery(queryLower, fitpic.author);
     const hashtags = fitpic.caption 
       ? (fitpic.caption.match(/#\w+/g) || []).map((tag: string) => tag.substring(1).toLowerCase())
       : [];
-    const hashtagMatch = hashtags.some(tag => tag.includes(queryLower));
-    return captionMatch || authorMatch || hashtagMatch;
+    const hashtagMatch = hashtags.some(tag => tag.includes(queryLower) || queryLower.includes(tag));
+    // Match on featured products
+    const productMatch = (fitpic.featuredProducts?.productIds || []).some((productId: string) => {
+      const product = productsData.products.find((p: any) => p.id === productId);
+      if (!product) return false;
+      return matchesQuery(queryLower, product.name) ||
+             matchesQuery(queryLower, product.brand) ||
+             matchesQuery(queryLower, product.description);
+    });
+    const captionWords = (fitpic.caption || '').toLowerCase().split(/\s+/);
+    const keywordMatch = captionWords.some(word => word.includes(queryLower) || queryLower.includes(word));
+    return captionMatch || authorMatch || hashtagMatch || productMatch || keywordMatch;
   });
   
   // Transform canonical FitPics to search result format
   const fitpics = canonicalFitpics.map(transformFitPicToSearchResult);
   
-  // Filter Products from canonical mock data
-  const canonicalProducts = productsData.products.filter((product: any) => 
-    product.name?.toLowerCase().includes(queryLower) ||
-    product.brand?.toLowerCase().includes(queryLower) ||
-    product.description?.toLowerCase().includes(queryLower)
-  );
+  // Filter Products from canonical mock data with enhanced matching
+  const canonicalProducts = productsData.products.filter((product: any) => {
+    const nameMatch = matchesQuery(queryLower, product.name);
+    const brandMatch = matchesQuery(queryLower, product.brand);
+    const descMatch = matchesQuery(queryLower, product.description);
+    const categoryMatch = matchesQuery(queryLower, product.category);
+    const nameWords = (product.name || '').toLowerCase().split(/\s+/);
+    const brandWords = (product.brand || '').toLowerCase().split(/\s+/);
+    const keywordMatch = nameWords.some(word => word.includes(queryLower) || queryLower.includes(word)) ||
+                        brandWords.some(word => word.includes(queryLower) || queryLower.includes(word));
+    return nameMatch || brandMatch || descMatch || categoryMatch || keywordMatch;
+  });
   
   // Transform canonical Products to search result format
   const products = canonicalProducts.map(transformProductToSearchResult);
   
-  // Filter hashtags from searchResults.json (unchanged)
-  const hashtags: HashtagSearchResult[] = allResults.hashtags
-    .filter(hashtag => hashtag.tag.toLowerCase().includes(queryLower))
-    .map(hashtag => ({
-      ...hashtag,
-      trendDirection: (hashtag.trendDirection === 'up' || hashtag.trendDirection === 'down' || hashtag.trendDirection === 'stable')
-        ? hashtag.trendDirection
-        : undefined,
-    }));
+  // Generate hashtags from FitPic captions (extract from canonical data)
+  const hashtagMap = new Map<string, number>();
+  fitpicsData.fitpics.forEach(fitpic => {
+    if (fitpic.caption) {
+      const hashtags = fitpic.caption.match(/#\w+/g) || [];
+      hashtags.forEach(tag => {
+        const tagLower = tag.substring(1).toLowerCase();
+        hashtagMap.set(tagLower, (hashtagMap.get(tagLower) || 0) + 1);
+      });
+    }
+  });
+  
+  // Convert to hashtag search results and filter by query
+  const hashtags: HashtagSearchResult[] = Array.from(hashtagMap.entries())
+    .filter(([tag]) => tag.includes(queryLower))
+    .map(([tag, count]) => ({
+      id: `hashtag-${tag}`,
+      tag,
+      postCount: count,
+      isTrending: count >= 2, // Consider trending if used in 2+ fitpics
+      trendDirection: count >= 3 ? 'up' as const : (count >= 2 ? 'stable' as const : undefined),
+    }))
+    .sort((a, b) => b.postCount - a.postCount); // Sort by usage count
   
   // Limit results for preview (Top Results page)
   const limitedUsers = users.slice(0, 5);

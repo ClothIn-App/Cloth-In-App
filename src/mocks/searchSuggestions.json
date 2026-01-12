@@ -1,61 +1,61 @@
 [
   {
     "id": "suggestion_1",
-    "text": "Summer dresses",
+    "text": "Classic White Sneakers",
     "type": "suggestion",
     "category": "products"
   },
   {
     "id": "suggestion_2",
-    "text": "Nike sneakers",
+    "text": "Streetwear Co",
     "type": "suggestion",
     "category": "products"
   },
   {
     "id": "suggestion_3",
-    "text": "janedoe",
+    "text": "abheet_singh",
     "type": "suggestion",
     "category": "users"
   },
   {
     "id": "suggestion_4",
-    "text": "Streetwear",
+    "text": "Black Hoodie",
     "type": "suggestion",
-    "category": "hashtags"
+    "category": "products"
   },
   {
     "id": "suggestion_5",
-    "text": "Designer bags",
+    "text": "Vintage Denim Jacket",
     "type": "suggestion",
     "category": "products"
   },
   {
     "id": "suggestion_6",
-    "text": "alicesmith",
+    "text": "joshua_kettle",
     "type": "suggestion",
     "category": "users"
   },
   {
     "id": "suggestion_7",
-    "text": "Minimalist fashion",
+    "text": "Leather Boots",
     "type": "suggestion",
-    "category": "hashtags"
+    "category": "products"
   },
   {
     "id": "suggestion_8",
-    "text": "Denim jackets",
+    "text": "Retro Threads",
     "type": "suggestion",
     "category": "products"
   },
   {
     "id": "suggestion_9",
-    "text": "Vintage tees",
+    "text": "ActiveWear",
     "type": "suggestion",
     "category": "products"
   },
   {
     "id": "suggestion_10",
-    "text": "bobwilson",
+    "text": "evgeni_tcherkasski",
     "type": "suggestion",
     "category": "users"
   }
