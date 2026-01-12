@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { View, ScrollView, useWindowDimensions, RefreshControl, RefreshControlProps } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type MasonryGridProps<T> = {
   data: T[];
@@ -24,6 +25,7 @@ export default function MasonryGrid<T>({
 }: MasonryGridProps<T>) {
   // Portrait-only assumption is fine; this will still work if rotation gets enabled later.
   const { width: screenWidth } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
 
   const columnWidth = useMemo(() => {
     const usable = screenWidth - contentPadding * 2 - gutter * (columns - 1);
@@ -54,13 +56,14 @@ export default function MasonryGrid<T>({
 
   return (
     <ScrollView
+      style={{ flex: 1 }}
       showsVerticalScrollIndicator={false}
       refreshControl={refreshControl}
       contentContainerStyle={{
         paddingLeft: contentPadding,
         paddingRight: contentPadding,
         paddingTop: gutter,
-        paddingBottom: gutter,
+        paddingBottom: gutter + insets.bottom,
       }}
     >
       <View style={{ flexDirection: "row" }}>

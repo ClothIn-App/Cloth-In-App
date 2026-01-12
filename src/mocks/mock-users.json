@@ -60,15 +60,46 @@
       ]
     },
     "closet": {
-      "total": 7,
-      "productIds": [
-        "P_2",
-        "P_1",
-        "P_3",
-        "P_8",
-        "P_7",
-        "P_4",
-        "P_5"
+      "base": {
+        "productIds": [
+          "P_2",
+          "P_1",
+          "P_3",
+          "P_8",
+          "P_7",
+          "P_4",
+          "P_5"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Casual Essentials",
+          "productIds": [
+            "P_2",
+            "P_1",
+            "P_3"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Formal Wear",
+          "productIds": [
+            "P_8",
+            "P_7",
+            "P_1"
+          ]
+        },
+        {
+          "id": "R_3",
+          "name": "Seasonal",
+          "productIds": [
+            "P_4",
+            "P_5",
+            "P_3",
+            "P_2"
+          ]
+        }
       ]
     },
     "followers": {
@@ -145,11 +176,31 @@
       ]
     },
     "closet": {
-      "total": 3,
-      "productIds": [
-        "P_6",
-        "P_1",
-        "P_2"
+      "base": {
+        "productIds": [
+          "P_6",
+          "P_1",
+          "P_2"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Daily Wear",
+          "productIds": [
+            "P_6",
+            "P_1",
+            "P_2"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Favorites",
+          "productIds": [
+            "P_2",
+            "P_1"
+          ]
+        }
       ]
     },
     "followers": {
@@ -225,15 +276,46 @@
       ]
     },
     "closet": {
-      "total": 7,
-      "productIds": [
-        "P_4",
-        "P_6",
-        "P_7",
-        "P_3",
-        "P_8",
-        "P_2",
-        "P_1"
+      "base": {
+        "productIds": [
+          "P_4",
+          "P_6",
+          "P_7",
+          "P_3",
+          "P_8",
+          "P_2",
+          "P_1"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Workout Gear",
+          "productIds": [
+            "P_4",
+            "P_6",
+            "P_2"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Street Style",
+          "productIds": [
+            "P_7",
+            "P_3",
+            "P_8",
+            "P_2"
+          ]
+        },
+        {
+          "id": "R_3",
+          "name": "Classics",
+          "productIds": [
+            "P_2",
+            "P_1",
+            "P_6"
+          ]
+        }
       ]
     },
     "followers": {
@@ -317,14 +399,45 @@
       ]
     },
     "closet": {
-      "total": 6,
-      "productIds": [
-        "P_8",
-        "P_3",
-        "P_4",
-        "P_2",
-        "P_5",
-        "P_1"
+      "base": {
+        "productIds": [
+          "P_8",
+          "P_3",
+          "P_4",
+          "P_2",
+          "P_5",
+          "P_1"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Evening",
+          "productIds": [
+            "P_8",
+            "P_3",
+            "P_2"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Daytime",
+          "productIds": [
+            "P_4",
+            "P_2",
+            "P_1"
+          ]
+        },
+        {
+          "id": "R_3",
+          "name": "Versatile",
+          "productIds": [
+            "P_5",
+            "P_1",
+            "P_2",
+            "P_3"
+          ]
+        }
       ]
     },
     "followers": {
@@ -391,11 +504,31 @@
       ]
     },
     "closet": {
-      "total": 3,
-      "productIds": [
-        "P_8",
-        "P_6",
-        "P_7"
+      "base": {
+        "productIds": [
+          "P_8",
+          "P_6",
+          "P_7"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Active",
+          "productIds": [
+            "P_8",
+            "P_6",
+            "P_7"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Comfort",
+          "productIds": [
+            "P_7",
+            "P_8"
+          ]
+        }
       ]
     },
     "followers": {
@@ -481,11 +614,31 @@
       ]
     },
     "closet": {
-      "total": 3,
-      "productIds": [
-        "P_7",
-        "P_1",
-        "P_2"
+      "base": {
+        "productIds": [
+          "P_7",
+          "P_1",
+          "P_2"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Basics",
+          "productIds": [
+            "P_7",
+            "P_1",
+            "P_2"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Go-To",
+          "productIds": [
+            "P_2",
+            "P_1"
+          ]
+        }
       ]
     },
     "followers": {
@@ -565,12 +718,33 @@
       ]
     },
     "closet": {
-      "total": 4,
-      "productIds": [
-        "P_2",
-        "P_1",
-        "P_7",
-        "P_6"
+      "base": {
+        "productIds": [
+          "P_2",
+          "P_1",
+          "P_7",
+          "P_6"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Essentials",
+          "productIds": [
+            "P_2",
+            "P_1",
+            "P_7"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Active",
+          "productIds": [
+            "P_7",
+            "P_6",
+            "P_1"
+          ]
+        }
       ]
     },
     "followers": {
@@ -642,20 +816,59 @@
       ]
     },
     "fitpics": {
-      "total": 0,
-      "postedIds": []
-    },
-    "closet": {
       "total": 8,
-      "productIds": [
-        "P_1",
-        "P_2",
-        "P_3",
-        "P_4",
-        "P_5",
-        "P_6",
-        "P_7",
-        "P_8"
+      "postedIds": [
+        "FP_1",
+        "FP_2",
+        "FP_3",
+        "FP_4",
+        "FP_5",
+        "FP_6",
+        "FP_7",
+        "FP_8"]
+    },
+
+    "closet": {
+      "base": {
+        "productIds": [
+          "P_1",
+          "P_2",
+          "P_3",
+          "P_4",
+          "P_5",
+          "P_6",
+          "P_7",
+          "P_8"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Formal",
+          "productIds": [
+            "P_3",
+            "P_4",
+            "P_1"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Active",
+          "productIds": [
+            "P_5",
+            "P_6",
+            "P_2"
+          ]
+        },
+        {
+          "id": "R_3",
+          "name": "Special",
+          "productIds": [
+            "P_7",
+            "P_8",
+            "P_1"
+          ]
+        }
       ]
     },
     "followers": {
