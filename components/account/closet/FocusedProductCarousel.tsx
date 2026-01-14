@@ -17,6 +17,7 @@ type Props = {
   renderItem: (product: Product, width: number) => React.ReactNode;
   onFocusedIndexChange?: (index: number) => void;
   initialIndex?: number;
+  variant?: "default" | "depth";
 };
 
 export default function FocusedProductCarousel({
@@ -24,16 +25,20 @@ export default function FocusedProductCarousel({
   renderItem,
   onFocusedIndexChange,
   initialIndex = 0,
+  variant = "default",
 }: Props) {
   const { width: screenWidth } = useWindowDimensions();
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef<FlatList>(null);
   const currentIndexRef = useRef(initialIndex);
 
-  // Calculate dimensions
-  const itemWidth = screenWidth * 0.52; // 52% of screen width for better peek
-  const itemSpacing = 14;
-  const sidePadding = (screenWidth - itemWidth) / 2; // Use only itemWidth for padding
+  // Calculate dimensions based on variant
+  const isDepth = variant === "depth";
+  const itemWidth = isDepth 
+    ? screenWidth * 0.23  // Smaller for depth variant to show more items (50% of original)
+    : screenWidth * 0.26; // Default size (50% of original)
+  const itemSpacing = isDepth ? 13 : 14;
+  const sidePadding = 4; // Left padding for first card to be focused at start (reduced to hide overflow)
   
   // Each item takes: itemWidth + itemSpacing (width + marginHorizontal on both sides)
   const itemTotalWidth = itemWidth + itemSpacing;
@@ -41,7 +46,7 @@ export default function FocusedProductCarousel({
 
   // Calculate vertical space needed for scaled card
   const baseCardHeight = itemWidth * 1.15; // ClosetProductCard aspect ratio
-  const focusedScale = 1.12;
+  const focusedScale = isDepth ? 1.16 : 1.12;
   const maxCardHeight = baseCardHeight * focusedScale;
 
   // Calculate getItemLayout for precise positioning
@@ -51,25 +56,21 @@ export default function FocusedProductCarousel({
     index,
   });
 
-  // Calculate snap offset adjustment (defined here so it's available in useEffect)
-  const snapOffsetAdjustment = 6; // Negative value shifts right
-
   // Scroll to initial index on mount
   useEffect(() => {
     if (initialIndex > 0 && products.length > 0) {
-      const offset = initialIndex * itemTotalWidth + snapOffsetAdjustment;
+      const offset = initialIndex * itemTotalWidth;
       setTimeout(() => {
         flatListRef.current?.scrollToOffset({ offset, animated: false });
       }, 100);
     }
-  }, [initialIndex, itemTotalWidth, products.length, snapOffsetAdjustment]);
+  }, [initialIndex, itemTotalWidth, products.length]);
 
   // Handle scroll end to determine focused index
   const handleScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = event.nativeEvent.contentOffset.x;
-    // Account for the snap offset adjustment when calculating index
-    const adjustedOffset = offsetX - snapOffsetAdjustment;
-    const index = Math.round(adjustedOffset / itemTotalWidth);
+    // First card is focused at scroll position 0
+    const index = Math.round(offsetX / snapInterval);
     const clampedIndex = Math.max(0, Math.min(index, products.length - 1));
     
     // Update focused index if it changed
@@ -87,51 +88,95 @@ export default function FocusedProductCarousel({
     item: Product;
     index: number;
   }) => {
-    const inputRange = [
-      (index - 1) * itemTotalWidth,
-      index * itemTotalWidth,
-      (index + 1) * itemTotalWidth,
-    ];
+    if (isDepth) {
+      // Depth variant: 5-level interpolation (focused at left, then adjacent, then far)
+      // First card (index 0) is focused when scrollX is at 0
+      const inputRange = [
+        (index - 2) * itemTotalWidth,
+        (index - 1) * itemTotalWidth,
+        index * itemTotalWidth,
+        (index + 1) * itemTotalWidth,
+        (index + 2) * itemTotalWidth,
+      ];
 
-    // Scale: focused = 1.12, side items = 0.94
-    const scale = scrollX.interpolate({
-      inputRange,
-      outputRange: [0.94, 1.12, 0.94],
-      extrapolate: "clamp",
-    });
+      // Scale: far 0.84, adjacent 0.94, focused 1.16, adjacent 0.94, far 0.84
+      const scale = scrollX.interpolate({
+        inputRange,
+        outputRange: [0.84, 0.94, 1.16, 0.94, 0.84],
+        extrapolate: "clamp",
+      });
 
-    // Opacity: focused = 1.0, side items = 0.8
-    const opacity = scrollX.interpolate({
-      inputRange,
-      outputRange: [0.8, 1.0, 0.8],
-      extrapolate: "clamp",
-    });
+      // Opacity: far 0.62, adjacent 0.82, focused 1.0, adjacent 0.82, far 0.62
+      const opacity = scrollX.interpolate({
+        inputRange,
+        outputRange: [0.62, 0.82, 1.0, 0.82, 0.62],
+        extrapolate: "clamp",
+      });
 
-    return (
-      <Animated.View
-        style={{
-          width: itemWidth,
-          marginHorizontal: itemSpacing / 2, // Split spacing on both sides
-          transform: [{ scale }],
-          opacity,
-        }}
-      >
-        {renderItem(item, itemWidth)}
-      </Animated.View>
-    );
+      // TranslateY: far 10, adjacent 6, focused 0, adjacent 6, far 10
+      const translateY = scrollX.interpolate({
+        inputRange,
+        outputRange: [10, 6, 0, 6, 10],
+        extrapolate: "clamp",
+      });
+
+      return (
+        <Animated.View
+          style={{
+            width: itemWidth,
+            marginHorizontal: itemSpacing / 2, // Split spacing on both sides
+            transform: [{ scale }, { translateY }],
+            opacity,
+          }}
+        >
+          {renderItem(item, itemWidth)}
+        </Animated.View>
+      );
+    } else {
+      // Default variant: 3-level interpolation
+      // First card (index 0) is focused when scrollX is at 0
+      const inputRange = [
+        (index - 1) * itemTotalWidth,
+        index * itemTotalWidth,
+        (index + 1) * itemTotalWidth,
+      ];
+
+      // Scale: focused = 1.12, side items = 0.94
+      const scale = scrollX.interpolate({
+        inputRange,
+        outputRange: [0.94, 1.12, 0.94],
+        extrapolate: "clamp",
+      });
+
+      // Opacity: focused = 1.0, side items = 0.8
+      const opacity = scrollX.interpolate({
+        inputRange,
+        outputRange: [0.8, 1.0, 0.8],
+        extrapolate: "clamp",
+      });
+
+      return (
+        <Animated.View
+          style={{
+            width: itemWidth,
+            marginHorizontal: itemSpacing / 2, // Split spacing on both sides
+            transform: [{ scale }],
+            opacity,
+          }}
+        >
+          {renderItem(item, itemWidth)}
+        </Animated.View>
+      );
+    }
   };
-
-  // Calculate snap offsets - each item should snap so it's centered
-  // Adjust slightly left for perfect centering (accounting for margins and padding)
-  const snapOffsets = products.map((_, index) => index * itemTotalWidth + snapOffsetAdjustment);
 
   // Content container style with special handling for single item
   const contentContainerStyle = {
     paddingLeft: sidePadding,
-    paddingRight: sidePadding,
+    paddingRight: screenWidth - itemWidth - sidePadding, // Right padding to allow last card to be visible
     alignItems: "center" as const,
     flexGrow: 1,
-    ...(products.length <= 1 ? { justifyContent: "center" as const } : {}),
+    ...(products.length <= 1 ? { justifyContent: "flex-start" as const } : {}),
   };
 
   return (
@@ -139,7 +184,8 @@ export default function FocusedProductCarousel({
       style={{
         height: maxCardHeight,
         justifyContent: "center",
-        overflow: "visible",
+        overflow: "hidden", // Hide overflow to prevent product showing on left edge
+        marginLeft: -.5, // Slight negative margin to shift content left and hide edge overflow
       }}
     >
       <FlatList
@@ -151,7 +197,15 @@ export default function FocusedProductCarousel({
         horizontal
         showsHorizontalScrollIndicator={false}
         pagingEnabled={false}
-        snapToOffsets={snapOffsets}
+        {...(isDepth 
+          ? {
+              snapToInterval: snapInterval,
+              snapToAlignment: "start",
+            }
+          : {
+              snapToOffsets: products.map((_, index) => index * itemTotalWidth),
+            }
+        )}
         decelerationRate="fast"
         disableIntervalMomentum={true}
         contentContainerStyle={contentContainerStyle}

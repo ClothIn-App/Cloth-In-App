@@ -5,7 +5,7 @@ import useAccountData from "../../../src/hooks/useAccountData";
 import productsData from "../../../src/mocks/mock-products.json";
 import { PRODUCT_ASSETS } from "../../../src/maps/images";
 import ClosetProductCard from "../closet/ClosetProductCard";
-import FocusedProductCarousel from "../closet/FocusedProductCarousel";
+import EndlessRackCarousel from "../closet/EndlessRackCarousel";
 
 type Props = {
   userId?: string;
@@ -145,7 +145,7 @@ export default function ClosetTab({ userId }: Props) {
     return (
       <View key={key} style={styles.section}>
         <Text style={styles.sectionTitle}>{title}</Text>
-        <FocusedProductCarousel
+        <EndlessRackCarousel
           products={productsWithImages}
           renderItem={(product, width) => {
             const imageSource = PRODUCT_ASSETS[product.id];
@@ -159,6 +159,7 @@ export default function ClosetTab({ userId }: Props) {
               />
             );
           }}
+          placeholderText="Post FitPic’s to Add to Closet!"
         />
       </View>
     );
