@@ -4,7 +4,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useAccountData from "../../../src/hooks/useAccountData";
 import productsData from "../../../src/mocks/mock-products.json";
 import { PRODUCT_ASSETS } from "../../../src/maps/images";
-import Product_Cover from "../../home/product-cover";
+import ClosetProductCard from "../closet/ClosetProductCard";
+import FocusedProductCarousel from "../closet/FocusedProductCarousel";
 
 type Props = {
   userId?: string;
@@ -122,7 +123,7 @@ export default function ClosetTab({ userId }: Props) {
     );
   }
 
-  // Render a product section with horizontal scroll
+  // Render a product section with focused carousel
   const renderProductSection = (
     title: string,
     products: Product[],
@@ -132,39 +133,33 @@ export default function ClosetTab({ userId }: Props) {
       return null;
     }
 
-    const thumbnailSize = 120;
+    // Filter products that have valid image sources
+    const productsWithImages = products.filter(
+      (product) => PRODUCT_ASSETS[product.id]
+    );
+
+    if (productsWithImages.length === 0) {
+      return null;
+    }
 
     return (
       <View key={key} style={styles.section}>
         <Text style={styles.sectionTitle}>{title}</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
-        >
-          {products.map((product) => {
+        <FocusedProductCarousel
+          products={productsWithImages}
+          renderItem={(product, width) => {
             const imageSource = PRODUCT_ASSETS[product.id];
-            // Skip rendering if image source is not found
             if (!imageSource) {
               return null;
             }
             return (
-              <View
-                key={product.id}
-                style={[styles.productContainer, { width: thumbnailSize }]}
-              >
-                <Product_Cover
-                  width={thumbnailSize}
-                  source={imageSource}
-                  brand={product.brand}
-                  name={product.name}
-                  price={product.price}
-                  showLabel={false}
-                />
-              </View>
+              <ClosetProductCard
+                width={width}
+                source={imageSource}
+              />
             );
-          })}
-        </ScrollView>
+          }}
+        />
       </View>
     );
   };
@@ -193,21 +188,15 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 32,
+    overflow: "visible",
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
     color: "#11181C",
-    marginBottom: 12,
+    marginBottom: 16,
     paddingHorizontal: 12,
-  },
-  scrollContent: {
-    paddingHorizontal: 12,
-    gap: 12,
-  },
-  productContainer: {
-    marginRight: 12,
   },
   loadingText: {
     fontSize: 14,
