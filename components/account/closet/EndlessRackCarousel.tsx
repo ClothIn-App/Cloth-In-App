@@ -1,6 +1,5 @@
-import React, { useRef, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  FlatList,
   Animated,
   useWindowDimensions,
   View,
@@ -18,6 +17,9 @@ type Props = {
   focusedScale?: number; // default 1.12
   itemSpacing?: number; // default 14
   horizontalPadding?: number; // default 12
+  autoDriftEnabled?: boolean; // default false (used by ClosetTab)
+  autoDriftSpeedPxPerSec?: number; // default 18
+  autoResumeDelayMs?: number; // default 3000
 };
 
 type DisplayItem = Product | null; // null represents a placeholder
@@ -29,12 +31,21 @@ export default function EndlessRackCarousel({
   focusedScale = 1.12,
   itemSpacing = 14,
   horizontalPadding = 12,
+  autoDriftEnabled = false,
+  autoDriftSpeedPxPerSec = 18,
+  autoResumeDelayMs = 3000,
 }: Props) {
   const { width: screenWidth } = useWindowDimensions();
   const scrollX = useRef(new Animated.Value(0)).current;
   // NOTE: Animated onScroll with useNativeDriver requires an Animated-wrapped VirtualizedList.
   // We keep the ref as `any` to preserve access to FlatList instance methods (scrollToOffset, etc.).
   const flatListRef = useRef<any>(null);
+  const scrollOffsetRef = useRef(0);
+  const rafIdRef = useRef<number | null>(null);
+  const lastRafTsRef = useRef<number | null>(null);
+  const resumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoActiveRef = useRef(false);
+  const [manualOverride, setManualOverride] = useState(false); // true = user is controlling / cooldown
 
   // Calculate item width so exactly 3 items fit
   const available = screenWidth - horizontalPadding * 2;
@@ -52,6 +63,15 @@ export default function EndlessRackCarousel({
   const containerHeight = baseHeight * focusedScale;
   const topCompensation = (baseHeight * (focusedScale - 1)) / 2;
 
+  // Always model the rack as exactly 3 slots (products first, then placeholders).
+  // This lets 1–2 product racks behave like any other rack (including 360 looping).
+  const baseItems = useMemo<DisplayItem[]>(() => {
+    const result: DisplayItem[] = [...products];
+    while (result.length < 3) result.push(null);
+    return result;
+  }, [products]);
+  const baseLength = baseItems.length; // always 3 (unless products > 3 in the future)
+
   // Infinite scroll constants
   const repetitions = 7;
   const midCopy = Math.floor(repetitions / 2); // Should be 3
@@ -59,32 +79,25 @@ export default function EndlessRackCarousel({
   const maxSafeCopy = repetitions - 2; // Should be 5
 
   // Determine if we should use infinite scrolling
-  const useInfiniteScroll = products.length >= 3;
+  const useInfiniteScroll = baseLength >= 3;
 
   // Build display data based on products length
   const displayData = useMemo<DisplayItem[]>(() => {
-    if (!useInfiniteScroll) {
-      // If less than 3 products, show exactly 3 slots: real products + placeholders
-      const result: DisplayItem[] = [...products];
-      while (result.length < 3) {
-        result.push(null);
-      }
-      return result;
-    } else {
-      // If 3 or more products, build infinite loop data
-      const loopData: Product[] = [];
-      for (let i = 0; i < repetitions; i++) {
-        loopData.push(...products);
-      }
-      return loopData;
+    if (!useInfiniteScroll) return baseItems;
+
+    // Build infinite loop data by repeating the 3-slot rack (products + placeholders).
+    const loopData: DisplayItem[] = [];
+    for (let i = 0; i < repetitions; i++) {
+      loopData.push(...baseItems);
     }
-  }, [products, useInfiniteScroll, repetitions]);
+    return loopData;
+  }, [baseItems, useInfiniteScroll, repetitions]);
 
   // Calculate starting index for infinite scroll (middle section)
   const middleCopyStartIndex = useMemo(() => {
     if (!useInfiniteScroll) return 0;
-    return products.length * midCopy; // Start in the middle copy
-  }, [products.length, useInfiniteScroll, midCopy]);
+    return baseLength * midCopy; // Start in the middle copy
+  }, [baseLength, useInfiniteScroll, midCopy]);
 
   // Scroll to initial position on mount (for infinite scroll)
   useEffect(() => {
@@ -93,6 +106,7 @@ export default function EndlessRackCarousel({
       setTimeout(() => {
         // Ensure the initially visible leftmost item is focused immediately (no first-interaction required).
         scrollX.setValue(initialOffset);
+        scrollOffsetRef.current = initialOffset;
         flatListRef.current?.scrollToOffset({ offset: initialOffset, animated: false });
       }, 100);
     }
@@ -105,18 +119,128 @@ export default function EndlessRackCarousel({
     const offsetX = event.nativeEvent.contentOffset.x;
     const currentIndex = Math.floor((offsetX + itemCellWidth * 0.5) / itemCellWidth);
 
-    // Calculate which copy we're in (each copy has products.length items)
-    const copyIndex = Math.floor(currentIndex / products.length);
+    // Calculate which copy we're in (each copy has baseLength items)
+    const copyIndex = Math.floor(currentIndex / baseLength);
 
     // If we're too close to edges, jump to equivalent position in middle
     if (copyIndex < minSafeCopy || copyIndex > maxSafeCopy) {
-      const positionInCopy = ((currentIndex % products.length) + products.length) % products.length;
-      const equivalentIndex = products.length * midCopy + positionInCopy;
+      const positionInCopy = ((currentIndex % baseLength) + baseLength) % baseLength;
+      const equivalentIndex = baseLength * midCopy + positionInCopy;
       const newOffset = equivalentIndex * itemCellWidth;
       scrollX.setValue(newOffset);
       flatListRef.current?.scrollToOffset({ offset: newOffset, animated: false });
     }
   };
+
+  const clearResumeTimer = useCallback(() => {
+    if (resumeTimeoutRef.current) {
+      clearTimeout(resumeTimeoutRef.current);
+      resumeTimeoutRef.current = null;
+    }
+  }, []);
+
+  const stopAutoDrift = useCallback(() => {
+    if (rafIdRef.current !== null) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
+    lastRafTsRef.current = null;
+  }, []);
+
+  const normalizeOffset = useCallback(
+    (offsetX: number) => {
+      if (!useInfiniteScroll) return offsetX;
+      const currentIndex = Math.floor((offsetX + itemCellWidth * 0.5) / itemCellWidth);
+      const copyIndex = Math.floor(currentIndex / baseLength);
+      if (copyIndex < minSafeCopy || copyIndex > maxSafeCopy) {
+        const positionInCopy = ((currentIndex % baseLength) + baseLength) % baseLength;
+        const equivalentIndex = baseLength * midCopy + positionInCopy;
+        return equivalentIndex * itemCellWidth;
+      }
+      return offsetX;
+    },
+    [
+      useInfiniteScroll,
+      itemCellWidth,
+      baseLength,
+      minSafeCopy,
+      maxSafeCopy,
+      midCopy,
+    ]
+  );
+
+  const startAutoDrift = useCallback(() => {
+    stopAutoDrift();
+    if (!flatListRef.current) return;
+    if (!useInfiniteScroll) return;
+
+    const tick = (ts: number) => {
+      if (!autoActiveRef.current) {
+        stopAutoDrift();
+        return;
+      }
+
+      const prevTs = lastRafTsRef.current ?? ts;
+      lastRafTsRef.current = ts;
+      const dtSec = Math.min(0.05, Math.max(0, (ts - prevTs) / 1000)); // clamp 0–50ms
+
+      const nextOffsetRaw = scrollOffsetRef.current + autoDriftSpeedPxPerSec * dtSec;
+      const nextOffset = normalizeOffset(nextOffsetRaw);
+
+      if (nextOffset !== nextOffsetRaw) {
+        // Jump back to a safe (equivalent) middle copy to preserve the loop.
+        scrollX.setValue(nextOffset);
+      }
+
+      scrollOffsetRef.current = nextOffset;
+      flatListRef.current?.scrollToOffset({ offset: nextOffset, animated: false });
+
+      rafIdRef.current = requestAnimationFrame(tick);
+    };
+
+    rafIdRef.current = requestAnimationFrame(tick);
+  }, [
+    stopAutoDrift,
+    useInfiniteScroll,
+    autoDriftSpeedPxPerSec,
+    normalizeOffset,
+    scrollX,
+  ]);
+
+  const autoActive = autoDriftEnabled && !manualOverride;
+  useEffect(() => {
+    autoActiveRef.current = autoActive;
+    if (autoActive) startAutoDrift();
+    else stopAutoDrift();
+    return stopAutoDrift;
+  }, [autoActive, startAutoDrift, stopAutoDrift]);
+
+  // If the parent disables auto drift (e.g. tab is not focused), fully reset.
+  useEffect(() => {
+    if (!autoDriftEnabled) {
+      clearResumeTimer();
+      setManualOverride(false);
+      stopAutoDrift();
+    }
+  }, [autoDriftEnabled, clearResumeTimer, stopAutoDrift]);
+
+  // Cleanup timer on unmount
+  useEffect(() => clearResumeTimer, [clearResumeTimer]);
+
+  const pauseForUser = useCallback(() => {
+    if (!autoDriftEnabled) return;
+    clearResumeTimer();
+    setManualOverride(true);
+    stopAutoDrift();
+  }, [autoDriftEnabled, clearResumeTimer, stopAutoDrift]);
+
+  const scheduleResume = useCallback(() => {
+    if (!autoDriftEnabled) return;
+    clearResumeTimer();
+    resumeTimeoutRef.current = setTimeout(() => {
+      setManualOverride(false);
+    }, autoResumeDelayMs);
+  }, [autoDriftEnabled, clearResumeTimer, autoResumeDelayMs]);
 
   // Get item layout for stability
   const getItemLayout = (_: any, index: number) => ({
@@ -127,13 +251,11 @@ export default function EndlessRackCarousel({
 
   // Key extractor - for infinite scroll, use index-based keys to handle duplicates
   const keyExtractor = (item: DisplayItem, index: number) => {
-    if (item === null) {
-      return `placeholder-${index}`;
-    }
     if (useInfiniteScroll) {
-      // For infinite scroll, use index to handle duplicate product IDs
-      return `${item.id}-${index}`;
+      // For infinite scroll, always key by index (items repeat, including placeholders).
+      return `slot-${index}`;
     }
+    if (item === null) return `placeholder-${index}`;
     return item.id;
   };
 
@@ -145,13 +267,35 @@ export default function EndlessRackCarousel({
     item: DisplayItem;
     index: number;
   }) => {
+    // Shared animation for both products and placeholders
+    // With 3 visible items, the centered item is (leftmost snapped index + 1).
+    // Keep the order the same; just shift which item is "focused".
+    const centeredIndex = Animated.add(animatedIndex, 1);
+    const distance = Animated.subtract(index, centeredIndex);
+
+    const scale = distance.interpolate({
+      inputRange: [-1, 0, 1, 2],
+      outputRange: [0.94, focusedScale, 0.94, 0.94],
+      extrapolate: "clamp",
+    });
+
+    // Dim only the adjacent (left/right) cards next to the focused center card.
+    // We do this via opacity (no overlay/backdrop layer).
+    const opacity = distance.interpolate({
+      inputRange: [-2, -1, 0, 1, 2],
+      outputRange: [1.0, 0.78, 1.0, 0.78, 1.0],
+      extrapolate: "clamp",
+    });
+
     // Handle placeholder
     if (item === null) {
       return (
-        <View
+        <Animated.View
           style={{
             width: itemWidth,
             marginHorizontal: itemSpacing / 2,
+            transform: [{ scale }],
+            opacity,
           }}
         >
           <ClosetPlaceholderCard
@@ -159,28 +303,11 @@ export default function EndlessRackCarousel({
             text={placeholderText}
             borderRadius={16}
           />
-        </View>
+        </Animated.View>
       );
     }
 
     // Handle real product with animation
-    // Use animated index approach: leftmost item is always focused
-    const distance = Animated.subtract(index, animatedIndex);
-
-    // Scale: distance=0 (focused) = focusedScale, others = 0.94
-    const scale = distance.interpolate({
-      inputRange: [-1, 0, 1, 2],
-      outputRange: [0.94, focusedScale, 0.94, 0.94],
-      extrapolate: "clamp",
-    });
-
-    // Opacity: distance=0 (focused) = 1.0, others = 0.85
-    const opacity = distance.interpolate({
-      inputRange: [-1, 0, 1, 2],
-      outputRange: [0.85, 1.0, 0.85, 0.85],
-      extrapolate: "clamp",
-    });
-
     return (
       <Animated.View
         style={{
@@ -199,6 +326,15 @@ export default function EndlessRackCarousel({
   const contentContainerStyle = {
     paddingHorizontal: horizontalPadding,
   };
+
+  const snapToIntervalValue =
+    displayData.length > 1
+      ? autoDriftEnabled
+        ? manualOverride
+          ? snapInterval
+          : undefined
+        : snapInterval
+      : undefined;
 
   return (
     <View
@@ -220,7 +356,7 @@ export default function EndlessRackCarousel({
         getItemLayout={getItemLayout}
         horizontal
         showsHorizontalScrollIndicator={false}
-        snapToInterval={products.length > 1 ? snapInterval : undefined}
+        snapToInterval={snapToIntervalValue}
         snapToAlignment="start"
         decelerationRate="fast"
         disableIntervalMomentum={true}
@@ -228,12 +364,25 @@ export default function EndlessRackCarousel({
         style={{ overflow: "visible" }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true }
+          {
+            useNativeDriver: true,
+            listener: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+              scrollOffsetRef.current = e.nativeEvent.contentOffset.x;
+            },
+          }
         )}
-        onMomentumScrollEnd={handleScrollEnd}
-        onScrollEndDrag={handleScrollEnd}
+        onTouchStart={pauseForUser}
+        onScrollBeginDrag={pauseForUser}
+        onMomentumScrollEnd={(e) => {
+          handleScrollEnd(e);
+          scheduleResume();
+        }}
+        onScrollEndDrag={(e) => {
+          handleScrollEnd(e);
+          scheduleResume();
+        }}
         scrollEventThrottle={16}
-        scrollEnabled={products.length > 1}
+        scrollEnabled={displayData.length > 1}
       />
     </View>
   );

@@ -26,7 +26,7 @@ export default function ClosetPlaceholderCard({
         },
       ]}
     >
-      <Text style={styles.text}>{text}</Text>
+      {!!text && <Text style={styles.text}>{text}</Text>}
     </View>
   );
 }

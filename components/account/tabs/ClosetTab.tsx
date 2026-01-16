@@ -1,11 +1,21 @@
 import React, { useMemo } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Pressable,
+  useWindowDimensions,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
 import useAccountData from "../../../src/hooks/useAccountData";
 import productsData from "../../../src/mocks/mock-products.json";
 import { PRODUCT_ASSETS } from "../../../src/maps/images";
 import ClosetProductCard from "../closet/ClosetProductCard";
 import EndlessRackCarousel from "../closet/EndlessRackCarousel";
+import RackStackTile from "../closet/RackStackTile";
 
 type Props = {
   userId?: string;
@@ -47,6 +57,8 @@ const getProductsByIds = (productIds: string[]): Product[] => {
 
 export default function ClosetTab({ userId }: Props) {
   const insets = useSafeAreaInsets();
+  const { width: screenWidth } = useWindowDimensions();
+  const isFocused = useIsFocused();
   const { data, loading } = useAccountData(userId || '');
 
   // Safely access closet data (using type assertion since ProfileMe doesn't include closet yet)
@@ -84,11 +96,6 @@ export default function ClosetTab({ userId }: Props) {
     }));
   }, [closetData.racks]);
 
-  // Show empty state if no products
-  const hasAnyProducts =
-    allProducts.length > 0 ||
-    rackSections.some((section: { products: Product[] }) => section.products.length > 0);
-
   if (loading) {
     return (
       <View style={styles.container}>
@@ -97,39 +104,15 @@ export default function ClosetTab({ userId }: Props) {
     );
   }
 
-  if (!hasAnyProducts) {
-    const border = '#E3E3E7';
-    const muted = '#666A70';
-    return (
-      <View
-        style={{
-          flex: 1,
-          margin: 12,
-          borderRadius: 12,
-          borderWidth: 1,
-          borderColor: border,
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 16,
-        }}
-      >
-        <Text style={{ fontSize: 16, fontWeight: "600", marginBottom: 4, color: '#11181C' }}>
-          Closet is empty
-        </Text>
-        <Text style={{ color: muted, textAlign: "center" }}>
-          Add items to your closet to manage them here.
-        </Text>
-      </View>
-    );
-  }
-
   // Render a product section with focused carousel
   const renderProductSection = (
     title: string,
     products: Product[],
-    key: string
+    key: string,
+    opts?: { alwaysShow?: boolean }
   ) => {
-    if (!products || products.length === 0) {
+    const alwaysShow = opts?.alwaysShow ?? false;
+    if (!alwaysShow && (!products || products.length === 0)) {
       return null;
     }
 
@@ -138,13 +121,26 @@ export default function ClosetTab({ userId }: Props) {
       (product) => PRODUCT_ASSETS[product.id]
     );
 
-    if (productsWithImages.length === 0) {
+    if (!alwaysShow && productsWithImages.length === 0) {
       return null;
     }
 
     return (
       <View key={key} style={styles.section}>
-        <Text style={styles.sectionTitle}>{title}</Text>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionHeaderLeft}>
+            <Text style={styles.sectionTitle}>{title}</Text>
+            <Pressable
+              onPress={() => {}}
+              accessibilityRole="button"
+              accessibilityLabel="Expand rack"
+              hitSlop={10}
+              style={styles.expandButton}
+            >
+              <Ionicons name="expand-outline" size={20} color="#11181C" />
+            </Pressable>
+          </View>
+        </View>
         <EndlessRackCarousel
           products={productsWithImages}
           renderItem={(product, width) => {
@@ -160,10 +156,16 @@ export default function ClosetTab({ userId }: Props) {
             );
           }}
           placeholderText="Post FitPic’s to Add to Closet!"
+          autoDriftEnabled={isFocused}
         />
       </View>
     );
   };
+
+  const gridHorizontalPadding = 24;
+  const gridColumnGap = 12;
+  const tileWidth =
+    (screenWidth - gridHorizontalPadding * 2 - gridColumnGap) / 2;
 
   return (
     <ScrollView
@@ -171,12 +173,44 @@ export default function ClosetTab({ userId }: Props) {
       contentContainerStyle={[styles.contentContainer, { paddingBottom: 16 + insets.bottom }]}
     >
       {/* All Products Section */}
-      {renderProductSection("All Products", allProducts, "all-products")}
+      {renderProductSection("All Products", allProducts, "all-products", {
+        alwaysShow: true,
+      })}
 
-      {/* Rack Sections */}
-      {rackSections.map((rack: { id: string; name: string; products: Product[] }) =>
-        renderProductSection(rack.name, rack.products, rack.id)
-      )}
+      {/* Rack Grid */}
+      <View style={[styles.racksGrid, { paddingHorizontal: gridHorizontalPadding }]}>
+        {rackSections.map((rack, idx) => {
+          const items = rack.products
+            .filter((p) => PRODUCT_ASSETS[p.id])
+            .slice(0, 3)
+            .map((p) => ({
+              id: p.id,
+              source: PRODUCT_ASSETS[p.id],
+            }));
+
+          const isLeftColumn = idx % 2 === 0;
+          return (
+            <View
+              key={rack.id}
+              style={[
+                styles.rackTileWrap,
+                {
+                  width: tileWidth,
+                  marginRight: isLeftColumn ? gridColumnGap : 0,
+                },
+              ]}
+            >
+              <RackStackTile
+                title={rack.name}
+                width={tileWidth}
+                items={items}
+                maxPreviewCount={3}
+                onPressExpand={() => {}}
+              />
+            </View>
+          );
+        })}
+      </View>
     </ScrollView>
   );
 }
@@ -192,18 +226,38 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     overflow: "visible",
   },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+    paddingLeft: 24, // slight right shift vs other aligned content
+    paddingRight: 12,
+  },
+  sectionHeaderLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  expandButton: {
+    marginLeft: 8,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
     color: "#11181C",
-    marginBottom: 16,
-    paddingHorizontal: 12,
   },
   loadingText: {
     fontSize: 14,
     color: "#666A70",
     textAlign: "center",
     marginTop: 24,
+  },
+  racksGrid: {
+    paddingTop: 4,
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  rackTileWrap: {
+    marginBottom: 28,
   },
 });
 
