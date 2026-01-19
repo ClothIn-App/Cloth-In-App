@@ -1,4 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Animated,
   useWindowDimensions,
@@ -24,17 +32,25 @@ type Props = {
 
 type DisplayItem = Product | null; // null represents a placeholder
 
-export default function EndlessRackCarousel({
-  products,
-  renderItem,
-  placeholderText = "Post FitPic's to Add to Closet!",
-  focusedScale = 1.12,
-  itemSpacing = 14,
-  horizontalPadding = 12,
-  autoDriftEnabled = false,
-  autoDriftSpeedPxPerSec = 18,
-  autoResumeDelayMs = 3000,
-}: Props) {
+export type EndlessRackCarouselHandle = {
+  pauseAutoDrift: () => void;
+  resumeAutoDrift: () => void;
+};
+
+const EndlessRackCarousel = forwardRef<EndlessRackCarouselHandle, Props>(function EndlessRackCarousel(
+  {
+    products,
+    renderItem,
+    placeholderText = "Post FitPic's to Add to Closet!",
+    focusedScale = 1.12,
+    itemSpacing = 14,
+    horizontalPadding = 12,
+    autoDriftEnabled = false,
+    autoDriftSpeedPxPerSec = 18,
+    autoResumeDelayMs = 3000,
+  }: Props,
+  ref
+) {
   const { width: screenWidth } = useWindowDimensions();
   const scrollX = useRef(new Animated.Value(0)).current;
   // NOTE: Animated onScroll with useNativeDriver requires an Animated-wrapped VirtualizedList.
@@ -242,6 +258,15 @@ export default function EndlessRackCarousel({
     }, autoResumeDelayMs);
   }, [autoDriftEnabled, clearResumeTimer, autoResumeDelayMs]);
 
+  useImperativeHandle(
+    ref,
+    () => ({
+      pauseAutoDrift: pauseForUser,
+      resumeAutoDrift: scheduleResume,
+    }),
+    [pauseForUser, scheduleResume]
+  );
+
   // Get item layout for stability
   const getItemLayout = (_: any, index: number) => ({
     length: itemCellWidth,
@@ -386,4 +411,6 @@ export default function EndlessRackCarousel({
       />
     </View>
   );
-}
+});
+
+export default EndlessRackCarousel;
