@@ -27,6 +27,8 @@ type Props = {
   horizontalPadding?: number; // default 12
   autoDriftEnabled?: boolean; // default false (used by ClosetTab)
   autoDriftSpeedPxPerSec?: number; // default 18
+  // Slideshow-style: advance one snap every N ms.
+  autoSlideIntervalMs?: number; // default 2200
   autoResumeDelayMs?: number; // default 3000
 };
 
@@ -47,20 +49,17 @@ const EndlessRackCarousel = forwardRef<EndlessRackCarouselHandle, Props>(functio
     horizontalPadding = 12,
     autoDriftEnabled = false,
     autoDriftSpeedPxPerSec = 18,
+    autoSlideIntervalMs = 2200,
     autoResumeDelayMs = 3000,
   }: Props,
   ref
 ) {
   const { width: screenWidth } = useWindowDimensions();
   const scrollX = useRef(new Animated.Value(0)).current;
-  // NOTE: Animated onScroll with useNativeDriver requires an Animated-wrapped VirtualizedList.
-  // We keep the ref as `any` to preserve access to FlatList instance methods (scrollToOffset, etc.).
   const flatListRef = useRef<any>(null);
   const scrollOffsetRef = useRef(0);
-  const rafIdRef = useRef<number | null>(null);
-  const lastRafTsRef = useRef<number | null>(null);
+  const slideTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const resumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const autoActiveRef = useRef(false);
   const [manualOverride, setManualOverride] = useState(false); // true = user is controlling / cooldown
 
   // Calculate item width so exactly 3 items fit
@@ -68,11 +67,6 @@ const EndlessRackCarousel = forwardRef<EndlessRackCarouselHandle, Props>(functio
   const itemWidth = (available - itemSpacing * 2) / 3;
   const itemCellWidth = itemWidth + itemSpacing;
   const snapInterval = itemCellWidth;
-
-  const animatedIndex = useMemo(
-    () => Animated.divide(scrollX, itemCellWidth),
-    [scrollX, itemCellWidth]
-  );
 
   // Calculate height to accommodate scaled item
   const baseHeight = itemWidth * 1.15; // ClosetProductCard aspect ratio
@@ -133,6 +127,7 @@ const EndlessRackCarousel = forwardRef<EndlessRackCarouselHandle, Props>(functio
     if (!useInfiniteScroll) return;
 
     const offsetX = event.nativeEvent.contentOffset.x;
+    scrollOffsetRef.current = offsetX;
     const currentIndex = Math.floor((offsetX + itemCellWidth * 0.5) / itemCellWidth);
 
     // Calculate which copy we're in (each copy has baseLength items)
@@ -143,8 +138,9 @@ const EndlessRackCarousel = forwardRef<EndlessRackCarouselHandle, Props>(functio
       const positionInCopy = ((currentIndex % baseLength) + baseLength) % baseLength;
       const equivalentIndex = baseLength * midCopy + positionInCopy;
       const newOffset = equivalentIndex * itemCellWidth;
-      scrollX.setValue(newOffset);
       flatListRef.current?.scrollToOffset({ offset: newOffset, animated: false });
+      scrollX.setValue(newOffset);
+      scrollOffsetRef.current = newOffset;
     }
   };
 
@@ -156,80 +152,55 @@ const EndlessRackCarousel = forwardRef<EndlessRackCarouselHandle, Props>(functio
   }, []);
 
   const stopAutoDrift = useCallback(() => {
-    if (rafIdRef.current !== null) {
-      cancelAnimationFrame(rafIdRef.current);
-      rafIdRef.current = null;
+    if (slideTimerRef.current) {
+      clearInterval(slideTimerRef.current);
+      slideTimerRef.current = null;
     }
-    lastRafTsRef.current = null;
   }, []);
-
-  const normalizeOffset = useCallback(
-    (offsetX: number) => {
-      if (!useInfiniteScroll) return offsetX;
-      const currentIndex = Math.floor((offsetX + itemCellWidth * 0.5) / itemCellWidth);
-      const copyIndex = Math.floor(currentIndex / baseLength);
-      if (copyIndex < minSafeCopy || copyIndex > maxSafeCopy) {
-        const positionInCopy = ((currentIndex % baseLength) + baseLength) % baseLength;
-        const equivalentIndex = baseLength * midCopy + positionInCopy;
-        return equivalentIndex * itemCellWidth;
-      }
-      return offsetX;
-    },
-    [
-      useInfiniteScroll,
-      itemCellWidth,
-      baseLength,
-      minSafeCopy,
-      maxSafeCopy,
-      midCopy,
-    ]
-  );
 
   const startAutoDrift = useCallback(() => {
     stopAutoDrift();
     if (!flatListRef.current) return;
     if (!useInfiniteScroll) return;
 
-    const tick = (ts: number) => {
-      if (!autoActiveRef.current) {
-        stopAutoDrift();
-        return;
-      }
+    slideTimerRef.current = setInterval(() => {
+      const nextOffsetRaw = scrollOffsetRef.current + snapInterval;
+      const nextOffset = (() => {
+        if (!useInfiniteScroll) return nextOffsetRaw;
+        const currentIndex = Math.floor((nextOffsetRaw + itemCellWidth * 0.5) / itemCellWidth);
+        const copyIndex = Math.floor(currentIndex / baseLength);
+        if (copyIndex < minSafeCopy || copyIndex > maxSafeCopy) {
+          const positionInCopy = ((currentIndex % baseLength) + baseLength) % baseLength;
+          const equivalentIndex = baseLength * midCopy + positionInCopy;
+          return equivalentIndex * itemCellWidth;
+        }
+        return nextOffsetRaw;
+      })();
 
-      const prevTs = lastRafTsRef.current ?? ts;
-      lastRafTsRef.current = ts;
-      const dtSec = Math.min(0.05, Math.max(0, (ts - prevTs) / 1000)); // clamp 0–50ms
-
-      const nextOffsetRaw = scrollOffsetRef.current + autoDriftSpeedPxPerSec * dtSec;
-      const nextOffset = normalizeOffset(nextOffsetRaw);
-
-      if (nextOffset !== nextOffsetRaw) {
-        // Jump back to a safe (equivalent) middle copy to preserve the loop.
-        scrollX.setValue(nextOffset);
-      }
-
+      const didJump = nextOffset !== nextOffsetRaw;
       scrollOffsetRef.current = nextOffset;
-      flatListRef.current?.scrollToOffset({ offset: nextOffset, animated: false });
-
-      rafIdRef.current = requestAnimationFrame(tick);
-    };
-
-    rafIdRef.current = requestAnimationFrame(tick);
+      scrollX.setValue(nextOffset);
+      flatListRef.current?.scrollToOffset({ offset: nextOffset, animated: !didJump });
+    }, autoSlideIntervalMs);
   }, [
     stopAutoDrift,
     useInfiniteScroll,
-    autoDriftSpeedPxPerSec,
-    normalizeOffset,
+    snapInterval,
+    itemCellWidth,
+    baseLength,
+    minSafeCopy,
+    maxSafeCopy,
+    midCopy,
+    autoSlideIntervalMs,
     scrollX,
   ]);
 
   const autoActive = autoDriftEnabled && !manualOverride;
   useEffect(() => {
-    autoActiveRef.current = autoActive;
-    if (autoActive) startAutoDrift();
+    if (autoActive && useInfiniteScroll) startAutoDrift();
     else stopAutoDrift();
     return stopAutoDrift;
-  }, [autoActive, startAutoDrift, stopAutoDrift]);
+  }, [autoActive, useInfiniteScroll, startAutoDrift, stopAutoDrift]);
 
   // If the parent disables auto drift (e.g. tab is not focused), fully reset.
   useEffect(() => {
@@ -285,17 +256,9 @@ const EndlessRackCarousel = forwardRef<EndlessRackCarouselHandle, Props>(functio
   };
 
   // Render carousel item
-  const renderCarouselItem = ({
-    item,
-    index,
-  }: {
-    item: DisplayItem;
-    index: number;
-  }) => {
-    // Shared animation for both products and placeholders
+  const renderCarouselItem = ({ item, index }: { item: DisplayItem; index: number }) => {
     // With 3 visible items, the centered item is (leftmost snapped index + 1).
-    // Keep the order the same; just shift which item is "focused".
-    const centeredIndex = Animated.add(animatedIndex, 1);
+    const centeredIndex = Animated.add(Animated.divide(scrollX, itemCellWidth), 1);
     const distance = Animated.subtract(index, centeredIndex);
 
     const scale = distance.interpolate({
@@ -304,35 +267,12 @@ const EndlessRackCarousel = forwardRef<EndlessRackCarouselHandle, Props>(functio
       extrapolate: "clamp",
     });
 
-    // Dim only the adjacent (left/right) cards next to the focused center card.
-    // We do this via opacity (no overlay/backdrop layer).
     const opacity = distance.interpolate({
       inputRange: [-2, -1, 0, 1, 2],
       outputRange: [1.0, 0.78, 1.0, 0.78, 1.0],
       extrapolate: "clamp",
     });
 
-    // Handle placeholder
-    if (item === null) {
-      return (
-        <Animated.View
-          style={{
-            width: itemWidth,
-            marginHorizontal: itemSpacing / 2,
-            transform: [{ scale }],
-            opacity,
-          }}
-        >
-          <ClosetPlaceholderCard
-            width={itemWidth}
-            text={placeholderText}
-            borderRadius={16}
-          />
-        </Animated.View>
-      );
-    }
-
-    // Handle real product with animation
     return (
       <Animated.View
         style={{
@@ -342,7 +282,11 @@ const EndlessRackCarousel = forwardRef<EndlessRackCarouselHandle, Props>(functio
           opacity,
         }}
       >
-        {renderItem(item, itemWidth)}
+        {item === null ? (
+          <ClosetPlaceholderCard width={itemWidth} text={placeholderText} borderRadius={16} />
+        ) : (
+          renderItem(item, itemWidth)
+        )}
       </Animated.View>
     );
   };
@@ -387,15 +331,12 @@ const EndlessRackCarousel = forwardRef<EndlessRackCarouselHandle, Props>(functio
         disableIntervalMomentum={true}
         contentContainerStyle={contentContainerStyle}
         style={{ overflow: "visible" }}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          {
-            useNativeDriver: true,
-            listener: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-              scrollOffsetRef.current = e.nativeEvent.contentOffset.x;
-            },
-          }
-        )}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
+          useNativeDriver: true,
+          listener: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+            scrollOffsetRef.current = e.nativeEvent.contentOffset.x;
+          },
+        })}
         onTouchStart={pauseForUser}
         onScrollBeginDrag={pauseForUser}
         onMomentumScrollEnd={(e) => {

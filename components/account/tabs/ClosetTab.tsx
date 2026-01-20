@@ -88,6 +88,17 @@ export default function ClosetTab({ userId }: Props) {
     carousel.resumeAutoDrift();
   };
 
+  // When the carousel is continuously moving, it can interfere with press recognition.
+  // Pausing it on any touch within the Closet scroll area keeps taps responsive,
+  // and using `onPress` still prevents accidental triggers during scroll.
+  const pauseCarousel = () => {
+    allProductsCarouselRef.current?.pauseAutoDrift();
+  };
+
+  const resumeCarousel = () => {
+    allProductsCarouselRef.current?.resumeAutoDrift();
+  };
+
   // Drag & drop state (All Products -> rack tiles)
   const [isDragging, setIsDragging] = useState(false);
   const [hoverRackId, setHoverRackId] = useState<string | null>(null);
@@ -211,13 +222,15 @@ export default function ClosetTab({ userId }: Props) {
           <View style={styles.sectionHeaderLeft}>
             <Text style={styles.sectionTitle}>{title}</Text>
             <Pressable
-              onPressIn={() => {
+              onPress={() => {
                 pauseAndResumeCarousel();
                 setAllProductsOptionsVisible(true);
               }}
               accessibilityRole="button"
               accessibilityLabel="Rack options"
-              hitSlop={10}
+              // Make scroll gestures win over accidental presses.
+              pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
+              hitSlop={6}
               style={styles.expandButton}
             >
               <Ionicons name="ellipsis-horizontal" size={20} color="#11181C" />
@@ -225,13 +238,15 @@ export default function ClosetTab({ userId }: Props) {
           </View>
           {title === "All Products" && (
             <Pressable
-              onPressIn={() => {
+              onPress={() => {
                 pauseAndResumeCarousel();
                 setCreateRackVisible(true);
               }}
               accessibilityRole="button"
               accessibilityLabel="Add new rack"
-              hitSlop={10}
+              // Make scroll gestures win over accidental presses.
+              pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
+              hitSlop={6}
               style={styles.addRackButton}
             >
               <Ionicons name="add-circle-outline" size={22} color="#11181C" />
@@ -332,7 +347,8 @@ export default function ClosetTab({ userId }: Props) {
             );
           }}
           placeholderText="Post FitPic’s to Add to Closet!"
-          autoDriftEnabled={isFocused && !isDragging}
+          // Disable auto-play: allow only manual swiping in Closet.
+          autoDriftEnabled={false}
         />
       </View>
     );
@@ -349,6 +365,9 @@ export default function ClosetTab({ userId }: Props) {
         style={styles.container}
         contentContainerStyle={[styles.contentContainer, { paddingBottom: 16 + insets.bottom }]}
         scrollEnabled={!isDragging}
+        onTouchStart={pauseCarousel}
+        onTouchEnd={resumeCarousel}
+        onScrollBeginDrag={pauseCarousel}
       >
         {/* All Products Section */}
         {renderProductSection("All Products", allProducts, "all-products", {
