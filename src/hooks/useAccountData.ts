@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { AccountData } from "../types/account";
 import usersData from "../mocks/mock-users.json";
 
-export default function useAccountData(userId: string) {
+export default function useAccountData(userId?: string) {
   const [data, setData] = useState<AccountData>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
@@ -10,6 +10,16 @@ export default function useAccountData(userId: string) {
 
   const load = useCallback(async () => {
     const myReq = ++reqRef.current;
+
+    // If we don't have a userId yet (e.g. auth/profile still resolving),
+    // keep the caller in a loading state to avoid a flash of empty UI.
+    if (!userId) {
+      setLoading(true);
+      setError(null);
+      setData({});
+      return;
+    }
+
     setLoading(true);
     setError(null);
 

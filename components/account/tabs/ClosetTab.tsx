@@ -10,6 +10,7 @@ import {
   Animated,
   PanResponder,
   GestureResponderEvent,
+  ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -71,9 +72,10 @@ export default function ClosetTab({ userId }: Props) {
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
   const isFocused = useIsFocused();
-  const { data, loading } = useAccountData(userId || '');
+  const { data, loading } = useAccountData(userId);
   const initializedRef = useRef(false);
   const allProductsCarouselRef = useRef<EndlessRackCarouselHandle | null>(null);
+  const preInitCreatedAtBaseRef = useRef(Date.now());
 
   const [baseProductIds, setBaseProductIds] = useState<string[]>([]);
   const [racks, setRacks] = useState<Rack[]>([]);
@@ -81,6 +83,14 @@ export default function ClosetTab({ userId }: Props) {
   const [rackOptionsRackId, setRackOptionsRackId] = useState<string | null>(null);
   const [renameRackId, setRenameRackId] = useState<string | null>(null);
   const [allProductsOptionsVisible, setAllProductsOptionsVisible] = useState(false);
+
+  // If the userId resolves after first render, we should re-initialize local closet state
+  // from fetched data. This also prevents a flash of "empty closet" placeholders.
+  useEffect(() => {
+    initializedRef.current = false;
+    setBaseProductIds([]);
+    setRacks([]);
+  }, [userId]);
   const pauseAndResumeCarousel = () => {
     const carousel = allProductsCarouselRef.current;
     if (!carousel) return;
@@ -153,14 +163,31 @@ export default function ClosetTab({ userId }: Props) {
     initializedRef.current = true;
   }, [loading, closetData.baseProductIds, closetData.racks]);
 
+  // Avoid the "All Products only" flash: until we've initialized local state,
+  // render from fetched closetData so the first post-loading render matches the full layout.
+  const effectiveBaseProductIds = initializedRef.current
+    ? baseProductIds
+    : closetData.baseProductIds;
+
+  const preInitRacks = useMemo(() => {
+    const base = preInitCreatedAtBaseRef.current;
+    return closetData.racks.map((r, idx) => ({
+      ...r,
+      pinned: r.pinned ?? false,
+      createdAt: r.createdAt ?? base + idx,
+    }));
+  }, [closetData.racks]);
+
+  const effectiveRacks = initializedRef.current ? racks : preInitRacks;
+
   // Get products for each section
   const allProducts = useMemo(
-    () => getProductsByIds(baseProductIds),
-    [baseProductIds]
+    () => getProductsByIds(effectiveBaseProductIds),
+    [effectiveBaseProductIds]
   );
 
   const rackSections = useMemo(() => {
-    const sorted = [...racks].sort((a, b) => {
+    const sorted = [...effectiveRacks].sort((a, b) => {
       const ap = a.pinned ? 1 : 0;
       const bp = b.pinned ? 1 : 0;
       if (ap !== bp) return bp - ap; // pinned first
@@ -175,7 +202,7 @@ export default function ClosetTab({ userId }: Props) {
       products: getProductsByIds(rack.productIds || []),
       pinned: rack.pinned ?? false,
     }));
-  }, [racks]);
+  }, [effectiveRacks]);
 
   const selectedRack = useMemo(() => {
     if (!rackOptionsRackId) return null;
@@ -187,10 +214,11 @@ export default function ClosetTab({ userId }: Props) {
     return racks.find((r) => r.id === renameRackId) ?? null;
   }, [renameRackId, racks]);
 
-  if (loading) {
+  if (loading || !userId) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>Loading closet...</Text>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator />
+        <Text style={{ marginTop: 8, color: "#11181C" }}>Loading Closet...</Text>
       </View>
     );
   }
@@ -346,7 +374,6 @@ export default function ClosetTab({ userId }: Props) {
               />
             );
           }}
-          placeholderText="Post FitPic’s to Add to Closet!"
           // Disable auto-play: allow only manual swiping in Closet.
           autoDriftEnabled={false}
         />
