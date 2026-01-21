@@ -6,8 +6,10 @@ import {
   TextInput,
   StyleSheet,
   Pressable,
-  KeyboardAvoidingView,
+  Keyboard,
   Platform,
+  Animated,
+  useWindowDimensions,
 } from "react-native";
 
 type Props = {
@@ -33,6 +35,10 @@ export default function RackNameModal({
 }: Props) {
   const [value, setValue] = useState(initialValue);
   const inputRef = useRef<TextInput | null>(null);
+  const { height: screenHeight } = useWindowDimensions();
+  const [sheetHeight, setSheetHeight] = useState(0);
+  const keyboardHeightRef = useRef(0);
+  const translateY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (!visible) return;
@@ -40,6 +46,62 @@ export default function RackNameModal({
     const t = setTimeout(() => inputRef.current?.focus(), 50);
     return () => clearTimeout(t);
   }, [visible, initialValue]);
+
+  const updatePosition = (nextKeyboardHeight?: number) => {
+    const kb = nextKeyboardHeight ?? keyboardHeightRef.current ?? 0;
+    const margin = 18;
+    if (!sheetHeight || sheetHeight <= 0) {
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 180,
+        useNativeDriver: true,
+      }).start();
+      return;
+    }
+
+    // Centered dialog baseline:
+    // top0 = (screenHeight - sheetHeight) / 2
+    // bottom0 = (screenHeight + sheetHeight) / 2
+    const bottom0 = (screenHeight + sheetHeight) / 2;
+    const maxBottom = screenHeight - kb - margin;
+    const overlap = bottom0 - maxBottom;
+    const desired = overlap > 0 ? -overlap : 0;
+
+    const top0 = (screenHeight - sheetHeight) / 2;
+    const minTranslate = margin - top0; // don't shift up so far that top goes above margin
+    const clamped = Math.max(minTranslate, Math.min(0, desired));
+
+    Animated.timing(translateY, {
+      toValue: clamped,
+      duration: Platform.OS === "ios" ? 220 : 180,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  useEffect(() => {
+    if (!visible) return;
+
+    const showEvt = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvt = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+
+    const subShow = Keyboard.addListener(showEvt, (e) => {
+      const h = e.endCoordinates?.height ?? 0;
+      keyboardHeightRef.current = h;
+      updatePosition(h);
+    });
+    const subHide = Keyboard.addListener(hideEvt, () => {
+      keyboardHeightRef.current = 0;
+      updatePosition(0);
+    });
+
+    // Ensure we start centered for this open.
+    updatePosition(0);
+    return () => {
+      subShow.remove();
+      subHide.remove();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, sheetHeight, screenHeight]);
 
   const trimmed = value.trim();
   const lowerSet = useMemo(
@@ -69,9 +131,16 @@ export default function RackNameModal({
       onRequestClose={onClose}
     >
       <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
+        <Animated.View style={[styles.kav, { transform: [{ translateY }] }]}>
+          <Pressable
+            style={styles.sheet}
+            onPress={(e) => e.stopPropagation()}
+            onLayout={(e) => {
+              const h = e.nativeEvent.layout.height;
+              setSheetHeight(h);
+              // Recompute when the dialog height changes (e.g. error message appears).
+              updatePosition();
+            }}
           >
             <Text style={styles.title}>{title}</Text>
 
@@ -117,8 +186,8 @@ export default function RackNameModal({
                 <Text style={styles.btnText}>{submitLabel}</Text>
               </Pressable>
             </View>
-          </KeyboardAvoidingView>
-        </Pressable>
+          </Pressable>
+        </Animated.View>
       </Pressable>
     </Modal>
   );
@@ -128,13 +197,20 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.35)",
-    justifyContent: "flex-end",
+    justifyContent: "center",
+    paddingHorizontal: 18,
+  },
+  kav: {
+    flex: 1,
+    justifyContent: "center",
   },
   sheet: {
     backgroundColor: "#fff",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderRadius: 16,
     padding: 16,
+    maxWidth: 420,
+    width: "100%",
+    alignSelf: "center",
   },
   title: {
     fontSize: 16,

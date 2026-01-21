@@ -4,22 +4,18 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet, Pressable } from "reac
 type Props = {
   visible: boolean;
   rackName: string;
-  pinned: boolean;
   onClose: () => void;
   onViewRack: () => void;
   onRenameRack: () => void;
-  onTogglePin: () => void;
   onDeleteRack: () => void;
 };
 
 export default function RackOptionsMenu({
   visible,
   rackName,
-  pinned,
   onClose,
   onViewRack,
   onRenameRack,
-  onTogglePin,
   onDeleteRack,
 }: Props) {
   if (!visible) return null;
@@ -40,11 +36,6 @@ export default function RackOptionsMenu({
 
             <TouchableOpacity style={styles.option} onPress={onRenameRack} activeOpacity={0.7}>
               <Text style={styles.optionText}>Edit rack name</Text>
-            </TouchableOpacity>
-            <View style={styles.divider} />
-
-            <TouchableOpacity style={styles.option} onPress={onTogglePin} activeOpacity={0.7}>
-              <Text style={styles.optionText}>{pinned ? "Unpin rack" : "Pin rack"}</Text>
             </TouchableOpacity>
             <View style={styles.divider} />
 

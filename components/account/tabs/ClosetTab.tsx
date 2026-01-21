@@ -7,15 +7,17 @@ import {
   Pressable,
   useWindowDimensions,
   Alert,
-  Animated,
-  PanResponder,
-  GestureResponderEvent,
   ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
-import * as Haptics from "expo-haptics";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+} from "react-native-reanimated";
 import useAccountData from "../../../src/hooks/useAccountData";
 import productsData from "../../../src/mocks/mock-products.json";
 import { PRODUCT_ASSETS } from "../../../src/maps/images";
@@ -27,6 +29,8 @@ import RackStackTile from "../closet/RackStackTile";
 import RackNameModal from "../closet/RackNameModal";
 import RackOptionsMenu from "../closet/RackOptionsMenu";
 import AllProductsOptionsMenu from "../closet/AllProductsOptionsMenu";
+import ProductActionsMenu from "../closet/ProductActionsMenu";
+import RackPickerMenu from "../closet/RackPickerMenu";
 
 type Props = {
   userId?: string;
@@ -44,7 +48,6 @@ type Rack = {
   id: string;
   name: string;
   productIds: string[];
-  pinned?: boolean;
   createdAt?: number;
 };
 
@@ -54,6 +57,51 @@ type ClosetData = {
   };
   racks?: Rack[];
 };
+
+type AllProductsCarouselItemProps = {
+  width: number;
+  imageSource: any;
+  productId: string;
+  onOpenMenu: (productId: string) => void;
+};
+
+const AllProductsCarouselItem = React.memo(function AllProductsCarouselItem({
+  width,
+  imageSource,
+  productId,
+  onOpenMenu,
+}: AllProductsCarouselItemProps) {
+  const dotScale = useSharedValue(1);
+  const dotStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: dotScale.value }],
+  }));
+
+  return (
+    <View style={{ width }}>
+      <View style={styles.productCardWrap}>
+        <ClosetProductCard width={width} source={imageSource} borderRadius={16} />
+        <Animated.View style={[styles.productOverflowWrap, dotStyle]}>
+          <Pressable
+            onPress={() => {
+              dotScale.value = withSequence(
+                withSpring(1.12, { damping: 14, stiffness: 240 }),
+                withSpring(1, { damping: 14, stiffness: 240 })
+              );
+              onOpenMenu(productId);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Product options"
+            pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
+            hitSlop={8}
+            style={styles.productOverflowButton}
+          >
+            <Ionicons name="ellipsis-horizontal" size={16} color="#11181C" />
+          </Pressable>
+        </Animated.View>
+      </View>
+    </View>
+  );
+});
 
 // Get products by IDs (helper function outside component for stability)
 const getProductsByIds = (productIds: string[]): Product[] => {
@@ -83,6 +131,17 @@ export default function ClosetTab({ userId }: Props) {
   const [rackOptionsRackId, setRackOptionsRackId] = useState<string | null>(null);
   const [renameRackId, setRenameRackId] = useState<string | null>(null);
   const [allProductsOptionsVisible, setAllProductsOptionsVisible] = useState(false);
+  const [activeProductId, setActiveProductId] = useState<string | null>(null);
+  const [productActionsVisible, setProductActionsVisible] = useState(false);
+  const [rackPickerVisible, setRackPickerVisible] = useState(false);
+  const [highlightedRackId, setHighlightedRackId] = useState<string | null>(null);
+  const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
+    };
+  }, []);
 
   // If the userId resolves after first render, we should re-initialize local closet state
   // from fetched data. This also prevents a flash of "empty closet" placeholders.
@@ -108,22 +167,6 @@ export default function ClosetTab({ userId }: Props) {
   const resumeCarousel = () => {
     allProductsCarouselRef.current?.resumeAutoDrift();
   };
-
-  // Drag & drop state (All Products -> rack tiles)
-  const [isDragging, setIsDragging] = useState(false);
-  const [hoverRackId, setHoverRackId] = useState<string | null>(null);
-  const draggedRef = useRef<{
-    productId: string;
-    source: any;
-    width: number;
-    height: number;
-  } | null>(null);
-  const [dragged, setDragged] = useState<typeof draggedRef.current>(null);
-  const dragXY = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
-  const rackTileRefs = useRef<Record<string, any>>({});
-  const rackRectsRef = useRef<Record<string, { x: number; y: number; w: number; h: number }>>(
-    {}
-  );
 
   // Safely access closet data (using type assertion since ProfileMe doesn't include closet yet)
   const closetData = useMemo(() => {
@@ -155,7 +198,6 @@ export default function ClosetTab({ userId }: Props) {
     setRacks(
       closetData.racks.map((r) => ({
         ...r,
-        pinned: r.pinned ?? false,
         createdAt: r.createdAt ?? Date.now(),
       }))
     );
@@ -173,7 +215,6 @@ export default function ClosetTab({ userId }: Props) {
     const base = preInitCreatedAtBaseRef.current;
     return closetData.racks.map((r, idx) => ({
       ...r,
-      pinned: r.pinned ?? false,
       createdAt: r.createdAt ?? base + idx,
     }));
   }, [closetData.racks]);
@@ -188,9 +229,6 @@ export default function ClosetTab({ userId }: Props) {
 
   const rackSections = useMemo(() => {
     const sorted = [...effectiveRacks].sort((a, b) => {
-      const ap = a.pinned ? 1 : 0;
-      const bp = b.pinned ? 1 : 0;
-      if (ap !== bp) return bp - ap; // pinned first
       const at = a.createdAt ?? 0;
       const bt = b.createdAt ?? 0;
       return at - bt;
@@ -200,7 +238,6 @@ export default function ClosetTab({ userId }: Props) {
       id: rack.id,
       name: rack.name,
       products: getProductsByIds(rack.productIds || []),
-      pinned: rack.pinned ?? false,
     }));
   }, [effectiveRacks]);
 
@@ -289,87 +326,19 @@ export default function ClosetTab({ userId }: Props) {
             if (!imageSource) {
               return null;
             }
+            if (title !== "All Products") {
+              return <ClosetProductCard width={width} source={imageSource} borderRadius={16} />;
+            }
+
             return (
-              <DraggableAllProductsCard
-                productId={product.id}
+              <AllProductsCarouselItem
                 width={width}
-                source={imageSource}
-                onStartDrag={(pageX, pageY) => {
-                  // close any open menus during drag
-                  setAllProductsOptionsVisible(false);
-                  setRackOptionsRackId(null);
-                  setRenameRackId(null);
-                  setCreateRackVisible(false);
-
-                  const height = width * 1.15;
-                  draggedRef.current = { productId: product.id, source: imageSource, width, height };
-                  setDragged(draggedRef.current);
-                  setIsDragging(true);
-                  setHoverRackId(null);
-
-                  // Measure rack drop targets once at drag start.
-                  const nextRects: Record<string, { x: number; y: number; w: number; h: number }> =
-                    {};
-                  Object.entries(rackTileRefs.current).forEach(([rackId, node]) => {
-                    if (!node?.measureInWindow) return;
-                    node.measureInWindow((x: number, y: number, w: number, h: number) => {
-                      nextRects[rackId] = { x, y, w, h };
-                      rackRectsRef.current = { ...rackRectsRef.current, ...nextRects };
-                    });
-                  });
-
-                  dragXY.setValue({ x: pageX - width / 2, y: pageY - height / 2 });
-                }}
-                onMoveDrag={(moveX, moveY) => {
-                  const d = draggedRef.current;
-                  if (!d) return;
-                  dragXY.setValue({ x: moveX - d.width / 2, y: moveY - d.height / 2 });
-
-                  let nextHover: string | null = null;
-                  for (const [rid, rect] of Object.entries(rackRectsRef.current)) {
-                    if (
-                      moveX >= rect.x &&
-                      moveX <= rect.x + rect.w &&
-                      moveY >= rect.y &&
-                      moveY <= rect.y + rect.h
-                    ) {
-                      nextHover = rid;
-                      break;
-                    }
-                  }
-                  setHoverRackId((prev) => (prev === nextHover ? prev : nextHover));
-                }}
-                onEndDrag={(moveX, moveY) => {
-                  const d = draggedRef.current;
-                  let dropId: string | null = null;
-                  for (const [rid, rect] of Object.entries(rackRectsRef.current)) {
-                    if (
-                      moveX >= rect.x &&
-                      moveX <= rect.x + rect.w &&
-                      moveY >= rect.y &&
-                      moveY <= rect.y + rect.h
-                    ) {
-                      dropId = rid;
-                      break;
-                    }
-                  }
-
-                  if (d && dropId) {
-                    setRacks((prev) =>
-                      prev.map((r) => {
-                        if (r.id !== dropId) return r;
-                        const next = new Set(r.productIds ?? []);
-                        next.add(d.productId);
-                        return { ...r, productIds: Array.from(next) };
-                      })
-                    );
-                    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  }
-
-                  draggedRef.current = null;
-                  setDragged(null);
-                  setHoverRackId(null);
-                  setIsDragging(false);
+                imageSource={imageSource}
+                productId={product.id}
+                onOpenMenu={(id) => {
+                  pauseAndResumeCarousel();
+                  setActiveProductId(id);
+                  setProductActionsVisible(true);
                 }}
               />
             );
@@ -391,7 +360,6 @@ export default function ClosetTab({ userId }: Props) {
       <ScrollView
         style={styles.container}
         contentContainerStyle={[styles.contentContainer, { paddingBottom: 16 + insets.bottom }]}
-        scrollEnabled={!isDragging}
         onTouchStart={pauseCarousel}
         onTouchEnd={resumeCarousel}
         onScrollBeginDrag={pauseCarousel}
@@ -416,9 +384,6 @@ export default function ClosetTab({ userId }: Props) {
             return (
               <View
                 key={rack.id}
-                ref={(node) => {
-                  rackTileRefs.current[rack.id] = node;
-                }}
                 style={[
                   styles.rackTileWrap,
                   {
@@ -432,32 +397,17 @@ export default function ClosetTab({ userId }: Props) {
                   width={tileWidth}
                   items={items}
                   maxPreviewCount={3}
+                  highlighted={highlightedRackId === rack.id}
                   onPressExpand={() => {
                     pauseAndResumeCarousel();
                     setRackOptionsRackId(rack.id);
                   }}
-                  highlighted={hoverRackId === rack.id}
                 />
               </View>
             );
           })}
         </View>
       </ScrollView>
-
-      {isDragging && dragged && (
-        <View style={styles.dragOverlay} pointerEvents="none">
-          <Animated.View
-            style={[
-              styles.dragGhost,
-              {
-                transform: dragXY.getTranslateTransform(),
-              },
-            ]}
-          >
-            <ClosetProductCard width={dragged.width} source={dragged.source} borderRadius={16} />
-          </Animated.View>
-        </View>
-      )}
 
       <RackNameModal
         visible={createRackVisible}
@@ -469,7 +419,7 @@ export default function ClosetTab({ userId }: Props) {
           const id = `rack-${Date.now()}`;
           setRacks((prev) => [
             ...prev,
-            { id, name, productIds: [], pinned: false, createdAt: Date.now() },
+            { id, name, productIds: [], createdAt: Date.now() },
           ]);
         }}
       />
@@ -477,7 +427,6 @@ export default function ClosetTab({ userId }: Props) {
       <RackOptionsMenu
         visible={!!selectedRack}
         rackName={selectedRack?.name ?? ""}
-        pinned={!!selectedRack?.pinned}
         onClose={() => setRackOptionsRackId(null)}
         onViewRack={() => {
           // Wire up to rack detail later.
@@ -487,13 +436,6 @@ export default function ClosetTab({ userId }: Props) {
           if (!selectedRack) return;
           setRackOptionsRackId(null);
           setRenameRackId(selectedRack.id);
-        }}
-        onTogglePin={() => {
-          if (!selectedRack) return;
-          setRacks((prev) =>
-            prev.map((r) => (r.id === selectedRack.id ? { ...r, pinned: !r.pinned } : r))
-          );
-          setRackOptionsRackId(null);
         }}
         onDeleteRack={() => {
           if (!selectedRack) return;
@@ -538,68 +480,71 @@ export default function ClosetTab({ userId }: Props) {
         onFilter={() => setAllProductsOptionsVisible(false)}
         onSelectMode={() => setAllProductsOptionsVisible(false)}
       />
-    </View>
-  );
-}
 
-function DraggableAllProductsCard({
-  productId,
-  width,
-  source,
-  onStartDrag,
-  onMoveDrag,
-  onEndDrag,
-}: {
-  productId: string;
-  width: number;
-  source: any;
-  onStartDrag: (pageX: number, pageY: number) => void;
-  onMoveDrag: (moveX: number, moveY: number) => void;
-  onEndDrag: (moveX: number, moveY: number) => void;
-}) {
-  const dragEnabledRef = useRef(false);
+      <ProductActionsMenu
+        visible={productActionsVisible}
+        onClose={() => {
+          setProductActionsVisible(false);
+          setActiveProductId(null);
+        }}
+        onMove={() => {
+          setProductActionsVisible(false);
+          setRackPickerVisible(true);
+        }}
+        onDelete={() => {
+          if (!activeProductId) return;
+          const productId = activeProductId;
+          setProductActionsVisible(false);
+          Alert.alert(
+            "Delete from closet?",
+            "This will remove this product from All Products and every rack.",
+            [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Delete",
+                style: "destructive",
+                onPress: () => {
+                  setBaseProductIds((prev) => prev.filter((id) => id !== productId));
+                  setRacks((prev) =>
+                    prev.map((r) => ({
+                      ...r,
+                      productIds: (r.productIds || []).filter((id) => id !== productId),
+                    }))
+                  );
+                  setActiveProductId(null);
+                },
+              },
+            ]
+          );
+        }}
+      />
 
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => false,
-        onMoveShouldSetPanResponder: () => dragEnabledRef.current,
-        onMoveShouldSetPanResponderCapture: () => dragEnabledRef.current,
-        onPanResponderMove: (_evt, gesture) => {
-          if (!dragEnabledRef.current) return;
-          onMoveDrag(gesture.moveX, gesture.moveY);
-        },
-        onPanResponderRelease: (_evt, gesture) => {
-          if (!dragEnabledRef.current) return;
-          dragEnabledRef.current = false;
-          onEndDrag(gesture.moveX, gesture.moveY);
-        },
-        onPanResponderTerminate: (_evt, gesture) => {
-          if (!dragEnabledRef.current) return;
-          dragEnabledRef.current = false;
-          onEndDrag(gesture.moveX, gesture.moveY);
-        },
-        onPanResponderTerminationRequest: () => false,
-      }),
-    [onEndDrag, onMoveDrag]
-  );
+      <RackPickerMenu
+        visible={rackPickerVisible}
+        racks={racks.map((r) => ({ id: r.id, name: r.name }))}
+        onClose={() => {
+          setRackPickerVisible(false);
+          setActiveProductId(null);
+        }}
+        onSelectRack={(rackId) => {
+          if (!activeProductId) return;
+          const productId = activeProductId;
+          setRackPickerVisible(false);
+          setActiveProductId(null);
 
-  const handleLongPress = (e: GestureResponderEvent) => {
-    // Mark as draggable; next movement will claim the responder.
-    dragEnabledRef.current = true;
-    onStartDrag(e.nativeEvent.pageX, e.nativeEvent.pageY);
-  };
+          setRacks((prev) =>
+            prev.map((r) => {
+              if (r.id !== rackId) return r;
+              const next = new Set([...(r.productIds || []), productId]);
+              return { ...r, productIds: Array.from(next) };
+            })
+          );
 
-  return (
-    <View {...panResponder.panHandlers}>
-      <Pressable
-        onLongPress={handleLongPress}
-        delayLongPress={250}
-        accessibilityRole="button"
-        accessibilityLabel={`Product ${productId}`}
-      >
-        <ClosetProductCard width={width} source={source} borderRadius={16} />
-      </Pressable>
+          setHighlightedRackId(rackId);
+          if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
+          highlightTimeoutRef.current = setTimeout(() => setHighlightedRackId(null), 700);
+        }}
+      />
     </View>
   );
 }
@@ -653,13 +598,23 @@ const styles = StyleSheet.create({
   rackTileWrap: {
     marginBottom: 28,
   },
-  dragOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 999,
+  productCardWrap: {
+    position: "relative",
   },
-  dragGhost: {
+  productOverflowWrap: {
     position: "absolute",
-    opacity: 0.95,
+    top: 8,
+    right: 8,
+  },
+  productOverflowButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "rgba(255,255,255,0.92)",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(0,0,0,0.08)",
   },
 });
 
