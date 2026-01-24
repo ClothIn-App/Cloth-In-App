@@ -9,6 +9,7 @@ import { ProductSummary } from "@/components/product-modal/ProductSummary";
 import { ProductReactionsRow } from "@/components/product-modal/ProductReactionsRow";
 import { ProductDescription } from "@/components/product-modal/ProductDescription";
 import { ProductFitPicCarousel } from "@/components/product-modal/ProductFitPicCarousel";
+import { ProductUserStyleCarousel } from "@/components/product-modal/ProductUserStyleCarousel";
 import ProductCommentsSection from "@/components/product-modal/comments/product-comments-section";
 import ProductCommentInput from "@/components/product-modal/comments/product-comment-input";
 import type { Reactions, CommentType } from "@/src/types/feed";
@@ -17,7 +18,7 @@ const DEFAULT_REACTIONS: Reactions = { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0,
 
 export default function ProductDetailModal() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const { product, featuredFitPics, comments: initialComments } = useProductData(id);
+  const { product, featuredFitPics, comments: initialComments, followersFitPics } = useProductData(id);
   const insets = useSafeAreaInsets();
   
   // Local state for reactions (optimistic updates)
@@ -141,6 +142,10 @@ export default function ProductDetailModal() {
             description={product.description}
             details={(product as any).details}
           />
+          {/* Followers Style Section - Only show if there are FitPics from followers */}
+          {followersFitPics && followersFitPics.length > 0 && (
+            <ProductUserStyleCarousel fitpics={followersFitPics} userName="Followers" />
+          )}
           <ProductFitPicCarousel fitpics={featuredFitPics} />
           
           {/* Comments Section */}

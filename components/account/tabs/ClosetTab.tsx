@@ -12,6 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
+import { router } from "expo-router";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -64,6 +65,7 @@ type AllProductsCarouselItemProps = {
   imageSource: any;
   productId: string;
   onOpenMenu: (productId: string) => void;
+  onProductPress?: (productId: string) => void;
 };
 
 const AllProductsCarouselItem = React.memo(function AllProductsCarouselItem({
@@ -71,6 +73,7 @@ const AllProductsCarouselItem = React.memo(function AllProductsCarouselItem({
   imageSource,
   productId,
   onOpenMenu,
+  onProductPress,
 }: AllProductsCarouselItemProps) {
   const dotScale = useSharedValue(1);
   const dotStyle = useAnimatedStyle(() => ({
@@ -80,7 +83,16 @@ const AllProductsCarouselItem = React.memo(function AllProductsCarouselItem({
   return (
     <View style={{ width }}>
       <View style={styles.productCardWrap}>
-        <ClosetProductCard width={width} source={imageSource} borderRadius={16} />
+        <Pressable
+          onPress={() => {
+            if (onProductPress) {
+              onProductPress(productId);
+            }
+          }}
+          style={styles.productCardPressable}
+        >
+          <ClosetProductCard width={width} source={imageSource} borderRadius={16} />
+        </Pressable>
         <Animated.View style={[styles.productOverflowWrap, dotStyle]}>
           <Pressable
             onPress={() => {
@@ -381,6 +393,14 @@ export default function ClosetTab({ userId }: Props) {
                   setActiveProductId(id);
                   setProductActionsVisible(true);
                 }}
+                onProductPress={(productId) => {
+                  if (userId) {
+                    router.push({
+                      pathname: "/closet-product-detail",
+                      params: { id: productId, userId },
+                    });
+                  }
+                }}
               />
             );
           }}
@@ -645,6 +665,15 @@ export default function ClosetTab({ userId }: Props) {
             ]
           );
         }}
+        onProductPress={(productId) => {
+          if (userId) {
+            router.push({
+              pathname: "/closet-product-detail",
+              params: { id: productId, userId },
+            });
+          }
+        }}
+        userId={userId}
       />
 
       <RackDetailModal
@@ -688,6 +717,15 @@ export default function ClosetTab({ userId }: Props) {
             ]
           );
         }}
+        onProductPress={(productId) => {
+          if (userId) {
+            router.push({
+              pathname: "/closet-product-detail",
+              params: { id: productId, userId },
+            });
+          }
+        }}
+        userId={userId}
       />
     </View>
   );
@@ -744,6 +782,9 @@ const styles = StyleSheet.create({
   },
   productCardWrap: {
     position: "relative",
+  },
+  productCardPressable: {
+    width: "100%",
   },
   productOverflowWrap: {
     position: "absolute",

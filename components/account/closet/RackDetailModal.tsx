@@ -43,16 +43,20 @@ type Props = {
   onProductRemoveFromRack?: (productId: string) => void;
   onProductMove?: (productId: string) => void;
   onProductDelete?: (productId: string) => void;
+  onProductPress?: (productId: string) => void;
+  userId?: string;
 };
 
 const RackProductCard = React.memo(function RackProductCard({
   product,
   width,
   onOpenMenu,
+  onProductPress,
 }: {
   product: Product;
   width: number;
   onOpenMenu: (productId: string) => void;
+  onProductPress?: (productId: string) => void;
 }) {
   const dotScale = useSharedValue(1);
   const dotStyle = useAnimatedStyle(() => ({
@@ -62,7 +66,16 @@ const RackProductCard = React.memo(function RackProductCard({
   return (
     <View style={{ width }}>
       <View style={styles.productCardWrap}>
-        <ClosetProductCard width={width} source={product.source} borderRadius={16} />
+        <Pressable
+          onPress={() => {
+            if (onProductPress) {
+              onProductPress(product.id);
+            }
+          }}
+          style={styles.productCardPressable}
+        >
+          <ClosetProductCard width={width} source={product.source} borderRadius={16} />
+        </Pressable>
         <ReanimatedAnimated.View style={[styles.productOverflowWrap, dotStyle]}>
           <Pressable
             onPress={() => {
@@ -94,6 +107,8 @@ export default function RackDetailModal({
   onProductRemoveFromRack,
   onProductMove,
   onProductDelete,
+  onProductPress,
+  userId,
 }: Props) {
   const { width: screenWidth } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -284,6 +299,7 @@ export default function RackDetailModal({
                             setActiveProductId(id);
                             setProductActionsVisible(true);
                           }}
+                          onProductPress={onProductPress}
                         />
                       ))}
                       {/* Fill remaining space if row has less than 3 items */}
@@ -402,6 +418,9 @@ const styles = StyleSheet.create({
   },
   productCardWrap: {
     position: "relative",
+  },
+  productCardPressable: {
+    width: "100%",
   },
   emptyContainer: {
     flex: 1,

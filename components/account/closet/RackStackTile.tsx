@@ -88,7 +88,12 @@ export default function RackStackTile({
       >
         <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title} numberOfLines={1}>
+          <Text 
+            style={styles.title} 
+            numberOfLines={1}
+            adjustsFontSizeToFit={true}
+            minimumFontScale={0.7}
+          >
             {title}
           </Text>
           <Pressable
@@ -106,10 +111,13 @@ export default function RackStackTile({
 
         <View style={[styles.stackContainer, { height: containerHeight }]}>
           {/* Always render a 3-layer stack. Missing items become cutout placeholders. */}
+          {/* Front card (i === 2) shows the first item (most recent), back card (i === 0) shows the last item */}
           {offsets.map((offset, i) => {
             const start = 3 - Math.min(3, previewCount);
-            const itemIndex = i - start;
-            const it = itemIndex >= 0 ? previewItems[itemIndex] : null;
+            const rawIndex = i - start;
+            // Reverse the order so first item (most recent) goes to front card (i === 2)
+            const itemIndex = rawIndex >= 0 ? (previewCount - 1 - rawIndex) : -1;
+            const it = itemIndex >= 0 && itemIndex < previewItems.length ? previewItems[itemIndex] : null;
             // Front card (i === 2) should show "Add Products" text when there are 0 products
             const isFrontCard = i === 2;
             const shouldShowAddText = previewCount === 0 && isFrontCard;
@@ -169,15 +177,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
     paddingLeft: 8,
+    minHeight: 24,
   },
   title: {
     fontSize: 16,
     fontWeight: "600",
     color: "#11181C",
-    maxWidth: "92%",
+    flex: 1,
+    flexShrink: 1,
+    marginRight: 8,
   },
   expandButton: {
-    marginLeft: 8,
+    flexShrink: 0,
+    width: 24,
+    height: 24,
+    alignItems: "center",
+    justifyContent: "center",
     transform: [{ translateY: 1 }],
   },
   stackContainer: {
