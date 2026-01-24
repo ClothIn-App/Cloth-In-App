@@ -43,7 +43,7 @@ const EndlessRackCarousel = forwardRef<EndlessRackCarouselHandle, Props>(functio
   {
     products,
     renderItem,
-    placeholderText = "",
+    placeholderText = "Post FitPic's to Add to Closet!",
     focusedScale = 1.12,
     itemSpacing = 14,
     horizontalPadding = 12,

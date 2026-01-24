@@ -15,6 +15,7 @@ type Props = {
   items: StackItem[];
   maxPreviewCount?: number; // default 3
   onPressExpand?: () => void;
+  onPress?: () => void;
   highlighted?: boolean;
 };
 
@@ -24,6 +25,7 @@ export default function RackStackTile({
   items,
   maxPreviewCount = 3,
   onPressExpand = () => {},
+  onPress,
   highlighted = false,
 }: Props) {
   const previewItems = useMemo(() => items.slice(0, maxPreviewCount), [items, maxPreviewCount]);
@@ -66,17 +68,25 @@ export default function RackStackTile({
   const baseTop = (containerHeight - cardHeight) / 2;
 
   return (
-    <Animated.View
-      style={[
-        styles.bubbleContainer,
-        { width },
-        {
-          transform: [{ scale: scaleAnim }],
-        },
-        highlighted ? styles.bubbleHighlighted : styles.bubbleDefault,
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      style={({ pressed }) => [
+        styles.pressableContainer,
+        pressed && onPress && styles.pressablePressed,
       ]}
     >
-      <View style={styles.container}>
+      <Animated.View
+        style={[
+          styles.bubbleContainer,
+          { width },
+          {
+            transform: [{ scale: scaleAnim }],
+          },
+          highlighted ? styles.bubbleHighlighted : styles.bubbleDefault,
+        ]}
+      >
+        <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title} numberOfLines={1}>
             {title}
@@ -100,6 +110,9 @@ export default function RackStackTile({
             const start = 3 - Math.min(3, previewCount);
             const itemIndex = i - start;
             const it = itemIndex >= 0 ? previewItems[itemIndex] : null;
+            // Front card (i === 2) should show "Add Products" text when there are 0 products
+            const isFrontCard = i === 2;
+            const shouldShowAddText = previewCount === 0 && isFrontCard;
             return (
               <View
                 key={it ? it.id : `placeholder-${i}`}
@@ -112,7 +125,11 @@ export default function RackStackTile({
                 {it ? (
                   <ClosetProductCard width={cardWidth} source={it.source} borderRadius={16} />
                 ) : (
-                  <ClosetPlaceholderCard width={cardWidth} text="" borderRadius={16} />
+                  <ClosetPlaceholderCard 
+                    width={cardWidth} 
+                    text={shouldShowAddText ? "Add Products to This Rack" : ""} 
+                    borderRadius={16} 
+                  />
                 )}
               </View>
             );
@@ -120,10 +137,17 @@ export default function RackStackTile({
         </View>
       </View>
     </Animated.View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  pressableContainer: {
+    overflow: "visible",
+  },
+  pressablePressed: {
+    opacity: 0.7,
+  },
   bubbleContainer: {
     borderRadius: 18,
     padding: 12,

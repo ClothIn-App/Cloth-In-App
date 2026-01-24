@@ -31,6 +31,7 @@ import RackOptionsMenu from "../closet/RackOptionsMenu";
 import AllProductsOptionsMenu from "../closet/AllProductsOptionsMenu";
 import ProductActionsMenu from "../closet/ProductActionsMenu";
 import RackPickerMenu from "../closet/RackPickerMenu";
+import RackDetailModal from "../closet/RackDetailModal";
 
 type Props = {
   userId?: string;
@@ -135,6 +136,9 @@ export default function ClosetTab({ userId }: Props) {
   const [productActionsVisible, setProductActionsVisible] = useState(false);
   const [rackPickerVisible, setRackPickerVisible] = useState(false);
   const [highlightedRackId, setHighlightedRackId] = useState<string | null>(null);
+  const [rackDetailVisible, setRackDetailVisible] = useState(false);
+  const [selectedRackId, setSelectedRackId] = useState<string | null>(null);
+  const [allProductsDetailVisible, setAllProductsDetailVisible] = useState(false);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -251,6 +255,11 @@ export default function ClosetTab({ userId }: Props) {
     return racks.find((r) => r.id === renameRackId) ?? null;
   }, [renameRackId, racks]);
 
+  const selectedRackForDetail = useMemo(() => {
+    if (!selectedRackId) return null;
+    return rackSections.find((r) => r.id === selectedRackId) ?? null;
+  }, [selectedRackId, rackSections]);
+
   if (loading || !userId) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -285,7 +294,39 @@ export default function ClosetTab({ userId }: Props) {
       <View key={key} style={styles.section}>
         <View style={styles.sectionHeader}>
           <View style={styles.sectionHeaderLeft}>
-            <Text style={styles.sectionTitle}>{title}</Text>
+            {title === "All Products" ? (
+              <Pressable
+                onPress={() => {
+                  pauseAndResumeCarousel();
+                  setAllProductsDetailVisible(true);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Expand All Products"
+                // Make scroll gestures win over accidental presses.
+                pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
+                hitSlop={6}
+              >
+                <Text style={styles.sectionTitle}>{title}</Text>
+              </Pressable>
+            ) : (
+              <Text style={styles.sectionTitle}>{title}</Text>
+            )}
+            {title === "All Products" && (
+              <Pressable
+                onPress={() => {
+                  pauseAndResumeCarousel();
+                  setAllProductsDetailVisible(true);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Expand All Products"
+                // Make scroll gestures win over accidental presses.
+                pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
+                hitSlop={6}
+                style={styles.expandButton}
+              >
+                <Ionicons name="expand" size={20} color="#11181C" />
+              </Pressable>
+            )}
             <Pressable
               onPress={() => {
                 pauseAndResumeCarousel();
@@ -401,6 +442,11 @@ export default function ClosetTab({ userId }: Props) {
                   onPressExpand={() => {
                     pauseAndResumeCarousel();
                     setRackOptionsRackId(rack.id);
+                  }}
+                  onPress={() => {
+                    pauseAndResumeCarousel();
+                    setSelectedRackId(rack.id);
+                    setRackDetailVisible(true);
                   }}
                 />
               </View>
@@ -543,6 +589,104 @@ export default function ClosetTab({ userId }: Props) {
           setHighlightedRackId(rackId);
           if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
           highlightTimeoutRef.current = setTimeout(() => setHighlightedRackId(null), 700);
+        }}
+      />
+
+      <RackDetailModal
+        visible={rackDetailVisible}
+        rackName={selectedRackForDetail?.name ?? ""}
+        products={
+          selectedRackForDetail?.products
+            ?.filter((p) => PRODUCT_ASSETS[p.id])
+            .map((p) => ({
+              id: p.id,
+              source: PRODUCT_ASSETS[p.id],
+            })) ?? []
+        }
+        onClose={() => {
+          setRackDetailVisible(false);
+          setSelectedRackId(null);
+        }}
+        onProductRemoveFromRack={(productId) => {
+          if (!selectedRackId) return;
+          setRacks((prev) =>
+            prev.map((r) => {
+              if (r.id !== selectedRackId) return r;
+              return {
+                ...r,
+                productIds: (r.productIds || []).filter((id) => id !== productId),
+              };
+            })
+          );
+        }}
+        onProductMove={(productId) => {
+          setActiveProductId(productId);
+          setRackPickerVisible(true);
+        }}
+        onProductDelete={(productId) => {
+          Alert.alert(
+            "Delete from closet?",
+            "This will remove this product from All Products and every rack.",
+            [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Delete",
+                style: "destructive",
+                onPress: () => {
+                  setBaseProductIds((prev) => prev.filter((id) => id !== productId));
+                  setRacks((prev) =>
+                    prev.map((r) => ({
+                      ...r,
+                      productIds: (r.productIds || []).filter((id) => id !== productId),
+                    }))
+                  );
+                },
+              },
+            ]
+          );
+        }}
+      />
+
+      <RackDetailModal
+        visible={allProductsDetailVisible}
+        rackName="All Products"
+        products={allProducts
+          .filter((p) => PRODUCT_ASSETS[p.id])
+          .map((p) => ({
+            id: p.id,
+            source: PRODUCT_ASSETS[p.id],
+          }))}
+        onClose={() => {
+          setAllProductsDetailVisible(false);
+        }}
+        onProductRemoveFromRack={(productId) => {
+          setBaseProductIds((prev) => prev.filter((id) => id !== productId));
+        }}
+        onProductMove={(productId) => {
+          setActiveProductId(productId);
+          setRackPickerVisible(true);
+        }}
+        onProductDelete={(productId) => {
+          Alert.alert(
+            "Delete from closet?",
+            "This will remove this product from All Products and every rack.",
+            [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Delete",
+                style: "destructive",
+                onPress: () => {
+                  setBaseProductIds((prev) => prev.filter((id) => id !== productId));
+                  setRacks((prev) =>
+                    prev.map((r) => ({
+                      ...r,
+                      productIds: (r.productIds || []).filter((id) => id !== productId),
+                    }))
+                  );
+                },
+              },
+            ]
+          );
         }}
       />
     </View>

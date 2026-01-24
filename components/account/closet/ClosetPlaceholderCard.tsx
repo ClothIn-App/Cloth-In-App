@@ -10,7 +10,7 @@ type Props = {
 export default function ClosetPlaceholderCard({
   width,
   borderRadius = 16,
-  text = "",
+  text = "Post FitPic's to Add to Closet!",
 }: Props) {
   // Height matches ClosetProductCard's aspect ratio
   const height = width * 1.15;
@@ -33,16 +33,17 @@ export default function ClosetPlaceholderCard({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#F2F3F5",
-    borderWidth: 1,
-    borderColor: "#E3E3E7",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 2,
+    borderColor: "#D0D0D0",
+    borderStyle: "dashed",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 12,
   },
   text: {
     fontSize: 12,
-    color: "#666A70",
+    color: "#999999",
     textAlign: "center",
     fontWeight: "400",
   },
