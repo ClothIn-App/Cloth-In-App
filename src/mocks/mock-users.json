@@ -122,7 +122,8 @@
         "u_5",
         "u_8"
       ]
-    }
+    },
+    "saved": []
   },
   "u_2": {
     "id": "u_2",
@@ -218,7 +219,16 @@
         "u_6",
         "u_8"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_1", "type": "product" },
+      { "id": "P_5", "type": "product" },
+      { "id": "P_7", "type": "product" },
+      { "id": "P_8", "type": "product" },
+      { "id": "FP_2", "type": "fitpic" },
+      { "id": "FP_4", "type": "fitpic" },
+      { "id": "FP_6", "type": "fitpic" }
+    ]
   },
   "u_3": {
     "id": "u_3",
@@ -340,7 +350,16 @@
         "u_7",
         "u_8"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_2", "type": "product" },
+      { "id": "P_6", "type": "product" },
+      { "id": "P_3", "type": "product" },
+      { "id": "FP_1", "type": "fitpic" },
+      { "id": "FP_3", "type": "fitpic" },
+      { "id": "FP_5", "type": "fitpic" },
+      { "id": "FP_7", "type": "fitpic" }
+    ]
   },
   "u_4": {
     "id": "u_4",
@@ -459,7 +478,17 @@
         "u_7",
         "u_8"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_1", "type": "product" },
+      { "id": "P_5", "type": "product" },
+      { "id": "P_7", "type": "product" },
+      { "id": "P_8", "type": "product" },
+      { "id": "P_4", "type": "product" },
+      { "id": "FP_2", "type": "fitpic" },
+      { "id": "FP_6", "type": "fitpic" },
+      { "id": "FP_8", "type": "fitpic" }
+    ]
   },
   "u_5": {
     "id": "u_5",
@@ -552,7 +581,15 @@
         "u_7",
         "u_8"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_2", "type": "product" },
+      { "id": "P_6", "type": "product" },
+      { "id": "P_3", "type": "product" },
+      { "id": "P_8", "type": "product" },
+      { "id": "FP_1", "type": "fitpic" },
+      { "id": "FP_4", "type": "fitpic" }
+    ]
   },
   "u_6": {
     "id": "u_6",
@@ -661,7 +698,15 @@
         "u_7",
         "u_8"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_1", "type": "product" },
+      { "id": "P_5", "type": "product" },
+      { "id": "P_2", "type": "product" },
+      { "id": "FP_3", "type": "fitpic" },
+      { "id": "FP_5", "type": "fitpic" },
+      { "id": "FP_7", "type": "fitpic" }
+    ]
   },
   "u_7": {
     "id": "u_7",
@@ -765,7 +810,25 @@
         "u_5",
         "u_8"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_1", "type": "product" },
+      { "id": "P_5", "type": "product" },
+      { "id": "P_2", "type": "product" },
+      { "id": "P_6", "type": "product" },
+      { "id": "P_3", "type": "product" },
+      { "id": "P_7", "type": "product" },
+      { "id": "P_4", "type": "product" },
+      { "id": "P_8", "type": "product" },
+      { "id": "FP_1", "type": "fitpic" },
+      { "id": "FP_2", "type": "fitpic" },
+      { "id": "FP_3", "type": "fitpic" },
+      { "id": "FP_4", "type": "fitpic" },
+      { "id": "FP_5", "type": "fitpic" },
+      { "id": "FP_6", "type": "fitpic" },
+      { "id": "FP_7", "type": "fitpic" },
+      { "id": "FP_8", "type": "fitpic" }
+    ]
   },
   "u_8": {
     "id": "u_8",
@@ -901,6 +964,24 @@
         "u_6",
         "u_7"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_1", "type": "product" },
+      { "id": "P_5", "type": "product" },
+      { "id": "P_2", "type": "product" },
+      { "id": "P_6", "type": "product" },
+      { "id": "P_3", "type": "product" },
+      { "id": "P_7", "type": "product" },
+      { "id": "P_4", "type": "product" },
+      { "id": "P_8", "type": "product" },
+      { "id": "FP_1", "type": "fitpic" },
+      { "id": "FP_2", "type": "fitpic" },
+      { "id": "FP_3", "type": "fitpic" },
+      { "id": "FP_4", "type": "fitpic" },
+      { "id": "FP_5", "type": "fitpic" },
+      { "id": "FP_6", "type": "fitpic" },
+      { "id": "FP_7", "type": "fitpic" },
+      { "id": "FP_8", "type": "fitpic" }
+    ]
   }
 }
