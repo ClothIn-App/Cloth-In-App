@@ -152,6 +152,9 @@ export default function ClosetTab({ userId }: Props) {
   const [selectedRackId, setSelectedRackId] = useState<string | null>(null);
   const [allProductsDetailVisible, setAllProductsDetailVisible] = useState(false);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Track which modal should be restored when returning from product detail
+  const pendingRackIdRef = useRef<string | null>(null);
+  const pendingAllProductsRef = useRef<boolean>(false);
 
   useEffect(() => {
     return () => {
@@ -220,6 +223,24 @@ export default function ClosetTab({ userId }: Props) {
 
     initializedRef.current = true;
   }, [loading, closetData.baseProductIds, closetData.racks]);
+
+  // Restore modal when returning from product detail page
+  useEffect(() => {
+    if (isFocused) {
+      // Check if we need to restore a rack modal
+      if (pendingRackIdRef.current !== null) {
+        const rackIdToRestore = pendingRackIdRef.current;
+        pendingRackIdRef.current = null; // Clear the pending ref
+        setSelectedRackId(rackIdToRestore);
+        setRackDetailVisible(true);
+      }
+      // Check if we need to restore "All Products" modal
+      else if (pendingAllProductsRef.current) {
+        pendingAllProductsRef.current = false; // Clear the pending ref
+        setAllProductsDetailVisible(true);
+      }
+    }
+  }, [isFocused]);
 
   // Avoid the "All Products only" flash: until we've initialized local state,
   // render from fetched closetData so the first post-loading render matches the full layout.
@@ -625,7 +646,12 @@ export default function ClosetTab({ userId }: Props) {
         }
         onClose={() => {
           setRackDetailVisible(false);
-          setSelectedRackId(null);
+          // If manually closing (no pending restoration), clear everything
+          if (pendingRackIdRef.current === null) {
+            setSelectedRackId(null);
+          }
+          // If navigating (pending ref is set), don't clear selectedRackId
+          // The ref will be cleared after restoration in the useEffect
         }}
         onProductRemoveFromRack={(productId) => {
           if (!selectedRackId) return;
@@ -667,6 +693,8 @@ export default function ClosetTab({ userId }: Props) {
         }}
         onProductPress={(productId) => {
           if (userId) {
+            // Preserve the rack ID so we can restore the modal when returning
+            pendingRackIdRef.current = selectedRackId;
             router.push({
               pathname: "/closet-product-detail",
               params: { id: productId, userId },
@@ -687,6 +715,12 @@ export default function ClosetTab({ userId }: Props) {
           }))}
         onClose={() => {
           setAllProductsDetailVisible(false);
+          // If manually closing (pending flag not set), clear the flag to be safe
+          if (!pendingAllProductsRef.current) {
+            // Already false, nothing to do
+          }
+          // If navigating (pending flag is set), don't clear it here
+          // It will be cleared after restoration in the useEffect
         }}
         onProductRemoveFromRack={(productId) => {
           setBaseProductIds((prev) => prev.filter((id) => id !== productId));
@@ -719,6 +753,8 @@ export default function ClosetTab({ userId }: Props) {
         }}
         onProductPress={(productId) => {
           if (userId) {
+            // Preserve the "All Products" flag so we can restore the modal when returning
+            pendingAllProductsRef.current = true;
             router.push({
               pathname: "/closet-product-detail",
               params: { id: productId, userId },

@@ -182,6 +182,16 @@ export default function RackDetailModal({
     closeAnim(onClose);
   }, [closeAnim, onClose]);
 
+  const handleProductPress = useCallback(
+    (productId: string) => {
+      if (onProductPress) {
+        onProductPress(productId);
+      }
+      handleClose();
+    },
+    [onProductPress, handleClose]
+  );
+
   const onGestureEvent = useMemo(
     () =>
       Animated.event([{ nativeEvent: { translationY: dragY } }], {
@@ -299,7 +309,7 @@ export default function RackDetailModal({
                             setActiveProductId(id);
                             setProductActionsVisible(true);
                           }}
-                          onProductPress={onProductPress}
+                          onProductPress={handleProductPress}
                         />
                       ))}
                       {/* Fill remaining space if row has less than 3 items */}
