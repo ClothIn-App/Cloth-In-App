@@ -36,6 +36,7 @@ import RackDetailModal from "../closet/RackDetailModal";
 
 type Props = {
   userId?: string;
+  isReadOnly?: boolean;
 };
 
 type Product = {
@@ -66,6 +67,7 @@ type AllProductsCarouselItemProps = {
   productId: string;
   onOpenMenu: (productId: string) => void;
   onProductPress?: (productId: string) => void;
+  isReadOnly?: boolean;
 };
 
 const AllProductsCarouselItem = React.memo(function AllProductsCarouselItem({
@@ -74,6 +76,7 @@ const AllProductsCarouselItem = React.memo(function AllProductsCarouselItem({
   productId,
   onOpenMenu,
   onProductPress,
+  isReadOnly = false,
 }: AllProductsCarouselItemProps) {
   const dotScale = useSharedValue(1);
   const dotStyle = useAnimatedStyle(() => ({
@@ -93,24 +96,26 @@ const AllProductsCarouselItem = React.memo(function AllProductsCarouselItem({
         >
           <ClosetProductCard width={width} source={imageSource} borderRadius={16} />
         </Pressable>
-        <Animated.View style={[styles.productOverflowWrap, dotStyle]}>
-          <Pressable
-            onPress={() => {
-              dotScale.value = withSequence(
-                withSpring(1.12, { damping: 14, stiffness: 240 }),
-                withSpring(1, { damping: 14, stiffness: 240 })
-              );
-              onOpenMenu(productId);
-            }}
-            accessibilityRole="button"
-            accessibilityLabel="Product options"
-            pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
-            hitSlop={8}
-            style={styles.productOverflowButton}
-          >
-            <Ionicons name="ellipsis-horizontal" size={16} color="#11181C" />
-          </Pressable>
-        </Animated.View>
+        {!isReadOnly && (
+          <Animated.View style={[styles.productOverflowWrap, dotStyle]}>
+            <Pressable
+              onPress={() => {
+                dotScale.value = withSequence(
+                  withSpring(1.12, { damping: 14, stiffness: 240 }),
+                  withSpring(1, { damping: 14, stiffness: 240 })
+                );
+                onOpenMenu(productId);
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Product options"
+              pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
+              hitSlop={8}
+              style={styles.productOverflowButton}
+            >
+              <Ionicons name="ellipsis-horizontal" size={16} color="#11181C" />
+            </Pressable>
+          </Animated.View>
+        )}
       </View>
     </View>
   );
@@ -129,7 +134,7 @@ const getProductsByIds = (productIds: string[]): Product[] => {
     .filter((p): p is Product => p !== null);
 };
 
-export default function ClosetTab({ userId }: Props) {
+export default function ClosetTab({ userId, isReadOnly = false }: Props) {
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
   const isFocused = useIsFocused();
@@ -360,22 +365,24 @@ export default function ClosetTab({ userId }: Props) {
                 <Ionicons name="expand" size={20} color="#11181C" />
               </Pressable>
             )}
-            <Pressable
-              onPress={() => {
-                pauseAndResumeCarousel();
-                setAllProductsOptionsVisible(true);
-              }}
-              accessibilityRole="button"
-              accessibilityLabel="Rack options"
-              // Make scroll gestures win over accidental presses.
-              pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
-              hitSlop={6}
-              style={styles.expandButton}
-            >
-              <Ionicons name="ellipsis-horizontal" size={20} color="#11181C" />
-            </Pressable>
+            {!isReadOnly && (
+              <Pressable
+                onPress={() => {
+                  pauseAndResumeCarousel();
+                  setAllProductsOptionsVisible(true);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Rack options"
+                // Make scroll gestures win over accidental presses.
+                pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
+                hitSlop={6}
+                style={styles.expandButton}
+              >
+                <Ionicons name="ellipsis-horizontal" size={20} color="#11181C" />
+              </Pressable>
+            )}
           </View>
-          {title === "All Products" && (
+          {title === "All Products" && !isReadOnly && (
             <Pressable
               onPress={() => {
                 pauseAndResumeCarousel();
@@ -422,6 +429,7 @@ export default function ClosetTab({ userId }: Props) {
                     });
                   }
                 }}
+                isReadOnly={isReadOnly}
               />
             );
           }}
@@ -480,7 +488,7 @@ export default function ClosetTab({ userId }: Props) {
                   items={items}
                   maxPreviewCount={3}
                   highlighted={highlightedRackId === rack.id}
-                  onPressExpand={() => {
+                  onPressExpand={isReadOnly ? undefined : () => {
                     pauseAndResumeCarousel();
                     setRackOptionsRackId(rack.id);
                   }}
@@ -489,6 +497,7 @@ export default function ClosetTab({ userId }: Props) {
                     setSelectedRackId(rack.id);
                     setRackDetailVisible(true);
                   }}
+                  isReadOnly={isReadOnly}
                 />
               </View>
             );
@@ -669,6 +678,7 @@ export default function ClosetTab({ userId }: Props) {
           setActiveProductId(productId);
           setRackPickerVisible(true);
         }}
+        isReadOnly={isReadOnly}
         onProductDelete={(productId) => {
           Alert.alert(
             "Delete from closet?",

@@ -7,15 +7,16 @@ import SavedTab from "./tabs/SavedTab";
 type Props = { 
   activeKey: string;
   userId?: string;
+  isReadOnly?: boolean;
 };
 
-export default function TabContent({ activeKey, userId }: Props) {
+export default function TabContent({ activeKey, userId, isReadOnly = false }: Props) {
   const content = (() => {
     switch (activeKey) {
       case "fitpics":
         return <FitPicsTab userId={userId} />;
       case "closet":
-        return <ClosetTab userId={userId} />;
+        return <ClosetTab userId={userId} isReadOnly={isReadOnly} />;
       case "saved":
         return <SavedTab userId={userId} />;
       default:

@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { UserSearchResult } from '../../src/types/search';
 
@@ -19,8 +20,11 @@ export default function UserListItem({ user, onPress, onFollowPress }: Props) {
     if (onPress) {
       onPress(user);
     } else {
-      // TODO: Navigate to user profile
-      console.log('Navigate to profile:', user.uid);
+      // Navigate to user profile
+      router.push({
+        pathname: '/user-profile',
+        params: { userId: user.uid },
+      });
     }
   };
 

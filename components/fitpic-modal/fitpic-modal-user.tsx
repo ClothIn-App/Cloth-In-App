@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Image, StyleSheet, Text } from 'react-native';
+import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useThemeColor } from '../../hooks/useThemeColor';
 import mockUsers from '../../src/mocks/mock-users.json';
 
@@ -18,9 +19,20 @@ type Props = {
 };
 
 // Helper to look up user by ID from mock data
-const getUserById = (userId: string): { username: string; avatarUrl?: string } | null => {
-  const user = (mockUsers as Record<string, { username: string; avatarUrl?: string }>)[userId];
+const getUserById = (userId: string): { username: string; avatarUrl?: string; id?: string } | null => {
+  const user = (mockUsers as Record<string, { username: string; avatarUrl?: string; id?: string }>)[userId];
   return user || null;
+};
+
+// Helper to find userId by username
+const getUserIdByUsername = (username: string): string | null => {
+  const users = mockUsers as Record<string, any>;
+  for (const [id, user] of Object.entries(users)) {
+    if (user.username === username) {
+      return id;
+    }
+  }
+  return null;
 };
 
 export default function FitPicModalUser({ author, createdAt, location }: Props) {
@@ -29,17 +41,38 @@ export default function FitPicModalUser({ author, createdAt, location }: Props) 
   // Normalize author data - handle both string (authorId) and object formats
   let username: string;
   let avatarUrl: string | undefined;
+  let userId: string | null = null;
 
   if (typeof author === 'string') {
     // author is an authorId (e.g., "u_1") - look up user data
     const userData = getUserById(author);
     username = userData?.username ?? author;
     avatarUrl = userData?.avatarUrl;
+    userId = author; // Use the author string as userId if it's an ID
   } else {
     // author is already an AuthorInfo object
     username = author.username;
     avatarUrl = author.avatarUrl;
+    userId = author.uid;
   }
+
+  const handlePress = () => {
+    if (userId) {
+      router.push({
+        pathname: '/user-profile',
+        params: { userId },
+      });
+    } else {
+      // Fallback: try to find userId by username
+      const foundUserId = getUserIdByUsername(username);
+      if (foundUserId) {
+        router.push({
+          pathname: '/user-profile',
+          params: { userId: foundUserId },
+        });
+      }
+    }
+  };
 
   // Format date helper: "2024-01-13T10:30:00Z" -> "Jan 13"
   const formatDate = (dateString: string): string => {
@@ -60,7 +93,7 @@ export default function FitPicModalUser({ author, createdAt, location }: Props) 
   const hasMetadata = hasDate || hasLocation;
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={handlePress} activeOpacity={0.7}>
       <View style={styles.avatarContainer}>
         <Image
           source={
@@ -97,7 +130,7 @@ export default function FitPicModalUser({ author, createdAt, location }: Props) 
           </View>
         )}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

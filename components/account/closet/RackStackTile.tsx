@@ -17,6 +17,7 @@ type Props = {
   onPressExpand?: () => void;
   onPress?: () => void;
   highlighted?: boolean;
+  isReadOnly?: boolean;
 };
 
 export default function RackStackTile({
@@ -27,6 +28,7 @@ export default function RackStackTile({
   onPressExpand = () => {},
   onPress,
   highlighted = false,
+  isReadOnly = false,
 }: Props) {
   const previewItems = useMemo(() => items.slice(0, maxPreviewCount), [items, maxPreviewCount]);
   const previewCount = previewItems.length;
@@ -96,17 +98,19 @@ export default function RackStackTile({
           >
             {title}
           </Text>
-          <Pressable
-            onPress={onPressExpand}
-            accessibilityRole="button"
-            accessibilityLabel={`${title} options`}
-            // Make scroll gestures win over accidental presses.
-            pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
-            hitSlop={6}
-            style={styles.expandButton}
-          >
-            <Ionicons name="ellipsis-horizontal" size={18} color="#11181C" />
-          </Pressable>
+          {!isReadOnly && (
+            <Pressable
+              onPress={onPressExpand}
+              accessibilityRole="button"
+              accessibilityLabel={`${title} options`}
+              // Make scroll gestures win over accidental presses.
+              pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
+              hitSlop={6}
+              style={styles.expandButton}
+            >
+              <Ionicons name="ellipsis-horizontal" size={18} color="#11181C" />
+            </Pressable>
+          )}
         </View>
 
         <View style={[styles.stackContainer, { height: containerHeight }]}>

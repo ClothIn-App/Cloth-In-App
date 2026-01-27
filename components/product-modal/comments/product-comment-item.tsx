@@ -7,8 +7,10 @@ import {
   Image,
   Animated,
 } from 'react-native';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { CommentType } from '../../../src/types/feed';
+import usersData from '../../../src/mocks/mock-users.json';
 
 // Re-export CommentType for convenience
 export type { CommentType };
@@ -24,6 +26,17 @@ interface ProductCommentItemProps {
 const LIKE_ACTIVE_COLOR = '#FFD60A'; // emoji yellow (matching THUMBS_UP)
 const DISLIKE_ACTIVE_COLOR = '#FFD60A'; // emoji yellow
 const INACTIVE_COLOR = '#222';
+
+// Helper to find userId by username
+const getUserIdByUsername = (username: string): string | null => {
+  const users = usersData as Record<string, any>;
+  for (const [id, user] of Object.entries(users)) {
+    if (user.username === username) {
+      return id;
+    }
+  }
+  return null;
+};
 
 // Simple timestamp formatter
 const formatTimestamp = (dateString: string): string => {
@@ -56,6 +69,17 @@ export default function ProductCommentItem({
   // Calculate depth from dot notation in comment.id
   const depth = comment.id.split('.').length - 1;
   const indent = depth * 16;
+
+  const handleUsernamePress = () => {
+    // comment.user is the username string
+    const userId = getUserIdByUsername(comment.user);
+    if (userId) {
+      router.push({
+        pathname: '/user-profile',
+        params: { userId },
+      });
+    }
+  };
 
   // Track local reaction state (optimistic UI)
   // TODO: This should be synced with actual user reaction state from parent/API
@@ -118,7 +142,9 @@ export default function ProductCommentItem({
           defaultSource={require('../../../assets/images/icon.png')}
         />
         <View style={styles.userInfo}>
-          <Text style={styles.username}>{comment.user}</Text>
+          <TouchableOpacity onPress={handleUsernamePress} activeOpacity={0.7}>
+            <Text style={styles.username}>{comment.user}</Text>
+          </TouchableOpacity>
           <Text style={styles.separator}> · </Text>
           <Text style={styles.timestamp}>{formatTimestamp(comment.createdAt)}</Text>
         </View>

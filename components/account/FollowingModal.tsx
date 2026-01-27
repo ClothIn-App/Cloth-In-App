@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   StyleSheet 
 } from "react-native";
+import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { FollowingUser } from "../../src/types/account";
 import usersData from "../../src/mocks/mock-users.json";
@@ -82,7 +83,8 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
     }
   };
 
-  const handleFollowToggle = (targetUserId: string) => {
+  const handleFollowToggle = (targetUserId: string, e: any) => {
+    e.stopPropagation();
     setFollowing(prev => 
       prev.map(user => 
         user.uid === targetUserId 
@@ -92,10 +94,21 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
     );
   };
 
+  const handleUserPress = (userId: string) => {
+    router.push({
+      pathname: '/user-profile',
+      params: { userId },
+    });
+  };
+
   const renderFollowing = ({ item }: { item: FollowingUser }) => {
     const shouldShowDisplayName = !!item.isFollowing || !item.isPrivateAccount;
     return (
-      <View style={[styles.followingItem, { borderBottomColor: borderColor }]}>
+      <TouchableOpacity 
+        style={[styles.followingItem, { borderBottomColor: borderColor }]}
+        onPress={() => handleUserPress(item.uid)}
+        activeOpacity={0.7}
+      >
         <Image
           source={{ uri: item.avatarUrl || "https://placehold.co/60x60" }}
           style={styles.avatar}
@@ -118,7 +131,7 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
               borderColor: borderColor 
             }
           ]}
-          onPress={() => handleFollowToggle(item.uid)}
+          onPress={(e) => handleFollowToggle(item.uid, e)}
         >
           <Text style={[
             styles.unfollowButtonText,
@@ -129,7 +142,7 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
             {item.isFollowing ? "Following" : "Follow"}
           </Text>
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
     );
   };
 

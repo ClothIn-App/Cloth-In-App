@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { UserSearchResult } from '../../src/types/search';
 
@@ -36,7 +37,17 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
       ) : (
         <View style={styles.list}>
           {previewUsers.map((user) => (
-            <View key={user.id} style={styles.userItem}>
+            <TouchableOpacity 
+              key={user.id} 
+              style={styles.userItem}
+              onPress={() => {
+                router.push({
+                  pathname: '/user-profile',
+                  params: { userId: user.uid },
+                });
+              }}
+              activeOpacity={0.7}
+            >
               <Image
                 source={{ uri: user.avatarUrl || 'https://placehold.co/50x50' }}
                 style={styles.avatar}
@@ -67,10 +78,12 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
                   styles.followButton,
                   user.isFollowing && styles.followingButton,
                 ]}
-                onPress={() => {
-                  // TODO: Navigate to user profile
-                  console.log('TODO: Navigate to profile for user:', user.uid);
+                onPress={(e) => {
+                  e.stopPropagation();
+                  // Follow button functionality can be added here later
+                  console.log('Toggle follow:', user.uid);
                 }}
+                activeOpacity={0.7}
               >
                 <Text
                   style={[
@@ -81,7 +94,7 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
                   {user.isFollowing ? 'Following' : 'Follow'}
                 </Text>
               </TouchableOpacity>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       )}
