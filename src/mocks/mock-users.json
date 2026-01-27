@@ -60,15 +60,46 @@
       ]
     },
     "closet": {
-      "total": 7,
-      "productIds": [
-        "P_2",
-        "P_1",
-        "P_3",
-        "P_8",
-        "P_7",
-        "P_4",
-        "P_5"
+      "base": {
+        "productIds": [
+          "P_2",
+          "P_1",
+          "P_3",
+          "P_8",
+          "P_7",
+          "P_4",
+          "P_5"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Casual Essentials",
+          "productIds": [
+            "P_2",
+            "P_1",
+            "P_3"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Formal Wear",
+          "productIds": [
+            "P_8",
+            "P_7",
+            "P_1"
+          ]
+        },
+        {
+          "id": "R_3",
+          "name": "Seasonal",
+          "productIds": [
+            "P_4",
+            "P_5",
+            "P_3",
+            "P_2"
+          ]
+        }
       ]
     },
     "followers": {
@@ -91,7 +122,8 @@
         "u_5",
         "u_8"
       ]
-    }
+    },
+    "saved": []
   },
   "u_2": {
     "id": "u_2",
@@ -145,11 +177,31 @@
       ]
     },
     "closet": {
-      "total": 3,
-      "productIds": [
-        "P_6",
-        "P_1",
-        "P_2"
+      "base": {
+        "productIds": [
+          "P_6",
+          "P_1",
+          "P_2"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Daily Wear",
+          "productIds": [
+            "P_6",
+            "P_1",
+            "P_2"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Favorites",
+          "productIds": [
+            "P_2",
+            "P_1"
+          ]
+        }
       ]
     },
     "followers": {
@@ -167,7 +219,16 @@
         "u_6",
         "u_8"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_1", "type": "product" },
+      { "id": "P_5", "type": "product" },
+      { "id": "P_7", "type": "product" },
+      { "id": "P_8", "type": "product" },
+      { "id": "FP_2", "type": "fitpic" },
+      { "id": "FP_4", "type": "fitpic" },
+      { "id": "FP_6", "type": "fitpic" }
+    ]
   },
   "u_3": {
     "id": "u_3",
@@ -225,15 +286,46 @@
       ]
     },
     "closet": {
-      "total": 7,
-      "productIds": [
-        "P_4",
-        "P_6",
-        "P_7",
-        "P_3",
-        "P_8",
-        "P_2",
-        "P_1"
+      "base": {
+        "productIds": [
+          "P_4",
+          "P_6",
+          "P_7",
+          "P_3",
+          "P_8",
+          "P_2",
+          "P_1"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Workout Gear",
+          "productIds": [
+            "P_4",
+            "P_6",
+            "P_2"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Street Style",
+          "productIds": [
+            "P_7",
+            "P_3",
+            "P_8",
+            "P_2"
+          ]
+        },
+        {
+          "id": "R_3",
+          "name": "Classics",
+          "productIds": [
+            "P_2",
+            "P_1",
+            "P_6"
+          ]
+        }
       ]
     },
     "followers": {
@@ -258,7 +350,16 @@
         "u_7",
         "u_8"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_2", "type": "product" },
+      { "id": "P_6", "type": "product" },
+      { "id": "P_3", "type": "product" },
+      { "id": "FP_1", "type": "fitpic" },
+      { "id": "FP_3", "type": "fitpic" },
+      { "id": "FP_5", "type": "fitpic" },
+      { "id": "FP_7", "type": "fitpic" }
+    ]
   },
   "u_4": {
     "id": "u_4",
@@ -317,14 +418,45 @@
       ]
     },
     "closet": {
-      "total": 6,
-      "productIds": [
-        "P_8",
-        "P_3",
-        "P_4",
-        "P_2",
-        "P_5",
-        "P_1"
+      "base": {
+        "productIds": [
+          "P_8",
+          "P_3",
+          "P_4",
+          "P_2",
+          "P_5",
+          "P_1"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Evening",
+          "productIds": [
+            "P_8",
+            "P_3",
+            "P_2"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Daytime",
+          "productIds": [
+            "P_4",
+            "P_2",
+            "P_1"
+          ]
+        },
+        {
+          "id": "R_3",
+          "name": "Versatile",
+          "productIds": [
+            "P_5",
+            "P_1",
+            "P_2",
+            "P_3"
+          ]
+        }
       ]
     },
     "followers": {
@@ -346,7 +478,17 @@
         "u_7",
         "u_8"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_1", "type": "product" },
+      { "id": "P_5", "type": "product" },
+      { "id": "P_7", "type": "product" },
+      { "id": "P_8", "type": "product" },
+      { "id": "P_4", "type": "product" },
+      { "id": "FP_2", "type": "fitpic" },
+      { "id": "FP_6", "type": "fitpic" },
+      { "id": "FP_8", "type": "fitpic" }
+    ]
   },
   "u_5": {
     "id": "u_5",
@@ -391,11 +533,31 @@
       ]
     },
     "closet": {
-      "total": 3,
-      "productIds": [
-        "P_8",
-        "P_6",
-        "P_7"
+      "base": {
+        "productIds": [
+          "P_8",
+          "P_6",
+          "P_7"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Active",
+          "productIds": [
+            "P_8",
+            "P_6",
+            "P_7"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Comfort",
+          "productIds": [
+            "P_7",
+            "P_8"
+          ]
+        }
       ]
     },
     "followers": {
@@ -419,7 +581,15 @@
         "u_7",
         "u_8"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_2", "type": "product" },
+      { "id": "P_6", "type": "product" },
+      { "id": "P_3", "type": "product" },
+      { "id": "P_8", "type": "product" },
+      { "id": "FP_1", "type": "fitpic" },
+      { "id": "FP_4", "type": "fitpic" }
+    ]
   },
   "u_6": {
     "id": "u_6",
@@ -481,11 +651,31 @@
       ]
     },
     "closet": {
-      "total": 3,
-      "productIds": [
-        "P_7",
-        "P_1",
-        "P_2"
+      "base": {
+        "productIds": [
+          "P_7",
+          "P_1",
+          "P_2"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Basics",
+          "productIds": [
+            "P_7",
+            "P_1",
+            "P_2"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Go-To",
+          "productIds": [
+            "P_2",
+            "P_1"
+          ]
+        }
       ]
     },
     "followers": {
@@ -508,7 +698,15 @@
         "u_7",
         "u_8"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_1", "type": "product" },
+      { "id": "P_5", "type": "product" },
+      { "id": "P_2", "type": "product" },
+      { "id": "FP_3", "type": "fitpic" },
+      { "id": "FP_5", "type": "fitpic" },
+      { "id": "FP_7", "type": "fitpic" }
+    ]
   },
   "u_7": {
     "id": "u_7",
@@ -565,12 +763,33 @@
       ]
     },
     "closet": {
-      "total": 4,
-      "productIds": [
-        "P_2",
-        "P_1",
-        "P_7",
-        "P_6"
+      "base": {
+        "productIds": [
+          "P_2",
+          "P_1",
+          "P_7",
+          "P_6"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Essentials",
+          "productIds": [
+            "P_2",
+            "P_1",
+            "P_7"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Active",
+          "productIds": [
+            "P_7",
+            "P_6",
+            "P_1"
+          ]
+        }
       ]
     },
     "followers": {
@@ -591,7 +810,25 @@
         "u_5",
         "u_8"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_1", "type": "product" },
+      { "id": "P_5", "type": "product" },
+      { "id": "P_2", "type": "product" },
+      { "id": "P_6", "type": "product" },
+      { "id": "P_3", "type": "product" },
+      { "id": "P_7", "type": "product" },
+      { "id": "P_4", "type": "product" },
+      { "id": "P_8", "type": "product" },
+      { "id": "FP_1", "type": "fitpic" },
+      { "id": "FP_2", "type": "fitpic" },
+      { "id": "FP_3", "type": "fitpic" },
+      { "id": "FP_4", "type": "fitpic" },
+      { "id": "FP_5", "type": "fitpic" },
+      { "id": "FP_6", "type": "fitpic" },
+      { "id": "FP_7", "type": "fitpic" },
+      { "id": "FP_8", "type": "fitpic" }
+    ]
   },
   "u_8": {
     "id": "u_8",
@@ -642,18 +879,66 @@
       ]
     },
     "fitpics": {
-      "total": 0,
-      "postedIds": []
+      "total": 8,
+      "postedIds": [
+        "FP_1",
+        "FP_2",
+        "FP_3",
+        "FP_4",
+        "FP_5",
+        "FP_6",
+        "FP_7",
+        "FP_8"]
     },
+
     "closet": {
-      "total": 6,
-      "productIds": [
-        "P_4",
-        "P_3",
-        "P_6",
-        "P_7",
-        "P_8",
-        "P_2"
+      "base": {
+        "productIds": [
+          "P_1",
+          "P_2",
+          "P_3",
+          "P_4",
+          "P_5",
+          "P_6",
+          "P_7",
+          "P_8"
+        ]
+      },
+      "racks": [
+        {
+          "id": "R_1",
+          "name": "Formal",
+          "productIds": [
+            "P_3",
+            "P_4",
+            "P_1"
+          ]
+        },
+        {
+          "id": "R_2",
+          "name": "Active",
+          "productIds": [
+            "P_5",
+            "P_6",
+            "P_2"
+          ]
+        },
+        {
+          "id": "R_3",
+          "name": "Special",
+          "productIds": [
+            "P_7",
+            "P_8",
+            "P_1"
+          ]
+        },
+        {
+          "id": "R_4",
+          "name": "One Item",
+          "productIds": [
+            "P_5"
+          ]
+        }
       ]
     },
     "followers": {
@@ -679,6 +964,24 @@
         "u_6",
         "u_7"
       ]
-    }
+    },
+    "saved": [
+      { "id": "P_1", "type": "product" },
+      { "id": "P_5", "type": "product" },
+      { "id": "P_2", "type": "product" },
+      { "id": "P_6", "type": "product" },
+      { "id": "P_3", "type": "product" },
+      { "id": "P_7", "type": "product" },
+      { "id": "P_4", "type": "product" },
+      { "id": "P_8", "type": "product" },
+      { "id": "FP_1", "type": "fitpic" },
+      { "id": "FP_2", "type": "fitpic" },
+      { "id": "FP_3", "type": "fitpic" },
+      { "id": "FP_4", "type": "fitpic" },
+      { "id": "FP_5", "type": "fitpic" },
+      { "id": "FP_6", "type": "fitpic" },
+      { "id": "FP_7", "type": "fitpic" },
+      { "id": "FP_8", "type": "fitpic" }
+    ]
   }
 }

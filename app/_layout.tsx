@@ -82,6 +82,15 @@ export default function RootLayout() {
               animation: 'fade_from_bottom',
             }}
           />
+          <Stack.Screen
+            name="closet-product-detail"
+            options={{
+              headerShown: false,
+              presentation: 'card',
+              gestureEnabled: true,
+              animation: 'fade_from_bottom',
+            }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </AuthProvider>

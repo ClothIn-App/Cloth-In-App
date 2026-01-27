@@ -10,6 +10,7 @@ import {
 import { router } from "expo-router";
 import { FitPic } from "@/src/types/content";
 import { FITPIC_ASSETS } from "@/src/maps/images";
+import mockUsers from "@/src/mocks/mock-users.json";
 
 const TILE_HEIGHT = 220;
 const MIN_W = 90;
@@ -18,6 +19,12 @@ const GAP = 12;
 
 type ProductFitPicCarouselProps = {
   fitpics: FitPic[];
+};
+
+// Helper to look up username from userId
+const getUsernameById = (userId: string): string => {
+  const user = (mockUsers as Record<string, { username: string }>)[userId];
+  return user?.username || userId;
 };
 
 // Helper to compute tile width from image source
@@ -97,7 +104,7 @@ export function ProductFitPicCarousel({
                 />
                 <View style={styles.usernameOverlay}>
                   <Text style={styles.usernameText}>
-                    @{fitpic.author}
+                    @{getUsernameById(fitpic.author)}
                   </Text>
                 </View>
               </TouchableOpacity>

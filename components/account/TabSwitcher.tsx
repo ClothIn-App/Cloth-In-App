@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import type { AccountTab } from "../../constants/accountTabs";
 
 type Props = {
@@ -15,12 +15,8 @@ export default function TabSwitcher({ tabs, activeKey, onChange }: Props) {
   const text = '#11181C';
 
   return (
-    <View style={{ paddingVertical: 8 }}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}
-      >
+    <View style={{ paddingVertical: 8, paddingHorizontal: 12 }}>
+      <View style={{ flexDirection: "row", gap: 8 }}>
         {tabs.map((t) => {
           const active = t.key === activeKey;
           return (
@@ -28,12 +24,14 @@ export default function TabSwitcher({ tabs, activeKey, onChange }: Props) {
               key={t.key}
               onPress={() => onChange(t.key)}
               style={{
+                flex: 1,
                 paddingVertical: 8,
                 paddingHorizontal: 14,
                 borderRadius: 999,
                 backgroundColor: active ? activeBg : inactiveBg,
                 borderWidth: 1,
                 borderColor: border,
+                alignItems: "center",
               }}
             >
               <Text style={{ color: text, fontWeight: active ? "600" : "400" }}>
@@ -42,7 +40,7 @@ export default function TabSwitcher({ tabs, activeKey, onChange }: Props) {
             </TouchableOpacity>
           );
         })}
-      </ScrollView>
+      </View>
     </View>
   );
 }

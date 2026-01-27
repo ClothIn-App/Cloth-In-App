@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
@@ -9,15 +9,18 @@ import { ProductSummary } from "@/components/product-modal/ProductSummary";
 import { ProductReactionsRow } from "@/components/product-modal/ProductReactionsRow";
 import { ProductDescription } from "@/components/product-modal/ProductDescription";
 import { ProductFitPicCarousel } from "@/components/product-modal/ProductFitPicCarousel";
+import { ProductUserStyleCarousel } from "@/components/product-modal/ProductUserStyleCarousel";
 import ProductCommentsSection from "@/components/product-modal/comments/product-comments-section";
 import ProductCommentInput from "@/components/product-modal/comments/product-comment-input";
 import type { Reactions, CommentType } from "@/src/types/feed";
+import sessionData from "@/src/mocks/mock-session.json";
+import usersData from "@/src/mocks/mock-users.json";
 
 const DEFAULT_REACTIONS: Reactions = { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } };
 
 export default function ProductDetailModal() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const { product, featuredFitPics, comments: initialComments } = useProductData(id);
+  const { product, featuredFitPics, comments: initialComments, followersFitPics } = useProductData(id);
   const insets = useSafeAreaInsets();
   
   // Local state for reactions (optimistic updates)
@@ -26,6 +29,24 @@ export default function ProductDetailModal() {
   // Local state for comments
   const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [replyTarget, setReplyTarget] = useState<CommentType | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
+
+  // Get current user and check if Product is saved
+  const currentUserId = sessionData.currentUserId;
+  const currentUser = useMemo(() => {
+    return (usersData as Record<string, any>)[currentUserId];
+  }, [currentUserId]);
+
+  // Check if Product is saved when product or id changes
+  useEffect(() => {
+    if (!product || !currentUser) return;
+    
+    const saved = currentUser.saved || [];
+    const isProductSaved = saved.some((item: { id: string; type: string }) => 
+      item.id === product.id && item.type === "product"
+    );
+    setIsSaved(isProductSaved);
+  }, [product, currentUser]);
   
   // Sync reactions state when product loads
   useEffect(() => {
@@ -102,6 +123,42 @@ export default function ProductDetailModal() {
     setReplyTarget(comment);
   };
 
+  // Handle save toggle
+  const handleToggleSave = useCallback((nextSaved: boolean) => {
+    setIsSaved(nextSaved);
+    // TODO: In a real app, this would update the backend
+    // For now, we're just updating local state
+    if (currentUser && product) {
+      const userData = usersData as Record<string, any>;
+      const user = userData[currentUserId];
+      if (user) {
+        if (!user.saved) {
+          user.saved = [];
+        }
+        const saved = user.saved || [];
+        if (nextSaved) {
+          // Add to saved at the beginning (most recent first) if not already there
+          if (!saved.some((item: { id: string; type: string }) => 
+            item.id === product.id && item.type === "product"
+          )) {
+            saved.unshift({
+              id: product.id,
+              type: "product",
+            });
+          }
+        } else {
+          // Remove from saved
+          const index = saved.findIndex((item: { id: string; type: string }) => 
+            item.id === product.id && item.type === "product"
+          );
+          if (index !== -1) {
+            saved.splice(index, 1);
+          }
+        }
+      }
+    }
+  }, [currentUser, product, currentUserId]);
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <ProductHeader
@@ -135,12 +192,18 @@ export default function ProductDetailModal() {
                 // later: persist to API
               }}
               productId={product.id}
+              isSaved={isSaved}
+              onToggleSave={handleToggleSave}
             />
           </View>
           <ProductDescription
             description={product.description}
             details={(product as any).details}
           />
+          {/* Followers Style Section - Only show if there are FitPics from followers */}
+          {followersFitPics && followersFitPics.length > 0 && (
+            <ProductUserStyleCarousel fitpics={followersFitPics} userName="Followers" />
+          )}
           <ProductFitPicCarousel fitpics={featuredFitPics} />
           
           {/* Comments Section */}

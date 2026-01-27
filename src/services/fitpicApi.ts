@@ -17,10 +17,130 @@ import {
   FitPicFilters,
   FitPicSortOptions
 } from '../types/fitpic';
+import { FITPIC_ASSETS } from '../maps/images';
+import { Image } from 'react-native';
 
-// Mock data structure (replacing deleted JSON file)
+// Load mock data
+import rawFitpicsData from '../mocks/mock-fitpics.json';
+import rawUsersData from '../mocks/mock-users.json';
+import rawProductsData from '../mocks/mock-products.json';
+
+// Helper to get image URI from asset
+const getImageUri = (source: any): string | undefined => {
+  if (typeof source === 'number') {
+    // require() returns a number, resolve it
+    const resolved = Image.resolveAssetSource(source);
+    return resolved?.uri;
+  }
+  if (source?.uri) {
+    return source.uri;
+  }
+  return undefined;
+};
+
+// Transform raw FitPic data to FitPic type
+const transformRawFitPic = (rawFitpic: any): FitPic | null => {
+  try {
+    const imageSource = FITPIC_ASSETS[rawFitpic.id];
+    if (!imageSource) {
+      console.warn(`No asset found for FitPic ID: ${rawFitpic.id}`);
+      return null;
+    }
+
+    const imageUri = getImageUri(imageSource);
+    if (!imageUri) {
+      console.warn(`Could not resolve image URI for FitPic ID: ${rawFitpic.id}`);
+      return null;
+    }
+
+    // Get image dimensions
+    const resolved = Image.resolveAssetSource(imageSource);
+    const width = resolved?.width || 800;
+    const height = resolved?.height || 1000;
+
+    // Get user data for author info
+    const userData = rawUsersData[rawFitpic.author as keyof typeof rawUsersData];
+    const author = userData ? {
+      uid: userData.id,
+      username: userData.username,
+      displayName: userData.displayName,
+      avatarUrl: userData.avatarUrl,
+    } : {
+      uid: rawFitpic.author || 'unknown',
+      username: rawFitpic.author || 'unknown',
+      displayName: rawFitpic.author || 'unknown',
+    };
+
+    // Transform products from productIds to ProductLite format
+    const products = (rawFitpic.featuredProducts?.productIds || []).map((productId: string) => {
+      const product = rawProductsData.products.find((p: any) => p.id === productId);
+      if (!product) return null;
+      return {
+        id: product.id,
+        name: product.name,
+        brand: product.brand,
+        category: (product as any).category, // Category may not exist in all products
+        price: product.price,
+        currency: 'USD',
+        imageUrl: undefined, // Could be added if needed
+        purchaseUrl: product.productUrl,
+      };
+    }).filter((p: any): p is NonNullable<typeof p> => p !== null);
+
+    // Transform reactions to engagement
+    const reactions = rawFitpic.reactions?.counts || {};
+    const engagement = {
+      likes: reactions.LIKE || 0,
+      saves: 0, // Not in raw data
+      comments: rawFitpic.comments?.length || 0,
+      shares: 0,
+      isLiked: false,
+      isSaved: false,
+      reactions: Object.entries(reactions).map(([emoji, count]) => ({
+        emoji: emoji === 'LIKE' ? '👍' : emoji === 'THUMBS_UP' ? '👍' : emoji === 'FIRE' ? '🔥' : '👎',
+        count: count as number,
+        users: [],
+      })),
+    };
+
+    const fitpic: FitPic = {
+      id: rawFitpic.id,
+      authorId: rawFitpic.author,
+      author,
+      photos: [{
+        id: `${rawFitpic.id}-photo-0`,
+        url: imageUri,
+        thumbnailUrl: imageUri,
+        index: 0,
+        isCover: true,
+        width,
+        height,
+      }],
+      caption: rawFitpic.caption || '',
+      products,
+      createdAt: rawFitpic.createdAt || new Date().toISOString(),
+      engagement,
+      location: rawFitpic.location ? {
+        name: rawFitpic.location,
+      } : undefined,
+      isPublic: true,
+    };
+
+    return fitpic;
+  } catch (error) {
+    console.error(`Error transforming FitPic ${rawFitpic.id}:`, error);
+    return null;
+  }
+};
+
+// Transform and cache all FitPics
+const transformedFitPics: FitPic[] = rawFitpicsData.fitpics
+  .map(transformRawFitPic)
+  .filter((fp): fp is FitPic => fp !== null);
+
+// Mock data structure
 const fitpicsData = {
-  fitpics: []
+  fitpics: transformedFitPics
 };
 
 // Simulate API delay
@@ -193,7 +313,12 @@ export const getUserFitPics = async (
   try {
     await delay(API_DELAY);
     
-    const userFitPics = fitpicsData.fitpics.filter(fp => fp.authorId === userId);
+    // Get user's posted FitPic IDs from mock-users.json
+    const userData = rawUsersData[userId as keyof typeof rawUsersData];
+    const postedIds: string[] = userData?.fitpics?.postedIds || [];
+    
+    // Filter FitPics by the user's postedIds
+    const userFitPics = fitpicsData.fitpics.filter(fp => postedIds.includes(fp.id));
     const sortedFitPics = sortFitPics(userFitPics, 'newest');
     
     // Simple pagination (in real implementation, this would be handled by the backend)

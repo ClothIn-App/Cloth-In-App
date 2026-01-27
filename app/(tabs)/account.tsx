@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import ProfileHeader from "../../components/account/ProfileHeader";
 import TabContent from "../../components/account/TabContent";
@@ -11,7 +11,6 @@ import useAccountData from "../../src/hooks/useAccountData";
 import session from "../../src/mocks/mock-session.json";
 
 export default function AccountScreen() {
-  const insets = useSafeAreaInsets();
 
   // TODO: pull from your real auth context
   const userId = session.currentUserId;
@@ -53,8 +52,8 @@ export default function AccountScreen() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, paddingBottom: insets.bottom, backgroundColor: '#FFFFFF' }}
-      edges={["top", "bottom"]}
+      style={{ flex: 1, backgroundColor: '#FFFFFF' }}
+      edges={["top"]}
     >
       <ProfileHeader me={data.me} />
       <TabSwitcher tabs={tabList} activeKey={activeKey} onChange={setActiveKey} />
