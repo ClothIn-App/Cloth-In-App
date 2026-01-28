@@ -6,8 +6,7 @@ import FitPic_Cover from "../../home/fitpic-cover";
 import Product_Cover, { PRODUCT_LABEL_HEIGHT } from "../../home/product-cover";
 import type { FeedItem } from "../../../src/types/feed";
 import { getFeedItemById } from "../../../src/utils/getFeedItem";
-import sessionData from "../../../src/mocks/mock-session.json";
-import usersData from "../../../src/mocks/mock-users.json";
+import { getCurrentUser } from "../../../src/services/mockSessionUsers";
 
 type Props = {
   userId?: string;
@@ -22,10 +21,10 @@ export default function SavedTab({ userId }: Props) {
   const [filter, setFilter] = useState<FilterType>("all");
 
   // Get the user ID (use provided userId or fall back to session)
-  const currentUserId = userId || sessionData.currentUserId;
-  const currentUser = useMemo(() => {
-    return (usersData as Record<string, any>)[currentUserId];
-  }, [currentUserId]);
+  const currentUser = useMemo(
+    () => getCurrentUser(userId),
+    [userId]
+  );
 
   // Load saved items
   const loadSavedItems = async () => {

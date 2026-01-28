@@ -20,7 +20,6 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import useAccountData from "../../../src/hooks/useAccountData";
-import productsData from "../../../src/mocks/mock-products.json";
 import { PRODUCT_ASSETS } from "../../../src/maps/images";
 import ClosetProductCard from "../closet/ClosetProductCard";
 import EndlessRackCarousel, {
@@ -40,10 +39,6 @@ type Props = {
 
 type Product = {
   id: string;
-  name: string;
-  brand: string;
-  price: number;
-  imagePath: string;
 };
 
 type Rack = {
@@ -120,13 +115,8 @@ const AllProductsCarouselItem = React.memo(function AllProductsCarouselItem({
 const getProductsByIds = (productIds: string[]): Product[] => {
   if (!productIds || !Array.isArray(productIds)) return [];
   return productIds
-    .map((id) => {
-      const product = (productsData as any).products.find(
-        (p: any) => p.id === id
-      );
-      return product || null;
-    })
-    .filter((p): p is Product => p !== null);
+    .filter((id) => !!PRODUCT_ASSETS[id])
+    .map((id) => ({ id }));
 };
 
 export default function ClosetTab({ userId }: Props) {

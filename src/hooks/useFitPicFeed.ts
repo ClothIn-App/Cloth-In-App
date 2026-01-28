@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import { getFeedFitPics, updateFitPicEngagement } from '../services/fitpicApi';
+import { fitpicClient } from '../services/apiClients/fitpicClient';
 import type { FitPic, FeedType, GetFeedRequest } from '../types/fitpic';
 
 export type FeedState = {
@@ -40,7 +40,7 @@ export const useFitPicFeed = (type: FeedType) => {
         limit: 20,
       };
 
-      const response = await getFeedFitPics(request);
+      const response = await fitpicClient.getFeed(request);
 
       if (response.success) {
         setState(prev => {
@@ -93,7 +93,7 @@ export const useFitPicFeed = (type: FeedType) => {
     const action = fitpic.engagement.isLiked ? 'unlike' : 'like';
     
     try {
-      const response = await updateFitPicEngagement({
+      const response = await fitpicClient.updateEngagement({
         fitpicId: fitpic.id,
         action,
       });
@@ -117,7 +117,7 @@ export const useFitPicFeed = (type: FeedType) => {
     const action = fitpic.engagement.isSaved ? 'unsave' : 'save';
     
     try {
-      const response = await updateFitPicEngagement({
+      const response = await fitpicClient.updateEngagement({
         fitpicId: fitpic.id,
         action,
       });

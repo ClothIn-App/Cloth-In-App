@@ -12,8 +12,7 @@ import MockFitPicReactionBar from '../components/fitpic-modal/fitpic-modal-react
 import FitPicFeaturedProductsSection from '../components/fitpic-modal/fitpic-featured-products-section';
 import FitPicCommentsSection from '../components/fitpic-modal/comments/fitpic-comments-section';
 import FitPicCommentInput from '../components/fitpic-modal/comments/fitpic-comment-input';
-import sessionData from '../src/mocks/mock-session.json';
-import usersData from '../src/mocks/mock-users.json';
+import { getCurrentUser } from '../src/services/mockSessionUsers';
 
 export default function FitPicDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -27,10 +26,10 @@ export default function FitPicDetailScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
 
   // Get current user and check if FitPic is saved
-  const currentUserId = sessionData.currentUserId;
-  const currentUser = useMemo(() => {
-    return (usersData as Record<string, any>)[currentUserId];
-  }, [currentUserId]);
+  const currentUser = useMemo(
+    () => getCurrentUser(),
+    []
+  );
 
   // Check if FitPic is saved when fitpic or id changes
   useEffect(() => {
@@ -128,35 +127,31 @@ export default function FitPicDetailScreen() {
     // TODO: In a real app, this would update the backend
     // For now, we're just updating local state
     if (currentUser && fitpic) {
-      const userData = usersData as Record<string, any>;
-      const user = userData[currentUserId];
-      if (user) {
-        if (!user.saved) {
-          user.saved = [];
+      if (!currentUser.saved) {
+        currentUser.saved = [];
+      }
+      const saved = currentUser.saved || [];
+      if (nextSaved) {
+        // Add to saved at the beginning (most recent first) if not already there
+        if (!saved.some((item: { id: string; type: string }) => 
+          item.id === fitpic.id && item.type === "fitpic"
+        )) {
+          saved.unshift({
+            id: fitpic.id,
+            type: "fitpic",
+          });
         }
-        const saved = user.saved || [];
-        if (nextSaved) {
-          // Add to saved at the beginning (most recent first) if not already there
-          if (!saved.some((item: { id: string; type: string }) => 
-            item.id === fitpic.id && item.type === "fitpic"
-          )) {
-            saved.unshift({
-              id: fitpic.id,
-              type: "fitpic",
-            });
-          }
-        } else {
-          // Remove from saved
-          const index = saved.findIndex((item: { id: string; type: string }) => 
-            item.id === fitpic.id && item.type === "fitpic"
-          );
-          if (index !== -1) {
-            saved.splice(index, 1);
-          }
+      } else {
+        // Remove from saved
+        const index = saved.findIndex((item: { id: string; type: string }) => 
+          item.id === fitpic.id && item.type === "fitpic"
+        );
+        if (index !== -1) {
+          saved.splice(index, 1);
         }
       }
     }
-  }, [currentUser, fitpic, currentUserId]);
+  }, [currentUser, fitpic]);
 
   // Handle more options action sheet
   const openMoreOptions = () => {

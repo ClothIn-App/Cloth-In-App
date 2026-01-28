@@ -2,24 +2,20 @@ import { Image } from 'react-native';
 import { 
   FeedItem, 
   FitPicItem, 
-  ProductItem, 
-  RawFitPic,
-  RawFitPicsData, 
-  RawProductsData 
+  ProductItem
 } from '../types/feed';
+import type { FitPic } from '../types/fitpic';
+import type { Product } from '../types/content';
+import type { ProductSearchResult } from '../types/search';
 import { FITPIC_ASSETS, PRODUCT_ASSETS } from '../maps/images';
 
-// Load raw data from JSON files
-const loadRawData = async () => {
-  const [fitpicsData, productsData] = await Promise.all([
-    import('../mocks/mock-fitpics.json') as unknown as Promise<{ default: RawFitPicsData }>,
-    import('../mocks/mock-products.json') as Promise<{ default: RawProductsData }>
-  ]);
-
-  return {
-    fitpics: fitpicsData.default.fitpics,
-    products: productsData.default.products
-  };
+// Generic product type that both Product and ProductSearchResult satisfy
+type ProductLike = {
+  id: string;
+  name: string;
+  brand?: string;
+  price?: number | null;
+  description?: string;
 };
 
 // Get image dimensions using Image.resolveAssetSource
@@ -51,65 +47,90 @@ const normalizeComment = (rawComment: any): any => {
   };
 };
 
-// Convert raw FitPic data to FitPicItem
-const normalizeFitPic = async (rawFitPic: any): Promise<FitPicItem> => {
-  const source = FITPIC_ASSETS[rawFitPic.id];
+// Convert FitPic API type to FitPicItem
+const normalizeFitPic = async (fitpic: FitPic): Promise<FitPicItem> => {
+  const source = FITPIC_ASSETS[fitpic.id];
   if (!source) {
-    throw new Error(`No asset found for FitPic ID: ${rawFitPic.id}`);
+    throw new Error(`No asset found for FitPic ID: ${fitpic.id}`);
   }
 
   const dimensions = await getImageDimensions(source);
 
+  // Convert location object to string if needed
+  const locationString = fitpic.location 
+    ? (typeof fitpic.location === 'string' ? fitpic.location : fitpic.location.name)
+    : undefined;
+
+  // Convert reactions array to counts object
+  const reactions = fitpic.engagement?.reactions && Array.isArray(fitpic.engagement.reactions)
+    ? fitpic.engagement.reactions.reduce((acc, r) => {
+        acc.counts[r.emoji as keyof typeof acc.counts] = r.count;
+        return acc;
+      }, { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } })
+    : { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } };
+
   return {
-    id: rawFitPic.id,
+    id: fitpic.id,
     type: 'fitpic',
     source,
-    caption: rawFitPic.caption,
-    featuredProducts: rawFitPic.featuredProducts,
-    likes: rawFitPic.likes,
-    author: rawFitPic.author,
-    createdAt: rawFitPic.createdAt,
-    location: rawFitPic.location,
-    reactions: rawFitPic.reactions,
-    comments: rawFitPic.comments ? rawFitPic.comments.map(normalizeComment) : undefined,
+    caption: fitpic.caption || '',
+    featuredProducts: {
+      total: fitpic.products?.length || 0,
+      productIds: fitpic.products?.map(p => p.id) || []
+    },
+    likes: fitpic.engagement?.likes || 0,
+    author: fitpic.author?.username || fitpic.authorId,
+    createdAt: fitpic.createdAt,
+    location: locationString,
+    reactions,
+    comments: undefined, // Comments would need to be loaded separately if needed
     ...dimensions
   };
 };
 
-// Convert raw Product data to ProductItem
-const normalizeProduct = async (rawProduct: any): Promise<ProductItem> => {
-  const source = PRODUCT_ASSETS[rawProduct.id];
+// Convert Product-like API type to ProductItem
+// Accepts both Product and ProductSearchResult types
+const normalizeProduct = async (product: ProductLike): Promise<ProductItem> => {
+  const source = PRODUCT_ASSETS[product.id];
   if (!source) {
-    throw new Error(`No asset found for Product ID: ${rawProduct.id}`);
+    throw new Error(`No asset found for Product ID: ${product.id}`);
   }
 
   // Products don't need dimensions since they're always square in the grid
   // The grid layout will handle the sizing based on column width
 
   return {
-    id: rawProduct.id,
+    id: product.id,
     type: 'product',
     source,
-    name: rawProduct.name,
-    brand: rawProduct.brand,
-    price: rawProduct.price,
-    salePrice: rawProduct.salePrice,
-    category: rawProduct.category,
-    description: rawProduct.description,
-    createdAt: new Date().toISOString(), // Products don't have createdAt in raw data, so we use current time
+    name: product.name,
+    brand: product.brand || '',
+    price: product.price || 0,
+    salePrice: null, // Set to null for now
+    category: '', // Not available in ProductLike
+    description: product.description || '',
+    createdAt: new Date().toISOString(), // Not available in ProductLike
     // No dimensions needed for products - they're always square
   };
 };
 
-// Main function to build the unified home feed
-export const buildHomeFeed = async (): Promise<FeedItem[]> => {
+/**
+ * Build unified home feed from API data
+ * Pure function - accepts FitPic[] and Product-like[] as parameters, no JSON imports
+ */
+export const buildHomeFeed = async (
+  fitpics: FitPic[] | undefined,
+  products: ProductLike[] | undefined
+): Promise<FeedItem[]> => {
   try {
-    const { fitpics, products } = await loadRawData();
+    // Handle undefined/null arrays
+    const fitpicsArray = fitpics || [];
+    const productsArray = products || [];
 
     // Normalize all items in parallel
     const [normalizedFitPics, normalizedProducts] = await Promise.all([
-      Promise.all(fitpics.map(normalizeFitPic)),
-      Promise.all(products.map(normalizeProduct))
+      Promise.all(fitpicsArray.map(normalizeFitPic)),
+      Promise.all(productsArray.map(normalizeProduct))
     ]);
 
     // Combine and sort by creation date (newest first)
@@ -124,14 +145,30 @@ export const buildHomeFeed = async (): Promise<FeedItem[]> => {
   }
 };
 
-// Utility function to get only FitPics
-export const buildFitPicFeed = async (): Promise<FitPicItem[]> => {
-  const feed = await buildHomeFeed();
-  return feed.filter((item): item is FitPicItem => item.type === 'fitpic');
+/**
+ * Build FitPic feed from API data
+ * Pure function - accepts FitPic[] as parameter
+ */
+export const buildFitPicFeed = async (fitpics: FitPic[] | undefined): Promise<FitPicItem[]> => {
+  try {
+    const fitpicsArray = fitpics || [];
+    return Promise.all(fitpicsArray.map(normalizeFitPic));
+  } catch (error) {
+    console.error('Error building FitPic feed:', error);
+    return [];
+  }
 };
 
-// Utility function to get only Products
-export const buildProductFeed = async (): Promise<ProductItem[]> => {
-  const feed = await buildHomeFeed();
-  return feed.filter((item): item is ProductItem => item.type === 'product');
+/**
+ * Build Product feed from API data
+ * Pure function - accepts Product-like[] as parameter
+ */
+export const buildProductFeed = async (products: ProductLike[] | undefined): Promise<ProductItem[]> => {
+  try {
+    const productsArray = products || [];
+    return Promise.all(productsArray.map(normalizeProduct));
+  } catch (error) {
+    console.error('Error building product feed:', error);
+    return [];
+  }
 };

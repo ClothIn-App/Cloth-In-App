@@ -7,8 +7,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { FitPic } from '../types/fitpic';
 import type { ProductSearchResult, ProductPriceStatus } from '../types/search';
-import fitpicsData from '../mocks/fitpics.json';
-import productsData from '../mocks/products.json';
+import { contentApiClient } from '../services/apiClients/contentClient';
 
 type FeedType = 'forYou' | 'following';
 
@@ -42,9 +41,7 @@ export function useMixedFeed(feedType: FeedType): UseMixedFeedReturn {
   const [refreshing, setRefreshing] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Simulate API delay
-  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const [cursor, setCursor] = useState<string | undefined>(undefined);
 
   // Load initial data
   const loadInitialData = useCallback(async () => {
@@ -52,24 +49,22 @@ export function useMixedFeed(feedType: FeedType): UseMixedFeedReturn {
     setError(null);
     
     try {
-      await delay(800); // Simulate network delay
+      const response = await contentApiClient.getFeed({
+        type: feedType === 'forYou' ? 'forYou' : feedType === 'following' ? 'following' : undefined,
+        limit: 20,
+      });
       
-      // Load fitpics
-      const fitpicsResponse = fitpicsData.fitpics;
-      setFitpics(fitpicsResponse);
-      
-      // Load products - take a subset for variety
-      const productsResponse = castProductsData(productsData.products.slice(0, 15));
-      setProducts(productsResponse);
-      
-      setHasMore(true);
+      setFitpics(response.fitpics);
+      setProducts(castProductsData(response.products));
+      setHasMore(response.pagination?.hasMore ?? false);
+      setCursor(response.pagination?.nextCursor);
     } catch (err) {
       setError('Failed to load content');
       console.error('Error loading feed:', err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [feedType]);
 
   // Refresh data
   const refresh = useCallback(async () => {
@@ -77,48 +72,47 @@ export function useMixedFeed(feedType: FeedType): UseMixedFeedReturn {
     setError(null);
     
     try {
-      await delay(500);
+      const response = await contentApiClient.getFeed({
+        type: feedType === 'forYou' ? 'forYou' : feedType === 'following' ? 'following' : undefined,
+        limit: 20,
+      });
       
-      // Reload data
-      const fitpicsResponse = fitpicsData.fitpics;
-      const productsResponse = castProductsData(productsData.products.slice(0, 15));
-      
-      setFitpics(fitpicsResponse);
-      setProducts(productsResponse);
-      setHasMore(true);
+      setFitpics(response.fitpics);
+      setProducts(castProductsData(response.products));
+      setHasMore(response.pagination?.hasMore ?? false);
+      setCursor(response.pagination?.nextCursor);
     } catch (err) {
       setError('Failed to refresh content');
       console.error('Error refreshing feed:', err);
     } finally {
       setRefreshing(false);
     }
-  }, []);
+  }, [feedType]);
 
   // Load more data (simulate pagination)
   const loadMore = useCallback(async () => {
-    if (loading || !hasMore) return;
+    if (loading || !hasMore || !cursor) return;
     
     setLoading(true);
     
     try {
-      await delay(600);
+      const response = await contentApiClient.getFeed({
+        type: feedType === 'forYou' ? 'forYou' : feedType === 'following' ? 'following' : undefined,
+        limit: 20,
+        cursor,
+      });
       
-      // Simulate loading more products
-      const currentProductCount = products.length;
-      const remainingProducts = castProductsData(productsData.products.slice(currentProductCount, currentProductCount + 10));
-      
-      if (remainingProducts.length === 0) {
-        setHasMore(false);
-      } else {
-        setProducts(prev => [...prev, ...remainingProducts]);
-      }
+      setFitpics(prev => [...prev, ...response.fitpics]);
+      setProducts(prev => [...prev, ...castProductsData(response.products)]);
+      setHasMore(response.pagination?.hasMore ?? false);
+      setCursor(response.pagination?.nextCursor);
     } catch (err) {
       setError('Failed to load more content');
       console.error('Error loading more:', err);
     } finally {
       setLoading(false);
     }
-  }, [loading, hasMore, products.length]);
+  }, [loading, hasMore, cursor, feedType]);
 
   // Handle like action
   const handleLike = useCallback((fitpicId: string) => {

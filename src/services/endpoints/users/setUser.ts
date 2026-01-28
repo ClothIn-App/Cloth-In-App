@@ -1,9 +1,10 @@
 import type { EndpointDefinition } from "../../http";
 import type { GetUserResponse } from "./getUser";
+import { getUserFromMockDb, setUserInMockDb } from "./mockDb";
 
 /** Fields the client can create/update */
 export type SetUserPayload = {
-  email?: string;                // optional; will be lowercased if provided
+  email?: string; // optional; will be lowercased if provided
   displayName?: string | null;
   username?: string;
   avatarUrl?: string;
@@ -19,32 +20,39 @@ export type SetUserResponse = GetUserResponse;
  * Default auth policy = "required" (enforced in http.ts)
  * Mark `auth: "none"` here only if you want this public.
  */
-export const setUserEndpoint: EndpointDefinition<SetUserPayload, SetUserResponse> = {
+export const setUserEndpoint: EndpointDefinition<
+  SetUserPayload,
+  SetUserResponse
+> = {
   key: "users.set",
   method: "PUT",
   pathTemplate: "/v1/users/set/:userId",
 
   // --- mock for create/update ---
-  mock: async ({ pathParameters, body, /* headers */ }) => {
+  mock: async ({ pathParameters, body /* headers */ }) => {
     await new Promise((r) => setTimeout(r, 150)); // small latency
     const userId = pathParameters.userId;
 
-    // simple in-memory "DB" for mocks (module-scoped)
-    const current = mockDb.get(userId) ?? {
-      user: {
-        uid: userId,
-        email: `user+${userId}@example.com`,
-        displayName: "New User",
-        username: `user_${userId}`,
-        avatarUrl: undefined,
-        bio: null,
-        accountType: "personal",
-        counts: { posts: 0, following: 0, followers: 0 },
-      },
-    } as SetUserResponse;
+    // Try to load an existing mock user; otherwise synthesize a default.
+    const current =
+      getUserFromMockDb(userId) ??
+      ({
+        user: {
+          uid: userId,
+          email: `user+${userId}@example.com`,
+          displayName: "New User",
+          username: `user_${userId}`,
+          avatarUrl: undefined,
+          bio: null,
+          accountType: "personal",
+          counts: { posts: 0, following: 0, followers: 0 },
+        },
+      } as SetUserResponse);
 
     const nextEmail =
-      body?.email !== undefined ? String(body.email).toLowerCase() : current.user.email;
+      body?.email !== undefined
+        ? String(body.email).toLowerCase()
+        : current.user.email;
 
     const updated: SetUserResponse = {
       user: {
@@ -59,10 +67,7 @@ export const setUserEndpoint: EndpointDefinition<SetUserPayload, SetUserResponse
       },
     };
 
-    mockDb.set(userId, updated);
+    setUserInMockDb(userId, updated);
     return updated;
   },
 };
-
-// module-local in-memory store for mock mode
-const mockDb: Map<string, SetUserResponse> = new Map();

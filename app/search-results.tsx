@@ -166,10 +166,26 @@ export default function SearchResultsScreen() {
   const getTabs = () => {
     const tabs = [
       { key: 'top' as SearchTabKey, label: 'Top', count: topResults?.totalEstimate },
-      { key: 'profiles' as SearchTabKey, label: 'Profiles', count: topResults?.results.users.length },
-      { key: 'fitpics' as SearchTabKey, label: 'FitPics', count: topResults?.results.fitpics.length },
-      { key: 'products' as SearchTabKey, label: 'Products', count: topResults?.results.products.length },
-      { key: 'hashtags' as SearchTabKey, label: 'Hashtags', count: topResults?.results.hashtags.length },
+      { 
+        key: 'profiles' as SearchTabKey, 
+        label: 'Profiles', 
+        count: topResults?.categoryCounts?.users ?? topResults?.results.users.length ?? 0 
+      },
+      { 
+        key: 'fitpics' as SearchTabKey, 
+        label: 'FitPics', 
+        count: topResults?.categoryCounts?.fitpics ?? topResults?.results.fitpics.length ?? 0 
+      },
+      { 
+        key: 'products' as SearchTabKey, 
+        label: 'Products', 
+        count: topResults?.categoryCounts?.products ?? topResults?.results.products.length ?? 0 
+      },
+      { 
+        key: 'hashtags' as SearchTabKey, 
+        label: 'Hashtags', 
+        count: topResults?.categoryCounts?.hashtags ?? topResults?.results.hashtags.length ?? 0 
+      },
     ];
 
     // Update count for active category tab if we have category results

@@ -1,23 +1,26 @@
 import React, { useState } from "react";
 import { Image, View, TouchableOpacity, Text } from "react-native";
 import { useRouter } from "expo-router";
-import type { ProfileMe } from "../../src/types/account";
+import type { ProfileMe, ProfileCounts } from "../../src/types/account";
 import FollowersModal from "./FollowersModal";
 import FollowingModal from "./FollowingModal";
 import { Ionicons } from "@expo/vector-icons";
 
-type Props = { me?: ProfileMe };
+type Props = { 
+  me?: ProfileMe;
+  counts?: ProfileCounts;
+};
 
-export default function ProfileHeader({ me }: Props) {
+export default function ProfileHeader({ me, counts }: Props) {
   const router = useRouter();
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
 
   const name = me?.username ? `@${me.username}` : "@username";
   const displayName = me?.displayName ?? "";
-  const fitpics = (me as any)?.fitpics?.total ?? 0;
-  const following = (me as any)?.following?.total ?? 0;
-  const followers = (me as any)?.followers?.total ?? 0;
+  const fitpics = counts?.posts ?? (me as any)?.counts?.posts ?? 0;
+  const following = counts?.following ?? (me as any)?.counts?.following ?? 0;
+  const followers = counts?.followers ?? (me as any)?.counts?.followers ?? 0;
 
   return (
     <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 }}>

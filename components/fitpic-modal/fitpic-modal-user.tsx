@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Image, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '../../hooks/useThemeColor';
-import mockUsers from '../../src/mocks/mock-users.json';
 
 type AuthorInfo = {
   uid: string;
@@ -17,12 +16,6 @@ type Props = {
   location?: string;
 };
 
-// Helper to look up user by ID from mock data
-const getUserById = (userId: string): { username: string; avatarUrl?: string } | null => {
-  const user = (mockUsers as Record<string, { username: string; avatarUrl?: string }>)[userId];
-  return user || null;
-};
-
 export default function FitPicModalUser({ author, createdAt, location }: Props) {
   const muted = useThemeColor({}, 'mutedText') || '#999';
 
@@ -31,10 +24,9 @@ export default function FitPicModalUser({ author, createdAt, location }: Props) 
   let avatarUrl: string | undefined;
 
   if (typeof author === 'string') {
-    // author is an authorId (e.g., "u_1") - look up user data
-    const userData = getUserById(author);
-    username = userData?.username ?? author;
-    avatarUrl = userData?.avatarUrl;
+    // author is an authorId or username string – render as-is
+    username = author;
+    avatarUrl = undefined;
   } else {
     // author is already an AuthorInfo object
     username = author.username;

@@ -12,6 +12,13 @@ export type SearchTopResponse = {
   nextCursor: string | null;
   searchTime?: number; // Time taken in milliseconds
   query?: string; // Original query
+  // Individual category counts (for tab badges)
+  categoryCounts?: {
+    users: number;
+    fitpics: number;
+    products: number;
+    hashtags: number;
+  };
 };
 
 // Paginated response for category-specific searches

@@ -6,6 +6,7 @@ import FitPic_Cover from "../home/fitpic-cover";
 import Product_Cover, { PRODUCT_LABEL_HEIGHT } from "../home/product-cover";
 import type { FeedItem } from "../../src/types/feed";
 import { buildHomeFeed } from "../../src/utils/normalizeFeed";
+import { contentApiClient } from "../../src/services/apiClients/contentClient";
 
 // add at top-level of file (outside component)
 function shuffle<T>(arr: T[]) {
@@ -22,6 +23,7 @@ type Props = {
   columns?: number;          // default 2
   gutter?: number;           // default 8
   contentPadding?: number;   // default 12
+  feedType?: "forYou" | "following"; // Feed type: For You or Following
 };
 
 export default function Home_Grid({
@@ -29,38 +31,78 @@ export default function Home_Grid({
   columns = 2,
   gutter = 8,
   contentPadding = 12,
+  feedType = "forYou",
 }: Props) {
   const baseData: FeedItem[] = dataOverride ?? [];
   const [refreshing, setRefreshing] = useState(false);
   const [data, setData] = useState<FeedItem[]>([]);
+  const [loading, setLoading] = useState(!dataOverride);
 
   useEffect(() => {
     if (dataOverride) {
       setData(shuffle(dataOverride));
+      setLoading(false);
     } else {
-      // Async build from local JSON + require() map
-      buildHomeFeed().then((feedData) => {
-        setData(shuffle(feedData));
-      });
+      // Load feed data from API client and normalize
+      const loadFeed = async () => {
+        setLoading(true);
+        try {
+          const response = await contentApiClient.getFeed({ 
+            type: feedType,
+            limit: 50 
+          });
+          if (!response) {
+            console.warn('getFeed returned undefined response');
+            setData([]);
+            return;
+          }
+          console.log('Feed response:', { 
+            fitpicsCount: response.fitpics?.length, 
+            productsCount: response.products?.length 
+          });
+          const feedData = await buildHomeFeed(response.fitpics, response.products);
+          setData(shuffle(feedData));
+        } catch (error) {
+          console.error('Error loading feed:', error);
+          setData([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadFeed();
     }
-  }, [dataOverride]);
+  }, [dataOverride, feedType]);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => {
+    try {
       if (dataOverride) {
         setData(shuffle(dataOverride));
       } else {
-        buildHomeFeed().then((feedData) => {
-          setData(shuffle(feedData));
+        const response = await contentApiClient.getFeed({ 
+          type: feedType,
+          limit: 50 
         });
+        if (!response) {
+          console.warn('getFeed returned undefined response on refresh');
+          return;
+        }
+        const feedData = await buildHomeFeed(response.fitpics, response.products);
+        setData(shuffle(feedData));
       }
+    } catch (error) {
+      console.error('Error refreshing feed:', error);
+    } finally {
       setRefreshing(false);
-    }, 300);
-  }, [dataOverride]);
+    }
+  }, [dataOverride, feedType]);
+
+  if (loading) {
+    return null; // Show loading state (or a loading placeholder component)
+  }
 
   if (data.length === 0) {
-    return null; // or a loading placeholder
+    return null; // or an empty state placeholder
   }
 
   return (

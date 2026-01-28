@@ -1,10 +1,10 @@
-import { useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Product, FitPic } from "../types/content";
 import type { CommentType } from "../types/feed";
-import productsData from "../mocks/mock-products.json";
-import fitpicsData from "../mocks/mock-fitpics.json";
-import sessionData from "../mocks/mock-session.json";
-import usersData from "../mocks/mock-users.json";
+import { contentApiClient } from "../services/apiClients/contentClient";
+import { fitpicClient } from "../services/apiClients/fitpicClient";
+import { userApiClient } from "../services/apiClients/userClient";
+import { getCurrentUserId, getCurrentUser } from "../services/mockSessionUsers";
 
 type UseProductDataResult = {
   product: Product | undefined;
@@ -12,6 +12,7 @@ type UseProductDataResult = {
   comments: CommentType[]; // Normalized comments in CommentType format
   userFitPics?: FitPic[]; // FitPics filtered by userId (optional)
   followersFitPics?: FitPic[]; // FitPics from current user's followers (optional)
+  loading: boolean;
 };
 
 // Recursive helper to normalize comments (convert 'like' to 'likes', 'dislike' to 'dislikes')
@@ -28,75 +29,105 @@ const normalizeComment = (rawComment: any): CommentType => {
 };
 
 export function useProductData(productId: string | undefined, userId?: string | undefined): UseProductDataResult {
-  const { product, featuredFitPics, comments, userFitPics, followersFitPics } = useMemo(() => {
+  const [product, setProduct] = useState<Product | undefined>(undefined);
+  const [featuredFitPics, setFeaturedFitPics] = useState<FitPic[]>([]);
+  const [comments, setComments] = useState<CommentType[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
     if (!productId) {
-      return {
-        product: undefined,
-        featuredFitPics: [],
-        comments: [],
-        userFitPics: [],
-        followersFitPics: [],
-      };
+      setProduct(undefined);
+      setFeaturedFitPics([]);
+      setComments([]);
+      setLoading(false);
+      return;
     }
 
-    // Find the product by id
-    const rawProduct = productsData.products.find(
-      (p) => p.id === productId
-    );
+    let cancelled = false;
 
-    // Normalize the product
-    const product: Product | undefined = rawProduct ? {
-      ...rawProduct,
-    } : undefined;
+    async function loadData() {
+      setLoading(true);
+      try {
+        // Load product
+        const productResponse = await contentApiClient.getProduct(productId);
+        if (cancelled) return;
 
-    // Normalize comments to CommentType format
-    const comments: CommentType[] = rawProduct?.comments
-      ? rawProduct.comments.map(normalizeComment)
-      : [];
+        const loadedProduct = productResponse.product;
+        setProduct(loadedProduct as Product);
+        
+        // Normalize comments
+        const normalizedComments = (loadedProduct as any)?.comments
+          ? (loadedProduct as any).comments.map(normalizeComment)
+          : [];
+        setComments(normalizedComments);
 
-    // Map fitpics to add productsUsed field (derived from featuredProducts.productIds)
-    const allFitPics: FitPic[] = fitpicsData.fitpics.map((fp: any) => ({
-      ...fp,
-      productsUsed: fp.featuredProducts?.productIds || [],
-    })) as FitPic[];
+        // Load all fitpics to find featured ones
+        // Use fitpicClient to get feed which includes all fitpics
+        const feedResponse = await fitpicClient.getFeed({ 
+          type: 'forYou',
+          limit: 100 
+        });
+        if (cancelled) return;
 
-    // Filter fitpics that include this product id in productsUsed
-    const featuredFitPics = allFitPics.filter((fp) =>
-      Array.isArray(fp.productsUsed) && fp.productsUsed.includes(productId)
-    );
-
-    // Filter fitpics by userId if provided (author matches userId and product is in productsUsed)
-    const userFitPics = userId
-      ? featuredFitPics.filter((fp) => fp.author === userId)
-      : [];
-
-    // Filter fitpics from current user's followers
-    let followersFitPics: FitPic[] = [];
-    try {
-      const currentUserId = sessionData.currentUserId;
-      const users = usersData as Record<string, any>;
-      const currentUser = users[currentUserId];
-      
-      if (currentUser?.followers?.userIds) {
-        const followerIds = new Set(currentUser.followers.userIds);
-        followersFitPics = featuredFitPics.filter((fp) => 
-          followerIds.has(fp.author)
+        const allFitPics = feedResponse.fitpics || [];
+        
+        // Filter fitpics that include this product id
+        const featured = allFitPics.filter((fp: FitPic) =>
+          fp.products?.some((p) => p.id === productId)
         );
+        setFeaturedFitPics(featured);
+      } catch (error) {
+        console.error("Error loading product data:", error);
+        if (!cancelled) {
+          setProduct(undefined);
+          setFeaturedFitPics([]);
+          setComments([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
-    } catch (error) {
-      // If there's an error getting followers, just return empty array
-      console.warn("Error getting followers FitPics:", error);
     }
 
-    return {
-      product,
-      featuredFitPics,
-      comments,
-      userFitPics,
-      followersFitPics,
-    };
-  }, [productId, userId]);
+    loadData();
 
-  return { product, featuredFitPics, comments, userFitPics, followersFitPics };
+    return () => {
+      cancelled = true;
+    };
+  }, [productId]);
+
+  // Filter fitpics by userId if provided
+  const userFitPics = useMemo(() => {
+    if (!userId) return [];
+    return featuredFitPics.filter((fp) => fp.authorId === userId);
+  }, [featuredFitPics, userId]);
+
+  // Filter fitpics from current user's followers
+  const followersFitPics = useMemo(() => {
+    try {
+      const currentUserId = getCurrentUserId();
+      const currentUser = getCurrentUser();
+      
+      if (!currentUser?.followers?.userIds) return [];
+      
+      const followerIds = new Set(currentUser.followers.userIds);
+      return featuredFitPics.filter((fp) => 
+        followerIds.has(fp.authorId)
+      );
+    } catch (error) {
+      console.warn("Error getting followers FitPics:", error);
+      return [];
+    }
+  }, [featuredFitPics]);
+
+  return { 
+    product, 
+    featuredFitPics, 
+    comments, 
+    userFitPics, 
+    followersFitPics,
+    loading,
+  };
 }
 

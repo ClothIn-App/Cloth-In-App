@@ -1,13 +1,18 @@
 // app/tabs/index.tsx
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useState } from "react";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import Home_Grid from "../../components/home/home-grid";
+import SegmentedTabs from "../../components/SegmentedTabs";
+
+type FeedType = "forYou" | "following";
 
 export default function HomeScreen() {
+  const [feedType, setFeedType] = useState<FeedType>("forYou");
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} edges={["top"]}>
       <StatusBar style="dark" />
@@ -31,8 +36,20 @@ export default function HomeScreen() {
         </View>
       </View>
 
+      {/* Tab Switcher: For You / Following */}
+      <View style={styles.tabsContainer}>
+        <SegmentedTabs
+          value={feedType}
+          onChange={(value) => setFeedType(value as FeedType)}
+          options={[
+            { key: "forYou", label: "For You" },
+            { key: "following", label: "Following" },
+          ]}
+        />
+      </View>
+
       {/* Home Grid with Feed Data */}
-      <Home_Grid />
+      <Home_Grid feedType={feedType} />
     </SafeAreaView>
   );
 }
@@ -71,5 +88,11 @@ const styles = StyleSheet.create({
   },
   searchButton: {
     padding: 8,
+  },
+  tabsContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#e5e5e5',
   },
 });

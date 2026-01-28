@@ -8,7 +8,7 @@ import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDrafts } from '../../components/create/draftcontext';
 import { usePost } from '../../components/create/post/postcontext';
-import { createFitPic } from '../services/fitpicApi';
+import { fitpicClient } from '../services/apiClients/fitpicClient';
 import { uploadPhotos, type PhotoUploadRequest } from '../services/photoUploadService';
 import type { CreateFitPicRequest } from '../types/fitpic';
 
@@ -100,8 +100,8 @@ export const useFitPicPosting = () => {
         progress: 90
       }));
 
-      // Create the FitPic
-      const createResult = await createFitPic(createRequest);
+      // Create the FitPic via client
+      const createResult = await fitpicClient.create(createRequest);
 
       if (!createResult.success) {
         throw new Error(createResult.error || 'Failed to create fit pic');

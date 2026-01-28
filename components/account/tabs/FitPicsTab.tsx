@@ -6,6 +6,7 @@ import FitPic_Cover from "../../home/fitpic-cover";
 import { useUserFitPics } from "../../../src/hooks/useUserFitPics";
 import type { FitPic } from "../../../src/types/fitpic";
 import type { FitPicItem } from "../../../src/types/feed";
+import { FITPIC_ASSETS } from "../../../src/maps/images";
 
 type Props = {
   userId?: string;
@@ -29,11 +30,14 @@ export default function FitPicsTab({ userId }: Props) {
     return fitpics.map((fitpic): FitPicItem => {
       const coverPhoto = fitpic.photos[0]; // Get the first/cover photo
       const productCount = fitpic.products.length;
+      
+      // Get image source from FITPIC_ASSETS map (matches the pattern used elsewhere)
+      const imageSource = FITPIC_ASSETS[fitpic.id] || require('../../../assets/images/icon.png');
 
       return {
         id: fitpic.id,
         type: 'fitpic',
-        source: coverPhoto?.url ? { uri: coverPhoto.url } : require('../../../assets/images/icon.png'),
+        source: imageSource,
         caption: fitpic.caption,
         featuredProducts: {
           total: productCount,
