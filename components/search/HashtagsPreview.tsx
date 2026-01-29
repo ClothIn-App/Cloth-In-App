@@ -20,7 +20,11 @@ type Props = {
 };
 
 export default function HashtagsPreview({ hashtags, onSeeAll }: Props) {
-  const previewHashtags = hashtags.slice(0, 5);
+  // Filter out invalid hashtags before processing
+  const validHashtags = (hashtags || []).filter(
+    (hashtag) => hashtag && hashtag.tag && typeof hashtag.postCount === 'number'
+  );
+  const previewHashtags = validHashtags.slice(0, 5);
 
   const handleHashtagPress = (tag: string) => {
     // TODO: Navigate to hashtag detail page when implemented
@@ -48,7 +52,7 @@ export default function HashtagsPreview({ hashtags, onSeeAll }: Props) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.sectionTitle}>Hashtags</Text>
-        {hashtags.length > previewHashtags.length && (
+        {validHashtags.length > previewHashtags.length && (
           <TouchableOpacity onPress={onSeeAll} style={styles.seeAllButton}>
             <Text style={styles.seeAllText}>See all</Text>
             <Ionicons name="chevron-forward" size={16} color="#666A70" />
@@ -91,7 +95,7 @@ export default function HashtagsPreview({ hashtags, onSeeAll }: Props) {
                     )}
                   </View>
                   <Text style={styles.postCount}>
-                    {hashtag.postCount.toLocaleString()} posts
+                    {(hashtag.postCount ?? 0).toLocaleString()} posts
                   </Text>
                 </View>
                 <Ionicons name="chevron-forward" size={20} color="#666A70" />
