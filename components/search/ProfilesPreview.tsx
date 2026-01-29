@@ -15,7 +15,15 @@ type Props = {
 };
 
 export default function ProfilesPreview({ users, onSeeAll }: Props) {
+  const router = useRouter();
   const previewUsers = users.slice(0, 5);
+
+  const handleUserPress = (userId: string) => {
+    router.push({
+      pathname: '/user-profile',
+      params: { userId },
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -36,7 +44,12 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
       ) : (
         <View style={styles.list}>
           {previewUsers.map((user) => (
-            <View key={user.id} style={styles.userItem}>
+            <TouchableOpacity
+              key={user.id}
+              style={styles.userItem}
+              onPress={() => handleUserPress(user.uid)}
+              activeOpacity={0.7}
+            >
               <Image
                 source={{ uri: user.avatarUrl || 'https://placehold.co/50x50' }}
                 style={styles.avatar}
@@ -67,10 +80,12 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
                   styles.followButton,
                   user.isFollowing && styles.followingButton,
                 ]}
-                onPress={() => {
-                  // TODO: Navigate to user profile
-                  console.log('TODO: Navigate to profile for user:', user.uid);
+                onPress={(e) => {
+                  e.stopPropagation();
+                  // TODO: Implement follow/unfollow
+                  console.log('Toggle follow:', user.uid);
                 }}
+                activeOpacity={0.7}
               >
                 <Text
                   style={[
@@ -81,7 +96,7 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
                   {user.isFollowing ? 'Following' : 'Follow'}
                 </Text>
               </TouchableOpacity>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       )}
