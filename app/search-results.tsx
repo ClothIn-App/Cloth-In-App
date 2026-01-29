@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -45,6 +45,10 @@ export default function SearchResultsScreen() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ q?: string; category?: string }>();
   const [activeTab, setActiveTab] = useState<SearchTabKey>('top');
+  
+  // Request tracking refs to prevent race conditions
+  const activeRequestRef = useRef<{ category: SearchTabKey; requestId: number } | null>(null);
+  const requestIdCounter = useRef(0);
   
   // Top results state
   const [topResults, setTopResults] = useState<SearchTopResponse | null>(null);
@@ -106,6 +110,10 @@ export default function SearchResultsScreen() {
   };
 
   const loadCategoryResults = async (category: SearchTabKey) => {
+    // Generate unique request ID for this request
+    const requestId = ++requestIdCounter.current;
+    activeRequestRef.current = { category, requestId };
+    
     setLoadingCategory(true);
     setError(null);
     setIsNoConnection(false);
@@ -130,18 +138,65 @@ export default function SearchResultsScreen() {
           return;
       }
       
-      setCategoryResults(results);
+      // Only update state if this is still the active request
+      if (activeRequestRef.current?.requestId === requestId && activeRequestRef.current?.category === category) {
+        // Validate and filter results before setting state
+        const validatedResults = validateCategoryResults(results, category);
+        setCategoryResults(validatedResults);
+      }
     } catch (err) {
-      console.error(`SearchResults: Error loading ${category} results:`, err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load search results';
-      setError(errorMessage);
-      setIsNoConnection(errorMessage.toLowerCase().includes('connection') || errorMessage.toLowerCase().includes('internet'));
+      // Only update error state if this is still the active request
+      if (activeRequestRef.current?.requestId === requestId && activeRequestRef.current?.category === category) {
+        console.error(`SearchResults: Error loading ${category} results:`, err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load search results';
+        setError(errorMessage);
+        setIsNoConnection(errorMessage.toLowerCase().includes('connection') || errorMessage.toLowerCase().includes('internet'));
+      }
     } finally {
-      setLoadingCategory(false);
+      // Only update loading state if this is still the active request
+      if (activeRequestRef.current?.requestId === requestId && activeRequestRef.current?.category === category) {
+        setLoadingCategory(false);
+      }
     }
   };
 
+  // Validate category results before setting state
+  const validateCategoryResults = (results: CategoryResults, category: SearchTabKey): CategoryResults => {
+    if (!results || !results.items) {
+      return results;
+    }
+
+    // Filter out invalid items based on category
+    const validItems = results.items.filter((item: any) => {
+      switch (category) {
+        case 'fitpics':
+          // Ensure fitpic has required properties
+          return item && 
+                 item.id && 
+                 Array.isArray(item.photos) && 
+                 item.engagement && 
+                 typeof item.engagement.likes === 'number';
+        case 'profiles':
+          return item && item.id && item.uid && item.username;
+        case 'products':
+          return item && item.id && item.name;
+        case 'hashtags':
+          return item && item.tag && typeof item.postCount === 'number';
+        default:
+          return true;
+      }
+    });
+
+    return {
+      ...results,
+      items: validItems,
+      totalEstimate: validItems.length,
+    };
+  };
+
   const handleTabChange = (tab: SearchTabKey) => {
+    // Cancel any pending requests by clearing the active request ref
+    activeRequestRef.current = null;
     setActiveTab(tab);
     setCategoryResults(null); // Clear previous category results
   };
@@ -201,7 +256,13 @@ export default function SearchResultsScreen() {
 
   // Render category-specific content
   const renderCategoryContent = () => {
-    if (!categoryResults) return null;
+    if (!categoryResults || !categoryResults.items) return null;
+
+    // Additional validation before rendering
+    const items = categoryResults.items;
+    if (!Array.isArray(items) || items.length === 0) {
+      return null;
+    }
 
     switch (activeTab) {
       case 'profiles':
@@ -213,9 +274,13 @@ export default function SearchResultsScreen() {
         );
       
       case 'fitpics':
+        // Filter out invalid fitpics before rendering
+        const validFitpics = (categoryResults as CategorySearchResponse<FitPicSearchResult>).items.filter(
+          (fitpic) => fitpic && Array.isArray(fitpic.photos) && fitpic.engagement
+        );
         return (
           <FitPicsPreview
-            fitpics={(categoryResults as CategorySearchResponse<FitPicSearchResult>).items}
+            fitpics={validFitpics}
             onSeeAll={() => handleSeeAll('fitpics')}
           />
         );
@@ -385,19 +450,21 @@ export default function SearchResultsScreen() {
           <>
             {/* Top Results - Show all categories */}
             <ProfilesPreview
-              users={topResults.results.users}
+              users={topResults.results.users || []}
               onSeeAll={() => handleSeeAll('profiles')}
             />
             <FitPicsPreview
-              fitpics={topResults.results.fitpics}
+              fitpics={(topResults.results.fitpics || []).filter(
+                (fitpic) => fitpic && Array.isArray(fitpic.photos) && fitpic.engagement
+              )}
               onSeeAll={() => handleSeeAll('fitpics')}
             />
             <ProductsPreview
-              products={topResults.results.products}
+              products={topResults.results.products || []}
               onSeeAll={() => handleSeeAll('products')}
             />
             <HashtagsPreview
-              hashtags={topResults.results.hashtags}
+              hashtags={topResults.results.hashtags || []}
               onSeeAll={() => handleSeeAll('hashtags')}
             />
           </>

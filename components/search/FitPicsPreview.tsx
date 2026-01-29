@@ -17,17 +17,34 @@ type Props = {
 };
 
 export default function FitPicsPreview({ fitpics, onSeeAll }: Props) {
-  const previewFitpics = fitpics.slice(0, 6); // 2x3 grid
+  // Filter out invalid fitpics before processing
+  const validFitpics = (fitpics || []).filter(
+    (fitpic) => 
+      fitpic && 
+      fitpic.id && 
+      Array.isArray(fitpic.photos) && 
+      fitpic.engagement && 
+      typeof fitpic.engagement.likes === 'number'
+  );
+  
+  const previewFitpics = validFitpics.slice(0, 6); // 2x3 grid
 
   const renderThumbnail = ({ item }: { item: FitPicSearchResult }) => {
-    const coverPhoto = item.photos.find(p => p.isCover) || item.photos[0];
+    // Defensive checks for photos array
+    const photos = item.photos || [];
+    const coverPhoto = photos.find(p => p?.isCover) || photos[0];
     const thumbnailUrl = coverPhoto?.thumbnailUrl || coverPhoto?.url;
 
+    // Defensive check for engagement
+    const likes = item.engagement?.likes ?? 0;
+
     const handlePress = () => {
-      router.push({
-        pathname: '/fitpic-detail',
-        params: { id: item.id },
-      });
+      if (item.id) {
+        router.push({
+          pathname: '/fitpic-detail',
+          params: { id: item.id },
+        });
+      }
     };
 
     return (
@@ -43,7 +60,7 @@ export default function FitPicsPreview({ fitpics, onSeeAll }: Props) {
         <View style={styles.overlay}>
           <View style={styles.engagementRow}>
             <Ionicons name="heart" size={14} color="#FFFFFF" />
-            <Text style={styles.engagementText}>{item.engagement.likes}</Text>
+            <Text style={styles.engagementText}>{likes}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -56,7 +73,7 @@ export default function FitPicsPreview({ fitpics, onSeeAll }: Props) {
         <Text style={styles.sectionTitle}>FitPics</Text>
         <TouchableOpacity onPress={onSeeAll} style={styles.seeAllButton}>
           <Text style={styles.seeAllText}>
-            {fitpics.length > previewFitpics.length ? 'See all' : 'Expand'}
+            {validFitpics.length > previewFitpics.length ? 'See all' : 'Expand'}
           </Text>
           <Ionicons name="chevron-forward" size={16} color="#666A70" />
         </TouchableOpacity>
