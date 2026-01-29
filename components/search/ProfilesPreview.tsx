@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { UserSearchResult } from '../../src/types/search';
 
@@ -15,7 +16,6 @@ type Props = {
 };
 
 export default function ProfilesPreview({ users, onSeeAll }: Props) {
-  const router = useRouter();
   const previewUsers = users.slice(0, 5);
 
   const handleUserPress = (userId: string) => {
