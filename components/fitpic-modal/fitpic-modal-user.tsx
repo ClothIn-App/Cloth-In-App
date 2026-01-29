@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Image, StyleSheet, Text } from 'react-native';
+import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useThemeColor } from '../../hooks/useThemeColor';
 
 type AuthorInfo = {
@@ -12,26 +13,51 @@ type AuthorInfo = {
 
 type Props = {
   author: string | AuthorInfo;
+  authorId?: string; // Optional authorId for when author is a string (username)
   createdAt?: string;
   location?: string;
 };
 
-export default function FitPicModalUser({ author, createdAt, location }: Props) {
+export default function FitPicModalUser({ author, authorId, createdAt, location }: Props) {
+  const router = useRouter();
   const muted = useThemeColor({}, 'mutedText') || '#999';
 
   // Normalize author data - handle both string (authorId) and object formats
   let username: string;
   let avatarUrl: string | undefined;
+  let userId: string | undefined;
 
   if (typeof author === 'string') {
     // author is an authorId or username string – render as-is
     username = author;
     avatarUrl = undefined;
+    // Try to extract userId:
+    // 1. If author starts with "u_", it's likely a userId
+    // 2. If authorId prop is provided, use that
+    // 3. Otherwise, assume author string might be a userId (fallback)
+    if (author.startsWith('u_')) {
+      userId = author;
+    } else if (authorId) {
+      userId = authorId;
+    } else {
+      // If it doesn't look like a userId and no authorId provided, disable navigation
+      userId = undefined;
+    }
   } else {
     // author is already an AuthorInfo object
     username = author.username;
     avatarUrl = author.avatarUrl;
+    userId = author.uid;
   }
+
+  const handleUsernamePress = () => {
+    if (userId) {
+      router.push({
+        pathname: '/user-profile',
+        params: { userId },
+      });
+    }
+  };
 
   // Format date helper: "2024-01-13T10:30:00Z" -> "Jan 13"
   const formatDate = (dateString: string): string => {
@@ -65,7 +91,9 @@ export default function FitPicModalUser({ author, createdAt, location }: Props) 
         />
       </View>
       <View style={styles.userInfo}>
-        <Text style={styles.username}>@{username}</Text>
+        <TouchableOpacity onPress={handleUsernamePress} disabled={!userId}>
+          <Text style={[styles.username, userId && styles.usernameTappable]}>@{username}</Text>
+        </TouchableOpacity>
         {hasMetadata && (
           <View style={styles.metadataContainer}>
             {hasDate && (
@@ -122,6 +150,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '400',
     color: '#000',
+  },
+  usernameTappable: {
+    // Visual indication that it's tappable (optional)
   },
   metaText: {
     fontSize: 12,

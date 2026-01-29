@@ -15,12 +15,16 @@ type Props = {
 };
 
 export default function UserListItem({ user, onPress, onFollowPress }: Props) {
+  const router = useRouter();
+  
   const handlePress = () => {
     if (onPress) {
       onPress(user);
     } else {
-      // TODO: Navigate to user profile
-      console.log('Navigate to profile:', user.uid);
+      router.push({
+        pathname: '/user-profile',
+        params: { userId: user.uid },
+      });
     }
   };
 
