@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import { getUserFitPics, updateFitPicEngagement } from '../services/fitpicApi';
+import { fitpicClient } from '../services/apiClients/fitpicClient';
 import type { FitPic } from '../types/fitpic';
 
 export type UserFitPicsState = {
@@ -36,7 +36,7 @@ export const useUserFitPics = (userId: string) => {
     }
 
     try {
-      const response = await getUserFitPics(
+      const response = await fitpicClient.listByUser(
         userId,
         refresh ? undefined : state.nextCursor,
         20
@@ -84,7 +84,7 @@ export const useUserFitPics = (userId: string) => {
     const action = fitpic.engagement.isLiked ? 'unlike' : 'like';
     
     try {
-      const response = await updateFitPicEngagement({
+      const response = await fitpicClient.updateEngagement({
         fitpicId: fitpic.id,
         action,
       });
@@ -108,7 +108,7 @@ export const useUserFitPics = (userId: string) => {
     const action = fitpic.engagement.isSaved ? 'unsave' : 'save';
     
     try {
-      const response = await updateFitPicEngagement({
+      const response = await fitpicClient.updateEngagement({
         fitpicId: fitpic.id,
         action,
       });

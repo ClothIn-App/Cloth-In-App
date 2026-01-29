@@ -13,14 +13,13 @@ import { ProductUserStyleCarousel } from "@/components/product-modal/ProductUser
 import ProductCommentsSection from "@/components/product-modal/comments/product-comments-section";
 import ProductCommentInput from "@/components/product-modal/comments/product-comment-input";
 import type { Reactions, CommentType } from "@/src/types/feed";
-import sessionData from "@/src/mocks/mock-session.json";
-import usersData from "@/src/mocks/mock-users.json";
+import { getCurrentUser } from "@/src/services/mockSessionUsers";
 
 const DEFAULT_REACTIONS: Reactions = { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } };
 
 export default function ProductDetailModal() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const { product, featuredFitPics, comments: initialComments, followersFitPics } = useProductData(id);
+  const { product, featuredFitPics, comments: initialComments, followersFitPics, loading: productLoading } = useProductData(id);
   const insets = useSafeAreaInsets();
   
   // Local state for reactions (optimistic updates)
@@ -32,10 +31,10 @@ export default function ProductDetailModal() {
   const [isSaved, setIsSaved] = useState(false);
 
   // Get current user and check if Product is saved
-  const currentUserId = sessionData.currentUserId;
-  const currentUser = useMemo(() => {
-    return (usersData as Record<string, any>)[currentUserId];
-  }, [currentUserId]);
+  const currentUser = useMemo(
+    () => getCurrentUser(),
+    []
+  );
 
   // Check if Product is saved when product or id changes
   useEffect(() => {
@@ -61,23 +60,20 @@ export default function ProductDetailModal() {
     setComments(initialComments);
   }, [initialComments]);
 
-  if (!product) {
-    // For now, a simple fallback is fine. Later we can improve loading states.
-    return null;
-  }
-
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     router.back();
-  };
+  }, []);
 
-  const handleAddToWishlist = () => {
+  const handleAddToWishlist = useCallback(() => {
     // For now, this can just be a placeholder (e.g., console.log).
     // Later we will wire this to real wishlist logic.
-    console.log("Add to wishlist:", product.id);
-  };
+    if (product) {
+      console.log("Add to wishlist:", product.id);
+    }
+  }, [product]);
 
   // Helper function to add reply to nested comment tree
-  const addReplyToCommentTree = (
+  const addReplyToCommentTree = useCallback((
     comments: CommentType[],
     targetCommentId: string,
     newReply: CommentType
@@ -97,10 +93,10 @@ export default function ProductDetailModal() {
       }
       return comment;
     });
-  };
+  }, []);
 
   // Handle reply submission
-  const handleReplySubmit = (text: string, replyingTo?: { id: string; user: string } | null) => {
+  const handleReplySubmit = useCallback((text: string, replyingTo?: { id: string; user: string } | null) => {
     if (!replyTarget || !replyingTo) return;
 
     const newReply: CommentType = {
@@ -116,12 +112,12 @@ export default function ProductDetailModal() {
     const updatedComments = addReplyToCommentTree(comments, replyTarget.id, newReply);
     setComments(updatedComments);
     setReplyTarget(null);
-  };
+  }, [replyTarget, comments, addReplyToCommentTree]);
 
   // Handle reply press
-  const handleReplyPress = (comment: CommentType) => {
+  const handleReplyPress = useCallback((comment: CommentType) => {
     setReplyTarget(comment);
-  };
+  }, []);
 
   // Handle save toggle
   const handleToggleSave = useCallback((nextSaved: boolean) => {
@@ -129,35 +125,37 @@ export default function ProductDetailModal() {
     // TODO: In a real app, this would update the backend
     // For now, we're just updating local state
     if (currentUser && product) {
-      const userData = usersData as Record<string, any>;
-      const user = userData[currentUserId];
-      if (user) {
-        if (!user.saved) {
-          user.saved = [];
+      if (!currentUser.saved) {
+        currentUser.saved = [];
+      }
+      const saved = currentUser.saved || [];
+      if (nextSaved) {
+        // Add to saved at the beginning (most recent first) if not already there
+        if (!saved.some((item: { id: string; type: string }) => 
+          item.id === product.id && item.type === "product"
+        )) {
+          saved.unshift({
+            id: product.id,
+            type: "product",
+          });
         }
-        const saved = user.saved || [];
-        if (nextSaved) {
-          // Add to saved at the beginning (most recent first) if not already there
-          if (!saved.some((item: { id: string; type: string }) => 
-            item.id === product.id && item.type === "product"
-          )) {
-            saved.unshift({
-              id: product.id,
-              type: "product",
-            });
-          }
-        } else {
-          // Remove from saved
-          const index = saved.findIndex((item: { id: string; type: string }) => 
-            item.id === product.id && item.type === "product"
-          );
-          if (index !== -1) {
-            saved.splice(index, 1);
-          }
+      } else {
+        // Remove from saved
+        const index = saved.findIndex((item: { id: string; type: string }) => 
+          item.id === product.id && item.type === "product"
+        );
+        if (index !== -1) {
+          saved.splice(index, 1);
         }
       }
     }
-  }, [currentUser, product, currentUserId]);
+  }, [currentUser, product]);
+
+  // Early return AFTER all hooks are called
+  if (!product) {
+    // For now, a simple fallback is fine. Later we can improve loading states.
+    return null;
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>

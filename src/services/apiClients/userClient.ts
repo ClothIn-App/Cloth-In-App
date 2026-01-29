@@ -5,6 +5,10 @@ import {
   setUserEndpoint,
   SetUserPayload,
   SetUserResponse,
+  getFollowersEndpoint,
+  GetFollowersResponse,
+  getFollowingEndpoint,
+  GetFollowingResponse,
 } from '../endpoints'
 
 // function-style
@@ -21,8 +25,20 @@ export async function setUser(userId: string, payload: SetUserPayload) {
   });
 }
 
-// object-style
-export const userApiClient = { getUser, setUser };
+export async function getFollowers(userId: string) {
+  return callApiEndpoint<undefined, GetFollowersResponse>(getFollowersEndpoint, {
+    pathParameters: { userId },
+  });
+}
 
-export type { GetUserResponse };
+export async function getFollowing(userId: string) {
+  return callApiEndpoint<undefined, GetFollowingResponse>(getFollowingEndpoint, {
+    pathParameters: { userId },
+  });
+}
+
+// object-style
+export const userApiClient = { getUser, setUser, getFollowers, getFollowing };
+
+export type { GetUserResponse, GetFollowersResponse, GetFollowingResponse };
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { AccountData } from "../types/account";
-import usersData from "../mocks/mock-users.json";
+import { userApiClient } from "../services/apiClients/userClient";
 
 export default function useAccountData(userId?: string) {
   const [data, setData] = useState<AccountData>({});
@@ -24,19 +24,20 @@ export default function useAccountData(userId?: string) {
     setError(null);
 
     try {
-      // Load user from mock-users.json
-      const user = (usersData as Record<string, any>)[userId];
+      // Load user via API client
+      const response = await userApiClient.getUser(userId);
       
       if (reqRef.current === myReq) {
-        if (!user) {
+        if (!response.user) {
           setError(new Error(`User ${userId} not found`));
           return;
         }
 
-        // Return user object as-is
-        const me = user as any;
+        // Return user object and counts separately (matching AccountData type)
+        const me = response.user as any;
+        const counts = response.user.counts;
 
-        setData({ me });
+        setData({ me, counts });
       }
     } catch (e) {
       if (reqRef.current === myReq) setError(e);

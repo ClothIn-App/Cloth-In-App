@@ -11,8 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { FollowerUser } from "../../src/types/account";
-import usersData from "../../src/mocks/mock-users.json";
-import session from "../../src/mocks/mock-session.json";
+import { userApiClient } from "../../src/services/apiClients/userClient";
 
 type Props = {
   visible: boolean;
@@ -38,42 +37,13 @@ export default function FollowersModal({ visible, onClose, userId }: Props) {
   const loadFollowers = async () => {
     setLoading(true);
     try {
-      const users = usersData as Record<string, any>;
-      
-      // Load the profile user
-      const profileUser = users[userId!];
-      if (!profileUser) {
+      if (!userId) {
         setFollowers([]);
         return;
       }
-      
-      // Get current user ID for follow status
-      const currentUserId = session.currentUserId;
-      const currentUser = users[currentUserId];
-      const currentUserFollowingIds = new Set(
-        currentUser?.following?.userIds ?? []
-      );
 
-      // Build list from profileUser.followers.userIds
-      const followerIds = profileUser.followers?.userIds ?? [];
-      const hydratedFollowers: FollowerUser[] = followerIds
-        .map((followerId: string): FollowerUser | null => {
-          const user = users[followerId];
-          if (!user) return null;
-          
-          return {
-            uid: user.id,
-            displayName: user.displayName,
-            username: user.username,
-            avatarUrl: user.avatarUrl,
-            bio: user.bio,
-            isFollowing: currentUserFollowingIds.has(user.id),
-            isPrivateAccount: !!user?.privacy?.isPrivateAccount,
-          } as FollowerUser;
-        })
-        .filter((item: FollowerUser | null): item is FollowerUser => item !== null);
-
-      setFollowers(hydratedFollowers);
+      const response = await userApiClient.getFollowers(userId);
+      setFollowers(response.followers);
     } catch (error) {
       console.error("Error loading followers:", error);
       setFollowers([]);

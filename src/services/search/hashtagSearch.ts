@@ -1,6 +1,8 @@
 /**
  * Hashtag search implementation
  * Handles searching for hashtags with filtering, sorting, and pagination
+ * 
+ * Pure function - accepts data as parameters, no JSON imports allowed.
  */
 
 import type { HashtagSearchResult } from '../../types/search';
@@ -14,16 +16,16 @@ import { calculateRelevanceScore } from './relevance';
 import { calculatePagination } from './pagination';
 import { validateQuery, simulateError, simulateNetworkDelay, createEmptyResponse, applyRelevanceSorting } from './searchUtils';
 import { DEV_SIMULATE_ERROR } from './devConfig';
-import fitpicsData from '../../mocks/mock-fitpics.json';
 
 /**
  * Generate hashtags from canonical FitPic data (extracted from captions)
+ * Pure function - accepts fitpics array as parameter
  */
-function fetchHashtagsFromMockData(queryLower: string): HashtagSearchResult[] {
+function fetchHashtagsFromMockData(fitpics: any[], queryLower: string): HashtagSearchResult[] {
   // Extract hashtags from FitPic captions
   const hashtagMap = new Map<string, number>();
   
-  fitpicsData.fitpics.forEach(fitpic => {
+  fitpics.forEach(fitpic => {
     if (fitpic.caption) {
       const hashtags = fitpic.caption.match(/#\w+/g) || [];
       hashtags.forEach(tag => {
@@ -55,8 +57,10 @@ function getHashtagTextFields(hashtag: HashtagSearchResult): string[] {
 
 /**
  * Search hashtags only
+ * Pure function - accepts fitpics array as parameter
  */
 export async function searchHashtags(
+  fitpics: any[],
   q: string,
   filters: HashtagSearchFilters = {},
   sortBy: HashtagSortBy = 'relevance',
@@ -77,7 +81,7 @@ export async function searchHashtags(
   await simulateNetworkDelay(350, 150);
 
   // Fetch hashtags from mock data
-  let hashtags = fetchHashtagsFromMockData(queryLower);
+  let hashtags = fetchHashtagsFromMockData(fitpics, queryLower);
 
   // Apply relevance scoring
   hashtags = applyRelevanceSorting(hashtags, q, getHashtagTextFields, calculateRelevanceScore);

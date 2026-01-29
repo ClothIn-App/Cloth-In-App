@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { buildProductFeed } from '../../src/utils/normalizeFeed';
 import type { ProductItem } from '../../src/types/feed';
+import { contentApiClient } from '../../src/services/apiClients/contentClient';
 import FeaturedProductCard from './featured-product-card';
 
 type Props = {
@@ -26,8 +27,10 @@ export default function FitPicFeaturedProductsSection({
 
     const loadProducts = async () => {
       try {
-        // Load all products first to build the cache
-        const allProducts = await buildProductFeed();
+        // Load products from API client
+        const response = await contentApiClient.getProducts({ limit: 100 });
+        // Normalize products to ProductItem format
+        const allProducts = await buildProductFeed(response.products);
         // Create a map for quick lookup
         const productMap = new Map<string, ProductItem>();
         allProducts.forEach(product => {

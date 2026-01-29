@@ -11,8 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { FollowingUser } from "../../src/types/account";
-import usersData from "../../src/mocks/mock-users.json";
-import session from "../../src/mocks/mock-session.json";
+import { userApiClient } from "../../src/services/apiClients/userClient";
 
 type Props = {
   visible: boolean;
@@ -38,42 +37,13 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
   const loadFollowing = async () => {
     setLoading(true);
     try {
-      const users = usersData as Record<string, any>;
-      
-      // Load the profile user
-      const profileUser = users[userId!];
-      if (!profileUser) {
+      if (!userId) {
         setFollowing([]);
         return;
       }
-      
-      // Get current user ID for follow status
-      const currentUserId = session.currentUserId;
-      const currentUser = users[currentUserId];
-      const currentUserFollowingIds = new Set(
-        currentUser?.following?.userIds ?? []
-      );
 
-      // Build list from profileUser.following.userIds
-      const followingIds = profileUser.following?.userIds ?? [];
-      const hydratedFollowing: FollowingUser[] = followingIds
-        .map((followingId: string): FollowingUser | null => {
-          const user = users[followingId];
-          if (!user) return null;
-          
-          return {
-            uid: user.id,
-            displayName: user.displayName,
-            username: user.username,
-            avatarUrl: user.avatarUrl,
-            bio: user.bio,
-            isFollowing: currentUserFollowingIds.has(user.id),
-            isPrivateAccount: !!user?.privacy?.isPrivateAccount,
-          } as FollowingUser;
-        })
-        .filter((item: FollowingUser | null): item is FollowingUser => item !== null);
-
-      setFollowing(hydratedFollowing);
+      const response = await userApiClient.getFollowing(userId);
+      setFollowing(response.following);
     } catch (error) {
       console.error("Error loading following:", error);
       setFollowing([]);

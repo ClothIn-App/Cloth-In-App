@@ -1,18 +1,19 @@
 /**
  * Data transformation mappers
  * Converts canonical mock data to search result format
+ * 
+ * These are pure functions that accept data as parameters - no JSON imports allowed.
  */
 
 import type { FitPicSearchResult, ProductSearchResult } from '../../types/search';
-import fitpicsData from '../../mocks/mock-fitpics.json';
-import productsData from '../../mocks/mock-products.json';
 import { FITPIC_ASSETS, PRODUCT_ASSETS } from '../../maps/images';
 import { getImageUri } from './assetHelpers';
 
 /**
  * Transform canonical FitPic data to FitPicSearchResult format
+ * Pure function - accepts products array as parameter
  */
-export function transformFitPicToSearchResult(fitpic: any): FitPicSearchResult {
+export function transformFitPicToSearchResult(fitpic: any, products: any[]): FitPicSearchResult {
   const imageSource = FITPIC_ASSETS[fitpic.id];
   const imageUri = imageSource ? getImageUri(imageSource) : undefined;
   
@@ -38,7 +39,7 @@ export function transformFitPicToSearchResult(fitpic: any): FitPicSearchResult {
     }] : [],
     caption: fitpic.caption || '',
     products: (fitpic.featuredProducts?.productIds || []).map((productId: string) => {
-      const product = productsData.products.find((p: any) => p.id === productId);
+      const product = products.find((p: any) => p.id === productId);
       if (!product) return null;
       const productImageSource = PRODUCT_ASSETS[productId];
       const productImageUri = productImageSource ? getImageUri(productImageSource) : undefined;
