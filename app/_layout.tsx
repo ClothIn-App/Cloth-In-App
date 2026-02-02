@@ -91,6 +91,15 @@ export default function RootLayout() {
               animation: 'fade_from_bottom',
             }}
           />
+          <Stack.Screen
+            name="profile/[userId]"
+            options={{
+              headerShown: false,
+              presentation: 'card',
+              gestureEnabled: true,
+              animation: 'slide_from_right',
+            }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </AuthProvider>

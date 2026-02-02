@@ -8,6 +8,9 @@ export type ProfileMe = {
   bio?: string;
   joinedAt?: string; // ISO date string
   accountType?: "personal" | "brand" | "creator";
+  /** Set when viewing another user's profile (from getUser) */
+  isPrivateAccount?: boolean;
+  isFollowing?: boolean;
 };
 
 export type ProfileCounts = {

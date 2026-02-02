@@ -95,8 +95,7 @@ export default function SearchProfilesScreen() {
   }, [query]);
 
   const handleUserPress = (user: UserSearchResult) => {
-    // TODO: Navigate to user profile
-    console.log('Navigate to profile:', user.uid);
+    router.push(`/profile/${user.uid}`);
   };
 
   const handleFollowPress = (user: UserSearchResult) => {

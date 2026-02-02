@@ -1,7 +1,7 @@
 // src/services/endpoints/users/getUser.ts
 import type { EndpointDefinition } from "../../http";
 import { log } from "../../../debug/log";
-import { getUserById } from "../../mockSessionUsers";
+import { getCurrentUser, getUserById } from "../../mockSessionUsers";
 import { getUserFromMockDb, setUserInMockDb } from "./mockDb";
 
 export type GetUserResponse = {
@@ -13,6 +13,9 @@ export type GetUserResponse = {
     avatarUrl?: string;
     bio?: string | null;
     accountType?: string | null;
+    /** Viewer relationship: only set when viewing another user's profile */
+    isPrivateAccount?: boolean;
+    isFollowing?: boolean;
     counts?: {
       posts: number;
       following: number;
@@ -39,38 +42,44 @@ export const getUserEndpoint: EndpointDefinition<undefined, GetUserResponse> = {
     await new Promise((r) => setTimeout(r, 200));
 
     const userId = pathParameters.userId;
+    const raw = getUserById(userId);
+    const currentUser = getCurrentUser();
+    const isFollowing = currentUser?.following?.userIds?.includes(userId) ?? false;
+    const isPrivateAccount = raw?.privacy?.isPrivateAccount ?? false;
 
-    // 1) If we've already seen/updated this user in mock mode, return that.
+    const withRelationship = (user: GetUserResponse["user"]): GetUserResponse["user"] => ({
+      ...user,
+      isPrivateAccount,
+      isFollowing,
+    });
+
+    // 1) If we've already seen/updated this user in mock mode, return that with relationship.
     const existing = getUserFromMockDb(userId);
     if (existing) {
-      return existing;
+      return { user: withRelationship(existing.user) };
     }
 
     // 2) Otherwise, try to hydrate from canonical mock-users.json via mockSessionUsers.
-    const raw = getUserById(userId);
-
     if (raw) {
       const hydrated: GetUserResponse = {
-        user: {
+        user: withRelationship({
           uid: raw.id ?? userId,
           email: `user+${userId}@example.com`.toLowerCase(),
           displayName: raw.displayName ?? raw.username,
           username: raw.username,
           avatarUrl: raw.avatarUrl,
           bio: raw.bio ?? null,
-          // Controls tabs shown on account page - constants/accountTabs.ts
           accountType: "personal",
           counts: {
             posts: raw.fitpics?.total ?? 0,
             following: raw.following?.total ?? 0,
             followers: raw.followers?.total ?? 0,
           },
-          // Include closet data from mock JSON
           closet: raw.closet,
-        },
+        }),
       };
 
-      setUserInMockDb(userId, hydrated);
+      setUserInMockDb(userId, { ...hydrated, user: { ...hydrated.user } });
       return hydrated;
     }
 
@@ -78,21 +87,20 @@ export const getUserEndpoint: EndpointDefinition<undefined, GetUserResponse> = {
     log("getUserEndpoint.mock: falling back to synthesized user", { userId });
 
     const synthesized: GetUserResponse = {
-      user: {
+      user: withRelationship({
         uid: userId,
         email: `user+${userId}@example.com`.toLowerCase(),
         displayName: "Jane Doe",
         username: "janedoe",
         avatarUrl: "https://example.com/avatars/jane.png",
         bio: "Clothes & coffee.",
-        // added account type - 8/24/25 (controls tabs shown on account page - constants/accountTabs.ts)
         accountType: "personal",
         counts: {
           posts: 12,
           following: 87,
           followers: 143,
         },
-      },
+      }),
     };
 
     setUserInMockDb(userId, synthesized);
