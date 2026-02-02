@@ -242,7 +242,6 @@ export default function FitPicDetailScreen() {
           {fitpic && (
             <FitPicModalUser
               author={fitpic.author}
-              authorId={fitpic.authorId}
               createdAt={fitpic.createdAt}
               location={fitpic.location}
             />

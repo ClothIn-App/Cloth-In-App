@@ -45,7 +45,6 @@ type Props = {
   onProductDelete?: (productId: string) => void;
   onProductPress?: (productId: string) => void;
   userId?: string;
-  isViewOnly?: boolean;
 };
 
 const RackProductCard = React.memo(function RackProductCard({
@@ -53,13 +52,11 @@ const RackProductCard = React.memo(function RackProductCard({
   width,
   onOpenMenu,
   onProductPress,
-  isViewOnly = false,
 }: {
   product: Product;
   width: number;
   onOpenMenu: (productId: string) => void;
   onProductPress?: (productId: string) => void;
-  isViewOnly?: boolean;
 }) {
   const dotScale = useSharedValue(1);
   const dotStyle = useAnimatedStyle(() => ({
@@ -79,26 +76,24 @@ const RackProductCard = React.memo(function RackProductCard({
         >
           <ClosetProductCard width={width} source={product.source} borderRadius={16} />
         </Pressable>
-        {!isViewOnly && (
-          <ReanimatedAnimated.View style={[styles.productOverflowWrap, dotStyle]}>
-            <Pressable
-              onPress={() => {
-                dotScale.value = withSequence(
-                  withSpring(1.12, { damping: 14, stiffness: 240 }),
-                  withSpring(1, { damping: 14, stiffness: 240 })
-                );
-                onOpenMenu(product.id);
-              }}
-              accessibilityRole="button"
-              accessibilityLabel="Product options"
-              pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
-              hitSlop={8}
-              style={styles.productOverflowButton}
-            >
-              <Ionicons name="ellipsis-horizontal" size={16} color="#11181C" />
-            </Pressable>
-          </ReanimatedAnimated.View>
-        )}
+        <ReanimatedAnimated.View style={[styles.productOverflowWrap, dotStyle]}>
+          <Pressable
+            onPress={() => {
+              dotScale.value = withSequence(
+                withSpring(1.12, { damping: 14, stiffness: 240 }),
+                withSpring(1, { damping: 14, stiffness: 240 })
+              );
+              onOpenMenu(product.id);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Product options"
+            pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
+            hitSlop={8}
+            style={styles.productOverflowButton}
+          >
+            <Ionicons name="ellipsis-horizontal" size={16} color="#11181C" />
+          </Pressable>
+        </ReanimatedAnimated.View>
       </View>
     </View>
   );
@@ -114,7 +109,6 @@ export default function RackDetailModal({
   onProductDelete,
   onProductPress,
   userId,
-  isViewOnly = false,
 }: Props) {
   const { width: screenWidth } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -316,7 +310,6 @@ export default function RackDetailModal({
                             setProductActionsVisible(true);
                           }}
                           onProductPress={handleProductPress}
-                          isViewOnly={isViewOnly}
                         />
                       ))}
                       {/* Fill remaining space if row has less than 3 items */}

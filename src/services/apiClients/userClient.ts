@@ -9,12 +9,6 @@ import {
   GetFollowersResponse,
   getFollowingEndpoint,
   GetFollowingResponse,
-  getFollowStatusEndpoint,
-  GetFollowStatusResponse,
-  followUserEndpoint,
-  FollowUserResponse,
-  unfollowUserEndpoint,
-  UnfollowUserResponse,
 } from '../endpoints'
 
 // function-style
@@ -43,34 +37,8 @@ export async function getFollowing(userId: string) {
   });
 }
 
-export async function getFollowStatus(userId: string) {
-  return callApiEndpoint<undefined, GetFollowStatusResponse>(getFollowStatusEndpoint, {
-    pathParameters: { userId },
-  });
-}
-
-export async function followUser(userId: string) {
-  return callApiEndpoint<undefined, FollowUserResponse>(followUserEndpoint, {
-    pathParameters: { userId },
-  });
-}
-
-export async function unfollowUser(userId: string) {
-  return callApiEndpoint<undefined, UnfollowUserResponse>(unfollowUserEndpoint, {
-    pathParameters: { userId },
-  });
-}
-
 // object-style
-export const userApiClient = { 
-  getUser, 
-  setUser, 
-  getFollowers, 
-  getFollowing,
-  getFollowStatus,
-  followUser,
-  unfollowUser,
-};
+export const userApiClient = { getUser, setUser, getFollowers, getFollowing };
 
-export type { GetUserResponse, GetFollowersResponse, GetFollowingResponse, GetFollowStatusResponse, FollowUserResponse, UnfollowUserResponse };
+export type { GetUserResponse, GetFollowersResponse, GetFollowingResponse };
 

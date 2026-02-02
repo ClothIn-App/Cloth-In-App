@@ -100,7 +100,6 @@ async function convertFitPicToFitPicItem(fitpic: any, commentsFromResponse?: Com
       },
       likes: fitpic.engagement?.likes || 0,
       author: fitpic.author?.username || fitpic.authorId,
-      authorId: fitpic.authorId || fitpic.author?.uid, // Preserve authorId for navigation
       createdAt: fitpic.createdAt,
       location: locationString,
       reactions,

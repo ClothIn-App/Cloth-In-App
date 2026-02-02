@@ -99,30 +99,11 @@ export function ProductFitPicCarousel({
                   style={styles.thumbnail}
                   resizeMode="cover"
                 />
-                <TouchableOpacity
-                  style={styles.usernameOverlay}
-                  onPress={() => {
-                    let userId: string | undefined;
-                    if (typeof fitpic.author === 'object') {
-                      userId = fitpic.author?.uid;
-                    } else {
-                      // For ContentFitPic type, author is a string (could be userId or username)
-                      // For FitpicFitPic type, check authorId
-                      userId = (fitpic as any).authorId || (fitpic.author?.startsWith('u_') ? fitpic.author : undefined);
-                    }
-                    if (userId) {
-                      router.push({
-                        pathname: '/user-profile',
-                        params: { userId },
-                      });
-                    }
-                  }}
-                  activeOpacity={0.8}
-                >
+                <View style={styles.usernameOverlay}>
                   <Text style={styles.usernameText}>
-                    @{typeof fitpic.author === 'string' ? fitpic.author : fitpic.author?.username || (fitpic as any).authorId || 'unknown'}
+                    @{typeof fitpic.author === 'string' ? fitpic.author : fitpic.author?.username || fitpic.authorId || 'unknown'}
                   </Text>
-                </TouchableOpacity>
+                </View>
               </TouchableOpacity>
             );
           })}

@@ -6,7 +6,6 @@ import {
   Image,
   StyleSheet,
 } from 'react-native';
-import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { UserSearchResult } from '../../src/types/search';
 
@@ -17,13 +16,6 @@ type Props = {
 
 export default function ProfilesPreview({ users, onSeeAll }: Props) {
   const previewUsers = users.slice(0, 5);
-
-  const handleUserPress = (userId: string) => {
-    router.push({
-      pathname: '/user-profile',
-      params: { userId },
-    });
-  };
 
   return (
     <View style={styles.container}>
@@ -44,12 +36,7 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
       ) : (
         <View style={styles.list}>
           {previewUsers.map((user) => (
-            <TouchableOpacity
-              key={user.id}
-              style={styles.userItem}
-              onPress={() => handleUserPress(user.uid)}
-              activeOpacity={0.7}
-            >
+            <View key={user.id} style={styles.userItem}>
               <Image
                 source={{ uri: user.avatarUrl || 'https://placehold.co/50x50' }}
                 style={styles.avatar}
@@ -80,12 +67,10 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
                   styles.followButton,
                   user.isFollowing && styles.followingButton,
                 ]}
-                onPress={(e) => {
-                  e.stopPropagation();
-                  // TODO: Implement follow/unfollow
-                  console.log('Toggle follow:', user.uid);
+                onPress={() => {
+                  // TODO: Navigate to user profile
+                  console.log('TODO: Navigate to profile for user:', user.uid);
                 }}
-                activeOpacity={0.7}
               >
                 <Text
                   style={[
@@ -96,7 +81,7 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
                   {user.isFollowing ? 'Following' : 'Follow'}
                 </Text>
               </TouchableOpacity>
-            </TouchableOpacity>
+            </View>
           ))}
         </View>
       )}
