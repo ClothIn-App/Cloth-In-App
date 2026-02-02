@@ -1,5 +1,7 @@
 {
   "currentUserId": "u_8",
-  "isLoggedIn": true
+  "isLoggedIn": true,
+  "todayLocalDate": "2026-01-29",
+  "timezone": "America/Toronto"
 }
 

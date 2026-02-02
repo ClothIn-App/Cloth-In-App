@@ -34,6 +34,8 @@ type RawUser = {
 type SessionData = {
   currentUserId: string;
   isLoggedIn: boolean;
+  todayLocalDate?: string;
+  timezone?: string;
 };
 
 // Synchronous session functions - load data lazily on first call
@@ -75,6 +77,16 @@ export function getCurrentUserId(): string {
 export function isLoggedIn(): boolean {
   const session = ensureSessionDataLoaded();
   return session.isLoggedIn === true;
+}
+
+export function getTodayLocalDate(): string | undefined {
+  const session = ensureSessionDataLoaded();
+  return session.todayLocalDate;
+}
+
+export function getTimezone(): string | undefined {
+  const session = ensureSessionDataLoaded();
+  return session.timezone;
 }
 
 export function getUserById(userId: string | undefined): RawUser | undefined {

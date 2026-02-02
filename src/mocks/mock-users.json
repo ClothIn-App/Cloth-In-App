@@ -881,14 +881,15 @@
     "fitpics": {
       "total": 8,
       "postedIds": [
-        "FP_1",
-        "FP_2",
-        "FP_3",
-        "FP_4",
-        "FP_5",
-        "FP_6",
-        "FP_7",
-        "FP_8"]
+        "FP_streak_1",
+        "FP_streak_2",
+        "FP_streak_3",
+        "FP_streak_4",
+        "FP_streak_5",
+        "FP_streak_6",
+        "FP_streak_7",
+        "FP_streak_8"
+      ]
     },
 
     "closet": {

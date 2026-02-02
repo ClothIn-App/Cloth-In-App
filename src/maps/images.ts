@@ -10,6 +10,14 @@ export const FITPIC_ASSETS: Record<string, ImageSourcePropType> = {
   'FP_6': require('../../assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg'),
   'FP_7': require('../../assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg'),
   'FP_8': require('../../assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg'),
+  'FP_streak_1': require('../../assets/mock-images/abheet-singh-sachdeva-VYc45RkdeuA-unsplash.jpg'),
+  'FP_streak_2': require('../../assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg'),
+  'FP_streak_3': require('../../assets/mock-images/evgeni-tcherkasski-hegb9Y8dKos-unsplash.jpg'),
+  'FP_streak_4': require('../../assets/mock-images/joshua-kettle-q8DovYzpoR8-unsplash.jpg'),
+  'FP_streak_5': require('../../assets/mock-images/masood-aslami-sSw20FmZvX4-unsplash.jpg'),
+  'FP_streak_6': require('../../assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg'),
+  'FP_streak_7': require('../../assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg'),
+  'FP_streak_8': require('../../assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg'),
 };
 
 // Product asset mappings - maps JSON IDs to require() statements

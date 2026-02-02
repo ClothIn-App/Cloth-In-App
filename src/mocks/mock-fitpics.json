@@ -16,7 +16,7 @@
           "P_6"
         ]
       },
-      "createdAt": "2024-01-15T10:30:00Z",
+      "createdAt": "2026-01-01T10:30:00Z",
       "location": "New York, NY",
       "reactions": {
         "counts": {
@@ -111,7 +111,7 @@
           "P_2"
         ]
       },
-      "createdAt": "2024-01-14T14:20:00Z",
+      "createdAt": "2026-01-02T14:20:00Z",
       "location": "Los Angeles, CA",
       "reactions": {
         "counts": {
@@ -137,7 +137,7 @@
           "P_5"
         ]
       },
-      "createdAt": "2024-01-13T09:15:00Z",
+      "createdAt": "2026-01-03T09:15:00Z",
       "location": "Toronto, Canada",
       "reactions": {
         "counts": {
@@ -202,7 +202,7 @@
           "P_1"
         ]
       },
-      "createdAt": "2024-01-12T16:45:00Z",
+      "createdAt": "2026-01-04T16:45:00Z",
       "location": "Paris, France",
       "reactions": {
         "counts": {
@@ -322,7 +322,7 @@
           "P_8"
         ]
       },
-      "createdAt": "2024-01-11T11:30:00Z",
+      "createdAt": "2026-01-05T11:30:00Z",
       "location": "Tokyo, Japan",
       "reactions": {
         "counts": {
@@ -346,7 +346,7 @@
           "P_2"
         ]
       },
-      "createdAt": "2024-01-10T13:20:00Z",
+      "createdAt": "2026-01-06T13:20:00Z",
       "reactions": {
         "counts": {
           "LIKE": 30,
@@ -436,7 +436,7 @@
           "P_1"
         ]
       },
-      "createdAt": "2024-01-09T15:10:00Z",
+      "createdAt": "2026-01-07T15:10:00Z",
       "reactions": {
         "counts": {
           "LIKE": 22,
@@ -497,7 +497,7 @@
           "P_8"
         ]
       },
-      "createdAt": "2024-01-08T12:00:00Z",
+      "createdAt": "2026-01-08T12:00:00Z",
       "reactions": {
         "counts": {
           "LIKE": 26,
@@ -506,6 +506,94 @@
           "DISLIKE": 0
         }
       },
+      "comments": []
+    },
+    {
+      "id": "FP_streak_1",
+      "author": "u_8",
+      "caption": "Streak day 1 #memories",
+      "imagePath": "assets/mock-images/abheet-singh-sachdeva-VYc45RkdeuA-unsplash.jpg",
+      "featuredProducts": { "total": 1, "productIds": ["P_1"] },
+      "createdAt": "2026-01-22T12:00:00.000Z",
+      "location": "Toronto, ON",
+      "reactions": { "counts": { "LIKE": 0, "THUMBS_UP": 0, "FIRE": 0, "DISLIKE": 0 } },
+      "comments": []
+    },
+    {
+      "id": "FP_streak_2",
+      "author": "u_8",
+      "caption": "Streak day 2 #memories",
+      "imagePath": "assets/mock-images/evgeni-tcherkasski-GsSUlbzXIec-unsplash.jpg",
+      "featuredProducts": { "total": 1, "productIds": ["P_2"] },
+      "createdAt": "2026-01-23T12:00:00.000Z",
+      "location": "Toronto, ON",
+      "reactions": { "counts": { "LIKE": 0, "THUMBS_UP": 0, "FIRE": 0, "DISLIKE": 0 } },
+      "comments": []
+    },
+    {
+      "id": "FP_streak_3",
+      "author": "u_8",
+      "caption": "Streak day 3 #memories",
+      "imagePath": "assets/mock-images/evgeni-tcherkasski-hegb9Y8dKos-unsplash.jpg",
+      "featuredProducts": { "total": 1, "productIds": ["P_3"] },
+      "createdAt": "2026-01-24T12:00:00.000Z",
+      "location": "Toronto, ON",
+      "reactions": { "counts": { "LIKE": 0, "THUMBS_UP": 0, "FIRE": 0, "DISLIKE": 0 } },
+      "comments": []
+    },
+    {
+      "id": "FP_streak_4",
+      "author": "u_8",
+      "caption": "Streak day 4 #memories",
+      "imagePath": "assets/mock-images/joshua-kettle-q8DovYzpoR8-unsplash.jpg",
+      "featuredProducts": { "total": 1, "productIds": ["P_4"] },
+      "createdAt": "2026-01-25T12:00:00.000Z",
+      "location": "Toronto, ON",
+      "reactions": { "counts": { "LIKE": 0, "THUMBS_UP": 0, "FIRE": 0, "DISLIKE": 0 } },
+      "comments": []
+    },
+    {
+      "id": "FP_streak_5",
+      "author": "u_8",
+      "caption": "Streak day 5 #memories",
+      "imagePath": "assets/mock-images/masood-aslami-sSw20FmZvX4-unsplash.jpg",
+      "featuredProducts": { "total": 1, "productIds": ["P_5"] },
+      "createdAt": "2026-01-26T12:00:00.000Z",
+      "location": "Toronto, ON",
+      "reactions": { "counts": { "LIKE": 0, "THUMBS_UP": 0, "FIRE": 0, "DISLIKE": 0 } },
+      "comments": []
+    },
+    {
+      "id": "FP_streak_6",
+      "author": "u_8",
+      "caption": "Streak day 6 #memories",
+      "imagePath": "assets/mock-images/nikita-pishchugin-B0mydNIV-sI-unsplash.jpg",
+      "featuredProducts": { "total": 1, "productIds": ["P_6"] },
+      "createdAt": "2026-01-27T12:00:00.000Z",
+      "location": "Toronto, ON",
+      "reactions": { "counts": { "LIKE": 0, "THUMBS_UP": 0, "FIRE": 0, "DISLIKE": 0 } },
+      "comments": []
+    },
+    {
+      "id": "FP_streak_7",
+      "author": "u_8",
+      "caption": "Streak day 7 #memories",
+      "imagePath": "assets/mock-images/quiet-studio-wEMXOQwjG58-unsplash.jpg",
+      "featuredProducts": { "total": 1, "productIds": ["P_7"] },
+      "createdAt": "2026-01-28T12:00:00.000Z",
+      "location": "Toronto, ON",
+      "reactions": { "counts": { "LIKE": 0, "THUMBS_UP": 0, "FIRE": 0, "DISLIKE": 0 } },
+      "comments": []
+    },
+    {
+      "id": "FP_streak_8",
+      "author": "u_8",
+      "caption": "Streak day 8 #memories",
+      "imagePath": "assets/mock-images/samsung-memory-us-2ofwyNTTvL8-unsplash.jpg",
+      "featuredProducts": { "total": 1, "productIds": ["P_8"] },
+      "createdAt": "2026-01-29T12:00:00.000Z",
+      "location": "Toronto, ON",
+      "reactions": { "counts": { "LIKE": 0, "THUMBS_UP": 0, "FIRE": 0, "DISLIKE": 0 } },
       "comments": []
     }
   ]
