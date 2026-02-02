@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
   StyleSheet 
 } from "react-native";
-import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { FollowingUser } from "../../src/types/account";
 import { userApiClient } from "../../src/services/apiClients/userClient";
@@ -21,7 +20,6 @@ type Props = {
 };
 
 export default function FollowingModal({ visible, onClose, userId }: Props) {
-  const router = useRouter();
   const [following, setFollowing] = useState<FollowingUser[]>([]);
   const [loading, setLoading] = useState(false);
   
@@ -64,30 +62,18 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
     );
   };
 
-  const handleUsernamePress = (followingUserId: string) => {
-    router.push({
-      pathname: '/user-profile',
-      params: { userId: followingUserId },
-    });
-    onClose();
-  };
-
   const renderFollowing = ({ item }: { item: FollowingUser }) => {
     const shouldShowDisplayName = !!item.isFollowing || !item.isPrivateAccount;
     return (
       <View style={[styles.followingItem, { borderBottomColor: borderColor }]}>
-        <TouchableOpacity onPress={() => handleUsernamePress(item.uid)}>
-          <Image
-            source={{ uri: item.avatarUrl || "https://placehold.co/60x60" }}
-            style={styles.avatar}
-          />
-        </TouchableOpacity>
+        <Image
+          source={{ uri: item.avatarUrl || "https://placehold.co/60x60" }}
+          style={styles.avatar}
+        />
         <View style={[styles.userInfo, !shouldShowDisplayName && styles.centerVertically]}>
-          <TouchableOpacity onPress={() => handleUsernamePress(item.uid)}>
-            <Text style={[styles.username, { color: textColor }]}>
-              @{item.username}
-            </Text>
-          </TouchableOpacity>
+          <Text style={[styles.username, { color: textColor }]}>
+            @{item.username}
+          </Text>
           {shouldShowDisplayName && !!item.displayName && (
             <Text style={[styles.displayName, { color: mutedTextColor }]}>
               {item.displayName}

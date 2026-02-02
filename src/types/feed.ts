@@ -29,7 +29,6 @@ export interface FitPicItem extends BaseFeedItem {
   };
   likes: number;
   author: string;
-  authorId?: string; // Optional authorId for navigation (when author is username string)
   reactions: Reactions;
   comments?: CommentType[]; // Optional comments array
   location?: string; // Optional location string (e.g., "New York, NY")
