@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   StyleSheet 
 } from "react-native";
+import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { FollowerUser } from "../../src/types/account";
 import { userApiClient } from "../../src/services/apiClients/userClient";
@@ -20,6 +21,7 @@ type Props = {
 };
 
 export default function FollowersModal({ visible, onClose, userId }: Props) {
+  const router = useRouter();
   const [followers, setFollowers] = useState<FollowerUser[]>([]);
   const [loading, setLoading] = useState(false);
   
@@ -62,18 +64,30 @@ export default function FollowersModal({ visible, onClose, userId }: Props) {
     );
   };
 
+  const handleUsernamePress = (followerUserId: string) => {
+    router.push({
+      pathname: '/user-profile',
+      params: { userId: followerUserId },
+    });
+    onClose();
+  };
+
   const renderFollower = ({ item }: { item: FollowerUser }) => {
     const shouldShowDisplayName = !!item.isFollowing || !item.isPrivateAccount;
     return (
       <View style={[styles.followerItem, { borderBottomColor: borderColor }]}>
-        <Image
-          source={{ uri: item.avatarUrl || "https://placehold.co/60x60" }}
-          style={styles.avatar}
-        />
+        <TouchableOpacity onPress={() => handleUsernamePress(item.uid)}>
+          <Image
+            source={{ uri: item.avatarUrl || "https://placehold.co/60x60" }}
+            style={styles.avatar}
+          />
+        </TouchableOpacity>
         <View style={[styles.userInfo, !shouldShowDisplayName && styles.centerVertically]}>
-          <Text style={[styles.username, { color: textColor }]}>
-            @{item.username}
-          </Text>
+          <TouchableOpacity onPress={() => handleUsernamePress(item.uid)}>
+            <Text style={[styles.username, { color: textColor }]}>
+              @{item.username}
+            </Text>
+          </TouchableOpacity>
           {shouldShowDisplayName && !!item.displayName && (
             <Text style={[styles.displayName, { color: mutedTextColor }]}>
               {item.displayName}
