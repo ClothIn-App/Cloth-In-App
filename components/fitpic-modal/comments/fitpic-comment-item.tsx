@@ -7,6 +7,7 @@ import {
   Image,
   Animated,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { CommentType } from '../../../src/types/feed';
 
@@ -53,9 +54,33 @@ export default function FitPicCommentItem({
   onOpenMenu,
   onReact,
 }: FitPicCommentItemProps) {
+  const router = useRouter();
   // Calculate depth from dot notation in comment.id
   const depth = comment.id.split('.').length - 1;
   const indent = depth * 16;
+
+  // Try to extract userId from comment.user
+  // If comment.user looks like a userId (starts with "u_"), use it directly
+  // Otherwise, we'd need to look it up (TODO: create getUserByUsername endpoint)
+  const getUserIdFromUsername = (username: string): string | null => {
+    // If it looks like a userId, use it
+    if (username.startsWith('u_')) {
+      return username;
+    }
+    // For now, return null - we'd need a lookup endpoint
+    // TODO: Create getUserByUsername endpoint to resolve username -> userId
+    return null;
+  };
+
+  const handleUsernamePress = () => {
+    const userId = getUserIdFromUsername(comment.user);
+    if (userId) {
+      router.push({
+        pathname: '/user-profile',
+        params: { userId },
+      });
+    }
+  };
 
   // Track local reaction state (optimistic UI)
   // TODO: This should be synced with actual user reaction state from parent/API
@@ -118,7 +143,9 @@ export default function FitPicCommentItem({
           defaultSource={require('../../../assets/images/icon.png')}
         />
         <View style={styles.userInfo}>
-          <Text style={styles.username}>{comment.user}</Text>
+          <TouchableOpacity onPress={handleUsernamePress} disabled={!getUserIdFromUsername(comment.user)}>
+            <Text style={styles.username}>{comment.user}</Text>
+          </TouchableOpacity>
           <Text style={styles.separator}> · </Text>
           <Text style={styles.timestamp}>{formatTimestamp(comment.createdAt)}</Text>
         </View>
