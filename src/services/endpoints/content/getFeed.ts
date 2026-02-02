@@ -2,6 +2,7 @@ import type { EndpointDefinition } from "../../http";
 import type { FitPic } from "../../../types/fitpic";
 import type { ProductSearchResult } from "../../../types/search";
 import { getCurrentUserId, getUserById } from "../../mockSessionUsers";
+import { transformRawFitPic } from "../../fitpicUtils";
 
 export type GetFeedRequest = {
   type?: "forYou" | "following" | "trending";
@@ -60,38 +61,13 @@ export const getFeedEndpoint: EndpointDefinition<
     // Apply pagination to filtered results
     const paginatedFitpics = filteredFitpics.slice(startIndex, endIndex);
 
-    // Transform fitpics to FitPic type (simplified)
-    const fitpics: FitPic[] = paginatedFitpics.map((fp: any) => {
-      const userData = usersData[fp.author as keyof typeof usersData];
-      return {
-        id: fp.id,
-        authorId: fp.author,
-        author: {
-          uid: fp.author,
-          username: userData?.username || fp.author,
-          displayName: userData?.displayName || fp.author,
-          avatarUrl: userData?.avatarUrl,
-        },
-      photos: [
-        {
-          id: `photo-${fp.id}`,
-          url: fp.imagePath,
-          thumbnailUrl: fp.imagePath,
-          index: 0,
-          isCover: true,
-        },
-      ],
-      caption: fp.caption || "",
-      products: [],
-      createdAt: fp.createdAt,
-      engagement: {
-        likes: fp.reactions?.counts?.LIKE || 0,
-        saves: 0,
-        comments: fp.comments?.length || 0,
-      },
-      isPublic: true,
-      };
-    });
+    // Transform fitpics using pure helper (populates products from featuredProducts.productIds)
+    const fitpics: FitPic[] = paginatedFitpics
+      .map((fp: any) => {
+        const userData = usersData[fp.author as keyof typeof usersData];
+        return transformRawFitPic(fp, userData, productsData.products || []);
+      })
+      .filter((f): f is FitPic => f != null);
 
     // Transform products to ProductSearchResult type
     const products: ProductSearchResult[] = productsData.products

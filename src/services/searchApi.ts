@@ -27,7 +27,7 @@ import type {
 } from "./search/types";
 import {
   getTrendingSearchesEndpoint,
-  getSearchSuggestionsEndpoint,
+  getSuggestionsEndpoint,
   searchTopEndpoint,
   searchUsersEndpoint,
   searchFitPicsEndpoint,
@@ -63,9 +63,10 @@ export async function getTrending(): Promise<SearchSuggestion[]> {
 export async function getSuggestions(
   q: string
 ): Promise<SearchSuggestion[]> {
-  return callApiEndpoint(getSearchSuggestionsEndpoint, {
+  const res = await callApiEndpoint(getSuggestionsEndpoint, {
     queryParameters: { q },
   });
+  return res.suggestions;
 }
 
 export async function searchTop(q: string): Promise<SearchTopResponse> {
