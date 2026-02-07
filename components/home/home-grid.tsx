@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { RefreshControl, TouchableOpacity } from "react-native";
+import { RefreshControl, TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import MasonryGrid from "../masonry-grid";
 import FitPic_Cover from "../home/fitpic-cover";
 import Product_Cover, { PRODUCT_LABEL_HEIGHT } from "../home/product-cover";
 import type { FeedItem } from "../../src/types/feed";
-import { buildHomeFeed } from "../../src/utils/normalizeFeed";
+import { buildHomeFeed, buildProductFeed } from "../../src/utils/normalizeFeed";
 import { contentApiClient } from "../../src/services/apiClients/contentClient";
 
 // add at top-level of file (outside component)
@@ -23,7 +23,7 @@ type Props = {
   columns?: number;          // default 2
   gutter?: number;           // default 8
   contentPadding?: number;   // default 12
-  feedType?: "forYou" | "following"; // Feed type: For You or Following
+  feedType?: "forYou" | "following" | "browse"; // Feed type: For You, Following, or Browse (products only)
 };
 
 export default function Home_Grid({
@@ -43,27 +43,32 @@ export default function Home_Grid({
       setData(shuffle(dataOverride));
       setLoading(false);
     } else {
-      // Load feed data from API client and normalize
       const loadFeed = async () => {
         setLoading(true);
         try {
-          const response = await contentApiClient.getFeed({ 
-            type: feedType,
-            limit: 50 
-          });
-          if (!response) {
-            console.warn('getFeed returned undefined response');
-            setData([]);
-            return;
+          if (feedType === "browse") {
+            const response = await contentApiClient.getProducts({ limit: 50 });
+            if (!response?.products) {
+              setData([]);
+              return;
+            }
+            const productItems = await buildProductFeed(response.products);
+            setData(shuffle(productItems));
+          } else {
+            const response = await contentApiClient.getFeed({
+              type: feedType,
+              limit: 50,
+            });
+            if (!response) {
+              console.warn("getFeed returned undefined response");
+              setData([]);
+              return;
+            }
+            const feedData = await buildHomeFeed(response.fitpics, response.products);
+            setData(shuffle(feedData));
           }
-          console.log('Feed response:', { 
-            fitpicsCount: response.fitpics?.length, 
-            productsCount: response.products?.length 
-          });
-          const feedData = await buildHomeFeed(response.fitpics, response.products);
-          setData(shuffle(feedData));
         } catch (error) {
-          console.error('Error loading feed:', error);
+          console.error("Error loading feed:", error);
           setData([]);
         } finally {
           setLoading(false);
@@ -78,31 +83,45 @@ export default function Home_Grid({
     try {
       if (dataOverride) {
         setData(shuffle(dataOverride));
+      } else if (feedType === "browse") {
+        const response = await contentApiClient.getProducts({ limit: 50 });
+        if (response?.products) {
+          const productItems = await buildProductFeed(response.products);
+          setData(shuffle(productItems));
+        }
       } else {
-        const response = await contentApiClient.getFeed({ 
+        const response = await contentApiClient.getFeed({
           type: feedType,
-          limit: 50 
+          limit: 50,
         });
         if (!response) {
-          console.warn('getFeed returned undefined response on refresh');
+          console.warn("getFeed returned undefined response on refresh");
           return;
         }
         const feedData = await buildHomeFeed(response.fitpics, response.products);
         setData(shuffle(feedData));
       }
     } catch (error) {
-      console.error('Error refreshing feed:', error);
+      console.error("Error refreshing feed:", error);
     } finally {
       setRefreshing(false);
     }
   }, [dataOverride, feedType]);
 
   if (loading) {
-    return null; // Show loading state (or a loading placeholder component)
+    return null;
   }
 
   if (data.length === 0) {
-    return null; // or an empty state placeholder
+    const emptyMessage =
+      feedType === "browse"
+        ? "No products to browse yet"
+        : "No posts yet";
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>{emptyMessage}</Text>
+      </View>
+    );
   }
 
   return (
@@ -176,3 +195,18 @@ export default function Home_Grid({
     />
   );
 }
+
+const styles = StyleSheet.create({
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 48,
+    paddingHorizontal: 24,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#6B7280",
+    textAlign: "center",
+  },
+});
