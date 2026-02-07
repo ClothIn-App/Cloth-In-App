@@ -65,6 +65,14 @@ type Props = {
   onClose: () => void;
 };
 
+type FitpicDayInfo = {
+  id: string;
+  imageUri: string;
+  count: number;
+  ids: string[];
+  items: { id: string; imageUri: string; createdAt: string }[];
+};
+
 export default function StreakDrawer({ visible, onClose }: Props) {
   const { width: screenWidth } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -120,6 +128,7 @@ export default function StreakDrawer({ visible, onClose }: Props) {
       backdropOpacity.setValue(0);
       dragX.setValue(0);
       setStreakHelpVisible(false);
+      setPickerItems(null);
     }
   }, [visible, openAnim, drawerWidth, baseTranslateX, backdropOpacity, dragX]);
 
@@ -191,15 +200,34 @@ export default function StreakDrawer({ visible, onClose }: Props) {
   }, [visible]);
 
   const handleDayPress = useCallback(
+    (fitpicInfo: FitpicDayInfo) => {
+      if (fitpicInfo.ids.length > 1) {
+        setPickerItems(fitpicInfo.items);
+      } else {
+        handleClose();
+        router.push({ pathname: "/fitpic-detail", params: { id: fitpicInfo.id } });
+      }
+    },
+    [handleClose]
+  );
+
+  const handlePickFitpic = useCallback(
     (fitpicId: string) => {
+      setPickerItems(null);
       handleClose();
       router.push({ pathname: "/fitpic-detail", params: { id: fitpicId } });
     },
     [handleClose]
   );
 
+  const formatPostTime = (createdAt: string) => {
+    const d = new Date(createdAt);
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  };
+
   const [streakHelpVisible, setStreakHelpVisible] = useState(false);
-  const [fitpicsByDate, setFitpicsByDate] = useState<Record<string, { id: string; imageUri: string }>>({});
+  const [fitpicsByDate, setFitpicsByDate] = useState<Record<string, FitpicDayInfo>>({});
+  const [pickerItems, setPickerItems] = useState<{ id: string; imageUri: string; createdAt: string }[] | null>(null);
 
   const { currentStreak, longestStreak } = useMemo(
     () => computeStreakStats(Object.keys(fitpicsByDate)),
@@ -218,12 +246,25 @@ export default function StreakDrawer({ visible, onClose }: Props) {
       .listByUser(currentUserId, undefined, 200)
       .then((res) => {
         if (cancelled || !res.success || !res.fitpics) return;
-        const byDate: Record<string, { id: string; imageUri: string }> = {};
+        const byDate: Record<string, FitpicDayInfo> = {};
         for (const fp of res.fitpics) {
           const d = new Date(fp.createdAt);
           const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-          const uri = fp.photos?.[0]?.url;
-          if (uri) byDate[key] = { id: fp.id, imageUri: uri };
+          const uri = fp.photos?.[0]?.url ?? "";
+          const item = { id: fp.id, imageUri: uri, createdAt: fp.createdAt };
+          if (!byDate[key]) {
+            byDate[key] = {
+              id: fp.id,
+              imageUri: uri,
+              count: 1,
+              ids: [fp.id],
+              items: [item],
+            };
+          } else {
+            byDate[key].count++;
+            byDate[key].ids.push(fp.id);
+            byDate[key].items.push(item);
+          }
         }
         if (!cancelled) setFitpicsByDate(byDate);
       })
@@ -392,34 +433,45 @@ export default function StreakDrawer({ visible, onClose }: Props) {
                                 <View
                                   key={day}
                                   style={[styles.dayCell, styles.dayCellFuture, cellStyle]}
-                                />
+                                >
+                                  <Text style={styles.dayCellDayLabelFuture}>{day}</Text>
+                                </View>
                               );
                             }
                             if (hasFitPic && fitpicInfo) {
+                              const showCountBubble = fitpicInfo.count > 1;
                               return (
-                                <TouchableOpacity
-                                  key={day}
-                                  activeOpacity={0.8}
-                                  onPress={() => handleDayPress(fitpicInfo.id)}
-                                  style={[styles.dayCell, styles.dayCellWithFitPic, cellStyle]}
-                                >
-                                  {fitpicInfo.imageUri ? (
-                                    <Image
-                                      source={{ uri: fitpicInfo.imageUri }}
-                                      style={styles.dayCellImage}
-                                      resizeMode="cover"
-                                    />
-                                  ) : (
-                                    <View style={styles.dayCellImagePlaceholder} />
+                                <View key={day} style={[styles.dayCell, styles.dayCellWithFitPic, cellStyle]}>
+                                  <TouchableOpacity
+                                    style={StyleSheet.absoluteFill}
+                                    activeOpacity={0.8}
+                                    onPress={() => handleDayPress(fitpicInfo)}
+                                  >
+                                    {fitpicInfo.imageUri ? (
+                                      <Image
+                                        source={{ uri: fitpicInfo.imageUri }}
+                                        style={styles.dayCellImage}
+                                        resizeMode="cover"
+                                      />
+                                    ) : (
+                                      <View style={styles.dayCellImagePlaceholder} />
+                                    )}
+                                  </TouchableOpacity>
+                                  {showCountBubble && (
+                                    <View style={styles.dayCellCountBubble} pointerEvents="none">
+                                      <Text style={styles.dayCellCountBubbleText}>×{fitpicInfo.count}</Text>
+                                    </View>
                                   )}
-                                </TouchableOpacity>
+                                </View>
                               );
                             }
                             return (
                               <View
                                 key={day}
                                 style={[styles.dayCell, styles.dayCellMissed, cellStyle]}
-                              />
+                              >
+                                <Text style={styles.dayCellDayLabelMissed}>{day}</Text>
+                              </View>
                             );
                           })}
                         </View>
@@ -431,6 +483,46 @@ export default function StreakDrawer({ visible, onClose }: Props) {
             </View>
           </Animated.View>
         </PanGestureHandler>
+
+        {pickerItems !== null && (
+          <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+            <Pressable
+              style={styles.helpOverlay}
+              onPress={() => setPickerItems(null)}
+            />
+            <View style={styles.helpOverlayContent} pointerEvents="box-none">
+              <View style={styles.pickerCard}>
+                <Text style={styles.pickerTitle}>View Which Post?</Text>
+                {pickerItems.map((item) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={styles.pickerOptionRow}
+                    onPress={() => handlePickFitpic(item.id)}
+                    activeOpacity={0.7}
+                  >
+                    {item.imageUri ? (
+                      <Image
+                        source={{ uri: item.imageUri }}
+                        style={styles.pickerOptionThumb}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={[styles.pickerOptionThumb, styles.pickerOptionThumbPlaceholder]} />
+                    )}
+                    <Text style={styles.pickerOptionTime}>{formatPostTime(item.createdAt)}</Text>
+                  </TouchableOpacity>
+                ))}
+                <TouchableOpacity
+                  style={styles.pickerCancel}
+                  onPress={() => setPickerItems(null)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.pickerCancelText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
 
         {streakHelpVisible && (
           <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
@@ -579,8 +671,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e5e5e5",
   },
+  dayCellDayLabelFuture: {
+    position: "absolute",
+    top: 4,
+    left: 0,
+    right: 0,
+    textAlign: "center",
+    fontSize: 10,
+    color: "#9CA3AF",
+    opacity: 0.85,
+  },
   dayCellMissed: {
     backgroundColor: "#E5E7EB",
+  },
+  dayCellDayLabelMissed: {
+    position: "absolute",
+    top: 4,
+    left: 0,
+    right: 0,
+    textAlign: "center",
+    fontSize: 10,
+    color: "#6B7280",
   },
   dayCellWithFitPic: {
     backgroundColor: "#e5e5e5",
@@ -592,9 +703,29 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   dayCellImagePlaceholder: {
-    flex: 1,
+    width: "100%",
+    height: "100%",
     backgroundColor: "#FF6B35",
     borderRadius: 4,
+  },
+  dayCellCountBubble: {
+    position: "absolute",
+    top: 4,
+    right: 4,
+    backgroundColor: "rgba(0,0,0,0.65)",
+    borderRadius: 10,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    minWidth: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10,
+    elevation: 10,
+  },
+  dayCellCountBubbleText: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#fff",
   },
   helpOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -611,6 +742,50 @@ const styles = StyleSheet.create({
     padding: 20,
     marginHorizontal: 24,
     maxWidth: 340,
+  },
+  pickerCard: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+    marginHorizontal: 24,
+    maxWidth: 320,
+  },
+  pickerTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#11181C",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  pickerOptionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "#e5e5e5",
+    gap: 12,
+  },
+  pickerOptionThumb: {
+    width: 56,
+    height: 56,
+    borderRadius: 8,
+  },
+  pickerOptionThumbPlaceholder: {
+    backgroundColor: "#E5E7EB",
+  },
+  pickerOptionTime: {
+    fontSize: 15,
+    color: "#11181C",
+  },
+  pickerCancel: {
+    paddingVertical: 14,
+    marginTop: 8,
+    alignItems: "center",
+  },
+  pickerCancelText: {
+    fontSize: 16,
+    color: "#666A70",
   },
   helpTitle: {
     fontSize: 18,
