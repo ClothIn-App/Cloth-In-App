@@ -14,6 +14,7 @@ import {
 import { router } from "expo-router";
 import { getCurrentUserId } from "../../src/services/mockSessionUsers";
 import { fitpicClient } from "../../src/services/apiClients/fitpicClient";
+import { computeStreakStats } from "../../src/utils/streakUtils";
 import {
   Gesture,
   GestureDetector,
@@ -163,10 +164,6 @@ export default function StreakDrawer({ visible, onClose }: Props) {
 
   const combinedTranslateX = Animated.add(baseTranslateX, dragClamped);
 
-  // Hardcoded for UI; will connect to data later
-  const currentStreak = 7;
-  const longestStreak = 15;
-
   // Calendar: list of months (oldest first, newest last) for continuous scroll
   const monthList = useMemo(() => {
     const now = new Date();
@@ -199,6 +196,11 @@ export default function StreakDrawer({ visible, onClose }: Props) {
 
   const [streakHelpVisible, setStreakHelpVisible] = useState(false);
   const [fitpicsByDate, setFitpicsByDate] = useState<Record<string, { id: string; imageUri: string }>>({});
+
+  const { currentStreak, longestStreak } = useMemo(
+    () => computeStreakStats(Object.keys(fitpicsByDate)),
+    [fitpicsByDate]
+  );
 
   useEffect(() => {
     if (!visible) return;
