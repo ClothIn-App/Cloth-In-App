@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
+  Image,
   Modal,
   Pressable,
   ScrollView,
@@ -10,11 +11,18 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
+import { router } from "expo-router";
+import { getCurrentUserId } from "../../src/services/mockSessionUsers";
+import { fitpicClient } from "../../src/services/apiClients/fitpicClient";
 import {
+  Gesture,
+  GestureDetector,
   GestureHandlerRootView,
   PanGestureHandler,
   State,
+  TouchableOpacity as GHTouchableOpacity,
 } from "react-native-gesture-handler";
+import { runOnJS } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -110,6 +118,7 @@ export default function StreakDrawer({ visible, onClose }: Props) {
       baseTranslateX.setValue(-drawerWidth);
       backdropOpacity.setValue(0);
       dragX.setValue(0);
+      setStreakHelpVisible(false);
     }
   }, [visible, openAnim, drawerWidth, baseTranslateX, backdropOpacity, dragX]);
 
@@ -169,8 +178,6 @@ export default function StreakDrawer({ visible, onClose }: Props) {
     return list;
   }, []);
 
-  const daysWithFitPic = useMemo(() => new Set([3, 7, 14]), []);
-
   const calendarPadding = 16;
   const cellGap = 8;
   const gridWidth = drawerWidth - calendarPadding * 2;
@@ -186,11 +193,54 @@ export default function StreakDrawer({ visible, onClose }: Props) {
     }
   }, [visible]);
 
-  const handleDayPress = useCallback((_day: number) => {
-    // TODO: connect to mocks/API and router.push fitpic-detail
+  const handleDayPress = useCallback((fitpicId: string) => {
+    router.push({ pathname: "/fitpic-detail", params: { id: fitpicId } });
   }, []);
 
+  const [streakHelpVisible, setStreakHelpVisible] = useState(false);
+  const [fitpicsByDate, setFitpicsByDate] = useState<Record<string, { id: string; imageUri: string }>>({});
+
+  useEffect(() => {
+    if (!visible) return;
+    let cancelled = false;
+    const currentUserId = getCurrentUserId();
+    if (!currentUserId) {
+      setFitpicsByDate({});
+      return;
+    }
+    fitpicClient
+      .listByUser(currentUserId, undefined, 200)
+      .then((res) => {
+        if (cancelled || !res.success || !res.fitpics) return;
+        const byDate: Record<string, { id: string; imageUri: string }> = {};
+        for (const fp of res.fitpics) {
+          const d = new Date(fp.createdAt);
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+          const uri = fp.photos?.[0]?.url;
+          if (uri) byDate[key] = { id: fp.id, imageUri: uri };
+        }
+        if (!cancelled) setFitpicsByDate(byDate);
+      })
+      .catch(() => {
+        if (!cancelled) setFitpicsByDate({});
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [visible]);
+
+  const openHelp = useCallback(() => setStreakHelpVisible(true), []);
+
+  const helpTapGesture = useMemo(
+    () =>
+      Gesture.Tap().onEnd(() => {
+        runOnJS(openHelp)();
+      }),
+    [openHelp]
+  );
+
   return (
+    <>
     <Modal
       visible={visible}
       transparent
@@ -233,14 +283,19 @@ export default function StreakDrawer({ visible, onClose }: Props) {
                 <View style={styles.headerTitleRow}>
                   <Ionicons name="flame" size={22} color="#FF6B35" style={styles.headerFlame} />
                   <Text style={styles.headerTitle}>Memories</Text>
+                  <GestureDetector gesture={helpTapGesture}>
+                    <View style={styles.helpIconButton} collapsable={false}>
+                      <Ionicons name="help-circle-outline" size={20} color="#666A70" />
+                    </View>
+                  </GestureDetector>
                 </View>
-                <TouchableOpacity
+                <GHTouchableOpacity
                   onPress={handleClose}
                   hitSlop={12}
                   style={styles.closeButton}
                 >
                   <Ionicons name="close" size={24} color="#11181C" />
-                </TouchableOpacity>
+                </GHTouchableOpacity>
               </View>
 
               {/* Section 2: Streak stats */}
@@ -323,7 +378,9 @@ export default function StreakDrawer({ visible, onClose }: Props) {
                               );
                             }
                             const future = isFuture(year, month, day);
-                            const hasFitPic = daysWithFitPic.has(day);
+                            const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                            const fitpicInfo = fitpicsByDate[dateKey];
+                            const hasFitPic = !!fitpicInfo;
                             if (future) {
                               return (
                                 <View
@@ -332,15 +389,23 @@ export default function StreakDrawer({ visible, onClose }: Props) {
                                 />
                               );
                             }
-                            if (hasFitPic) {
+                            if (hasFitPic && fitpicInfo) {
                               return (
                                 <TouchableOpacity
                                   key={day}
                                   activeOpacity={0.8}
-                                  onPress={() => handleDayPress(day)}
+                                  onPress={() => handleDayPress(fitpicInfo.id)}
                                   style={[styles.dayCell, styles.dayCellWithFitPic, cellStyle]}
                                 >
-                                  <View style={styles.dayCellImagePlaceholder} />
+                                  {fitpicInfo.imageUri ? (
+                                    <Image
+                                      source={{ uri: fitpicInfo.imageUri }}
+                                      style={styles.dayCellImage}
+                                      resizeMode="cover"
+                                    />
+                                  ) : (
+                                    <View style={styles.dayCellImagePlaceholder} />
+                                  )}
                                 </TouchableOpacity>
                               );
                             }
@@ -360,8 +425,33 @@ export default function StreakDrawer({ visible, onClose }: Props) {
             </View>
           </Animated.View>
         </PanGestureHandler>
+
+        {streakHelpVisible && (
+          <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+            <Pressable
+              style={styles.helpOverlay}
+              onPress={() => setStreakHelpVisible(false)}
+            />
+            <View style={styles.helpOverlayContent} pointerEvents="box-none">
+              <Pressable style={styles.helpCard} onPress={() => {}}>
+                <Text style={styles.helpTitle}>How Streaks Work</Text>
+                <Text style={styles.helpBody}>
+                  Post a FitPic every day to build your streak. Miss a day and your current streak resets.
+                </Text>
+                <TouchableOpacity
+                  style={styles.helpButton}
+                  onPress={() => setStreakHelpVisible(false)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.helpButtonText}>Got it</Text>
+                </TouchableOpacity>
+              </Pressable>
+            </View>
+          </View>
+        )}
       </GestureHandlerRootView>
     </Modal>
+    </>
   );
 }
 
@@ -405,6 +495,11 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     padding: 8,
+  },
+  helpIconButton: {
+    marginLeft: 6,
+    marginTop: 2,
+    padding: 4,
   },
   statsRow: {
     flexDirection: "row",
@@ -485,9 +580,56 @@ const styles = StyleSheet.create({
     backgroundColor: "#e5e5e5",
     overflow: "hidden",
   },
+  dayCellImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 4,
+  },
   dayCellImagePlaceholder: {
     flex: 1,
     backgroundColor: "#FF6B35",
     borderRadius: 4,
+  },
+  helpOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  helpOverlayContent: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  helpCard: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+    marginHorizontal: 24,
+    maxWidth: 340,
+  },
+  helpTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#11181C",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  helpBody: {
+    fontSize: 15,
+    color: "#666A70",
+    lineHeight: 22,
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  helpButton: {
+    backgroundColor: "#11181C",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  helpButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#fff",
   },
 });
