@@ -7,21 +7,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import Home_Grid from "../../components/home/home-grid";
 import StreakDrawer from "../../components/home/StreakDrawer";
-import FeedTypeDropdown, { type FeedType } from "../../components/home/FeedTypeDropdown";
+import SegmentedTabs from "../../components/SegmentedTabs";
 import { getCurrentUserId } from "../../src/services/mockSessionUsers";
 import { fitpicClient } from "../../src/services/apiClients/fitpicClient";
 import { computeStreakStats } from "../../src/utils/streakUtils";
 
-const FEED_TYPE_LABELS: Record<FeedType, string> = {
-  forYou: "For You",
-  following: "Following",
-  browse: "Browse",
-};
+type FeedType = "forYou" | "following";
 
 export default function HomeScreen() {
   const [feedType, setFeedType] = useState<FeedType>("forYou");
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [headerHeight, setHeaderHeight] = useState(0);
   const [streakDrawerOpen, setStreakDrawerOpen] = useState(false);
   const [currentStreak, setCurrentStreak] = useState<number>(0);
 
@@ -54,11 +48,8 @@ export default function HomeScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} edges={["top"]}>
       <StatusBar style="dark" />
 
-      {/* Custom Header: streak left, feed selector center, search right */}
-      <View
-        style={styles.headerContainer}
-        onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
-      >
+      {/* Custom Header: streak left, search right */}
+      <View style={styles.headerContainer}>
         <TouchableOpacity
           style={styles.streakButton}
           onPress={() => setStreakDrawerOpen(true)}
@@ -73,14 +64,6 @@ export default function HomeScreen() {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.feedSelector}
-          onPress={() => setDropdownVisible((prev) => !prev)}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.feedSelectorLabel}>{FEED_TYPE_LABELS[feedType]}</Text>
-          <Ionicons name="chevron-down" size={20} color="#11181C" />
-        </TouchableOpacity>
-        <TouchableOpacity
           onPress={() => router.push('/search-modal')}
           style={styles.searchButton}
         >
@@ -88,18 +71,20 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Tab Switcher: For You / Following */}
+      <View style={styles.tabsContainer}>
+        <SegmentedTabs
+          value={feedType}
+          onChange={(value) => setFeedType(value as FeedType)}
+          options={[
+            { key: "forYou", label: "For You" },
+            { key: "following", label: "Following" },
+          ]}
+        />
+      </View>
+
       {/* Home Grid with Feed Data */}
       <Home_Grid feedType={feedType} />
-
-      {dropdownVisible && (
-        <FeedTypeDropdown
-          visible={dropdownVisible}
-          onClose={() => setDropdownVisible(false)}
-          value={feedType}
-          onSelect={setFeedType}
-          headerBottomY={headerHeight || 56}
-        />
-      )}
 
       <StreakDrawer
         visible={streakDrawerOpen}
@@ -137,16 +122,10 @@ const styles = StyleSheet.create({
   searchButton: {
     padding: 8,
   },
-  feedSelector: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-  },
-  feedSelectorLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#11181C',
+  tabsContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#e5e5e5',
   },
 });
