@@ -6,34 +6,34 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import Home_Grid from "../../components/home/home-grid";
+import StreakDrawer from "../../components/home/StreakDrawer";
 import SegmentedTabs from "../../components/SegmentedTabs";
 
 type FeedType = "forYou" | "following";
 
 export default function HomeScreen() {
   const [feedType, setFeedType] = useState<FeedType>("forYou");
+  const [streakDrawerOpen, setStreakDrawerOpen] = useState(false);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} edges={["top"]}>
       <StatusBar style="dark" />
 
-      {/* Custom Header with ClothIn title, streak, and search */}
+      {/* Custom Header: streak left, search right */}
       <View style={styles.headerContainer}>
-        <Text style={styles.appTitle}>ClothIn</Text>
-        <View style={styles.headerRight}>
-          <TouchableOpacity 
-            style={styles.streakButton}
-          >
-            <Ionicons name="flame" size={24} color="#FF6B35" />
-            <Text style={styles.streakNumber}>7</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            onPress={() => router.push('/search-modal')} 
-            style={styles.searchButton}
-          >
-            <Ionicons name="search-outline" size={24} color="#11181C" />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={styles.streakButton}
+          onPress={() => setStreakDrawerOpen(true)}
+        >
+          <Ionicons name="flame" size={24} color="#FF6B35" />
+          <Text style={styles.streakNumber}>7</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => router.push('/search-modal')}
+          style={styles.searchButton}
+        >
+          <Ionicons name="search-outline" size={24} color="#11181C" />
+        </TouchableOpacity>
       </View>
 
       {/* Tab Switcher: For You / Following */}
@@ -50,6 +50,11 @@ export default function HomeScreen() {
 
       {/* Home Grid with Feed Data */}
       <Home_Grid feedType={feedType} />
+
+      <StreakDrawer
+        visible={streakDrawerOpen}
+        onClose={() => setStreakDrawerOpen(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -64,16 +69,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     borderBottomWidth: 0.5,
     borderBottomColor: '#e5e5e5',
-  },
-  appTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#11181C',
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
   },
   streakButton: {
     flexDirection: 'row',
