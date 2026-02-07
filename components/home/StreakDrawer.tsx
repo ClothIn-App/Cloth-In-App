@@ -190,9 +190,13 @@ export default function StreakDrawer({ visible, onClose }: Props) {
     }
   }, [visible]);
 
-  const handleDayPress = useCallback((fitpicId: string) => {
-    router.push({ pathname: "/fitpic-detail", params: { id: fitpicId } });
-  }, []);
+  const handleDayPress = useCallback(
+    (fitpicId: string) => {
+      handleClose();
+      router.push({ pathname: "/fitpic-detail", params: { id: fitpicId } });
+    },
+    [handleClose]
+  );
 
   const [streakHelpVisible, setStreakHelpVisible] = useState(false);
   const [fitpicsByDate, setFitpicsByDate] = useState<Record<string, { id: string; imageUri: string }>>({});

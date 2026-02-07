@@ -1,6 +1,6 @@
 // app/tabs/index.tsx
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -8,12 +8,41 @@ import { router } from "expo-router";
 import Home_Grid from "../../components/home/home-grid";
 import StreakDrawer from "../../components/home/StreakDrawer";
 import SegmentedTabs from "../../components/SegmentedTabs";
+import { getCurrentUserId } from "../../src/services/mockSessionUsers";
+import { fitpicClient } from "../../src/services/apiClients/fitpicClient";
+import { computeStreakStats } from "../../src/utils/streakUtils";
 
 type FeedType = "forYou" | "following";
 
 export default function HomeScreen() {
   const [feedType, setFeedType] = useState<FeedType>("forYou");
   const [streakDrawerOpen, setStreakDrawerOpen] = useState(false);
+  const [currentStreak, setCurrentStreak] = useState<number>(0);
+
+  useEffect(() => {
+    const userId = getCurrentUserId();
+    if (!userId) {
+      setCurrentStreak(0);
+      return;
+    }
+    fitpicClient
+      .listByUser(userId, undefined, 200)
+      .then((res) => {
+        if (!res.success || !res.fitpics) {
+          setCurrentStreak(0);
+          return;
+        }
+        const byDate: Record<string, unknown> = {};
+        for (const fp of res.fitpics) {
+          const d = new Date(fp.createdAt);
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+          byDate[key] = true;
+        }
+        const { currentStreak: streak } = computeStreakStats(Object.keys(byDate));
+        setCurrentStreak(streak);
+      })
+      .catch(() => setCurrentStreak(0));
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} edges={["top"]}>
@@ -25,8 +54,14 @@ export default function HomeScreen() {
           style={styles.streakButton}
           onPress={() => setStreakDrawerOpen(true)}
         >
-          <Ionicons name="flame" size={24} color="#FF6B35" />
-          <Text style={styles.streakNumber}>7</Text>
+          <Ionicons
+            name={currentStreak === 0 ? "flame-outline" : "flame"}
+            size={24}
+            color={currentStreak === 0 ? "#9CA3AF" : "#FF6B35"}
+          />
+          <Text style={[styles.streakNumber, currentStreak === 0 && styles.streakNumberZero]}>
+            {currentStreak}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => router.push('/search-modal')}
@@ -80,6 +115,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#FF6B35',
+  },
+  streakNumberZero: {
+    color: '#9CA3AF',
   },
   searchButton: {
     padding: 8,
