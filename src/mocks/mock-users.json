@@ -22,37 +22,6 @@
       "allowDmFrom": "everyone",
       "showActivityStatus": true
     },
-    "streak": {
-      "current": 1,
-      "longest": 2,
-      "freezeCount": 0,
-      "timezone": "America/Toronto",
-      "activeDatesLastYear": [
-        "2024-02-17",
-        "2024-02-24",
-        "2024-03-16",
-        "2024-03-26",
-        "2024-04-05",
-        "2024-04-14",
-        "2024-06-14",
-        "2024-06-21",
-        "2024-06-30",
-        "2024-07-02",
-        "2024-08-05",
-        "2024-08-15",
-        "2024-08-19",
-        "2024-09-30",
-        "2024-10-26",
-        "2024-11-10",
-        "2024-11-12",
-        "2024-11-14",
-        "2024-11-25",
-        "2024-11-26",
-        "2024-12-03",
-        "2024-12-18",
-        "2024-12-30"
-      ]
-    },
     "fitpics": {
       "total": 1,
       "postedIds": [
@@ -148,27 +117,6 @@
       "allowDmFrom": "everyone",
       "showActivityStatus": true
     },
-    "streak": {
-      "current": 1,
-      "longest": 1,
-      "freezeCount": 0,
-      "timezone": "America/Toronto",
-      "activeDatesLastYear": [
-        "2024-02-22",
-        "2024-03-25",
-        "2024-04-09",
-        "2024-05-10",
-        "2024-06-07",
-        "2024-08-23",
-        "2024-08-25",
-        "2024-09-10",
-        "2024-09-21",
-        "2024-09-26",
-        "2024-11-07",
-        "2024-11-30",
-        "2024-12-18"
-      ]
-    },
     "fitpics": {
       "total": 2,
       "postedIds": [
@@ -252,32 +200,6 @@
       "isPrivateAccount": false,
       "allowDmFrom": "everyone",
       "showActivityStatus": true
-    },
-    "streak": {
-      "current": 1,
-      "longest": 2,
-      "freezeCount": 1,
-      "timezone": "America/Toronto",
-      "activeDatesLastYear": [
-        "2024-02-02",
-        "2024-02-12",
-        "2024-03-17",
-        "2024-03-18",
-        "2024-03-21",
-        "2024-04-13",
-        "2024-04-16",
-        "2024-06-27",
-        "2024-07-05",
-        "2024-09-07",
-        "2024-09-18",
-        "2024-09-22",
-        "2024-11-18",
-        "2024-12-06",
-        "2024-12-16",
-        "2024-12-17",
-        "2025-01-03",
-        "2025-01-05"
-      ]
     },
     "fitpics": {
       "total": 1,
@@ -384,33 +306,6 @@
       "allowDmFrom": "everyone",
       "showActivityStatus": true
     },
-    "streak": {
-      "current": 1,
-      "longest": 1,
-      "freezeCount": 2,
-      "timezone": "America/Toronto",
-      "activeDatesLastYear": [
-        "2024-02-16",
-        "2024-03-09",
-        "2024-03-26",
-        "2024-03-29",
-        "2024-05-11",
-        "2024-05-22",
-        "2024-06-25",
-        "2024-08-14",
-        "2024-09-01",
-        "2024-09-13",
-        "2024-09-22",
-        "2024-10-04",
-        "2024-10-06",
-        "2024-10-29",
-        "2024-11-15",
-        "2024-11-22",
-        "2024-12-17",
-        "2025-01-03",
-        "2025-01-13"
-      ]
-    },
     "fitpics": {
       "total": 1,
       "postedIds": [
@@ -513,19 +408,6 @@
       "allowDmFrom": "everyone",
       "showActivityStatus": true
     },
-    "streak": {
-      "current": 1,
-      "longest": 1,
-      "freezeCount": 1,
-      "timezone": "America/Toronto",
-      "activeDatesLastYear": [
-        "2024-04-09",
-        "2024-06-18",
-        "2024-08-05",
-        "2024-12-02",
-        "2024-12-04"
-      ]
-    },
     "fitpics": {
       "total": 1,
       "postedIds": [
@@ -614,36 +496,6 @@
       "allowDmFrom": "everyone",
       "showActivityStatus": true
     },
-    "streak": {
-      "current": 1,
-      "longest": 2,
-      "freezeCount": 2,
-      "timezone": "America/Toronto",
-      "activeDatesLastYear": [
-        "2024-01-28",
-        "2024-01-29",
-        "2024-02-25",
-        "2024-03-13",
-        "2024-03-20",
-        "2024-03-22",
-        "2024-04-02",
-        "2024-04-22",
-        "2024-04-27",
-        "2024-05-07",
-        "2024-05-21",
-        "2024-05-26",
-        "2024-05-27",
-        "2024-06-09",
-        "2024-06-25",
-        "2024-06-26",
-        "2024-09-24",
-        "2024-10-28",
-        "2024-11-16",
-        "2024-11-20",
-        "2024-12-25",
-        "2025-01-18"
-      ]
-    },
     "fitpics": {
       "total": 1,
       "postedIds": [
@@ -730,31 +582,6 @@
       "isPrivateAccount": true,
       "allowDmFrom": "everyone",
       "showActivityStatus": true
-    },
-    "streak": {
-      "current": 1,
-      "longest": 1,
-      "freezeCount": 2,
-      "timezone": "America/Toronto",
-      "activeDatesLastYear": [
-        "2024-02-02",
-        "2024-02-11",
-        "2024-03-24",
-        "2024-04-29",
-        "2024-05-24",
-        "2024-06-10",
-        "2024-06-12",
-        "2024-06-15",
-        "2024-07-03",
-        "2024-07-09",
-        "2024-08-04",
-        "2024-08-18",
-        "2024-08-28",
-        "2024-09-24",
-        "2024-11-09",
-        "2024-12-24",
-        "2025-01-12"
-      ]
     },
     "fitpics": {
       "total": 1,
@@ -852,31 +679,6 @@
       "isPrivateAccount": false,
       "allowDmFrom": "everyone",
       "showActivityStatus": true
-    },
-    "streak": {
-      "current": 1,
-      "longest": 2,
-      "freezeCount": 1,
-      "timezone": "America/Toronto",
-      "activeDatesLastYear": [
-        "2024-01-28",
-        "2024-03-03",
-        "2024-04-04",
-        "2024-04-20",
-        "2024-04-21",
-        "2024-05-16",
-        "2024-05-21",
-        "2024-07-22",
-        "2024-08-06",
-        "2024-08-13",
-        "2024-08-24",
-        "2024-09-14",
-        "2024-10-07",
-        "2024-10-08",
-        "2024-11-02",
-        "2024-11-12",
-        "2024-12-05"
-      ]
     },
     "fitpics": {
       "total": 8,
