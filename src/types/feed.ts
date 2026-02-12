@@ -17,6 +17,7 @@ export interface CommentType {
   likes: number;
   dislikes: number;
   replies: CommentType[];
+  authorId?: string; // When set, use for navigation; user is display username
 }
 
 // FitPic specific data

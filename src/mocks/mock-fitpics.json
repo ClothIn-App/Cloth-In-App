@@ -29,7 +29,7 @@
       "comments": [
         {
           "id": "c1",
-          "user": "fashion_lover",
+          "user": "u_2",
           "text": "This outfit looks amazing! Love the color combination",
           "createdAt": "2024-01-15T11:00:00Z",
           "like": 8,
@@ -58,7 +58,7 @@
         },
         {
           "id": "c2",
-          "user": "style_enthusiast",
+          "user": "u_3",
           "text": "Where did you get those sneakers? They're perfect!",
           "createdAt": "2024-01-15T12:30:00Z",
           "like": 6,
@@ -67,7 +67,7 @@
         },
         {
           "id": "c3",
-          "user": "outfit_inspirer",
+          "user": "u_4",
           "text": "Perfect weekend vibes! \ud83d\udd25",
           "createdAt": "2024-01-16T09:20:00Z",
           "like": 12,
@@ -75,7 +75,7 @@
           "replies": [
             {
               "id": "c3.1",
-              "user": "weekend_warrior",
+              "user": "u_5",
               "text": "Totally agree! This is goals",
               "createdAt": "2024-01-16T10:00:00Z",
               "like": 4,
@@ -150,7 +150,7 @@
       "comments": [
         {
           "id": "c1",
-          "user": "fitness_fanatic",
+          "user": "u_6",
           "text": "This is exactly what I need for my morning runs!",
           "createdAt": "2024-01-13T10:00:00Z",
           "like": 7,
@@ -179,7 +179,7 @@
         },
         {
           "id": "c2",
-          "user": "active_lifestyle",
+          "user": "u_7",
           "text": "Love the performance-focused design!",
           "createdAt": "2024-01-13T14:45:00Z",
           "like": 5,
@@ -215,7 +215,7 @@
       "comments": [
         {
           "id": "c1",
-          "user": "vintage_collector",
+          "user": "u_8",
           "text": "That denim jacket is a classic! Where did you find it?",
           "createdAt": "2024-01-12T17:30:00Z",
           "like": 15,
@@ -240,7 +240,7 @@
                 },
                 {
                   "id": "c1.1.2",
-                  "user": "thrift_hunter",
+                  "user": "u_1",
                   "text": "Vintage shops are the best for unique pieces!",
                   "createdAt": "2024-01-12T19:00:00Z",
                   "like": 4,
@@ -249,10 +249,10 @@
                 }
               ]
             },
-            {
-              "id": "c1.2",
-              "user": "denim_lover",
-              "text": "Great find! The fit looks perfect",
+                {
+                  "id": "c1.2",
+                  "user": "u_deleted",
+                  "text": "Great find! The fit looks perfect",
               "createdAt": "2024-01-12T18:15:00Z",
               "like": 6,
               "dislike": 0,
@@ -271,7 +271,7 @@
         },
         {
           "id": "c3",
-          "user": "style_curator",
+          "user": "u_3",
           "text": "Perfect pairing of denim and leather. Timeless combo!",
           "createdAt": "2024-01-13T08:00:00Z",
           "like": 8,
@@ -358,7 +358,7 @@
       "comments": [
         {
           "id": "c1",
-          "user": "minimalist_style",
+          "user": "u_4",
           "text": "Clean and simple. Love this aesthetic!",
           "createdAt": "2024-01-10T14:00:00Z",
           "like": 9,
@@ -387,7 +387,7 @@
         },
         {
           "id": "c2",
-          "user": "casual_wear",
+          "user": "u_6",
           "text": "Perfect everyday look. Where can I get that tank?",
           "createdAt": "2024-01-10T16:20:00Z",
           "like": 7,
@@ -396,7 +396,7 @@
         },
         {
           "id": "c3",
-          "user": "style_simple",
+          "user": "u_7",
           "text": "This is exactly my style! So versatile",
           "createdAt": "2024-01-11T09:00:00Z",
           "like": 10,
@@ -404,7 +404,7 @@
           "replies": [
             {
               "id": "c3.1",
-              "user": "fashion_basics",
+              "user": "u_8",
               "text": "Same here! Simple but effective",
               "createdAt": "2024-01-11T10:00:00Z",
               "like": 5,
@@ -448,7 +448,7 @@
       "comments": [
         {
           "id": "c1",
-          "user": "city_explorer",
+          "user": "u_1",
           "text": "Ready for adventure! This outfit is perfect for exploring",
           "createdAt": "2024-01-09T16:00:00Z",
           "like": 8,
@@ -477,7 +477,7 @@
         },
         {
           "id": "c2",
-          "user": "urban_style",
+          "user": "u_deleted",
           "text": "Love the versatility of this look!",
           "createdAt": "2024-01-10T08:00:00Z",
           "like": 6,

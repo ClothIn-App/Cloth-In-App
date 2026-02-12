@@ -25,7 +25,7 @@
       "comments": [
         {
           "id": "c1",
-          "user": "sneaker_head",
+          "user": "u_1",
           "text": "True to size? I'm usually a 10.5 but have wide feet",
           "createdAt": "2024-01-20T10:30:00Z",
           "like": 12,
@@ -33,7 +33,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "comfort_seeker",
+              "user": "u_2",
               "text": "I have wide feet too and went with my normal size. The roomy toe box is perfect!",
               "createdAt": "2024-01-20T11:00:00Z",
               "like": 8,
@@ -52,7 +52,7 @@
             },
             {
               "id": "c1.2",
-              "user": "shoe_expert",
+              "user": "u_3",
               "text": "I'd stick with 10.5. The canvas upper stretches a bit after wear",
               "createdAt": "2024-01-20T12:00:00Z",
               "like": 5,
@@ -63,7 +63,7 @@
         },
         {
           "id": "c2",
-          "user": "daily_walker",
+          "user": "u_4",
           "text": "How do these hold up for daily wear? Need something durable",
           "createdAt": "2024-01-21T09:15:00Z",
           "like": 9,
@@ -71,7 +71,7 @@
           "replies": [
             {
               "id": "c2.1",
-              "user": "longtime_owner",
+              "user": "u_5",
               "text": "Had mine for 6 months of daily use. Still look great with regular cleaning",
               "createdAt": "2024-01-21T10:00:00Z",
               "like": 7,
@@ -125,7 +125,7 @@
       "comments": [
         {
           "id": "c1",
-          "user": "hoodie_lover",
+          "user": "u_6",
           "text": "How's the material quality? Is it soft or more on the rough side?",
           "createdAt": "2024-01-18T11:00:00Z",
           "like": 15,
@@ -133,7 +133,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "fabric_expert",
+              "user": "u_7",
               "text": "Super soft! The cotton-poly blend feels great against the skin",
               "createdAt": "2024-01-18T11:30:00Z",
               "like": 10,
@@ -226,7 +226,7 @@
       "comments": [
         {
           "id": "c1",
-          "user": "denim_collector",
+          "user": "u_8",
           "text": "Is the distressing authentic or does it look manufactured?",
           "createdAt": "2024-01-17T13:00:00Z",
           "like": 18,
@@ -234,7 +234,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "vintage_expert",
+              "user": "u_1",
               "text": "The distressing looks very natural. The fade patterns are well done",
               "createdAt": "2024-01-17T13:30:00Z",
               "like": 12,
@@ -251,7 +251,7 @@
                 },
                 {
                   "id": "c1.1.2",
-                  "user": "quality_checker",
+                  "user": "u_deleted",
                   "text": "I agree, the distressing is subtle and looks authentic",
                   "createdAt": "2024-01-17T14:30:00Z",
                   "like": 4,
@@ -436,7 +436,7 @@
       "comments": [
         {
           "id": "c1",
-          "user": "office_wear",
+          "user": "u_5",
           "text": "Is this appropriate for business casual? The description says yes but want to confirm",
           "createdAt": "2024-01-19T08:00:00Z",
           "like": 10,
@@ -444,7 +444,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "business_casual_pro",
+              "user": "u_6",
               "text": "Yes! I wear it to the office all the time. Looks professional when tucked in",
               "createdAt": "2024-01-19T08:30:00Z",
               "like": 7,
@@ -507,7 +507,7 @@
       "comments": [
         {
           "id": "c1",
-          "user": "runner",
+          "user": "u_7",
           "text": "Does it really wick moisture well? I sweat a lot during runs",
           "createdAt": "2024-01-18T07:00:00Z",
           "like": 14,
@@ -515,7 +515,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "marathon_training",
+              "user": "u_8",
               "text": "Yes! The fabric dries super fast. I wear it for long runs and it stays comfortable",
               "createdAt": "2024-01-18T07:30:00Z",
               "like": 9,
@@ -579,7 +579,7 @@
       "comments": [
         {
           "id": "c1",
-          "user": "sun_protection",
+          "user": "u_1",
           "text": "Is the UV400 protection legit? I need serious sun protection",
           "createdAt": "2024-01-17T11:00:00Z",
           "like": 16,
@@ -587,7 +587,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "optics_expert",
+              "user": "u_2",
               "text": "Yes, full UV400 blocks all UVA and UVB. These are legit protective",
               "createdAt": "2024-01-17T11:30:00Z",
               "like": 10,
@@ -659,7 +659,7 @@
       "comments": [
         {
           "id": "c1",
-          "user": "battery_concern",
+          "user": "u_3",
           "text": "Does it really last 7 days? My current watch dies after 2 days",
           "createdAt": "2024-01-16T10:00:00Z",
           "like": 20,
@@ -667,7 +667,7 @@
           "replies": [
             {
               "id": "c1.1",
-              "user": "longtime_user",
+              "user": "u_deleted",
               "text": "Yes! I get a full week easily. The battery is impressive",
               "createdAt": "2024-01-16T10:30:00Z",
               "like": 13,
