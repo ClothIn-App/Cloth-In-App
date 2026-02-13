@@ -1,6 +1,5 @@
 // src/services/endpoints/users/getUser.ts
 import type { EndpointDefinition } from "../../http";
-import { log } from "../../../debug/log";
 import { getUserById } from "../../mockSessionUsers";
 import { getUserFromMockDb, setUserInMockDb } from "./mockDb";
 
@@ -27,7 +26,7 @@ export type GetUserResponse = {
         createdAt?: number;
       }>;
     };
-  };
+  } | null;
 };
 
 export const getUserEndpoint: EndpointDefinition<undefined, GetUserResponse> = {
@@ -74,28 +73,7 @@ export const getUserEndpoint: EndpointDefinition<undefined, GetUserResponse> = {
       return hydrated;
     }
 
-    // 3) Fallback: synthesize a simple demo user (previous behaviour).
-    log("getUserEndpoint.mock: falling back to synthesized user", { userId });
-
-    const synthesized: GetUserResponse = {
-      user: {
-        uid: userId,
-        email: `user+${userId}@example.com`.toLowerCase(),
-        displayName: "Jane Doe",
-        username: "janedoe",
-        avatarUrl: "https://example.com/avatars/jane.png",
-        bio: "Clothes & coffee.",
-        // added account type - 8/24/25 (controls tabs shown on account page - constants/accountTabs.ts)
-        accountType: "personal",
-        counts: {
-          posts: 12,
-          following: 87,
-          followers: 143,
-        },
-      },
-    };
-
-    setUserInMockDb(userId, synthesized);
-    return synthesized;
+    // 3) User not in mock-users or mockDb — return null so callers can show "profile not found".
+    return { user: null };
   },
 };

@@ -80,15 +80,17 @@ export default function FitPicModalUser({ author, authorId, createdAt, location 
   return (
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
-        <Image
-          source={
-            avatarUrl
-              ? { uri: avatarUrl }
-              : require('../../assets/images/icon.png') // Placeholder
-          }
-          style={styles.avatar}
-          defaultSource={require('../../assets/images/icon.png')}
-        />
+        <TouchableOpacity onPress={handleUsernamePress} disabled={!userId} activeOpacity={0.7}>
+          <Image
+            source={
+              avatarUrl
+                ? { uri: avatarUrl }
+                : require('../../assets/images/icon.png') // Placeholder
+            }
+            style={styles.avatar}
+            defaultSource={require('../../assets/images/icon.png')}
+          />
+        </TouchableOpacity>
       </View>
       <View style={styles.userInfo}>
         <TouchableOpacity onPress={handleUsernamePress} disabled={!userId}>

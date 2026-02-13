@@ -10,6 +10,8 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { CommentType } from '../../../src/types/feed';
+import { userApiClient } from '../../../src/services/apiClients/userClient';
+import ProfileNotFoundModal from '../../common/ProfileNotFoundModal';
 
 // Re-export CommentType for convenience
 export type { CommentType };
@@ -55,30 +57,35 @@ export default function FitPicCommentItem({
   onReact,
 }: FitPicCommentItemProps) {
   const router = useRouter();
+  const [showProfileNotFound, setShowProfileNotFound] = useState(false);
+  const [authorTapLoading, setAuthorTapLoading] = useState(false);
+
   // Calculate depth from dot notation in comment.id
   const depth = comment.id.split('.').length - 1;
   const indent = depth * 16;
 
-  // Try to extract userId from comment.user
-  // If comment.user looks like a userId (starts with "u_"), use it directly
-  // Otherwise, we'd need to look it up (TODO: create getUserByUsername endpoint)
   const getUserIdFromUsername = (username: string): string | null => {
-    // If it looks like a userId, use it
-    if (username.startsWith('u_')) {
-      return username;
-    }
-    // For now, return null - we'd need a lookup endpoint
-    // TODO: Create getUserByUsername endpoint to resolve username -> userId
+    if (username.startsWith('u_')) return username;
     return null;
   };
 
-  const handleUsernamePress = () => {
-    const userId = getUserIdFromUsername(comment.user);
-    if (userId) {
+  const userId = comment.authorId ?? getUserIdFromUsername(comment.user) ?? null;
+
+  const handleAuthorPress = async () => {
+    if (!userId || authorTapLoading) return;
+    setAuthorTapLoading(true);
+    try {
+      const res = await userApiClient.getUser(userId);
+      if (!res.user) {
+        setShowProfileNotFound(true);
+        return;
+      }
       router.push({
         pathname: '/user-profile',
         params: { userId },
       });
+    } finally {
+      setAuthorTapLoading(false);
     }
   };
 
@@ -137,14 +144,24 @@ export default function FitPicCommentItem({
     <View style={[styles.container, { marginLeft: indent }]}>
       {/* Avatar and Username Row */}
       <View style={styles.headerRow}>
-        <Image
-          source={require('../../../assets/images/icon.png')}
-          style={styles.avatar}
-          defaultSource={require('../../../assets/images/icon.png')}
-        />
+        <TouchableOpacity
+          onPress={handleAuthorPress}
+          disabled={!userId}
+          activeOpacity={0.7}
+        >
+          <Image
+            source={require('../../../assets/images/icon.png')}
+            style={styles.avatar}
+            defaultSource={require('../../../assets/images/icon.png')}
+          />
+        </TouchableOpacity>
         <View style={styles.userInfo}>
-          <TouchableOpacity onPress={handleUsernamePress} disabled={!getUserIdFromUsername(comment.user)}>
-            <Text style={styles.username}>{comment.user}</Text>
+          <TouchableOpacity
+            onPress={handleAuthorPress}
+            disabled={!userId}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.username}>@{comment.user}</Text>
           </TouchableOpacity>
           <Text style={styles.separator}> · </Text>
           <Text style={styles.timestamp}>{formatTimestamp(comment.createdAt)}</Text>
@@ -234,6 +251,10 @@ export default function FitPicCommentItem({
           ))}
         </View>
       )}
+      <ProfileNotFoundModal
+        visible={showProfileNotFound}
+        onClose={() => setShowProfileNotFound(false)}
+      />
     </View>
   );
 }

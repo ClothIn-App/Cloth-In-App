@@ -15,9 +15,9 @@ type UseProductDataResult = {
   loading: boolean;
 };
 
-// Recursive helper to normalize comments (convert 'like' to 'likes', 'dislike' to 'dislikes')
+// Recursive helper to normalize comments (like→likes, dislike→dislikes; preserve authorId from endpoint)
 const normalizeComment = (rawComment: any): CommentType => {
-  return {
+  const result: CommentType = {
     id: rawComment.id,
     user: rawComment.user,
     text: rawComment.text,
@@ -26,6 +26,8 @@ const normalizeComment = (rawComment: any): CommentType => {
     dislikes: rawComment.dislikes ?? rawComment.dislike ?? 0,
     replies: (rawComment.replies || []).map(normalizeComment),
   };
+  if (rawComment.authorId != null) result.authorId = rawComment.authorId;
+  return result;
 };
 
 export function useProductData(productId: string | undefined, userId?: string | undefined): UseProductDataResult {

@@ -9,17 +9,34 @@ type GetFitPicResponseWithComments = GetFitPicResponse & {
   comments?: CommentType[];
 };
 
-// Helper to normalize comments
-function normalizeComment(rawComment: any): CommentType {
-  return {
+// Helper to normalize comments: resolve userId to username and set authorId for navigation
+function normalizeComment(rawComment: any, usersData: Record<string, { username?: string }>): CommentType {
+  const rawUser = rawComment.user;
+  let user: string;
+  let authorId: string | undefined;
+
+  if (rawUser != null && typeof rawUser === "string" && usersData[rawUser]) {
+    user = usersData[rawUser].username ?? rawUser;
+    authorId = rawUser;
+  } else if (rawUser != null && typeof rawUser === "string" && rawUser.startsWith("u_")) {
+    user = rawUser;
+    authorId = rawUser;
+  } else {
+    user = rawUser ?? "";
+    authorId = undefined;
+  }
+
+  const result: CommentType = {
     id: rawComment.id,
-    user: rawComment.user,
+    user,
     text: rawComment.text,
     createdAt: rawComment.createdAt,
     likes: rawComment.likes ?? rawComment.like ?? 0,
     dislikes: rawComment.dislikes ?? rawComment.dislike ?? 0,
-    replies: (rawComment.replies || []).map(normalizeComment),
+    replies: (rawComment.replies || []).map((r: any) => normalizeComment(r, usersData)),
   };
+  if (authorId !== undefined) result.authorId = authorId;
+  return result;
 }
 
 export const getFitPicEndpoint: EndpointDefinition<undefined, GetFitPicResponseWithComments> =
@@ -68,9 +85,9 @@ export const getFitPicEndpoint: EndpointDefinition<undefined, GetFitPicResponseW
         };
       }
 
-      // Normalize comments from raw data
-      const comments: CommentType[] = rawFitpic.comments 
-        ? rawFitpic.comments.map(normalizeComment)
+      // Normalize comments from raw data (username + authorId)
+      const comments: CommentType[] = rawFitpic.comments
+        ? rawFitpic.comments.map((c: any) => normalizeComment(c, usersData))
         : [];
 
       return {
