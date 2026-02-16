@@ -229,10 +229,13 @@ export default function StreakDrawer({ visible, onClose }: Props) {
   const [fitpicsByDate, setFitpicsByDate] = useState<Record<string, FitpicDayInfo>>({});
   const [pickerItems, setPickerItems] = useState<{ id: string; imageUri: string; createdAt: string }[] | null>(null);
 
-  const { currentStreak, longestStreak } = useMemo(
+  const { currentStreak, longestStreak, hasPostedToday } = useMemo(
     () => computeStreakStats(Object.keys(fitpicsByDate)),
     [fitpicsByDate]
   );
+
+  const currentStreakActive = currentStreak > 0 && hasPostedToday;
+  const inGracePeriod = currentStreak > 0 && !hasPostedToday;
 
   useEffect(() => {
     if (!visible) return;
@@ -349,10 +352,13 @@ export default function StreakDrawer({ visible, onClose }: Props) {
               <View style={styles.statsRow}>
                 <View style={styles.statColumn}>
                   <Text style={styles.statLabel}>Current Streak</Text>
-                  <Text style={[styles.statNumber, currentStreak === 0 && styles.statNumberZero]}>
+                  <Text style={[styles.statNumber, !currentStreakActive && styles.statNumberZero]}>
                     {currentStreak}
                   </Text>
                   <Text style={styles.statUnit}>days</Text>
+                  {inGracePeriod && (
+                    <Text style={styles.gracePeriodHint}>Post a FitPic today to keep your streak</Text>
+                  )}
                 </View>
                 <View style={styles.statColumn}>
                   <Text style={styles.statLabel}>Longest Streak</Text>
@@ -631,6 +637,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#666A70",
     textAlign: "center",
+  },
+  gracePeriodHint: {
+    fontSize: 11,
+    color: "#9CA3AF",
+    textAlign: "center",
+    marginTop: 4,
+    paddingHorizontal: 8,
   },
   calendarSection: {
     flex: 1,

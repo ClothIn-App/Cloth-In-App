@@ -24,11 +24,13 @@ export default function HomeScreen() {
   const [headerHeight, setHeaderHeight] = useState(0);
   const [streakDrawerOpen, setStreakDrawerOpen] = useState(false);
   const [currentStreak, setCurrentStreak] = useState<number>(0);
+  const [hasPostedToday, setHasPostedToday] = useState(false);
 
   useEffect(() => {
     const userId = getCurrentUserId();
     if (!userId) {
       setCurrentStreak(0);
+      setHasPostedToday(false);
       return;
     }
     fitpicClient
@@ -36,6 +38,7 @@ export default function HomeScreen() {
       .then((res) => {
         if (!res.success || !res.fitpics) {
           setCurrentStreak(0);
+          setHasPostedToday(false);
           return;
         }
         const byDate: Record<string, unknown> = {};
@@ -44,11 +47,17 @@ export default function HomeScreen() {
           const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
           byDate[key] = true;
         }
-        const { currentStreak: streak } = computeStreakStats(Object.keys(byDate));
+        const { currentStreak: streak, hasPostedToday: postedToday } = computeStreakStats(Object.keys(byDate));
         setCurrentStreak(streak);
+        setHasPostedToday(postedToday);
       })
-      .catch(() => setCurrentStreak(0));
+      .catch(() => {
+        setCurrentStreak(0);
+        setHasPostedToday(false);
+      });
   }, []);
+
+  const streakActive = currentStreak > 0 && hasPostedToday;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} edges={["top"]}>
@@ -64,11 +73,11 @@ export default function HomeScreen() {
           onPress={() => setStreakDrawerOpen(true)}
         >
           <Ionicons
-            name={currentStreak === 0 ? "flame-outline" : "flame"}
+            name={streakActive ? "flame" : "flame-outline"}
             size={24}
-            color={currentStreak === 0 ? "#9CA3AF" : "#FF6B35"}
+            color={streakActive ? "#FF6B35" : "#9CA3AF"}
           />
-          <Text style={[styles.streakNumber, currentStreak === 0 && styles.streakNumberZero]}>
+          <Text style={[styles.streakNumber, !streakActive && styles.streakNumberZero]}>
             {currentStreak}
           </Text>
         </TouchableOpacity>
