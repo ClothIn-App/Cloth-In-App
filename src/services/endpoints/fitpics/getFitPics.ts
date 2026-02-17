@@ -1,5 +1,6 @@
 import type { EndpointDefinition } from "../../http";
 import type { GetFitPicsResponse, FitPic } from "../../../types/fitpic";
+import { getCurrentUserId } from "../../mockSessionUsers";
 import { inMemoryFitpics } from "./createFitPic";
 import { transformRawFitPic } from "../../fitpicUtils";
 
@@ -46,6 +47,20 @@ export const getFitPicsEndpoint: EndpointDefinition<undefined, GetFitPicsRespons
         } else {
           // Fallback to filtering by authorId (standard API behavior)
           source = source.filter((fp) => fp.authorId === userId);
+        }
+
+        // Mock: for current user, override createdAts to consecutive days ending today so streak is active
+        if (userId === getCurrentUserId() && source.length > 0) {
+          const sorted = [...source].sort(
+            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+          const now = new Date();
+          source = sorted.map((fp, i) => {
+            const d = new Date(now);
+            d.setDate(d.getDate() - i);
+            d.setHours(12, 0, 0, 0);
+            return { ...fp, createdAt: d.toISOString() };
+          });
         }
       }
 

@@ -6,12 +6,14 @@ import FollowersModal from "./FollowersModal";
 import FollowingModal from "./FollowingModal";
 import { Ionicons } from "@expo/vector-icons";
 
-type Props = { 
+type Props = {
   me?: ProfileMe;
   counts?: ProfileCounts;
+  currentStreak?: number;
+  hasPostedToday?: boolean;
 };
 
-export default function ProfileHeader({ me, counts }: Props) {
+export default function ProfileHeader({ me, counts, currentStreak = 0, hasPostedToday = false }: Props) {
   const router = useRouter();
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
@@ -21,6 +23,7 @@ export default function ProfileHeader({ me, counts }: Props) {
   const fitpics = counts?.posts ?? (me as any)?.counts?.posts ?? 0;
   const following = counts?.following ?? (me as any)?.counts?.following ?? 0;
   const followers = counts?.followers ?? (me as any)?.counts?.followers ?? 0;
+  const streakActive = currentStreak > 0 && hasPostedToday;
 
   return (
     <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 }}>
@@ -59,7 +62,25 @@ export default function ProfileHeader({ me, counts }: Props) {
           }}
         />
         <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 16, fontWeight: "600", color: '#11181C' }}>{name}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+            <Text style={{ fontSize: 16, fontWeight: "600", color: '#11181C' }}>{name}</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+              <Ionicons
+                name={streakActive ? "flame" : "flame-outline"}
+                size={20}
+                color={streakActive ? "#FF6B35" : "#9CA3AF"}
+              />
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: streakActive ? "#FF6B35" : "#9CA3AF",
+                }}
+              >
+                {currentStreak}
+              </Text>
+            </View>
+          </View>
           {!!displayName && (
             <Text style={{ fontSize: 14, marginTop: 2, color: '#11181C' }}>
               {displayName}
@@ -68,7 +89,7 @@ export default function ProfileHeader({ me, counts }: Props) {
         </View>
       </View>
 
-      <View style={{ flexDirection: "row", gap: 16, marginTop: 8 }}>
+      <View style={{ flexDirection: "row", gap: 16, marginTop: 8, alignItems: "center" }}>
         <Text style={{ fontSize: 14, color: '#11181C' }}>FitPics {fitpics}</Text>
         <TouchableOpacity onPress={() => setShowFollowingModal(true)}>
           <Text style={{ fontSize: 14, color: '#11181C' }}>Following {following}</Text>

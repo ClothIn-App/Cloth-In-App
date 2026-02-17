@@ -69,7 +69,7 @@ export default function HomeScreen() {
   const edgeSwipeGesture = useMemo(
     () =>
       Gesture.Pan()
-        .activeOffsetX(20)
+        .activeOffsetX([20, 999])
         .onEnd((e) => {
           if (e.translationX >= openThreshold) {
             runOnJS(openStreakDrawer)();
