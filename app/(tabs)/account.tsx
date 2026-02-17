@@ -8,6 +8,7 @@ import TabSwitcher from "../../components/account/TabSwitcher";
 
 import { getAccountTabs } from "../../constants/accountTabs";
 import useAccountData from "../../src/hooks/useAccountData";
+import useStreakForUser from "../../src/hooks/useStreakForUser";
 import { getCurrentUserId } from "../../src/services/mockSessionUsers";
 
 export default function AccountScreen() {
@@ -16,6 +17,7 @@ export default function AccountScreen() {
   const userId = getCurrentUserId();
 
   const { data, loading, error, refetch } = useAccountData(userId);
+  const { currentStreak, hasPostedToday } = useStreakForUser(userId);
 
   // Frontend-only tabs, dynamic by accountType
   const tabList = useMemo(
@@ -55,7 +57,12 @@ export default function AccountScreen() {
       style={{ flex: 1, backgroundColor: '#FFFFFF' }}
       edges={["top"]}
     >
-      <ProfileHeader me={data.me} counts={data.counts} />
+      <ProfileHeader
+        me={data.me}
+        counts={data.counts}
+        currentStreak={currentStreak}
+        hasPostedToday={hasPostedToday}
+      />
       <TabSwitcher tabs={tabList} activeKey={activeKey} onChange={setActiveKey} />
       <TabContent activeKey={activeKey} userId={userId} />
     </SafeAreaView>

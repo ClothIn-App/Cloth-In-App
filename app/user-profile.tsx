@@ -8,18 +8,25 @@ import PublicProfileHeader from "../components/account/PublicProfileHeader";
 import TabContent from "../components/account/TabContent";
 import TabSwitcher from "../components/account/TabSwitcher";
 
-import { getAccountTabs } from "../constants/accountTabs";
+import { getAccountTabs, type AccountType } from "../constants/accountTabs";
 import { usePublicProfile } from "../src/hooks/usePublicProfile";
+import useStreakForUser from "../src/hooks/useStreakForUser";
 import { userApiClient } from "../src/services/apiClients/userClient";
 
 export default function UserProfileScreen() {
   const { userId } = useLocalSearchParams<{ userId: string }>();
   const { data, loading, error, refetch, refreshFollowStatus } = usePublicProfile(userId);
+  const { currentStreak, hasPostedToday } = useStreakForUser(
+    typeof userId === "string" ? userId : undefined
+  );
 
   // Frontend-only tabs, dynamic by accountType
   // For public profiles, exclude "Saved" tab (only show FitPics and Closet)
   const tabList = useMemo(
-    () => getAccountTabs(data?.user.accountType).filter(tab => tab.key !== "saved"),
+    () =>
+      getAccountTabs((data?.user.accountType ?? undefined) as AccountType).filter(
+        (tab) => tab.key !== "saved"
+      ),
     [data?.user.accountType]
   );
 
@@ -92,6 +99,8 @@ export default function UserProfileScreen() {
         <PublicProfileHeader
           profileData={data}
           onFollowChange={handleFollowChange}
+          currentStreak={currentStreak}
+          hasPostedToday={hasPostedToday}
         />
         <View
           style={{
@@ -134,6 +143,8 @@ export default function UserProfileScreen() {
       <PublicProfileHeader
         profileData={data}
         onFollowChange={handleFollowChange}
+        currentStreak={currentStreak}
+        hasPostedToday={hasPostedToday}
       />
       <TabSwitcher tabs={tabList} activeKey={activeKey} onChange={setActiveKey} />
       <TabContent activeKey={activeKey} userId={userId} isViewOnly={true} />

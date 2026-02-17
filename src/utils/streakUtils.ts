@@ -29,24 +29,36 @@ function nextDayKey(key: string): string {
 export type StreakStats = {
   currentStreak: number;
   longestStreak: number;
+  hasPostedToday: boolean;
 };
 
 /**
  * Compute current and longest streak from an array of date keys (YYYY-MM-DD).
- * Current streak: consecutive days with a post counting backward from today (0 if no post today).
+ * Current streak: consecutive days with a post counting backward from today or yesterday (grace period: if no post today but posted yesterday, show yesterday's streak until day ends).
  * Longest streak: maximum consecutive calendar days with at least one post in history.
+ * hasPostedToday: true if there is a post for today's date (used for active vs grace-period UI).
  */
 export function computeStreakStats(dateKeys: string[]): StreakStats {
   const set = new Set(dateKeys);
+  const todayKey = toDateKey(new Date());
+  const hasPostedToday = set.has(todayKey);
+
   if (set.size === 0) {
-    return { currentStreak: 0, longestStreak: 0 };
+    return { currentStreak: 0, longestStreak: 0, hasPostedToday: false };
   }
 
-  const todayKey = toDateKey(new Date());
-  let currentStreak = 0;
+  const yesterdayKey = previousDayKey(todayKey);
+  let refKey: string | null = null;
   if (set.has(todayKey)) {
+    refKey = todayKey;
+  } else if (set.has(yesterdayKey)) {
+    refKey = yesterdayKey;
+  }
+
+  let currentStreak = 0;
+  if (refKey) {
     currentStreak = 1;
-    let d = previousDayKey(todayKey);
+    let d = previousDayKey(refKey);
     while (set.has(d)) {
       currentStreak++;
       d = previousDayKey(d);
@@ -65,5 +77,5 @@ export function computeStreakStats(dateKeys: string[]): StreakStats {
     }
   }
 
-  return { currentStreak, longestStreak };
+  return { currentStreak, longestStreak, hasPostedToday };
 }

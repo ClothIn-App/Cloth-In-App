@@ -10,9 +10,11 @@ import FollowingModal from "./FollowingModal";
 type Props = {
   profileData: PublicProfileData;
   onFollowChange?: () => void;
+  currentStreak?: number;
+  hasPostedToday?: boolean;
 };
 
-export default function PublicProfileHeader({ profileData, onFollowChange }: Props) {
+export default function PublicProfileHeader({ profileData, onFollowChange, currentStreak = 0, hasPostedToday = false }: Props) {
   const router = useRouter();
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
@@ -25,6 +27,7 @@ export default function PublicProfileHeader({ profileData, onFollowChange }: Pro
   const fitpics = user.counts?.posts ?? 0;
   const following = user.counts?.following ?? 0;
   const followers = user.counts?.followers ?? 0;
+  const streakActive = currentStreak > 0 && hasPostedToday;
 
   // Show display name only if privacy allows (public OR following)
   const shouldShowDisplayName = !isPrivateAccount || isFollowing;
@@ -116,7 +119,25 @@ export default function PublicProfileHeader({ profileData, onFollowChange }: Pro
           }}
         />
         <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 16, fontWeight: "600", color: '#11181C' }}>{username}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+            <Text style={{ fontSize: 16, fontWeight: "600", color: '#11181C' }}>{username}</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+              <Ionicons
+                name={streakActive ? "flame" : "flame-outline"}
+                size={20}
+                color={streakActive ? "#FF6B35" : "#9CA3AF"}
+              />
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: streakActive ? "#FF6B35" : "#9CA3AF",
+                }}
+              >
+                {currentStreak}
+              </Text>
+            </View>
+          </View>
           {shouldShowDisplayName && !!displayName && (
             <Text style={{ fontSize: 14, marginTop: 2, color: '#11181C' }}>
               {displayName}
@@ -153,7 +174,7 @@ export default function PublicProfileHeader({ profileData, onFollowChange }: Pro
       </TouchableOpacity>
 
       {/* Counts Row */}
-      <View style={{ flexDirection: "row", gap: 16 }}>
+      <View style={{ flexDirection: "row", gap: 16, alignItems: "center" }}>
         <Text style={{ fontSize: 14, color: '#11181C' }}>FitPics {fitpics}</Text>
         <TouchableOpacity onPress={() => setShowFollowingModal(true)}>
           <Text style={{ fontSize: 14, color: '#11181C' }}>Following {following}</Text>
