@@ -29,8 +29,10 @@ export default function PublicProfileHeader({ profileData, onFollowChange, curre
   const followers = user.counts?.followers ?? 0;
   const streakActive = currentStreak > 0 && hasPostedToday;
 
-  // Show display name only if privacy allows (public OR following)
+  // Show display name (vs username) next to avatar when public OR following
   const shouldShowDisplayName = !isPrivateAccount || isFollowing;
+  // Show streak only when public OR following (hide for private until followed)
+  const shouldShowStreak = !isPrivateAccount || isFollowing;
 
   const handleFollowPress = async () => {
     if (!user.uid) return;
@@ -84,7 +86,7 @@ export default function PublicProfileHeader({ profileData, onFollowChange, curre
 
   return (
     <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 }}>
-      {/* Header Row: Back button, Title, Menu */}
+      {/* Header Row: Back | Username + Streak | Menu */}
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
         <TouchableOpacity
           onPress={() => router.back()}
@@ -93,38 +95,15 @@ export default function PublicProfileHeader({ profileData, onFollowChange, curre
         >
           <Ionicons name="chevron-back" size={24} color="#11181C" />
         </TouchableOpacity>
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Text style={{ fontSize: 20, fontWeight: "600", color: '#11181C' }}>
+        <View style={{ flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 }}>
+          <Text style={{ fontSize: 18, fontWeight: "600", color: '#11181C' }}>
             {username}
           </Text>
-        </View>
-        <TouchableOpacity
-          style={{ padding: 8 }}
-          hitSlop={8}
-        >
-          <Ionicons name="ellipsis-horizontal" size={24} color="#11181C" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Profile Info Row */}
-      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
-        <Image
-          source={{ uri: user.avatarUrl || "https://placehold.co/80x80" }}
-          style={{
-            width: 60,
-            height: 60,
-            borderRadius: 30,
-            marginRight: 12,
-            backgroundColor: "#ccc",
-          }}
-        />
-        <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-            <Text style={{ fontSize: 16, fontWeight: "600", color: '#11181C' }}>{username}</Text>
+          {shouldShowStreak && (
             <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
               <Ionicons
                 name={streakActive ? "flame" : "flame-outline"}
-                size={20}
+                size={18}
                 color={streakActive ? "#FF6B35" : "#9CA3AF"}
               />
               <Text
@@ -137,12 +116,32 @@ export default function PublicProfileHeader({ profileData, onFollowChange, curre
                 {currentStreak}
               </Text>
             </View>
-          </View>
-          {shouldShowDisplayName && !!displayName && (
-            <Text style={{ fontSize: 14, marginTop: 2, color: '#11181C' }}>
-              {displayName}
-            </Text>
           )}
+        </View>
+        <TouchableOpacity
+          style={{ padding: 8 }}
+          hitSlop={8}
+        >
+          <Ionicons name="ellipsis-horizontal" size={24} color="#11181C" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Avatar + display name or username (private, not following = username only) */}
+      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
+        <Image
+          source={{ uri: user.avatarUrl || "https://placehold.co/80x80" }}
+          style={{
+            width: 60,
+            height: 60,
+            borderRadius: 30,
+            marginRight: 12,
+            backgroundColor: "#ccc",
+          }}
+        />
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, fontWeight: "600", color: '#11181C' }}>
+            {shouldShowDisplayName ? (displayName || username) : username}
+          </Text>
         </View>
       </View>
 
@@ -172,6 +171,12 @@ export default function PublicProfileHeader({ profileData, onFollowChange, curre
           </Text>
         )}
       </TouchableOpacity>
+
+      {shouldShowDisplayName && !!user.bio && (
+        <Text style={{ fontSize: 14, color: '#666A70', marginTop: 8, marginBottom: 8 }}>
+          {user.bio}
+        </Text>
+      )}
 
       {/* Counts Row */}
       <View style={{ flexDirection: "row", gap: 16, alignItems: "center" }}>

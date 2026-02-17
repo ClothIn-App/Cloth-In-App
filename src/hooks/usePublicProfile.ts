@@ -64,9 +64,10 @@ export function usePublicProfile(userId?: string) {
           return;
         }
 
-        // Check privacy status from raw mock data
-        const rawUser = getUserById(userId);
-        const isPrivateAccount = !!rawUser?.privacy?.isPrivateAccount;
+        // Prefer privacy from API (supports profile edits); fallback to raw mock data
+        const isPrivateAccount =
+          userResponse.user?.privacy?.isPrivateAccount ??
+          !!getUserById(userId)?.privacy?.isPrivateAccount;
         const isFollowing = followStatusResponse.isFollowing;
         
         // Can view content if: public account OR (private account AND following)
@@ -94,8 +95,10 @@ export function usePublicProfile(userId?: string) {
     
     try {
       const followStatusResponse = await userApiClient.getFollowStatus(userId);
-      const rawUser = getUserById(userId);
-      const isPrivateAccount = !!rawUser?.privacy?.isPrivateAccount;
+      const userResponse = await userApiClient.getUser(userId);
+      const isPrivateAccount =
+        userResponse.user?.privacy?.isPrivateAccount ??
+        !!getUserById(userId)?.privacy?.isPrivateAccount;
       const isFollowing = followStatusResponse.isFollowing;
       const canViewContent = !isPrivateAccount || isFollowing;
 

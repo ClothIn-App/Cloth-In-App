@@ -47,6 +47,15 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="profile-edit"
+            options={{
+              headerShown: false,
+              presentation: 'card',
+              gestureEnabled: true,
+              animation: 'slide_from_right',
+            }}
+          />
+          <Stack.Screen
             name="search-modal"
             options={{
               headerShown: false,

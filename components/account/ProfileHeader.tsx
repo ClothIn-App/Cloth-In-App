@@ -27,20 +27,36 @@ export default function ProfileHeader({ me, counts, currentStreak = 0, hasPosted
 
   return (
     <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 4 }}>
-      {/* My Profile Header */}
+      {/* Header: username + streak (left) | Edit + Settings (right) */}
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-        <Text style={{ fontSize: 20, fontWeight: "600", color: '#11181C' }}>
-          My Profile
-        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <Text style={{ fontSize: 18, fontWeight: "600", color: '#11181C' }}>{name}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+            <Ionicons
+              name={streakActive ? "flame" : "flame-outline"}
+              size={18}
+              color={streakActive ? "#FF6B35" : "#9CA3AF"}
+            />
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: streakActive ? "#FF6B35" : "#9CA3AF",
+              }}
+            >
+              {currentStreak}
+            </Text>
+          </View>
+        </View>
         <View style={{ flexDirection: "row", gap: 8 }}>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => router.push("../profile-edit")}
             style={{ padding: 8 }}
             hitSlop={8}
           >
             <Ionicons name="create-outline" size={24} color="#11181C" />
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => router.push("../user-settings")}
             style={{ padding: 8 }}
             hitSlop={8}
@@ -50,6 +66,7 @@ export default function ProfileHeader({ me, counts, currentStreak = 0, hasPosted
         </View>
       </View>
 
+      {/* Avatar + display name */}
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <Image
           source={{ uri: me?.avatarUrl || "https://placehold.co/80x80" }}
@@ -61,33 +78,18 @@ export default function ProfileHeader({ me, counts, currentStreak = 0, hasPosted
             backgroundColor: "#ccc",
           }}
         />
-        <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-            <Text style={{ fontSize: 16, fontWeight: "600", color: '#11181C' }}>{name}</Text>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
-              <Ionicons
-                name={streakActive ? "flame" : "flame-outline"}
-                size={20}
-                color={streakActive ? "#FF6B35" : "#9CA3AF"}
-              />
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: "600",
-                  color: streakActive ? "#FF6B35" : "#9CA3AF",
-                }}
-              >
-                {currentStreak}
-              </Text>
-            </View>
-          </View>
-          {!!displayName && (
-            <Text style={{ fontSize: 14, marginTop: 2, color: '#11181C' }}>
-              {displayName}
-            </Text>
-          )}
-        </View>
+        {!!displayName && (
+          <Text style={{ fontSize: 16, fontWeight: "600", color: '#11181C' }}>
+            {displayName}
+          </Text>
+        )}
       </View>
+
+      {!!me?.bio && (
+        <Text style={{ fontSize: 14, color: '#666A70', marginTop: 8 }}>
+          {me.bio}
+        </Text>
+      )}
 
       <View style={{ flexDirection: "row", gap: 16, marginTop: 8, alignItems: "center" }}>
         <Text style={{ fontSize: 14, color: '#11181C' }}>FitPics {fitpics}</Text>
