@@ -6,6 +6,7 @@ type RawUser = {
   username: string;
   avatarUrl?: string;
   bio?: string;
+  accountType?: "personal" | "brand" | "creator";
   followers?: { 
     total?: number;
     userIds?: string[] 

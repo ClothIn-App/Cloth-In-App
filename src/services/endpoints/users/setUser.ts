@@ -9,7 +9,8 @@ export type SetUserPayload = {
   username?: string;
   avatarUrl?: string;
   bio?: string | null;
-  accountType?: "personal" | "business" | string;
+  accountType?: "personal" | "brand" | "creator";
+  privacy?: { isPrivateAccount?: boolean };
 };
 
 /** Reuse the same response shape as getUser */
@@ -45,6 +46,7 @@ export const setUserEndpoint: EndpointDefinition<
           avatarUrl: undefined,
           bio: null,
           accountType: "personal",
+          privacy: { isPrivateAccount: false },
           counts: { posts: 0, following: 0, followers: 0 },
         },
       } as SetUserResponse);
@@ -63,6 +65,7 @@ export const setUserEndpoint: EndpointDefinition<
         avatarUrl: body?.avatarUrl ?? current.user.avatarUrl,
         bio: body?.bio ?? current.user.bio,
         accountType: body?.accountType ?? current.user.accountType,
+        privacy: body?.privacy ?? current.user?.privacy ?? { isPrivateAccount: false },
         counts: current.user.counts, // counts not modified by this endpoint
       },
     };

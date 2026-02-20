@@ -106,8 +106,9 @@ export default function UserProfileScreen() {
           style={{
             flex: 1,
             alignItems: "center",
-            justifyContent: "center",
-            padding: 32,
+            justifyContent: "flex-start",
+            paddingTop: 40,
+            paddingHorizontal: 32,
           }}
         >
           <Ionicons name="lock-closed" size={48} color="#666A70" />

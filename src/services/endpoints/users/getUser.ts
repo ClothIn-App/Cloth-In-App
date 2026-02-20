@@ -12,6 +12,7 @@ export type GetUserResponse = {
     avatarUrl?: string;
     bio?: string | null;
     accountType?: string | null;
+    privacy?: { isPrivateAccount?: boolean };
     counts?: {
       posts: number;
       following: number;
@@ -58,8 +59,8 @@ export const getUserEndpoint: EndpointDefinition<undefined, GetUserResponse> = {
           username: raw.username,
           avatarUrl: raw.avatarUrl,
           bio: raw.bio ?? null,
-          // Controls tabs shown on account page - constants/accountTabs.ts
-          accountType: "personal",
+          accountType: raw.accountType ?? "personal",
+          privacy: raw.privacy ?? { isPrivateAccount: false },
           counts: {
             posts: raw.fitpics?.total ?? 0,
             following: raw.following?.total ?? 0,

@@ -8,16 +8,16 @@ import {
   Alert,
   StyleSheet,
   ActivityIndicator,
+  Pressable,
+  Switch,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useThemeColor } from '../hooks/useThemeColor';
-import { ThemedText } from '../components/ThemedText';
 import AvatarPicker from '../components/profile/AvatarPicker';
-import { userClient } from '../src/services/apiClients';
+import { userApiClient } from '../src/services/apiClients/userClient';
 import useAccountData from '../src/hooks/useAccountData';
-import type { ProfileMe } from '../src/types/account';
+import { getCurrentUserId } from '../src/services/mockSessionUsers';
 
 type ProfileFormData = {
   displayName: string;
@@ -25,15 +25,22 @@ type ProfileFormData = {
   bio: string;
   avatarUrl: string;
   accountType: 'personal' | 'brand' | 'creator';
+  isPrivateAccount: boolean;
+};
+
+const COLORS = {
+  text: '#11181C',
+  muted: '#666A70',
+  background: '#FFFFFF',
+  border: '#E3E3E7',
+  error: '#ef4444',
 };
 
 export default function ProfileEditScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  
-  // TODO: Replace with real auth context
-  const userId = "u_demo";
-  
+  const userId = getCurrentUserId();
+
   const { data, loading: profileLoading } = useAccountData(userId);
   const [formData, setFormData] = useState<ProfileFormData>({
     displayName: '',
@@ -41,24 +48,26 @@ export default function ProfileEditScreen() {
     bio: '',
     avatarUrl: '',
     accountType: 'personal',
+    isPrivateAccount: false,
   });
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Partial<ProfileFormData>>({});
 
-  const backgroundColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
-  const borderColor = useThemeColor({}, 'border');
-  const mutedTextColor = useThemeColor({}, 'mutedText');
+  const topPad = Math.max(insets.top - 6, 0);
+  const headerHeight = 60 + topPad;
+  const bottomPad = Math.max(insets.bottom, 24);
 
   // Initialize form with current profile data
   useEffect(() => {
     if (data.me) {
+      const me = data.me as { privacy?: { isPrivateAccount?: boolean } };
       setFormData({
         displayName: data.me.displayName || '',
         username: data.me.username || '',
         bio: data.me.bio || '',
         avatarUrl: data.me.avatarUrl || '',
-        accountType: data.me.accountType || 'personal',
+        accountType: (data.me.accountType as 'personal' | 'brand' | 'creator') || 'personal',
+        isPrivateAccount: !!me?.privacy?.isPrivateAccount,
       });
     }
   }, [data.me]);
@@ -97,13 +106,13 @@ export default function ProfileEditScreen() {
 
     setSaving(true);
     try {
-      // Call mock API that mirrors backend exactly
-      const response = await userClient.setUser(userId, {
+      const response = await userApiClient.setUser(userId, {
         displayName: formData.displayName.trim(),
         username: formData.username.trim(),
         bio: formData.bio.trim() || null,
         avatarUrl: formData.avatarUrl || undefined,
         accountType: formData.accountType,
+        privacy: { isPrivateAccount: formData.isPrivateAccount },
       });
 
       if (response.user) {
@@ -130,189 +139,245 @@ export default function ProfileEditScreen() {
   };
 
 
-  const updateField = (field: keyof ProfileFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+  const updateField = <K extends keyof ProfileFormData>(
+    field: K,
+    value: ProfileFormData[K]
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (field in errors) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
+  if (!userId) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: COLORS.background }]} edges={['top', 'bottom']}>
+        <View style={styles.loadingContainer}>
+          <Text style={{ color: COLORS.text }}>Unable to load profile.</Text>
+          <Pressable onPress={() => router.back()} style={{ marginTop: 16 }}>
+            <Text style={{ color: COLORS.text, textDecorationLine: 'underline' }}>Go back</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   if (profileLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['top', 'bottom']}>
+      <SafeAreaView style={[styles.container, { backgroundColor: COLORS.background }]} edges={['top', 'bottom']}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" />
-          <ThemedText style={{ marginTop: 16 }}>Loading profile...</ThemedText>
+          <ActivityIndicator size="large" color={COLORS.text} />
+          <Text style={{ marginTop: 16, color: COLORS.text }}>Loading profile...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!data.me) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: COLORS.background }]} edges={['top', 'bottom']}>
+        <View style={styles.loadingContainer}>
+          <Text style={{ color: COLORS.text }}>Couldn't load profile.</Text>
+          <Pressable onPress={() => router.back()} style={{ marginTop: 16 }}>
+            <Text style={{ color: COLORS.text, textDecorationLine: 'underline' }}>Go back</Text>
+          </Pressable>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: COLORS.background }]} edges={['left', 'right']}>
+      {/* Header */}
+      <View style={[styles.header, { paddingTop: topPad, height: headerHeight }]}>
+        <Pressable onPress={() => router.back()} hitSlop={8} style={styles.headerButton}>
+          <Ionicons name="chevron-back-sharp" size={24} color={COLORS.text} />
+        </Pressable>
+        <Text style={styles.headerTitle}>Edit Profile</Text>
+        <Pressable
+          onPress={handleSave}
+          disabled={saving}
+          hitSlop={8}
+          style={[styles.headerSaveButton, saving && styles.headerSaveButtonDisabled]}
+        >
+          {saving ? (
+            <ActivityIndicator size="small" color={COLORS.text} />
+          ) : (
+            <Text style={styles.headerSaveText}>Save</Text>
+          )}
+        </Pressable>
+      </View>
+
       {/* Content */}
-      <ScrollView 
-        style={styles.content} 
+      <ScrollView
+        style={styles.content}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="never"
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: bottomPad + 40 }]}
       >
         {/* Avatar Section */}
         <View style={styles.firstSection}>
-          <ThemedText style={styles.sectionTitle}>Profile Photo</ThemedText>
+          <Text style={styles.sectionTitle}>Profile Photo</Text>
           <View style={styles.avatarSection}>
             <AvatarPicker
               value={formData.avatarUrl}
               onChange={(url) => updateField('avatarUrl', url)}
             />
-            <ThemedText style={[styles.avatarHint, { color: mutedTextColor }]}>
+            <Text style={[styles.avatarHint, { color: COLORS.muted }]}>
               Tap to change your profile photo
-            </ThemedText>
+            </Text>
           </View>
         </View>
 
         {/* Basic Info Section */}
         <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Basic Information</ThemedText>
-          
+          <Text style={styles.sectionTitle}>Basic Information</Text>
+
           {/* Display Name */}
           <View style={styles.inputGroup}>
-            <ThemedText style={styles.inputLabel}>Display Name *</ThemedText>
+            <Text style={styles.inputLabel}>Display Name *</Text>
             <TextInput
               style={[
                 styles.textInput,
-                { 
-                  borderColor: errors.displayName ? '#ef4444' : borderColor,
-                  color: textColor,
-                }
+                {
+                  borderColor: errors.displayName ? COLORS.error : COLORS.border,
+                  color: COLORS.text,
+                },
               ]}
               value={formData.displayName}
               onChangeText={(value) => updateField('displayName', value)}
               placeholder="Enter your display name"
-              placeholderTextColor={mutedTextColor}
+              placeholderTextColor={COLORS.muted}
               maxLength={50}
             />
             {errors.displayName && (
-              <ThemedText style={styles.errorText}>{errors.displayName}</ThemedText>
+              <Text style={styles.errorText}>{errors.displayName}</Text>
             )}
-            <ThemedText style={[styles.characterCount, { color: mutedTextColor }]}>
+            <Text style={[styles.characterCount, { color: COLORS.muted }]}>
               {formData.displayName.length}/50
-            </ThemedText>
+            </Text>
           </View>
 
           {/* Username */}
           <View style={styles.inputGroup}>
-            <ThemedText style={styles.inputLabel}>Username *</ThemedText>
+            <Text style={styles.inputLabel}>Username *</Text>
             <TextInput
               style={[
                 styles.textInput,
-                { 
-                  borderColor: errors.username ? '#ef4444' : borderColor,
-                  color: textColor,
-                }
+                {
+                  borderColor: errors.username ? COLORS.error : COLORS.border,
+                  color: COLORS.text,
+                },
               ]}
               value={formData.username}
               onChangeText={(value) => updateField('username', value)}
               placeholder="Enter your username"
-              placeholderTextColor={mutedTextColor}
+              placeholderTextColor={COLORS.muted}
               autoCapitalize="none"
               maxLength={20}
             />
             {errors.username && (
-              <ThemedText style={styles.errorText}>{errors.username}</ThemedText>
+              <Text style={styles.errorText}>{errors.username}</Text>
             )}
-            <ThemedText style={[styles.characterCount, { color: mutedTextColor }]}>
+            <Text style={[styles.characterCount, { color: COLORS.muted }]}>
               {formData.username.length}/20
-            </ThemedText>
+            </Text>
           </View>
 
           {/* Bio */}
           <View style={styles.inputGroup}>
-            <ThemedText style={styles.inputLabel}>Bio</ThemedText>
+            <Text style={styles.inputLabel}>Bio</Text>
             <TextInput
               style={[
                 styles.textInput,
                 styles.textArea,
-                { 
-                  borderColor: errors.bio ? '#ef4444' : borderColor,
-                  color: textColor,
-                }
+                {
+                  borderColor: errors.bio ? COLORS.error : COLORS.border,
+                  color: COLORS.text,
+                },
               ]}
               value={formData.bio}
               onChangeText={(value) => updateField('bio', value)}
               placeholder="Tell us about yourself..."
-              placeholderTextColor={mutedTextColor}
+              placeholderTextColor={COLORS.muted}
               multiline
               numberOfLines={3}
               maxLength={150}
             />
             {errors.bio && (
-              <ThemedText style={styles.errorText}>{errors.bio}</ThemedText>
+              <Text style={styles.errorText}>{errors.bio}</Text>
             )}
-            <ThemedText style={[styles.characterCount, { color: mutedTextColor }]}>
+            <Text style={[styles.characterCount, { color: COLORS.muted }]}>
               {formData.bio.length}/150
-            </ThemedText>
+            </Text>
+          </View>
+        </View>
+
+        {/* Privacy Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Privacy</Text>
+          <View style={styles.toggleRow}>
+            <View style={styles.toggleContent}>
+              <Text style={styles.toggleLabel}>Private Account</Text>
+              <Text style={[styles.toggleDescription, { color: COLORS.muted }]}>
+                Only approved followers can see your FitPics, Closet, and Saved items
+              </Text>
+            </View>
+            <Switch
+              value={formData.isPrivateAccount}
+              onValueChange={(value) => updateField('isPrivateAccount', value)}
+              trackColor={{ false: COLORS.border, true: '#11181C' }}
+              thumbColor="#FFFFFF"
+            />
           </View>
         </View>
 
         {/* Account Type Section */}
         <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Account Type</ThemedText>
-          <ThemedText style={[styles.sectionSubtitle, { color: mutedTextColor }]}>
+          <Text style={styles.sectionTitle}>Account Type</Text>
+          <Text style={[styles.sectionSubtitle, { color: COLORS.muted }]}>
             This affects which tabs appear on your profile
-          </ThemedText>
-          
+          </Text>
+
           {(['personal', 'brand', 'creator'] as const).map((type) => (
             <TouchableOpacity
               key={type}
               style={[
                 styles.radioOption,
-                { 
-                  borderColor: formData.accountType === type ? textColor : borderColor,
-                  backgroundColor: formData.accountType === type ? `${textColor}10` : backgroundColor,
-                }
+                {
+                  borderColor: formData.accountType === type ? COLORS.text : COLORS.border,
+                  backgroundColor:
+                    formData.accountType === type ? 'rgba(17,24,28,0.06)' : COLORS.background,
+                },
               ]}
               onPress={() => updateField('accountType', type)}
             >
               <View style={styles.radioContent}>
-                <ThemedText style={styles.radioLabel}>
+                <Text style={styles.radioLabel}>
                   {type.charAt(0).toUpperCase() + type.slice(1)}
-                </ThemedText>
-                <ThemedText style={[styles.radioDescription, { color: mutedTextColor }]}>
+                </Text>
+                <Text style={[styles.radioDescription, { color: COLORS.muted }]}>
                   {type === 'personal' && 'Share your personal style and outfits'}
                   {type === 'brand' && 'Showcase your brand and products'}
                   {type === 'creator' && 'Share content and connect with followers'}
-                </ThemedText>
+                </Text>
               </View>
-              <View style={[
-                styles.radioButton,
-                { 
-                  borderColor: formData.accountType === type ? textColor : borderColor,
-                  backgroundColor: formData.accountType === type ? textColor : backgroundColor,
-                }
-              ]}>
+              <View
+                style={[
+                  styles.radioButton,
+                  {
+                    borderColor: formData.accountType === type ? COLORS.text : COLORS.border,
+                    backgroundColor:
+                      formData.accountType === type ? COLORS.text : COLORS.background,
+                  },
+                ]}
+              >
                 {formData.accountType === type && (
-                  <View style={[styles.radioButtonInner, { backgroundColor }]} />
+                  <View style={[styles.radioButtonInner, { backgroundColor: COLORS.background }]} />
                 )}
               </View>
             </TouchableOpacity>
           ))}
-        </View>
-
-        {/* Save Button at Bottom */}
-        <View style={styles.bottomSection}>
-          <TouchableOpacity 
-            onPress={handleSave} 
-            style={[styles.saveButton, { borderColor: borderColor }]}
-            disabled={saving}
-          >
-            {saving ? (
-              <ActivityIndicator size="small" color={textColor} />
-            ) : (
-              <Text style={[styles.saveButtonText, { color: textColor }]}>Save Changes</Text>
-            )}
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -322,6 +387,37 @@ export default function ProfileEditScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  headerButton: {
+    padding: 8,
+    minWidth: 60,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#11181C',
+  },
+  headerSaveButton: {
+    padding: 8,
+    minWidth: 60,
+    alignItems: 'flex-end',
+  },
+  headerSaveButtonDisabled: {
+    opacity: 0.6,
+  },
+  headerSaveText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#11181C',
   },
   loadingContainer: {
     flex: 1,
@@ -343,24 +439,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingTop: 0, // Remove default scroll padding
   },
-  bottomSection: {
-    paddingHorizontal: 16,
-    paddingVertical: 24,
-    paddingBottom: 40, // Extra padding for safe area
-  },
-  saveButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 50,
-  },
-  saveButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
@@ -369,6 +447,26 @@ const styles = StyleSheet.create({
   sectionSubtitle: {
     fontSize: 14,
     marginBottom: 16,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 0,
+  },
+  toggleContent: {
+    flex: 1,
+    marginRight: 16,
+  },
+  toggleLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#11181C',
+    marginBottom: 4,
+  },
+  toggleDescription: {
+    fontSize: 14,
   },
   avatarSection: {
     alignItems: 'center',
