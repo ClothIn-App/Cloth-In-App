@@ -50,15 +50,22 @@ export default function ProfileHeader({ me, counts, currentStreak = 0, hasPosted
         </View>
         <View style={{ flexDirection: "row", gap: 8 }}>
           <TouchableOpacity
-            onPress={() => router.push("../profile-edit")}
+            onPress={() => router.push("../notifications")}
             style={{ padding: 8 }}
+            hitSlop={8}
+          >
+            <Ionicons name="notifications-outline" size={24} color="#11181C" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push("../profile-edit")}
+            style={{ padding: 8, marginTop: -1 }}
             hitSlop={8}
           >
             <Ionicons name="create-outline" size={24} color="#11181C" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => router.push("../user-settings")}
-            style={{ padding: 8 }}
+            style={{ padding: 8, marginTop: -.5 }}
             hitSlop={8}
           >
             <Ionicons name="settings-outline" size={24} color="#11181C" />
