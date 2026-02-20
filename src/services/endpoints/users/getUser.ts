@@ -33,6 +33,7 @@ export const getUserEndpoint: EndpointDefinition<undefined, GetUserResponse> = {
   key: "users.get",
   method: "GET",
   pathTemplate: "/v1/users/get/:userId",
+  auth: "optional",
   mock: async ({ pathParameters }) => {
     // simulate latency
     await new Promise((r) => setTimeout(r, 200));

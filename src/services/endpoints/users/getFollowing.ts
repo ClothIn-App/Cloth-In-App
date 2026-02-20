@@ -11,6 +11,7 @@ export const getFollowingEndpoint: EndpointDefinition<undefined, GetFollowingRes
   key: "users.getFollowing",
   method: "GET",
   pathTemplate: "/v1/users/:userId/following",
+  auth: "optional",
   mock: async ({ pathParameters }) => {
     // Simulate network latency
     await new Promise((r) => setTimeout(r, 200));
