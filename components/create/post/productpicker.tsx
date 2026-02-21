@@ -1,16 +1,30 @@
 // src/create/post/components/ProductPicker.tsx
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  FlatList,
   Keyboard,
+  ActivityIndicator,
+  ScrollView,
+  Pressable,
+  Dimensions,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { usePost } from './postcontext';
 import { ProductLite } from './types';
+import { useProductSearch, mapToProductLite } from '../../../src/hooks/useProductSearch';
+import type { ProductSearchResult } from '../../../src/types/search';
+
+const ROW_HEIGHT = 52;
+const DROPDOWN_VISIBLE_ROWS = 5;
+const DROPDOWN_MAX_HEIGHT = ROW_HEIGHT * DROPDOWN_VISIBLE_ROWS;
+
+const ADD_NEW_PRODUCT_ID = '__add_new_product__';
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export type ProductPickerProps = {
   /** Optional override of selected products; if omitted, uses PostContext */
@@ -18,19 +32,19 @@ export type ProductPickerProps = {
   /** Optional add/remove handlers; if omitted, uses PostContext */
   onAdd?: (p: ProductLite) => void;
   onRemove?: (id: string) => void;
-  /** Optional suggestion dataset for the dropdown (purely presentational) */
-  suggestions?: ProductLite[];
   /** Placeholder text for the search box */
   placeholder?: string;
 };
+
+type DropdownItem = ProductSearchResult | { id: string; name: string; isAddNew: true };
 
 export default function ProductPicker({
   selected,
   onAdd,
   onRemove,
-  suggestions,
   placeholder = 'Search products',
 }: ProductPickerProps) {
+  const router = useRouter();
   const { meta, addProduct, removeProduct } = usePost();
   const selectedProducts = selected ?? meta.products;
   const handleAdd = onAdd ?? addProduct;
@@ -40,107 +54,114 @@ export default function ProductPicker({
   const [open, setOpen] = useState(false);
   const inputRef = useRef<TextInput>(null);
 
-  const filteredSuggestions = useMemo(() => {
-    const base = suggestions ?? [];
-    if (!query.trim()) return base.slice(0, 6);
-    const q = query.trim().toLowerCase();
-    return base.filter(p => (p.name ?? '').toLowerCase().includes(q)).slice(0, 6);
-  }, [suggestions, query]);
+  const { products, loading, error } = useProductSearch(query, { enabled: open });
 
-  const makeTempId = () =>
-    `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+  const selectedIds = new Set(selectedProducts.map(p => p.id));
+  const availableProducts = products.filter(p => !selectedIds.has(p.id));
+  const dropdownData: DropdownItem[] = [
+    ...availableProducts.slice(0, 4),
+    { id: ADD_NEW_PRODUCT_ID, name: 'Add new product', isAddNew: true },
+  ];
 
-  const addNewFromQuery = () => {
-    const name = query.trim() || 'New product';
-    handleAdd({ id: makeTempId(), name });
+  const handleSelectProduct = (item: ProductSearchResult) => {
+    handleAdd(mapToProductLite(item));
     setQuery('');
     setOpen(false);
     Keyboard.dismiss();
   };
 
-  const addFromSuggestion = (p: ProductLite) => {
-    handleAdd(p);
-    setQuery('');
+  const handleAddNewProduct = () => {
+    setOpen(false);
+    Keyboard.dismiss();
+    router.push('/create-modals/addproduct');
+  };
+
+  const closeDropdown = () => {
     setOpen(false);
     Keyboard.dismiss();
   };
 
   return (
     <View style={styles.container}>
-      <TextInput
-        ref={inputRef}
-        style={styles.input}
-        placeholder={placeholder}
-        value={query}
-        onFocus={() => setOpen(true)}
-        onChangeText={t => {
-          setQuery(t);
-          if (!open) setOpen(true);
-        }}
-        returnKeyType="search"
-        onSubmitEditing={addNewFromQuery}
-      />
-
-      {/* Simple dropdown — always shows an action row to add new */}
       {open && (
-        <View style={styles.dropdown}>
-          {/* Optional suggestion rows */}
-          {filteredSuggestions.map(s => (
-            <TouchableOpacity
-              key={s.id}
-              style={styles.dropdownItem}
-              onPress={() => addFromSuggestion(s)}
-              activeOpacity={0.7}
-            >
-              <Text numberOfLines={1} style={styles.dropdownText}>
-                {s.name ?? 'Untitled'}
-              </Text>
-              <Text style={styles.addHint}>Add</Text>
-            </TouchableOpacity>
-          ))}
-
-          {/* Always-present action row */}
-          <TouchableOpacity
-            style={[styles.dropdownItem, styles.addRow]}
-            onPress={addNewFromQuery}
-            activeOpacity={0.7}
-          >
-            <Text numberOfLines={1} style={[styles.dropdownText, styles.addText]}>
-              + Add {query.trim() ? `“${query.trim()}”` : 'product'}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <Pressable
+          style={[styles.overlay, { top: -SCREEN_HEIGHT, height: 2 * SCREEN_HEIGHT }]}
+          onPress={closeDropdown}
+        />
       )}
+      <View style={styles.inputDropdownWrapper}>
+        <TextInput
+          ref={inputRef}
+          style={styles.input}
+          placeholder={placeholder}
+          value={query}
+          onFocus={() => setOpen(true)}
+          onChangeText={t => {
+            setQuery(t);
+            if (!open) setOpen(true);
+          }}
+          returnKeyType="search"
+          onSubmitEditing={() => Keyboard.dismiss()}
+        />
 
-      {/* Tiny readout of currently selected count (persists via context) */}
+        {open && (
+          <View style={[styles.dropdown, { maxHeight: DROPDOWN_MAX_HEIGHT }]}>
+            {loading ? (
+              <View style={styles.loadingRow}>
+                <ActivityIndicator size="small" />
+                <Text style={styles.loadingText}>Searching…</Text>
+              </View>
+            ) : error ? (
+              <View style={styles.loadingRow}>
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            ) : (
+              <ScrollView
+                style={styles.dropdownScroll}
+                nestedScrollEnabled
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={true}
+              >
+                {dropdownData.map(item => {
+                  if ('isAddNew' in item && item.isAddNew) {
+                    return (
+                      <TouchableOpacity
+                        key={item.id}
+                        style={[styles.dropdownItem, styles.addRow]}
+                        onPress={handleAddNewProduct}
+                        activeOpacity={0.7}
+                      >
+                        <Text numberOfLines={1} style={[styles.dropdownText, styles.addText]}>
+                          + {item.name}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  }
+                  const product = item as ProductSearchResult;
+                  return (
+                    <TouchableOpacity
+                      key={product.id}
+                      style={styles.dropdownItem}
+                      onPress={() => handleSelectProduct(product)}
+                      activeOpacity={0.7}
+                    >
+                      <Text numberOfLines={1} style={styles.dropdownText}>
+                        {product.name ?? 'Untitled'}
+                        {product.brand ? ` · ${product.brand}` : ''}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            )}
+          </View>
+        )}
+      </View>
+
       <View style={styles.footer}>
         <Text style={styles.footerText}>
           Selected: {selectedProducts.length}
         </Text>
-
-        {selectedProducts.length > 0 && (
-          <FlatList
-            horizontal
-            data={selectedProducts}
-            keyExtractor={item => item.id}
-            contentContainerStyle={styles.chips}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <View style={styles.chip}>
-                <Text numberOfLines={1} style={styles.chipText}>
-                  {item.name ?? 'Unnamed'}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => handleRemove(item.id)}
-                  style={styles.chipX}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  <Text style={styles.chipXText}>×</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          />
-        )}
       </View>
     </View>
   );
@@ -149,7 +170,23 @@ export default function ProductPicker({
 const BORDER = '#E2E8F0';
 
 const styles = StyleSheet.create({
-  container: { width: '100%' },
+  container: {
+    width: '100%',
+    position: 'relative',
+    overflow: 'visible',
+  },
+  overlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    zIndex: 0,
+    backgroundColor: 'transparent',
+  },
+  inputDropdownWrapper: {
+    position: 'relative',
+    zIndex: 10,
+    elevation: 10,
+  },
   input: {
     borderWidth: 1,
     borderColor: BORDER,
@@ -166,10 +203,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#fff',
     overflow: 'hidden',
+    zIndex: 10,
+    elevation: 4,
+  },
+  dropdownScroll: {
+    maxHeight: DROPDOWN_MAX_HEIGHT,
   },
   dropdownItem: {
     paddingHorizontal: 12,
     paddingVertical: 12,
+    minHeight: ROW_HEIGHT - 2,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -179,22 +222,16 @@ const styles = StyleSheet.create({
   dropdownText: { fontSize: 16, flex: 1, marginRight: 8 },
   addRow: { backgroundColor: '#F8FAFC' },
   addText: { fontWeight: '600' },
-  addHint: { fontSize: 12, color: '#64748B' },
-
-  footer: { marginTop: 10 },
-  footerText: { fontSize: 12, color: '#64748B', marginBottom: 6 },
-  chips: { paddingRight: 4 },
-  chip: {
+  loadingRow: {
+    paddingHorizontal: 12,
+    paddingVertical: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E0F2FE',
-    borderRadius: 14,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    marginRight: 8,
-    maxWidth: 180,
+    gap: 8,
   },
-  chipText: { fontSize: 13, flexShrink: 1 },
-  chipX: { marginLeft: 6 },
-  chipXText: { fontSize: 14, fontWeight: '700' },
+  loadingText: { fontSize: 14, color: '#64748B' },
+  errorText: { fontSize: 14, color: '#dc2626' },
+
+  footer: { marginTop: 10 },
+  footerText: { fontSize: 12, color: '#64748B' },
 });

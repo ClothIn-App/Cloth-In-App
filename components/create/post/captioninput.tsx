@@ -48,18 +48,20 @@ export default function CaptionInput({ value, onChange, max }: CaptionInputProps
         onSubmitEditing={handleSubmit}
         blurOnSubmit={true}
       />
-      <View style={S.footerRow} accessible accessibilityLabel={`Characters remaining: ${remaining}`}>
+      <View style={S.counterRow} accessible accessibilityLabel={`Characters: ${value.length} of ${max}`}>
         <Text style={[S.counter, showHelper && S.counterNear]}>
           {value.length}/{max}
         </Text>
-        {showHelper && <Text style={S.helper}>{helperText}</Text>}
       </View>
+      {showHelper && (
+        <Text style={S.helper}>{helperText}</Text>
+      )}
     </View>
   );
 }
 
 const S = StyleSheet.create({
-  wrap: { gap: 6 },
+  wrap: { gap: 4 },
   input: {
     minHeight: 100,
     maxHeight: 200,
@@ -71,10 +73,9 @@ const S = StyleSheet.create({
     color: '#111827',
     fontSize: 14,
   },
-  footerRow: {
+  counterRow: {
     flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
   },
   counter: { color: '#6b7280', fontSize: 12 },
   counterNear: { color: '#374151', fontWeight: '600' },

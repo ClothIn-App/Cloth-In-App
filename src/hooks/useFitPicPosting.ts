@@ -91,6 +91,7 @@ export const useFitPicPosting = () => {
           })),
         caption: meta.caption,
         products: meta.products || [],
+        location: meta.location?.trim() ? { name: meta.location.trim() } : undefined,
         isPublic: true
       };
 
