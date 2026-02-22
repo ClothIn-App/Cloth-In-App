@@ -13,7 +13,7 @@ function SettingsContent() {
     router.back();
   }, [router]);
 
-  const handleLogout = React.useCallback(() => {
+  const handleLogout = React.useCallback(async () => {
     Alert.alert(
       "Log Out",
       "Are you sure you want to log out?",
@@ -25,8 +25,11 @@ function SettingsContent() {
         {
           text: "Log Out",
           style: "destructive",
-          onPress: () => {
-            // TODO: Implement actual logout logic with API call
+          onPress: async () => {
+            // Clear all tokens using token manager
+            const { clearTokens } = await import('@/src/services/authTokenManager');
+            await clearTokens();
+            
             // Reset navigation stack to welcome page (no back history)
             router.dismissAll();
             router.replace('/auth/welcome');
@@ -115,6 +118,41 @@ function SettingsContent() {
             <Text style={styles.settingItemArrow}>›</Text>
           </Pressable>
         </View>
+
+        {/* Dev Section - only visible in development builds */}
+        {__DEV__ && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Development</Text>
+            
+            <Pressable 
+              style={styles.settingItem}
+              onPress={async () => {
+                Alert.alert(
+                  "Clear Auth State",
+                  "Clear all tokens and auth state. Useful after code pushes or when testing.",
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Clear",
+                      style: "destructive",
+                      onPress: async () => {
+                        const { clearTokens } = await import('@/src/services/authTokenManager');
+                        await clearTokens();
+                        router.dismissAll();
+                        router.replace('/auth/welcome');
+                      },
+                    },
+                  ]
+                );
+              }}
+            >
+              <Text style={[styles.settingItemText, { color: '#ef4444' }]}>
+                🧹 Clear Auth State
+              </Text>
+              <Text style={styles.settingItemArrow}>›</Text>
+            </Pressable>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
