@@ -37,11 +37,19 @@ export default function Login() {
       // 🔑 Call your API (mock/real decided by EXPO_PUBLIC_API_MODE)
       const res = await authApiClient.login({ email, password });
 
-      await SecureStore.setItemAsync('idToken', res.idToken);
-      await SecureStore.setItemAsync('refreshToken', res.refreshToken);
-      // If you’ve set up setAuthTokenProvider() to read a stored token,
-      // you can persist res.idToken here (e.g., SecureStore/AsyncStorage).
-      // Skipping storage here to avoid extra deps—routing still works.
+      // Store tokens with expiry using token manager
+      const { storeTokenData } = await import('@/src/services/authTokenManager');
+      const { AUTH_CONFIG } = await import('@/src/config/authConfig');
+      
+      // Calculate expiry timestamp (Firebase tokens last ~1 hour)
+      const expiresAt = Date.now() + AUTH_CONFIG.TOKEN_EXPIRY_MS;
+      
+      await storeTokenData({
+        idToken: res.idToken,
+        refreshToken: res.refreshToken,
+        expiresAt,
+      });
+      
       console.log('Logged in user:', res.user.email);
 
       // ✅ Redirect to home (tabs layout)

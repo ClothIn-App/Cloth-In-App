@@ -285,6 +285,133 @@ export async function callApiEndpoint<RequestBodyType, ResponseBodyType>(
     data: responseData,
   });
 
+  // Handle 401 Unauthorized - attempt token refresh and retry
+  if (response.status === 401 && authPolicy !== "none") {
+    log.debug("[HTTP:401_UNAUTHORIZED]", {
+      key: endpointDefinition.key,
+      url,
+    });
+
+    // Only attempt refresh if we're in real API mode and have auth
+    if (currentApiMode === "real" && authPolicy !== "none") {
+      try {
+        // Dynamically import to avoid circular dependencies
+        const { getValidIdToken } = await import('@/src/services/authTokenManager');
+        const { authEvents } = await import('@/src/services/authEvents');
+        
+        // Attempt to refresh token
+        const newToken = await getValidIdToken();
+        
+        if (newToken) {
+          // Retry original request with new token
+          log.debug("[HTTP:TOKEN_REFRESH_RETRY]", {
+            key: endpointDefinition.key,
+            url,
+          });
+          
+          // Rebuild headers with new token
+          const retryHeaders: Record<string, string> = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${newToken}`,
+            ...(options.headers ?? {}),
+          };
+          
+          // Strip Authorization if auth policy is "none" (shouldn't happen here, but safety check)
+          if (authPolicy === "none" && "Authorization" in retryHeaders) {
+            delete retryHeaders.Authorization;
+          }
+          
+          const retryInit: RequestInit = {
+            method: endpointDefinition.method,
+            headers: retryHeaders,
+            body: shouldIncludeBody ? JSON.stringify(options.requestBody ?? {}) : undefined,
+            signal: options.signal,
+          };
+          
+          const retryStartedAt = Date.now();
+          let retryResponse: Response;
+          try {
+            retryResponse = await fetch(url, retryInit);
+          } catch (retryNetworkError: any) {
+            const retryElapsedMs = Date.now() - retryStartedAt;
+            log.debug("[HTTP:RETRY_ERROR]", {
+              key: endpointDefinition.key,
+              url,
+              retryElapsedMs,
+              error: retryNetworkError?.message ?? String(retryNetworkError),
+            });
+            throw retryNetworkError;
+          }
+          
+          let retryResponseData: unknown;
+          try {
+            retryResponseData = await retryResponse.json();
+          } catch {
+            retryResponseData = undefined;
+          }
+          
+          const retryElapsedMs = Date.now() - retryStartedAt;
+          log.debug("[HTTP:RETRY_RESPONSE]", {
+            key: endpointDefinition.key,
+            url,
+            status: retryResponse.status,
+            ok: retryResponse.ok,
+            retryElapsedMs,
+            data: retryResponseData,
+          });
+          
+          if (retryResponse.ok) {
+            return retryResponseData as ResponseBodyType;
+          }
+          
+          // If retry still returns 401, token refresh didn't help - emit event and fail
+          if (retryResponse.status === 401) {
+            log.warn("[HTTP:RETRY_STILL_401]", {
+              key: endpointDefinition.key,
+              url,
+            });
+            authEvents.emit('token_expired');
+            const message =
+              (retryResponseData as any)?.detail ||
+              (retryResponseData as any)?.message ||
+              `${endpointDefinition.key} failed: Unauthorized`;
+            throw new Error(String(message));
+          }
+        } else {
+          // Token refresh failed - emit event and fail
+          log.warn("[HTTP:TOKEN_REFRESH_FAILED]", {
+            key: endpointDefinition.key,
+            url,
+          });
+          const { authEvents } = await import('@/src/services/authEvents');
+          authEvents.emit('token_expired');
+          const message =
+            (responseData as any)?.detail ||
+            (responseData as any)?.message ||
+            `${endpointDefinition.key} failed: Unauthorized`;
+          throw new Error(String(message));
+        }
+      } catch (refreshError: any) {
+        // If refresh attempt itself fails, emit event and throw
+        log.error("[HTTP:TOKEN_REFRESH_ERROR]", {
+          key: endpointDefinition.key,
+          url,
+          error: refreshError?.message ?? String(refreshError),
+        });
+        const { authEvents } = await import('@/src/services/authEvents');
+        authEvents.emit('token_expired');
+        throw refreshError;
+      }
+    } else {
+      // Not in real mode or no auth required - just throw the error
+      const message =
+        (responseData as any)?.detail ||
+        (responseData as any)?.message ||
+        `${endpointDefinition.key} failed: Unauthorized`;
+      throw new Error(String(message));
+    }
+  }
+
   if (!response.ok) {
     const message =
       (responseData as any)?.detail ||

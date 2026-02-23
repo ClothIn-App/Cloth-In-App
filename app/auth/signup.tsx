@@ -68,9 +68,18 @@ export default function Signup() {
         user: resp?.user ?? { uid: 'mock-uid', email: trimmedEmail },
       });
 
-      // (optional later) persist tokens securely
-       await SecureStore.setItemAsync('idToken', resp.idToken);
-       await SecureStore.setItemAsync('refreshToken', resp.refreshToken);
+      // Store tokens with expiry using token manager
+      const { storeTokenData } = await import('@/src/services/authTokenManager');
+      const { AUTH_CONFIG } = await import('@/src/config/authConfig');
+      
+      // Calculate expiry timestamp (Firebase tokens last ~1 hour)
+      const expiresAt = Date.now() + AUTH_CONFIG.TOKEN_EXPIRY_MS;
+      
+      await storeTokenData({
+        idToken: resp.idToken,
+        refreshToken: resp.refreshToken,
+        expiresAt,
+      });
 
       router.replace('/survey');
     } catch (e: any) {

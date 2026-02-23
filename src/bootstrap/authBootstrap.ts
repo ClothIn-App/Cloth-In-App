@@ -1,7 +1,7 @@
 // src/bootstrap/authBootstrap.ts
-import * as SecureStore from 'expo-secure-store';
 import { setAuthTokenProvider } from '@/src/services/http';
+import { getValidIdToken } from '@/src/services/authTokenManager';
 
 setAuthTokenProvider(async () => {
-  return await SecureStore.getItemAsync('idToken'); // null if missing
+  return await getValidIdToken(); // Returns fresh token or null, refreshes if needed
 });
