@@ -23,8 +23,8 @@ export const createFitPicEndpoint: EndpointDefinition<
   key: "fitpics.create",
   method: "POST",
   pathTemplate: "/v1/fitpics",
-  // Auth policy: in real world this would be "required", but allow mock usage without wiring auth for now
-  auth: "optional",
+  // Auth required: create cannot run without a token; client fails fast with Unauthorized if missing.
+  auth: "required",
   mock: async ({ body }) => {
     // Simulate network latency
     await new Promise((resolve) => setTimeout(resolve, 400));
