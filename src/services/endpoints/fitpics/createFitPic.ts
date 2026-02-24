@@ -45,16 +45,16 @@ export const createFitPicEndpoint: EndpointDefinition<
       };
     }
 
-    // For mock mode, we don't upload; we just wrap the provided URIs into FitPicPhoto objects
+    // For mock mode, wrap the provided network URLs into FitPicPhoto objects
     const photos: FitPicPhoto[] = request.photos.map((photo, index) => ({
       id: generateId("ph"),
-      url: photo.uri,
-      thumbnailUrl: photo.uri,
+      url: photo.url,
+      thumbnailUrl: photo.url,
       index,
       isCover: index === 0,
       width: 800,
       height: 1000,
-      alt: photo.name ?? `Photo ${index + 1}`,
+      alt: `Photo ${index + 1}`,
     }));
 
     // In mock mode, tie the new FitPic to the current mock session user if available.

@@ -8,6 +8,7 @@ import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDrafts } from '../../components/create/draftcontext';
 import { usePost } from '../../components/create/post/postcontext';
+import { requestFeedRefetch } from '../feedRefresh';
 import { fitpicClient } from '../services/apiClients/fitpicClient';
 import { uploadPhotos, type PhotoUploadRequest } from '../services/photoUploadService';
 import type { CreateFitPicRequest } from '../types/fitpic';
@@ -80,18 +81,14 @@ export const useFitPicPosting = () => {
         throw new Error(uploadResult.errors?.join(', ') || 'Photo upload failed');
       }
 
-      // Prepare FitPic creation request
+      // Prepare FitPic creation request (network URLs only)
       const createRequest: CreateFitPicRequest = {
         photos: uploadResult.uploads
-          .filter(upload => upload.success)
-          .map(upload => ({
-            uri: upload.url!,
-            type: 'image/jpeg',
-            name: `uploaded_${upload.uploadId}.jpg`
-          })),
+          .filter((upload) => upload.success)
+          .map((upload) => ({ url: upload.url! })),
         caption: meta.caption,
         products: meta.products || [],
-        isPublic: true
+        isPublic: true,
       };
 
       setPostingState(prev => ({
@@ -116,6 +113,9 @@ export const useFitPicPosting = () => {
       // Clear drafts and post context
       clearDrafts();
       clearMeta();
+
+      // Signal feed to refetch when user returns to home
+      requestFeedRefetch();
 
       // Show success message
       Alert.alert(

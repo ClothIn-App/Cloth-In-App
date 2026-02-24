@@ -1,8 +1,10 @@
 /**
  * Photo Upload Service
- * Handles multiple image uploads for FitPics
- * Mock implementation that simulates real upload behavior
+ * Handles multiple image uploads for FitPics.
+ * Uses real API (POST /v1/fitpics/uploads) when not in mock mode; otherwise simulates upload.
  */
+
+import { log } from "../debug/log";
 
 export type PhotoUploadRequest = {
   uri: string;
@@ -33,12 +35,137 @@ export type UploadProgress = {
   error?: string;
 };
 
+/** True when app is configured to use real API (not mocks). Aligns with http.ts. */
+function useRealApi(): boolean {
+  const mode = process.env.EXPO_PUBLIC_API_MODE as string | undefined;
+  if (mode === "real") return true;
+  if (mode === "mock") return false;
+  return process.env.EXPO_PUBLIC_USE_MOCKS !== "true";
+}
+
+const BASE_API_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://127.0.0.1:8080";
+
 // Mock upload delay
 const UPLOAD_DELAY = 2000; // 2 seconds per photo
 const PROCESSING_DELAY = 1000; // 1 second for processing
 
 // Helper function to generate upload IDs
 const generateUploadId = () => `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+/** Server upload response shape (POST /v1/fitpics/uploads). */
+type ServerUploadItem = { url: string; path: string; contentType: string };
+
+const UPLOAD_REQUEST_TIMEOUT_MS = 30_000;
+
+async function uploadPhotosToServer(
+  photos: PhotoUploadRequest[],
+  onProgress?: (uploadId: string, progress: UploadProgress) => void
+): Promise<BatchUploadResponse> {
+  log.info("[UPLOAD] start", { photoCount: photos.length });
+
+  const token = await (async () => {
+    try {
+      const { getValidIdToken } = await import("@/src/services/authTokenManager");
+      return await getValidIdToken();
+    } catch {
+      return null;
+    }
+  })();
+  if (!token) {
+    return {
+      success: false,
+      uploads: photos.map(() => ({ success: false, error: "Unauthorized" })),
+      errors: ["Missing auth token"],
+    };
+  }
+  log.info("[UPLOAD] token ok");
+
+  const formData = new FormData();
+  photos.forEach((photo) => {
+    formData.append("photos", {
+      uri: photo.uri,
+      name: photo.name,
+      type: photo.type || "image/jpeg",
+    } as unknown as Blob);
+  });
+
+  const uploadId = generateUploadId();
+  onProgress?.(uploadId, { uploadId, progress: 0, status: "uploading" });
+
+  const uploadUrl = `${BASE_API_URL}/v1/fitpics/uploads`;
+  log.info("[UPLOAD] sending POST", { url: uploadUrl });
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), UPLOAD_REQUEST_TIMEOUT_MS);
+
+  let res: Response;
+  try {
+    res = await fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        // Let the browser set Content-Type with boundary for FormData
+      },
+      body: formData,
+      signal: controller.signal,
+    });
+  } catch (err) {
+    clearTimeout(timeoutId);
+    const message = err instanceof Error ? err.message : String(err);
+    const isTimeout = err instanceof Error && err.name === "AbortError";
+    log.warn("[UPLOAD] timeout or error", { error: message, isTimeout });
+    onProgress?.(uploadId, {
+      uploadId,
+      progress: 0,
+      status: "failed",
+      error: message,
+    });
+    return {
+      success: false,
+      uploads: photos.map(() => ({ success: false, error: message })),
+      errors: [isTimeout ? "Request timeout" : message],
+    };
+  }
+  clearTimeout(timeoutId);
+
+  log.info("[UPLOAD] response", { status: res.status });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    onProgress?.(uploadId, {
+      uploadId,
+      progress: 0,
+      status: "failed",
+      error: errText || res.statusText,
+    });
+    return {
+      success: false,
+      uploads: photos.map(() => ({ success: false, error: errText || res.statusText })),
+      errors: [errText || res.statusText],
+    };
+  }
+
+  const data = (await res.json()) as { uploads?: ServerUploadItem[] };
+  const uploads = data.uploads ?? [];
+  onProgress?.(uploadId, { uploadId, progress: 100, status: "completed" });
+
+  const results: PhotoUploadResponse[] = uploads.map((u) => ({
+    success: true,
+    url: u.url,
+    thumbnailUrl: u.url,
+    uploadId: u.path,
+  }));
+  // If server returned fewer items than requested, fill failures
+  while (results.length < photos.length) {
+    results.push({ success: false, error: "Server did not return URL" });
+  }
+
+  return {
+    success: results.every((r) => r.success),
+    uploads: results,
+    errors: results.filter((r) => !r.success).map((r) => r.error).filter(Boolean) as string[],
+  };
+}
 
 // Helper function to simulate upload progress
 const simulateUploadProgress = (
@@ -124,7 +251,8 @@ export const uploadPhoto = async (
 };
 
 /**
- * Upload multiple photos in parallel
+ * Upload multiple photos in parallel.
+ * When not in mock mode, uses real API POST /v1/fitpics/uploads and returns signed URLs.
  */
 export const uploadPhotos = async (
   photos: PhotoUploadRequest[],
@@ -134,40 +262,41 @@ export const uploadPhotos = async (
     if (photos.length === 0) {
       return {
         success: true,
-        uploads: []
+        uploads: [],
       };
     }
-    
+
     if (photos.length > 10) {
       return {
         success: false,
         uploads: [],
-        errors: ['Maximum 10 photos allowed per upload']
+        errors: ["Maximum 10 photos allowed per upload"],
       };
     }
-    
-    // Upload all photos in parallel
-    const uploadPromises = photos.map(photo => 
+
+    if (useRealApi()) {
+      return uploadPhotosToServer(photos, onProgress);
+    }
+
+    // Mock: upload all photos in parallel with simulated progress
+    const uploadPromises = photos.map((photo) =>
       uploadPhoto(photo, (progress) => {
         onProgress?.(progress.uploadId, progress);
       })
     );
-    
+
     const results = await Promise.all(uploadPromises);
-    
-    const successful = results.filter(r => r.success);
-    const failed = results.filter(r => !r.success);
-    
+
     return {
-      success: failed.length === 0,
+      success: results.every((r) => r.success),
       uploads: results,
-      errors: failed.map(f => f.error).filter(Boolean) as string[]
+      errors: results.filter((r) => !r.success).map((r) => r.error).filter(Boolean) as string[],
     };
   } catch (error) {
     return {
       success: false,
       uploads: [],
-      errors: [error instanceof Error ? error.message : 'Batch upload failed']
+      errors: [error instanceof Error ? error.message : "Batch upload failed"],
     };
   }
 };

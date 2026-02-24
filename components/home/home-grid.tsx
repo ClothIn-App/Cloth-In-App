@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { RefreshControl, TouchableOpacity, View, Text, StyleSheet } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import MasonryGrid from "../masonry-grid";
 import FitPic_Cover from "../home/fitpic-cover";
@@ -7,6 +8,11 @@ import Product_Cover, { PRODUCT_LABEL_HEIGHT } from "../home/product-cover";
 import type { FeedItem } from "../../src/types/feed";
 import { buildHomeFeed, buildProductFeed } from "../../src/utils/normalizeFeed";
 import { contentApiClient } from "../../src/services/apiClients/contentClient";
+import { fitpicClient } from "../../src/services/apiClients/fitpicClient";
+import { consumeFeedRefetch } from "../../src/feedRefresh";
+
+const useRealApi = (): boolean =>
+  process.env.EXPO_PUBLIC_API_MODE === "real";
 
 // add at top-level of file (outside component)
 function shuffle<T>(arr: T[]) {
@@ -54,6 +60,15 @@ export default function Home_Grid({
             }
             const productItems = await buildProductFeed(response.products);
             setData(shuffle(productItems));
+          } else if (useRealApi()) {
+            // TODO (home page): Temporary – feed uses GET /v1/fitpics only to test fitpic E2E. When building the real home page (fitpics + products), revert to GET /v1/content/feed (or new feed API) and remove this branch.
+            const response = await fitpicClient.list(undefined, 50);
+            if (!response?.success || !response.fitpics) {
+              setData([]);
+              return;
+            }
+            const feedData = await buildHomeFeed(response.fitpics, []);
+            setData(shuffle(feedData));
           } else {
             const response = await contentApiClient.getFeed({
               type: feedType,
@@ -89,6 +104,13 @@ export default function Home_Grid({
           const productItems = await buildProductFeed(response.products);
           setData(shuffle(productItems));
         }
+      } else if (useRealApi()) {
+        // TODO (home page): Temporary – feed uses GET /v1/fitpics only to test fitpic E2E. When building the real home page (fitpics + products), revert to GET /v1/content/feed (or new feed API) and remove this branch.
+        const response = await fitpicClient.list(undefined, 50);
+        if (response?.success && response.fitpics) {
+          const feedData = await buildHomeFeed(response.fitpics, []);
+          setData(shuffle(feedData));
+        }
       } else {
         const response = await contentApiClient.getFeed({
           type: feedType,
@@ -107,6 +129,15 @@ export default function Home_Grid({
       setRefreshing(false);
     }
   }, [dataOverride, feedType]);
+
+  // When returning from create flow (e.g. after posting), refetch feed if requested
+  useFocusEffect(
+    useCallback(() => {
+      if (consumeFeedRefetch()) {
+        onRefresh();
+      }
+    }, [onRefresh])
+  );
 
   if (loading) {
     return null;

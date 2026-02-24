@@ -49,12 +49,17 @@ const normalizeComment = (rawComment: any): any => {
 
 // Convert FitPic API type to FitPicItem
 const normalizeFitPic = async (fitpic: FitPic): Promise<FitPicItem> => {
-  const source = FITPIC_ASSETS[fitpic.id];
-  if (!source) {
-    throw new Error(`No asset found for FitPic ID: ${fitpic.id}`);
-  }
+  const staticSource = FITPIC_ASSETS[fitpic.id];
+  const source = staticSource ?? { uri: fitpic.photos?.[0]?.url ?? '' };
 
-  const dimensions = await getImageDimensions(source);
+  // Dimensions: from static asset or from API photo; skip for URL source (grid fallback applies)
+  let dimensions: { width?: number; height?: number } = {};
+  if (staticSource) {
+    const resolved = await getImageDimensions(staticSource);
+    if (resolved) dimensions = resolved;
+  } else if (fitpic.photos?.[0]?.width != null && fitpic.photos[0].height != null) {
+    dimensions = { width: fitpic.photos[0].width, height: fitpic.photos[0].height };
+  }
 
   // Convert location object to string if needed
   const locationString = fitpic.location 
@@ -79,7 +84,7 @@ const normalizeFitPic = async (fitpic: FitPic): Promise<FitPicItem> => {
       productIds: fitpic.products?.map(p => p.id) || []
     },
     likes: fitpic.engagement?.likes || 0,
-    author: fitpic.author?.username || fitpic.authorId,
+    author: fitpic.author?.username ?? fitpic.authorId ?? '',
     createdAt: fitpic.createdAt,
     location: locationString,
     reactions,

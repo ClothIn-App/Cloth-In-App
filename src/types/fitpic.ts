@@ -80,11 +80,7 @@ export type FitPic = {
 
 // Request/Response types for API calls
 export type CreateFitPicRequest = {
-  photos: {
-    uri: string;
-    type: string;
-    name: string;
-  }[];
+  photos: { url: string }[];
   caption: string;
   products: ProductLite[];
   location?: {
