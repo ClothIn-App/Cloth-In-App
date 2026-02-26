@@ -52,13 +52,16 @@ const normalizeFitPic = async (fitpic: FitPic): Promise<FitPicItem> => {
   const staticSource = FITPIC_ASSETS[fitpic.id];
   const source = staticSource ?? { uri: fitpic.photos?.[0]?.url ?? '' };
 
-  // Dimensions: from static asset or from API photo; skip for URL source (grid fallback applies)
+  // Dimensions: from static asset or from API photo; fallback to portrait ratio for legacy fitpics
   let dimensions: { width?: number; height?: number } = {};
   if (staticSource) {
     const resolved = await getImageDimensions(staticSource);
     if (resolved) dimensions = resolved;
   } else if (fitpic.photos?.[0]?.width != null && fitpic.photos[0].height != null) {
     dimensions = { width: fitpic.photos[0].width, height: fitpic.photos[0].height };
+  } else {
+    // No dimensions (e.g. existing fitpics before dimensions were stored): use portrait aspect so grid doesn't assume square
+    dimensions = { width: 4, height: 5 };
   }
 
   // Convert location object to string if needed
