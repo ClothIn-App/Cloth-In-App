@@ -4,7 +4,7 @@
  */
 
 import { useCallback, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDrafts } from '../../components/create/draftcontext';
 import { usePost } from '../../components/create/post/postcontext';
@@ -12,6 +12,7 @@ import { requestFeedRefetch } from '../feedRefresh';
 import { fitpicClient } from '../services/apiClients/fitpicClient';
 import { uploadPhotos, type PhotoUploadRequest } from '../services/photoUploadService';
 import type { CreateFitPicRequest } from '../types/fitpic';
+import { resolveUploadUri } from '../utils/resolveUploadUri';
 
 export type PostingState = {
   isPosting: boolean;
@@ -61,9 +62,20 @@ export const useFitPicPosting = () => {
         throw new Error('Selected photos not found');
       }
 
-      // Prepare photos for upload
-      const photosToUpload: PhotoUploadRequest[] = selectedPhotos.map(photo => ({
-        uri: photo!.uri,
+      // Resolve ph:// and content:// URIs to local file paths for upload
+      const resolvedUris = await Promise.all(
+        selectedPhotos.map((photo) => resolveUploadUri(photo!.id, photo!.uri))
+      );
+      const failedIndex = resolvedUris.findIndex((uri) => uri == null);
+      if (failedIndex !== -1) {
+        throw new Error(
+          'Could not access photo from library. Try choosing it again.'
+        );
+      }
+
+      // Prepare photos for upload using resolved URIs
+      const photosToUpload: PhotoUploadRequest[] = selectedPhotos.map((photo, index) => ({
+        uri: resolvedUris[index]!,
         type: 'image/jpeg', // Default type, in real app this would come from the photo
         name: `fitpic_${Date.now()}_${photo!.id}.jpg`
       }));
@@ -81,11 +93,30 @@ export const useFitPicPosting = () => {
         throw new Error(uploadResult.errors?.join(', ') || 'Photo upload failed');
       }
 
-      // Prepare FitPic creation request (network URLs only)
+      // Resolve dimensions for each selected photo (same order as uploads), using resolved URIs
+      const dimensionsList = await Promise.all(
+        resolvedUris.map(
+          (uri) =>
+            new Promise<{ width?: number; height?: number }>((resolve) => {
+              Image.getSize(
+                uri!,
+                (width, height) => resolve({ width, height }),
+                () => resolve({})
+              );
+            })
+        )
+      );
+
+      const successfulUploads = uploadResult.uploads.filter((u) => u.success);
       const createRequest: CreateFitPicRequest = {
-        photos: uploadResult.uploads
-          .filter((upload) => upload.success)
-          .map((upload) => ({ url: upload.url! })),
+        photos: successfulUploads.map((upload, index) => {
+          const dims = dimensionsList[index];
+          return {
+            url: upload.url!,
+            ...(dims?.width != null && { width: dims.width }),
+            ...(dims?.height != null && { height: dims.height }),
+          };
+        }),
         caption: meta.caption,
         products: meta.products || [],
         location: meta.location?.trim() || undefined,
