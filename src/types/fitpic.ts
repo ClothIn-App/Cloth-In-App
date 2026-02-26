@@ -32,13 +32,25 @@ export type EmojiReaction = {
 
 export type FitPicEngagement = {
   likes: number;
-  saves: number;
-  comments: number;
-  shares?: number;
+  dislikes: number;
+  heart: number;
+  fire: number;
+  saves?: number;
+  comments?: number;
   isLiked?: boolean;
   isSaved?: boolean;
   reactions?: EmojiReaction[];
   userReactions?: string[]; // emojis the current user has reacted with
+};
+
+export type FitPicComment = {
+  id: string;
+  user: string; // user id
+  text: string;
+  createdAt: string;
+  like: number;
+  dislike: number;
+  replies: FitPicComment[];
 };
 
 export type FitPic = {
@@ -62,17 +74,13 @@ export type FitPic = {
   
   // Engagement
   engagement: FitPicEngagement;
-  
+
+  // Comments (mock shape: id, user, text, createdAt, like, dislike, replies)
+  comments: FitPicComment[];
+
   // Optional fields
-  location?: {
-    name: string;
-    coordinates?: {
-      lat: number;
-      lng: number;
-    };
-  };
-  isPublic: boolean;
-  
+  location?: string;
+
   // Moderation
   isReported?: boolean;
   isHidden?: boolean;
@@ -80,21 +88,11 @@ export type FitPic = {
 
 // Request/Response types for API calls
 export type CreateFitPicRequest = {
-  photos: {
-    uri: string;
-    type: string;
-    name: string;
-  }[];
+  photos: { url: string }[];
   caption: string;
   products: ProductLite[];
-  location?: {
-    name: string;
-    coordinates?: {
-      lat: number;
-      lng: number;
-    };
-  };
-  isPublic?: boolean;
+  location?: string;
+  fitpicId?: string;
 };
 
 export type CreateFitPicResponse = {

@@ -49,10 +49,10 @@ export default function CaptionInput({ value, onChange, max }: CaptionInputProps
         blurOnSubmit={true}
       />
       <View style={S.footerRow} accessible accessibilityLabel={`Characters remaining: ${remaining}`}>
+        {showHelper && <Text style={S.helper}>{helperText}</Text>}
         <Text style={[S.counter, showHelper && S.counterNear]}>
           {value.length}/{max}
         </Text>
-        {showHelper && <Text style={S.helper}>{helperText}</Text>}
       </View>
     </View>
   );
@@ -74,7 +74,7 @@ const S = StyleSheet.create({
   footerRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
   },
   counter: { color: '#6b7280', fontSize: 12 },
   counterNear: { color: '#374151', fontWeight: '600' },

@@ -23,7 +23,7 @@ export const createFitPicEndpoint: EndpointDefinition<
   key: "fitpics.create",
   method: "POST",
   pathTemplate: "/v1/fitpics",
-  // Auth policy: in real world this would be "required", but allow mock usage without wiring auth for now
+  // Optional in mock mode so the mock can run without a real token (mock uses getCurrentUser from session).
   auth: "optional",
   mock: async ({ body }) => {
     // Simulate network latency
@@ -45,16 +45,16 @@ export const createFitPicEndpoint: EndpointDefinition<
       };
     }
 
-    // For mock mode, we don't upload; we just wrap the provided URIs into FitPicPhoto objects
+    // For mock mode, wrap the provided network URLs into FitPicPhoto objects
     const photos: FitPicPhoto[] = request.photos.map((photo, index) => ({
       id: generateId("ph"),
-      url: photo.uri,
-      thumbnailUrl: photo.uri,
+      url: photo.url,
+      thumbnailUrl: photo.url,
       index,
       isCover: index === 0,
       width: 800,
       height: 1000,
-      alt: photo.name ?? `Photo ${index + 1}`,
+      alt: `Photo ${index + 1}`,
     }));
 
     // In mock mode, tie the new FitPic to the current mock session user if available.
@@ -65,13 +65,9 @@ export const createFitPicEndpoint: EndpointDefinition<
 
     const engagement: FitPicEngagement = {
       likes: 0,
-      saves: 0,
-      comments: 0,
-      shares: 0,
-      isLiked: false,
-      isSaved: false,
-      reactions: [],
-      userReactions: [],
+      dislikes: 0,
+      heart: 0,
+      fire: 0,
     };
 
     const fitpic: FitPic = {
@@ -89,8 +85,8 @@ export const createFitPicEndpoint: EndpointDefinition<
       createdAt: now,
       updatedAt: now,
       engagement,
+      comments: [],
       location: request.location,
-      isPublic: request.isPublic !== false,
       isReported: false,
       isHidden: false,
     };

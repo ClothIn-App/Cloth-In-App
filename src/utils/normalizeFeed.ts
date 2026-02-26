@@ -49,25 +49,38 @@ const normalizeComment = (rawComment: any): any => {
 
 // Convert FitPic API type to FitPicItem
 const normalizeFitPic = async (fitpic: FitPic): Promise<FitPicItem> => {
-  const source = FITPIC_ASSETS[fitpic.id];
-  if (!source) {
-    throw new Error(`No asset found for FitPic ID: ${fitpic.id}`);
-  }
+  const staticSource = FITPIC_ASSETS[fitpic.id];
+  const source = staticSource ?? { uri: fitpic.photos?.[0]?.url ?? '' };
 
-  const dimensions = await getImageDimensions(source);
+  // Dimensions: from static asset or from API photo; skip for URL source (grid fallback applies)
+  let dimensions: { width?: number; height?: number } = {};
+  if (staticSource) {
+    const resolved = await getImageDimensions(staticSource);
+    if (resolved) dimensions = resolved;
+  } else if (fitpic.photos?.[0]?.width != null && fitpic.photos[0].height != null) {
+    dimensions = { width: fitpic.photos[0].width, height: fitpic.photos[0].height };
+  }
 
   // Convert location object to string if needed
   const locationString = fitpic.location 
     ? (typeof fitpic.location === 'string' ? fitpic.location : fitpic.location.name)
     : undefined;
 
-  // Convert reactions array to counts object
-  const reactions = fitpic.engagement?.reactions && Array.isArray(fitpic.engagement.reactions)
-    ? fitpic.engagement.reactions.reduce((acc, r) => {
+  // Convert engagement to reaction counts (API has likes, dislikes, heart, fire)
+  const engagement = fitpic.engagement;
+  const reactions = engagement?.reactions && Array.isArray(engagement.reactions)
+    ? engagement.reactions.reduce((acc, r) => {
         acc.counts[r.emoji as keyof typeof acc.counts] = r.count;
         return acc;
       }, { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } })
-    : { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } };
+    : {
+        counts: {
+          LIKE: engagement?.likes ?? 0,
+          THUMBS_UP: engagement?.heart ?? 0,
+          FIRE: engagement?.fire ?? 0,
+          DISLIKE: engagement?.dislikes ?? 0,
+        },
+      };
 
   return {
     id: fitpic.id,
@@ -79,7 +92,7 @@ const normalizeFitPic = async (fitpic: FitPic): Promise<FitPicItem> => {
       productIds: fitpic.products?.map(p => p.id) || []
     },
     likes: fitpic.engagement?.likes || 0,
-    author: fitpic.author?.username || fitpic.authorId,
+    author: fitpic.author?.username ?? fitpic.authorId ?? '',
     createdAt: fitpic.createdAt,
     location: locationString,
     reactions,

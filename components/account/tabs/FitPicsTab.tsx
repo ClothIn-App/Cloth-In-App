@@ -54,7 +54,7 @@ export default function FitPicsTab({ userId }: Props) {
           },
         },
         createdAt: fitpic.createdAt,
-        location: fitpic.location?.name,
+        location: typeof fitpic.location === 'string' ? fitpic.location : fitpic.location?.name,
         width: coverPhoto?.width,
         height: coverPhoto?.height,
       };

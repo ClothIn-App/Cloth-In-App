@@ -8,6 +8,7 @@ import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDrafts } from '../../components/create/draftcontext';
 import { usePost } from '../../components/create/post/postcontext';
+import { requestFeedRefetch } from '../feedRefresh';
 import { fitpicClient } from '../services/apiClients/fitpicClient';
 import { uploadPhotos, type PhotoUploadRequest } from '../services/photoUploadService';
 import type { CreateFitPicRequest } from '../types/fitpic';
@@ -80,18 +81,15 @@ export const useFitPicPosting = () => {
         throw new Error(uploadResult.errors?.join(', ') || 'Photo upload failed');
       }
 
-      // Prepare FitPic creation request
+      // Prepare FitPic creation request (network URLs only)
       const createRequest: CreateFitPicRequest = {
         photos: uploadResult.uploads
-          .filter(upload => upload.success)
-          .map(upload => ({
-            uri: upload.url!,
-            type: 'image/jpeg',
-            name: `uploaded_${upload.uploadId}.jpg`
-          })),
+          .filter((upload) => upload.success)
+          .map((upload) => ({ url: upload.url! })),
         caption: meta.caption,
         products: meta.products || [],
-        isPublic: true
+        location: meta.location?.trim() || undefined,
+        ...(uploadResult.fitpicId && { fitpicId: uploadResult.fitpicId }),
       };
 
       setPostingState(prev => ({
@@ -117,20 +115,11 @@ export const useFitPicPosting = () => {
       clearDrafts();
       clearMeta();
 
-      // Show success message
-      Alert.alert(
-        'Success!',
-        'Your fit pic has been posted successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Navigate back to home or previous screen
-              router.back();
-            }
-          }
-        ]
-      );
+      // Signal feed to refetch when user returns to home
+      requestFeedRefetch();
+
+      // Dismiss create modal and reveal the existing home screen (refetches on focus)
+      router.dismissTo('/(tabs)/home');
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to post fit pic';

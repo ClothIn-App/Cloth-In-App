@@ -52,6 +52,22 @@ export async function listByUser(
   );
 }
 
+/** List all fitpics (no user filter). Used for temporary home feed in real API mode. */
+export async function list(
+  cursor?: string,
+  limit?: number
+): Promise<GetFitPicsResponse> {
+  return callApiEndpoint<undefined, GetFitPicsResponse>(
+    getFitPicsEndpoint,
+    {
+      queryParameters: {
+        cursor,
+        limit: limit?.toString(),
+      },
+    }
+  );
+}
+
 export async function getFeed(request: GetFeedRequest): Promise<GetFeedResponse> {
   return callApiEndpoint<GetFeedRequest, GetFeedResponse>(
     getFeedEndpoint,
@@ -91,6 +107,7 @@ export const fitpicClient = {
   create,
   getById,
   listByUser,
+  list,
   getFeed,
   updateEngagement,
   remove,
