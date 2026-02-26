@@ -1,10 +1,20 @@
 // Minimal post metadata & upload types
 
-export type ProductLite = { id: string; name: string };
+export type ProductLite = {
+  id: string;
+  name: string;
+  brand?: string;
+  category?: string;
+  price?: number;
+  currency?: string;
+  imageUrl?: string;
+  purchaseUrl?: string;
+};
 
 export type PostMeta = {
   caption: string;
   products: ProductLite[];
+  location?: string;
 };
 
 export type UploadedPhoto = {

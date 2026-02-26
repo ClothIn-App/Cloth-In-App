@@ -25,6 +25,7 @@ export type BatchUploadResponse = {
   success: boolean;
   uploads: PhotoUploadResponse[];
   errors?: string[];
+  fitpicId?: string;
 };
 
 // Simulate upload progress
@@ -145,7 +146,7 @@ async function uploadPhotosToServer(
     };
   }
 
-  const data = (await res.json()) as { uploads?: ServerUploadItem[] };
+  const data = (await res.json()) as { uploads?: ServerUploadItem[]; fitpicId?: string };
   const uploads = data.uploads ?? [];
   onProgress?.(uploadId, { uploadId, progress: 100, status: "completed" });
 
@@ -164,6 +165,7 @@ async function uploadPhotosToServer(
     success: results.every((r) => r.success),
     uploads: results,
     errors: results.filter((r) => !r.success).map((r) => r.error).filter(Boolean) as string[],
+    fitpicId: data.fitpicId,
   };
 }
 

@@ -86,10 +86,12 @@ export const getFitPicsEndpoint: EndpointDefinition<
       createdAt: fp.createdAt,
       engagement: {
         likes: fp.reactions?.counts?.LIKE || 0,
-        saves: 0,
-        comments: fp.comments?.length || 0,
+        dislikes: fp.reactions?.counts?.DISLIKE || 0,
+        heart: fp.reactions?.counts?.THUMBS_UP || 0,
+        fire: fp.reactions?.counts?.FIRE || 0,
       },
-      isPublic: true,
+      comments: fp.comments || [],
+      location: typeof fp.location === "string" ? fp.location : fp.location,
     }));
 
     return {

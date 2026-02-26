@@ -88,7 +88,8 @@ export const useFitPicPosting = () => {
           .map((upload) => ({ url: upload.url! })),
         caption: meta.caption,
         products: meta.products || [],
-        isPublic: true,
+        location: meta.location?.trim() || undefined,
+        ...(uploadResult.fitpicId && { fitpicId: uploadResult.fitpicId }),
       };
 
       setPostingState(prev => ({
@@ -117,20 +118,8 @@ export const useFitPicPosting = () => {
       // Signal feed to refetch when user returns to home
       requestFeedRefetch();
 
-      // Show success message
-      Alert.alert(
-        'Success!',
-        'Your fit pic has been posted successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Navigate back to home or previous screen
-              router.back();
-            }
-          }
-        ]
-      );
+      // Dismiss create modal and reveal the existing home screen (refetches on focus)
+      router.dismissTo('/(tabs)/home');
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to post fit pic';

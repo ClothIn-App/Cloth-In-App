@@ -2,8 +2,9 @@ import React, { createContext, useCallback, useContext, useMemo, useState } from
 import { CAPTION_MAX, ProductLite } from './types';
 
 export type PostContextValue = {
-  meta: { caption: string; products: ProductLite[] };
+  meta: { caption: string; products: ProductLite[]; location: string };
   setCaption: (v: string) => void;      // silently truncates to CAPTION_MAX
+  setLocation: (v: string) => void;
   addProduct: (p: ProductLite) => void;
   removeProduct: (id: string) => void;
   clearMeta: () => void;                 // clears caption + products
@@ -12,14 +13,20 @@ export type PostContextValue = {
 const PostContext = createContext<PostContextValue | null>(null);
 
 export function PostProvider({ children }: { children: React.ReactNode }) {
-  const [meta, setMeta] = useState<{ caption: string; products: ProductLite[] }>({
+  const [meta, setMeta] = useState<{ caption: string; products: ProductLite[]; location: string }>({
     caption: '',
     products: [],
+    location: '',
   });
 
   const setCaption = useCallback((v: string) => {
     const next = (v ?? '').slice(0, CAPTION_MAX);
     setMeta(prev => (prev.caption === next ? prev : { ...prev, caption: next }));
+  }, []);
+
+  const setLocation = useCallback((v: string) => {
+    const next = v ?? '';
+    setMeta(prev => (prev.location === next ? prev : { ...prev, location: next }));
   }, []);
 
   const addProduct = useCallback((p: ProductLite) => {
@@ -39,12 +46,12 @@ export function PostProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const clearMeta = useCallback(() => {
-    setMeta({ caption: '', products: [] });
+    setMeta({ caption: '', products: [], location: '' });
   }, []);
 
   const value = useMemo<PostContextValue>(
-    () => ({ meta, setCaption, addProduct, removeProduct, clearMeta }),
-    [meta, setCaption, addProduct, removeProduct, clearMeta]
+    () => ({ meta, setCaption, setLocation, addProduct, removeProduct, clearMeta }),
+    [meta, setCaption, setLocation, addProduct, removeProduct, clearMeta]
   );
 
   return <PostContext.Provider value={value}>{children}</PostContext.Provider>;

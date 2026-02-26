@@ -55,10 +55,12 @@ export const getFitPicEndpoint: EndpointDefinition<
       createdAt: rawFitpic.createdAt,
       engagement: {
         likes: rawFitpic.reactions?.counts?.LIKE || 0,
-        saves: 0,
-        comments: rawFitpic.comments?.length || 0,
+        dislikes: rawFitpic.reactions?.counts?.DISLIKE || 0,
+        heart: rawFitpic.reactions?.counts?.THUMBS_UP || 0,
+        fire: rawFitpic.reactions?.counts?.FIRE || 0,
       },
-      isPublic: true,
+      comments: rawFitpic.comments || [],
+      location: typeof rawFitpic.location === "string" ? rawFitpic.location : rawFitpic.location,
     };
 
     return { fitpic };

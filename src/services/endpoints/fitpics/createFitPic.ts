@@ -23,8 +23,8 @@ export const createFitPicEndpoint: EndpointDefinition<
   key: "fitpics.create",
   method: "POST",
   pathTemplate: "/v1/fitpics",
-  // Auth required: create cannot run without a token; client fails fast with Unauthorized if missing.
-  auth: "required",
+  // Optional in mock mode so the mock can run without a real token (mock uses getCurrentUser from session).
+  auth: "optional",
   mock: async ({ body }) => {
     // Simulate network latency
     await new Promise((resolve) => setTimeout(resolve, 400));
@@ -65,13 +65,9 @@ export const createFitPicEndpoint: EndpointDefinition<
 
     const engagement: FitPicEngagement = {
       likes: 0,
-      saves: 0,
-      comments: 0,
-      shares: 0,
-      isLiked: false,
-      isSaved: false,
-      reactions: [],
-      userReactions: [],
+      dislikes: 0,
+      heart: 0,
+      fire: 0,
     };
 
     const fitpic: FitPic = {
@@ -89,8 +85,8 @@ export const createFitPicEndpoint: EndpointDefinition<
       createdAt: now,
       updatedAt: now,
       engagement,
+      comments: [],
       location: request.location,
-      isPublic: request.isPublic !== false,
       isReported: false,
       isHidden: false,
     };

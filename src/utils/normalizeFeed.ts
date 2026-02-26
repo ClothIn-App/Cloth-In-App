@@ -66,13 +66,21 @@ const normalizeFitPic = async (fitpic: FitPic): Promise<FitPicItem> => {
     ? (typeof fitpic.location === 'string' ? fitpic.location : fitpic.location.name)
     : undefined;
 
-  // Convert reactions array to counts object
-  const reactions = fitpic.engagement?.reactions && Array.isArray(fitpic.engagement.reactions)
-    ? fitpic.engagement.reactions.reduce((acc, r) => {
+  // Convert engagement to reaction counts (API has likes, dislikes, heart, fire)
+  const engagement = fitpic.engagement;
+  const reactions = engagement?.reactions && Array.isArray(engagement.reactions)
+    ? engagement.reactions.reduce((acc, r) => {
         acc.counts[r.emoji as keyof typeof acc.counts] = r.count;
         return acc;
       }, { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } })
-    : { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } };
+    : {
+        counts: {
+          LIKE: engagement?.likes ?? 0,
+          THUMBS_UP: engagement?.heart ?? 0,
+          FIRE: engagement?.fire ?? 0,
+          DISLIKE: engagement?.dislikes ?? 0,
+        },
+      };
 
   return {
     id: fitpic.id,

@@ -23,6 +23,7 @@ import PhotoGrid from '../../components/create/post/photogrid';
 import ProductPicker from '../../components/create/post/productpicker';
 import ProductGrid from '../../components/create/post/productgrid';
 import CaptionInput from '../../components/create/post/captioninput';
+import LocationInput from '../../components/create/post/locationinput';
 
 type Props = {
   onBackToCamera?: () => void;
@@ -55,8 +56,8 @@ export default function FitPicPostModal({
   // Photos live in DraftsContext
   const { selectedIds, removeSelected, setSelectedOrder } = useDrafts();
 
-  // Caption + products live in PostContext
-  const { meta, setCaption, removeProduct } = usePost();
+  // Caption + products + location live in PostContext
+  const { meta, setCaption, setLocation, removeProduct } = usePost();
 
   // FitPic posting functionality
   const { postingState, handlePost, canPost } = useFitPicPosting();
@@ -145,6 +146,15 @@ export default function FitPicPostModal({
           )}
         </Section>
 
+        {/* Caption */}
+        <Section title="Caption">
+          <CaptionInput
+            value={caption}     
+            onChange={setCaption}    
+            max={CAPTION_MAX}
+          />
+        </Section>
+
         {/* Products */}
         <Section title="Products">
           {/* Selector writes to PostContext; grid reflects context */}
@@ -153,15 +163,13 @@ export default function FitPicPostModal({
           <View style={{ marginTop: 8 }}>
             <ProductGrid products={products} onRemove={removeProduct} />
           </View>
-        </Section>
 
-        {/* Caption */}
-        <Section title="Caption">
-          <CaptionInput
-            value={caption}     
-            onChange={setCaption}    
-            max={CAPTION_MAX}
-          />
+          <View style={{ marginTop: 0 }}>
+            <Text style={S.sectionTitle}>Location</Text>
+            <View style={{ marginTop: 4 }}>
+              <LocationInput value={meta.location ?? ''} onChange={setLocation} />
+            </View>
+          </View>
         </Section>
 
         {/* Spacer so last content isn't obscured by sticky footer */}

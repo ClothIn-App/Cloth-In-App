@@ -5,7 +5,7 @@
 
 import { Image } from 'react-native';
 import { FITPIC_ASSETS } from '../maps/images';
-import type { FitPic, FitPicSortOptions, FitPicFilters } from '../types/fitpic';
+import type { FitPic, FitPicComment, FitPicSortOptions, FitPicFilters } from '../types/fitpic';
 
 /**
  * Helper to get image URI from asset
@@ -77,21 +77,25 @@ export function transformRawFitPic(
       };
     }).filter((p: any): p is NonNullable<typeof p> => p !== null);
 
-    // Transform reactions to engagement
-    const reactions = rawFitpic.reactions?.counts || {};
+    // Transform reactions to engagement (likes, dislikes, heart, fire)
+    const counts = rawFitpic.reactions?.counts || {};
     const engagement = {
-      likes: reactions.LIKE || 0,
-      saves: 0, // Not in raw data
-      comments: rawFitpic.comments?.length || 0,
-      shares: 0,
-      isLiked: false,
-      isSaved: false,
-      reactions: Object.entries(reactions).map(([emoji, count]) => ({
-        emoji: emoji === 'LIKE' ? '👍' : emoji === 'THUMBS_UP' ? '👍' : emoji === 'FIRE' ? '🔥' : '👎',
-        count: count as number,
-        users: [],
-      })),
+      likes: counts.LIKE || 0,
+      dislikes: counts.DISLIKE || 0,
+      heart: counts.THUMBS_UP || 0,
+      fire: counts.FIRE || 0,
     };
+
+    const mapComment = (c: any): FitPicComment => ({
+      id: c.id,
+      user: c.user,
+      text: c.text,
+      createdAt: c.createdAt,
+      like: c.like ?? c.likes ?? 0,
+      dislike: c.dislike ?? c.dislikes ?? 0,
+      replies: (c.replies || []).map(mapComment),
+    });
+    const comments = (rawFitpic.comments || []).map(mapComment);
 
     const fitpic: FitPic = {
       id: rawFitpic.id,
@@ -110,10 +114,8 @@ export function transformRawFitPic(
       products: transformedProducts,
       createdAt: rawFitpic.createdAt || new Date().toISOString(),
       engagement,
-      location: rawFitpic.location ? {
-        name: rawFitpic.location,
-      } : undefined,
-      isPublic: true,
+      comments,
+      location: rawFitpic.location || undefined,
     };
 
     return fitpic;
