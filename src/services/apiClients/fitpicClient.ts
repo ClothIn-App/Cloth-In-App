@@ -1,5 +1,7 @@
 import { callApiEndpoint } from "../http";
 import {
+  addCommentEndpoint,
+  commentReactEndpoint,
   createFitPicEndpoint,
   getFitPicEndpoint,
   getFitPicsEndpoint,
@@ -9,6 +11,10 @@ import {
 } from "../endpoints";
 
 import type {
+  AddCommentRequest,
+  AddCommentResponse,
+  CommentReactRequest,
+  CommentReactResponse,
   CreateFitPicRequest,
   CreateFitPicResponse,
   GetFitPicResponse,
@@ -103,6 +109,32 @@ export async function remove(
   );
 }
 
+export async function addComment(
+  fitpicId: string,
+  body: AddCommentRequest
+): Promise<AddCommentResponse> {
+  return callApiEndpoint<AddCommentRequest, AddCommentResponse>(
+    addCommentEndpoint,
+    {
+      pathParameters: { fitpicId },
+      requestBody: body,
+    }
+  );
+}
+
+export async function commentReact(
+  fitpicId: string,
+  body: CommentReactRequest
+): Promise<CommentReactResponse> {
+  return callApiEndpoint<CommentReactRequest, CommentReactResponse>(
+    commentReactEndpoint,
+    {
+      pathParameters: { fitpicId },
+      requestBody: body,
+    }
+  );
+}
+
 export const fitpicClient = {
   create,
   getById,
@@ -111,6 +143,8 @@ export const fitpicClient = {
   getFeed,
   updateEngagement,
   remove,
+  addComment,
+  commentReact,
 };
 
 

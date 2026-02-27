@@ -90,12 +90,13 @@ export const useFitPicFeed = (type: FeedType) => {
   }, [loadFeed, state.loading, state.refreshing, state.hasMore]);
 
   const handleLike = useCallback(async (fitpic: FitPic) => {
-    const action = fitpic.engagement.isLiked ? 'unlike' : 'like';
-    
+    const isLiked = fitpic.engagement.isLiked ?? fitpic.engagement.userReaction === 'LIKE';
+    const action = isLiked ? 'unreact' : 'react';
     try {
       const response = await fitpicClient.updateEngagement({
         fitpicId: fitpic.id,
         action,
+        reaction: 'LIKE',
       });
 
       if (response.success && response.engagement) {

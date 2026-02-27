@@ -32,7 +32,7 @@ export async function getFeedItemById(id: string): Promise<FeedItem | null> {
 }
 
 /**
- * Convert FitPicComment (from mock data) to CommentType (for UI)
+ * Convert FitPicComment (from API) to CommentType (for UI)
  */
 function normalizeComment(rawComment: any): CommentType {
   return {
@@ -43,6 +43,7 @@ function normalizeComment(rawComment: any): CommentType {
     likes: rawComment.likes ?? rawComment.like ?? 0,
     dislikes: rawComment.dislikes ?? rawComment.dislike ?? 0,
     replies: (rawComment.replies || []).map(normalizeComment),
+    userReaction: rawComment.userReaction,
   };
 }
 
@@ -51,30 +52,40 @@ function normalizeComment(rawComment: any): CommentType {
  */
 async function convertFitPicToFitPicItem(fitpic: any, commentsFromResponse?: CommentType[]): Promise<FitPicItem | null> {
   try {
-    const source = FITPIC_ASSETS[fitpic.id];
-    if (!source) {
-      console.warn(`No asset found for FitPic ID: ${fitpic.id}`);
+    const staticSource = FITPIC_ASSETS[fitpic.id];
+    const source = staticSource ?? { uri: fitpic.photos?.[0]?.url ?? '' };
+    if (!source || (typeof source === 'object' && 'uri' in source && !source.uri)) {
+      console.warn(`No image source for FitPic ID: ${fitpic.id}`);
       return null;
     }
 
-    // Get image dimensions
+    // Get image dimensions: static asset, API photo, or portrait default
     const dimensions = await (async () => {
-      try {
-        const resolved = Image.resolveAssetSource(source);
-        if (resolved && resolved.width && resolved.height) {
-          return {
-            width: resolved.width,
-            height: resolved.height
-          };
+      if (staticSource) {
+        try {
+          const resolved = Image.resolveAssetSource(staticSource);
+          if (resolved && resolved.width && resolved.height) {
+            return { width: resolved.width, height: resolved.height };
+          }
+        } catch (error) {
+          console.warn('Failed to resolve image dimensions:', error);
         }
-      } catch (error) {
-        console.warn('Failed to resolve image dimensions:', error);
+        return undefined;
       }
-      return undefined;
+      if (fitpic.photos?.[0]?.width != null && fitpic.photos[0].height != null) {
+        return {
+          width: fitpic.photos[0].width,
+          height: fitpic.photos[0].height
+        };
+      }
+      return { width: 4, height: 5 };
     })();
 
-    // Use comments from response if provided, otherwise empty array
-    const comments: CommentType[] = commentsFromResponse || [];
+    // Use comments from response/fitpic; server returns comments inside fitpic.comments
+    const rawComments = commentsFromResponse ?? fitpic.comments ?? [];
+    const comments: CommentType[] = Array.isArray(rawComments)
+      ? rawComments.map((c: any) => normalizeComment(c))
+      : [];
 
     // Convert location object to string
     const locationString = fitpic.location 
@@ -90,8 +101,8 @@ async function convertFitPicToFitPicItem(fitpic: any, commentsFromResponse?: Com
         }, { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } })
       : {
           counts: {
-            LIKE: engagement?.likes ?? 0,
-            THUMBS_UP: engagement?.heart ?? 0,
+            LIKE: engagement?.heart ?? 0,
+            THUMBS_UP: engagement?.likes ?? 0,
             FIRE: engagement?.fire ?? 0,
             DISLIKE: engagement?.dislikes ?? 0,
           },
@@ -113,6 +124,8 @@ async function convertFitPicToFitPicItem(fitpic: any, commentsFromResponse?: Com
       location: locationString,
       reactions,
       comments,
+      userReaction: fitpic.engagement?.userReaction,
+      isSaved: fitpic.engagement?.isSaved,
       ...dimensions
     };
   } catch (error) {
@@ -124,9 +137,12 @@ async function convertFitPicToFitPicItem(fitpic: any, commentsFromResponse?: Com
 export async function getFitPicById(id: string): Promise<FitPicItem | null> {
   // First try to get from API endpoint (has full data including products and comments)
   try {
-    const response = await fitpicClient.getById(id) as any; // Type assertion needed because response includes comments
+    const response = await fitpicClient.getById(id) as any;
     if (response.success && response.fitpic) {
-      const fitpicItem = await convertFitPicToFitPicItem(response.fitpic, response.comments);
+      // Server returns comments inside fitpic.comments (not top-level response.comments)
+      const fitpic = response.fitpic;
+      const commentsSource = fitpic.comments ?? response.comments;
+      const fitpicItem = await convertFitPicToFitPicItem(fitpic, commentsSource);
       if (fitpicItem) {
         return fitpicItem;
       }

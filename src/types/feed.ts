@@ -18,6 +18,8 @@ export interface CommentType {
   dislikes: number;
   replies: CommentType[];
   authorId?: string; // When set, use for navigation; user is display username
+  /** Current user's reaction when auth present (like | dislike) */
+  userReaction?: string;
 }
 
 // FitPic specific data
@@ -34,6 +36,10 @@ export interface FitPicItem extends BaseFeedItem {
   reactions: Reactions;
   comments?: CommentType[]; // Optional comments array
   location?: string; // Optional location string (e.g., "New York, NY")
+  /** Current user's reaction when auth present (LIKE | THUMBS_UP | FIRE | DISLIKE) */
+  userReaction?: string;
+  /** Whether the current user has saved this fitpic (from API when auth present) */
+  isSaved?: boolean;
   // Intrinsic dimensions for proper grid layout
   width?: number;
   height?: number;

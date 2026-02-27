@@ -41,16 +41,20 @@ export type FitPicEngagement = {
   isSaved?: boolean;
   reactions?: EmojiReaction[];
   userReactions?: string[]; // emojis the current user has reacted with
+  /** Current user's reaction when auth present: LIKE | THUMBS_UP | FIRE | DISLIKE */
+  userReaction?: string;
 };
 
 export type FitPicComment = {
   id: string;
-  user: string; // user id
+  user: string; // user id or username
   text: string;
   createdAt: string;
   like: number;
   dislike: number;
   replies: FitPicComment[];
+  /** Current user's reaction when auth present: like | dislike */
+  userReaction?: string;
 };
 
 export type FitPic = {
@@ -121,14 +125,39 @@ export type GetFitPicsResponse = {
   error?: string;
 };
 
+export type ReactionType = 'LIKE' | 'THUMBS_UP' | 'FIRE' | 'DISLIKE';
+
 export type UpdateFitPicEngagementRequest = {
   fitpicId: string;
-  action: 'like' | 'unlike' | 'save' | 'unsave';
+  action: 'react' | 'unreact' | 'save' | 'unsave';
+  reaction?: ReactionType; // required when action is react or unreact
 };
 
 export type UpdateFitPicEngagementResponse = {
   success: boolean;
   engagement?: FitPicEngagement;
+  error?: string;
+};
+
+export type AddCommentRequest = {
+  text: string;
+  parentCommentId?: string;
+};
+
+export type AddCommentResponse = {
+  success: boolean;
+  comment?: FitPicComment;
+  error?: string;
+};
+
+export type CommentReactRequest = {
+  commentId: string;
+  reaction: 'like' | 'dislike';
+};
+
+export type CommentReactResponse = {
+  success: boolean;
+  comment?: FitPicComment;
   error?: string;
 };
 
