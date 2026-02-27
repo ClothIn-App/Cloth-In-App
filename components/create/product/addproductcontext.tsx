@@ -36,7 +36,7 @@ type AddProductContextType = {
   setSpecifications: (specs: string) => void;
   setDescription: (desc: string) => void;
   setLink: (link: string) => void;
-  setPhotos: (photos: string[]) => void;
+  setPhotos: (photos: string[] | ((prev: string[]) => string[])) => void;
   setPriceType: (type: PriceType) => void;
   setPrice: (price: string) => void;
   setOriginalPrice: (price: string) => void;
@@ -90,8 +90,11 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
     setFormData(prev => ({ ...prev, link }));
   }, []);
 
-  const setPhotos = useCallback((photos: string[]) => {
-    setFormData(prev => ({ ...prev, photos }));
+  const setPhotos = useCallback((photos: string[] | ((prev: string[]) => string[])) => {
+    setFormData(prev => ({
+      ...prev,
+      photos: typeof photos === 'function' ? photos(prev.photos) : photos,
+    }));
   }, []);
 
   const setPriceType = useCallback((priceType: PriceType) => {
