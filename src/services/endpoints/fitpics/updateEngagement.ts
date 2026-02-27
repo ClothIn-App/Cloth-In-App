@@ -39,22 +39,44 @@ export const updateFitPicEngagementEndpoint: EndpointDefinition<
     }
 
     const engagement = { ...fitpic.engagement };
+    const reactionToKey: Record<string, keyof typeof engagement> = {
+      LIKE: "heart",
+      THUMBS_UP: "likes",
+      FIRE: "fire",
+      DISLIKE: "dislikes",
+    };
 
     switch (request.action) {
-      case "like":
-        engagement.likes += 1;
-        engagement.isLiked = true;
+      case "react":
+        if (request.reaction) {
+          const prev = (fitpic.engagement as any).userReaction;
+          if (prev && reactionToKey[prev]) {
+            engagement[reactionToKey[prev]] = Math.max(
+              0,
+              (engagement[reactionToKey[prev]] as number) - 1
+            );
+          }
+          (engagement as any).userReaction = request.reaction;
+          const key = reactionToKey[request.reaction];
+          if (key) engagement[key] = ((engagement[key] as number) ?? 0) + 1;
+        }
         break;
-      case "unlike":
-        engagement.likes = Math.max(0, engagement.likes - 1);
-        engagement.isLiked = false;
+      case "unreact":
+        if (request.reaction) {
+          const prev = (fitpic.engagement as any).userReaction;
+          if (prev === request.reaction) {
+            const k = reactionToKey[request.reaction];
+            if (k) engagement[k] = Math.max(0, (engagement[k] as number) - 1);
+            (engagement as any).userReaction = undefined;
+          }
+        }
         break;
       case "save":
-        engagement.saves += 1;
+        engagement.saves = (engagement.saves ?? 0) + 1;
         engagement.isSaved = true;
         break;
       case "unsave":
-        engagement.saves = Math.max(0, engagement.saves - 1);
+        engagement.saves = Math.max(0, (engagement.saves ?? 0) - 1);
         engagement.isSaved = false;
         break;
     }

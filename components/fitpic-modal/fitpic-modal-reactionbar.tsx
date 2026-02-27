@@ -23,6 +23,8 @@ type Props = {
   isSaved?: boolean;
   /** Optional: callback when save state changes */
   onToggleSave?: (nextSaved: boolean) => void;
+  /** Optional: called when user taps a reaction (key and whether it was added or removed) for API sync */
+  onReactionPress?: (key: ReactionKey, isAdding: boolean) => void;
 };
 
 /**
@@ -47,10 +49,16 @@ export default function MockFitPicReactionBar({
   initialSelected = null,
   isSaved: isSavedProp,
   onToggleSave,
+  onReactionPress,
 }: Props) {
-  // Single-reaction selection (client-only, optimistic)
-  const [selected, setSelected] = useState<ReactionKey | null>(initialSelected);
-  
+  // Single-reaction selection (client-only, optimistic); sync from prop when it changes
+  const [selected, setSelected] = useState<ReactionKey | null>(initialSelected ?? null);
+  useEffect(() => {
+    if (initialSelected !== undefined) {
+      setSelected(initialSelected);
+    }
+  }, [initialSelected]);
+
   // Save/bookmark state (uncontrolled by default, controlled if isSaved prop is provided)
   const [saved, setSaved] = useState<boolean>(isSavedProp ?? false);
   
@@ -82,6 +90,7 @@ export default function MockFitPicReactionBar({
   const handleReactionPress = (key: ReactionKey) => {
     const currentCounts = reactions.counts;
     const nextCounts = { ...currentCounts };
+    const isAdding = selected !== key;
 
     if (selected === key) {
       // Toggle OFF same reaction
@@ -98,6 +107,7 @@ export default function MockFitPicReactionBar({
 
     animatePop(key);
     onChange({ counts: nextCounts });
+    onReactionPress?.(key, isAdding);
   };
 
   const handleSavePress = () => {
