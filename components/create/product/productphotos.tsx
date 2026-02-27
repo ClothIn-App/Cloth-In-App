@@ -1,6 +1,6 @@
 // src/create/product/productphotos.tsx
-import React from 'react';
-import { View, Text, StyleSheet, Alert, Platform, ActionSheetIOS } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Alert, Modal, Pressable } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAddProductContext } from './addproductcontext';
 import { MockDraftsProvider } from './mockdrafts';
@@ -10,6 +10,7 @@ const MAX_PHOTOS = 5;
 
 export default function ProductPhotos() {
   const { photos, setPhotos } = useAddProductContext();
+  const [showPhotoOptions, setShowPhotoOptions] = useState(false);
 
   const handleAddPhotos = () => {
     if (photos.length >= MAX_PHOTOS) {
@@ -20,76 +21,64 @@ export default function ProductPhotos() {
       );
       return;
     }
+    setShowPhotoOptions(true);
+  };
 
-    const takePhoto = () => {
-      ImagePicker.requestCameraPermissionsAsync().then(({ status }) => {
-        if (status !== 'granted') {
-          Alert.alert(
-            'Permission Required',
-            'We need access to your camera to take a product photo.',
-            [{ text: 'OK' }]
-          );
-          return;
+  const takePhoto = () => {
+    setShowPhotoOptions(false);
+    ImagePicker.requestCameraPermissionsAsync().then(({ status }) => {
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Required',
+          'We need access to your camera to take a product photo.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+      ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      }).then((result) => {
+        if (!result.canceled && result.assets[0]) {
+          const uri = result.assets[0].uri;
+          setPhotos((prev) => [...prev, uri].slice(0, MAX_PHOTOS));
         }
-        ImagePicker.launchCameraAsync({
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 0.8,
-        }).then((result) => {
-          if (!result.canceled && result.assets[0]) {
-            const uri = result.assets[0].uri;
-            setPhotos((prev) => [...prev, uri].slice(0, MAX_PHOTOS));
-          }
-        }).catch(() => {
-          Alert.alert('Error', 'Failed to take photo. Please try again.', [{ text: 'OK' }]);
-        });
+      }).catch(() => {
+        Alert.alert('Error', 'Failed to take photo. Please try again.', [{ text: 'OK' }]);
       });
-    };
+    });
+  };
 
-    const chooseFromLibrary = () => {
-      ImagePicker.requestMediaLibraryPermissionsAsync().then(({ status }) => {
-        if (status !== 'granted') {
-          Alert.alert(
-            'Permission Required',
-            'We need access to your photo library to choose a product photo.',
-            [{ text: 'OK' }]
-          );
-          return;
+  const chooseFromLibrary = () => {
+    setShowPhotoOptions(false);
+    ImagePicker.requestMediaLibraryPermissionsAsync().then(({ status }) => {
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Required',
+          'We need access to your photo library to choose a product photo.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+      ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      }).then((result) => {
+        if (!result.canceled && result.assets[0]) {
+          const uri = result.assets[0].uri;
+          setPhotos((prev) => [...prev, uri].slice(0, MAX_PHOTOS));
         }
-        ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 0.8,
-        }).then((result) => {
-          if (!result.canceled && result.assets[0]) {
-            const uri = result.assets[0].uri;
-            setPhotos((prev) => [...prev, uri].slice(0, MAX_PHOTOS));
-          }
-        }).catch(() => {
-          Alert.alert('Error', 'Failed to select photo. Please try again.', [{ text: 'OK' }]);
-        });
+      }).catch(() => {
+        Alert.alert('Error', 'Failed to select photo. Please try again.', [{ text: 'OK' }]);
       });
-    };
+    });
+  };
 
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: ['Cancel', 'Take photo', 'Choose from library'],
-          cancelButtonIndex: 0,
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 1) takePhoto();
-          else if (buttonIndex === 2) chooseFromLibrary();
-        }
-      );
-    } else {
-      Alert.alert('Add photo', undefined, [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Take photo', onPress: takePhoto },
-        { text: 'Choose from library', onPress: chooseFromLibrary },
-      ]);
-    }
+  const dismissPhotoOptions = () => {
+    setShowPhotoOptions(false);
   };
 
   const handleRemovePhoto = (id: string) => {
@@ -115,6 +104,24 @@ export default function ProductPhotos() {
           />
         </MockDraftsProvider>
       </View>
+
+      <Modal
+        visible={showPhotoOptions}
+        transparent
+        animationType="fade"
+        onRequestClose={dismissPhotoOptions}
+      >
+        <Pressable style={styles.photoOptionsOverlay} onPress={dismissPhotoOptions}>
+          <Pressable style={styles.photoOptionsCard} onPress={() => {}}>
+            <Pressable style={styles.photoOptionButton} onPress={takePhoto}>
+              <Text style={styles.photoOptionText}>Take Photo</Text>
+            </Pressable>
+            <Pressable style={[styles.photoOptionButton, styles.photoOptionButtonBorder]} onPress={chooseFromLibrary}>
+              <Text style={styles.photoOptionText}>Choose From Library</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -136,5 +143,32 @@ const styles = StyleSheet.create({
   },
   photoGridContainer: {
     minHeight: 200,
+  },
+  photoOptionsOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  photoOptionsCard: {
+    width: '100%',
+    maxWidth: 320,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  photoOptionButton: {
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+  },
+  photoOptionButtonBorder: {
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+  },
+  photoOptionText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
   },
 });

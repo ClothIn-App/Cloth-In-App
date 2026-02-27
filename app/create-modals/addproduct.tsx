@@ -5,6 +5,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 
+import { Ionicons } from '@expo/vector-icons';
+
 import { useAddProductContext, AddProductProvider } from '../../components/create/product/addproductcontext';
 import CategorySelect from '../../components/create/product/categoryselect';
 import BrandSelect from '../../components/create/product/brandselect';
@@ -76,31 +78,68 @@ function AddProductContent() {
     router.back();
   }, [isValid, category, brand, productName, specifications, description, link, photos, priceType, price, originalPrice, router]);
 
-  // Calculate header height similar to fitpic_post
+  // Flow bar: count how many of the 7 fields have any input (0–7)
+  const filledCount = React.useMemo(() => {
+    let count = 0;
+    if (category.trim().length > 0) count += 1;
+    if (brand.trim().length > 0) count += 1;
+    if (productName.trim().length > 0) count += 1;
+    if (specifications.trim().length > 0 || description.trim().length > 0) count += 1;
+    if (link.trim().length > 0) count += 1;
+    if (photos.length > 0) count += 1;
+    const priceFilled =
+      priceType === 'tbd' ||
+      priceType === 'na' ||
+      price.trim().length > 0 ||
+      originalPrice.trim().length > 0;
+    if (priceFilled) count += 1;
+    return count;
+  }, [
+    category,
+    brand,
+    productName,
+    specifications,
+    description,
+    link,
+    photos.length,
+    priceType,
+    price,
+    originalPrice,
+  ]);
+
+  // Calculate header height: top row + flow bar
   const topPad = Math.max(insets.top - 6, 0);
-  const headerHeight = 60 + topPad;
+  const FLOW_BAR_HEIGHT = 8;
+  const headerHeight = 60 + topPad + FLOW_BAR_HEIGHT + 4;
   const footerSafePad = insets.bottom;
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       {/* Header */}
       <View style={[styles.header, { paddingTop: topPad, height: headerHeight }]}>
-        <Pressable onPress={handleClose} hitSlop={8} style={styles.headerButton}>
-          <Text style={styles.headerButtonText}>Cancel</Text>
-        </Pressable>
-        
-        <Text style={styles.headerTitle}>New Product</Text>
-        
-        <Pressable
-          onPress={handleAddProduct}
-          hitSlop={8}
-          style={[styles.headerButton, !isValid && styles.headerButtonDisabled]}
-          disabled={!isValid}
-        >
-          <Text style={[styles.headerButtonText, !isValid && styles.headerButtonTextDisabled]}>
-            Post
-          </Text>
-        </Pressable>
+        <View style={styles.headerRow}>
+          <Pressable onPress={handleClose} hitSlop={8} style={styles.headerButton}>
+            <Ionicons name="chevron-back-outline" size={24} color="#111827" />
+          </Pressable>
+
+          <Text style={styles.headerTitle}>New Product</Text>
+
+          <Pressable
+            onPress={handleAddProduct}
+            hitSlop={8}
+            style={[styles.headerButton, !isValid && styles.headerButtonDisabled]}
+            disabled={!isValid}
+          >
+            <Text style={[styles.headerButtonText, !isValid && styles.headerButtonTextDisabled]}>
+              Post
+            </Text>
+          </Pressable>
+        </View>
+        <View style={styles.flowBarContainer}>
+          <View
+            style={[styles.flowBarFill, { width: `${(filledCount / 7) * 100}%` }]}
+          />
+        </View>
       </View>
 
       {/* Content */}
@@ -167,16 +206,33 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   header: {
+    flexDirection: 'column',
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
   },
   headerButton: {
     padding: 8,
+  },
+  flowBarContainer: {
+    height: 8,
+    width: '100%',
+    marginTop: 0,
+    backgroundColor: '#e5e7eb',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  flowBarFill: {
+    height: '100%',
+    backgroundColor: '#3b82f6',
+    borderRadius: 4,
   },
   headerButtonDisabled: {
     opacity: 0.5,
@@ -197,6 +253,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 16,
+    paddingTop: 24,
   },
   footer: {
     position: 'absolute',

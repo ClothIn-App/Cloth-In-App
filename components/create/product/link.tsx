@@ -7,12 +7,19 @@ export default function ProductLink() {
   const { link, setLink } = useAddProductContext();
 
   const isValidUrl = (url: string) => {
-    if (!url) return true; // Empty is valid (optional field)
+    if (!url || !url.trim()) return true; // Empty is valid (optional field)
+    const trimmed = url.trim();
     try {
-      new URL(url);
+      new URL(trimmed);
       return true;
     } catch {
-      return false;
+      // Accept URLs without protocol (e.g. nike.com) by trying with https://
+      try {
+        new URL(`https://${trimmed}`);
+        return true;
+      } catch {
+        return false;
+      }
     }
   };
 
@@ -29,7 +36,7 @@ export default function ProductLink() {
         style={[styles.input, hasError && styles.inputError]}
         value={link}
         onChangeText={handleLinkChange}
-        placeholder="https://example.com/product"
+        placeholder="example.com or https://example.com/product"
         placeholderTextColor="#9ca3af"
         keyboardType="url"
         autoCapitalize="none"

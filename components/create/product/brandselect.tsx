@@ -23,7 +23,7 @@ export default function BrandSelect() {
         placeholder="Enter Brand Name"
         placeholderTextColor="#9ca3af"
         maxLength={50}
-        autoCapitalize="words"
+        autoCapitalize="none"
         autoCorrect={false}
       />
       <Text style={styles.characterCount}>{brand.length}/50</Text>
