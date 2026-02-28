@@ -339,7 +339,8 @@ export default function FitPicDetailScreen() {
               />
 
               <FitPicModalMedia
-                imageUrl={fitpic.source}
+                imageUrls={fitpic.sources?.length ? fitpic.sources : undefined}
+                imageUrl={fitpic.sources?.length ? undefined : fitpic.source}
                 aspectRatio={aspectRatio}
                 borderRadius={0}
               />

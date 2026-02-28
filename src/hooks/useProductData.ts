@@ -82,6 +82,8 @@ const normalizeProduct = (rawProduct: any): Product => {
     name: rawProduct.name,
     brand: rawProduct.brand ?? "",
     price: rawProduct.price ?? 0,
+    originalPrice: rawProduct.originalPrice,
+    priceType: rawProduct.priceType,
     imagePath: primaryImage,
     description: rawProduct.description ?? "",
     specs: rawProduct.specs ?? rawProduct.specifications,

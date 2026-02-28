@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 
 type ProductDescriptionProps = {
-  description: string;
+  description?: string;
   details?: string;
 };
 
@@ -13,8 +13,11 @@ export function ProductDescription({
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
 
-  const shouldShowDescriptionToggle = description.length > 100; // Rough estimate for ~2 lines
-  const shouldShowDetailsToggle = details && details.length > 100;
+  const hasDescription = !!description && description.trim().length > 0;
+  const hasDetails = !!details && details.trim().length > 0;
+
+  const shouldShowDescriptionToggle = hasDescription && description!.length > 100;
+  const shouldShowDetailsToggle = hasDetails && details!.length > 100;
 
   const toggleDescription = () => {
     setIsDescriptionExpanded(!isDescriptionExpanded);
@@ -24,26 +27,30 @@ export function ProductDescription({
     setIsDetailsExpanded(!isDetailsExpanded);
   };
 
+  if (!hasDescription && !hasDetails) return null;
+
   return (
     <View style={styles.container}>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Description</Text>
-        <Text
-          style={styles.bodyText}
-          numberOfLines={isDescriptionExpanded ? undefined : 2}
-        >
-          {description}
-        </Text>
-        {shouldShowDescriptionToggle && (
-          <Pressable onPress={toggleDescription} hitSlop={8}>
-            <Text style={styles.toggleText}>
-              {isDescriptionExpanded ? "Show less ▴" : "Show more ▾"}
-            </Text>
-          </Pressable>
-        )}
-      </View>
+      {hasDescription && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Description</Text>
+          <Text
+            style={styles.bodyText}
+            numberOfLines={isDescriptionExpanded ? undefined : 2}
+          >
+            {description}
+          </Text>
+          {shouldShowDescriptionToggle && (
+            <Pressable onPress={toggleDescription} hitSlop={8}>
+              <Text style={styles.toggleText}>
+                {isDescriptionExpanded ? "Show less ▴" : "Show more ▾"}
+              </Text>
+            </Pressable>
+          )}
+        </View>
+      )}
 
-      {details && details.trim().length > 0 && (
+      {hasDetails && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Details</Text>
           <Text

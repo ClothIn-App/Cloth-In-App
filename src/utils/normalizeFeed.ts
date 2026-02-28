@@ -9,12 +9,13 @@ import type { Product } from '../types/content';
 import type { ProductSearchResult } from '../types/search';
 import { FITPIC_ASSETS, PRODUCT_ASSETS } from '../maps/images';
 
-// Generic product type that both Product and ProductSearchResult satisfy
 type ProductLike = {
   id: string;
   name: string;
   brand?: string;
   price?: number | null;
+  originalPrice?: number;
+  priceType?: 'fixed' | 'sale' | 'sold_out' | 'tbd' | 'na';
   description?: string;
   imageUrl?: string | null;
   createdAt?: string;
@@ -118,18 +119,23 @@ const normalizeProduct = async (product: ProductLike): Promise<ProductItem> => {
   // Products don't need dimensions since they're always square in the grid
   // The grid layout will handle the sizing based on column width
 
+  const price = product.price || 0;
+  const salePrice = product.priceType === 'sale' && product.originalPrice
+    ? price
+    : null;
+
   return {
     id: product.id,
     type: 'product',
     source,
     name: product.name,
     brand: product.brand || '',
-    price: product.price || 0,
-    salePrice: null, // Set to null for now
-    category: '', // Not available in ProductLike
+    price: product.priceType === 'sale' && product.originalPrice ? product.originalPrice : price,
+    salePrice,
+    priceType: product.priceType,
+    category: '',
     description: product.description || '',
     createdAt: product.createdAt || new Date().toISOString(),
-    // No dimensions needed for products - they're always square
   };
 };
 

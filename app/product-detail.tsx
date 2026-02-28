@@ -281,6 +281,8 @@ export default function ProductDetailModal() {
                 brandName={product.brand}
                 productName={product.name}
                 price={product.price}
+                originalPrice={product.originalPrice}
+                priceType={product.priceType}
                 productUrl={product.productUrl}
               />
               <View style={styles.reactionsWrapper}>

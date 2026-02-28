@@ -48,6 +48,8 @@ export const createProductEndpoint: EndpointDefinition<
       name: body?.name ?? "New Product",
       brand: body?.brand ?? "Brand",
       price: body?.price ?? 0,
+      originalPrice: body?.originalPrice,
+      priceType: body?.priceType,
       imagePath: firstImage || "assets/mock-products/c-d-x-PDX_a_82obo-unsplash.jpg",
       description: body?.description ?? "",
       specs: body?.specifications,

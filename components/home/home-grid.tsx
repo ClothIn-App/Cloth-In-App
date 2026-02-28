@@ -235,6 +235,7 @@ export default function Home_Grid({
               name={item.name}
               price={item.price}
               salePrice={item.salePrice}
+              priceType={item.priceType}
               sharedTransitionTag={`product-${item.id}`}
             />
           </TouchableOpacity>

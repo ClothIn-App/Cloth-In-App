@@ -1,5 +1,6 @@
 // src/create/product/addproductcontext.tsx
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { isValidProductUrl } from './link';
 
 export type PriceType = 'fixed' | 'sale' | 'sold_out' | 'tbd' | 'na';
 
@@ -118,7 +119,8 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
       formData.productName.trim().length <= 100 &&
       formData.photos.length >= 1 &&
       formData.photos.length <= 5 &&
-      (formData.priceType === 'tbd' || formData.priceType === 'na' || formData.price.trim().length > 0)
+      isValidProductUrl(formData.link) &&
+      (formData.priceType === 'tbd' || formData.priceType === 'na' || formData.priceType === 'sold_out' || formData.price.trim().length > 0)
     );
   }, [formData]);
 
