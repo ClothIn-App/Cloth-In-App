@@ -15,9 +15,20 @@ import {
   createProductEndpoint,
   CreateProductRequest,
   CreateProductResponse,
+  updateProductEngagementEndpoint,
+  addProductCommentEndpoint,
+  productCommentReactEndpoint,
 } from "../endpoints";
 // Import content feed endpoint directly to avoid conflict with fitpics feed endpoint
 import { getFeedEndpoint, GetFeedRequest, GetFeedResponse } from "../endpoints/content/getFeed";
+import type {
+  UpdateProductEngagementRequest,
+  UpdateProductEngagementResponse,
+  AddProductCommentRequest,
+  AddProductCommentResponse,
+  ProductCommentReactRequest,
+  ProductCommentReactResponse,
+} from "../types/product";
 
 // function-style
 export async function getProduct(
@@ -71,6 +82,44 @@ export async function getFitPics(
   );
 }
 
+export async function updateProductEngagement(
+  request: UpdateProductEngagementRequest
+): Promise<UpdateProductEngagementResponse> {
+  return callApiEndpoint<UpdateProductEngagementRequest, UpdateProductEngagementResponse>(
+    updateProductEngagementEndpoint,
+    {
+      pathParameters: { productId: request.productId },
+      requestBody: request,
+    }
+  );
+}
+
+export async function addProductComment(
+  productId: string,
+  body: AddProductCommentRequest
+): Promise<AddProductCommentResponse> {
+  return callApiEndpoint<AddProductCommentRequest, AddProductCommentResponse>(
+    addProductCommentEndpoint,
+    {
+      pathParameters: { productId },
+      requestBody: body,
+    }
+  );
+}
+
+export async function productCommentReact(
+  productId: string,
+  body: ProductCommentReactRequest
+): Promise<ProductCommentReactResponse> {
+  return callApiEndpoint<ProductCommentReactRequest, ProductCommentReactResponse>(
+    productCommentReactEndpoint,
+    {
+      pathParameters: { productId },
+      requestBody: body,
+    }
+  );
+}
+
 // object-style (what your screens use)
 export const contentApiClient = {
   getProduct,
@@ -79,6 +128,9 @@ export const contentApiClient = {
   getProducts,
   getFitPics,
   createProduct,
+  updateProductEngagement,
+  addProductComment,
+  productCommentReact,
 };
 
 // Export types
@@ -95,5 +147,11 @@ export type {
   GetFitPicsResponse,
   CreateProductRequest,
   CreateProductResponse,
+  UpdateProductEngagementRequest,
+  UpdateProductEngagementResponse,
+  AddProductCommentRequest,
+  AddProductCommentResponse,
+  ProductCommentReactRequest,
+  ProductCommentReactResponse,
 };
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Product, FitPic, Reactions as ProductReactions } from "../types/content";
 import type { CommentType } from "../types/feed";
 import { contentApiClient } from "../services/apiClients/contentClient";
@@ -9,10 +9,12 @@ import { getCurrentUserId, getCurrentUser } from "../services/mockSessionUsers";
 type UseProductDataResult = {
   product: Product | undefined;
   featuredFitPics: FitPic[];
-  comments: CommentType[]; // Normalized comments in CommentType format
-  userFitPics?: FitPic[]; // FitPics filtered by userId (optional)
-  followersFitPics?: FitPic[]; // FitPics from current user's followers (optional)
+  comments: CommentType[];
+  userFitPics?: FitPic[];
+  followersFitPics?: FitPic[];
   loading: boolean;
+  error: boolean;
+  refresh: () => Promise<void>;
 };
 
 // Recursive helper to normalize comments (like→likes, dislike→dislikes; preserve authorId from endpoint)
@@ -95,70 +97,56 @@ export function useProductData(productId: string | undefined, userId?: string | 
   const [featuredFitPics, setFeaturedFitPics] = useState<FitPic[]>([]);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
+  const loadData = useCallback(async () => {
     if (!productId) {
       setProduct(undefined);
       setFeaturedFitPics([]);
       setComments([]);
       setLoading(false);
+      setError(false);
       return;
     }
 
-    let cancelled = false;
+    setLoading(true);
+    setError(false);
+    try {
+      const productResponse = await contentApiClient.getProduct(productId);
 
-    async function loadData() {
-      setLoading(true);
+      const loadedProduct = (productResponse as any)?.product;
+      const normalizedProduct = normalizeProduct(loadedProduct);
+      setProduct(normalizedProduct);
+
+      const normalizedComments = (loadedProduct as any)?.comments
+        ? (loadedProduct as any).comments.map(normalizeComment)
+        : [];
+      setComments(normalizedComments);
+
       try {
-        // Load product
-        const productResponse = await contentApiClient.getProduct(productId);
-        if (cancelled) return;
-
-        const loadedProduct = (productResponse as any)?.product;
-        const normalizedProduct = normalizeProduct(loadedProduct);
-        setProduct(normalizedProduct);
-        
-        // Normalize comments
-        const normalizedComments = (loadedProduct as any)?.comments
-          ? (loadedProduct as any).comments.map(normalizeComment)
-          : [];
-        setComments(normalizedComments);
-
-        // Load all fitpics to find featured ones
-        // Use fitpicClient to get feed which includes all fitpics
-        const feedResponse = await fitpicClient.getFeed({ 
-          type: 'forYou',
-          limit: 100 
-        });
-        if (cancelled) return;
-
+        const feedResponse = await fitpicClient.list(undefined, 100);
         const allFitPics = feedResponse.fitpics || [];
-        
-        // Filter fitpics that include this product id
         const featured = allFitPics.filter((fp: FitPic) =>
           fp.products?.some((p) => p.id === productId)
         );
         setFeaturedFitPics(featured);
-      } catch (error) {
-        console.error("Error loading product data:", error);
-        if (!cancelled) {
-          setProduct(undefined);
-          setFeaturedFitPics([]);
-          setComments([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+      } catch (fitpicError) {
+        console.warn("Failed to load featured FitPics:", fitpicError);
       }
+    } catch (err) {
+      console.error("Error loading product data:", err);
+      setProduct(undefined);
+      setFeaturedFitPics([]);
+      setComments([]);
+      setError(true);
+    } finally {
+      setLoading(false);
     }
-
-    loadData();
-
-    return () => {
-      cancelled = true;
-    };
   }, [productId]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   // Filter fitpics by userId if provided
   const userFitPics = useMemo(() => {
@@ -191,6 +179,8 @@ export function useProductData(productId: string | undefined, userId?: string | 
     userFitPics, 
     followersFitPics,
     loading,
+    error,
+    refresh: loadData,
   };
 }
 

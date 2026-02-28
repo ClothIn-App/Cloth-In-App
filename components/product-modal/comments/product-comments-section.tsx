@@ -9,6 +9,10 @@ interface ProductCommentsSectionProps {
   comments: CommentType[];
   onReplyPress?: (comment: CommentType) => void;
   onCommentUpdate?: (comments: CommentType[]) => void;
+  /** When provided, top-level comments are submitted via API; called with (text, parentCommentId?) returns created comment or null */
+  onSubmitComment?: (text: string, parentCommentId?: string) => Promise<CommentType | null>;
+  /** When provided, comment like/dislike is synced to API; called with (commentId, reaction) */
+  onCommentReact?: (commentId: string, reaction: 'like' | 'dislike') => Promise<void>;
 }
 
 // Recursive helper to update a comment by id
@@ -35,6 +39,8 @@ export default function ProductCommentsSection({
   comments,
   onReplyPress: externalOnReplyPress,
   onCommentUpdate,
+  onSubmitComment,
+  onCommentReact,
 }: ProductCommentsSectionProps) {
   // Store comments in local state
   const [localComments, setLocalComments] = useState<CommentType[]>(comments);
@@ -70,22 +76,25 @@ export default function ProductCommentsSection({
     });
   }, [localComments]);
 
-  // Handle reactions (like/dislike)
-  const handleReact = (commentId: string, type: 'LIKE' | 'DISLIKE') => {
+  // Handle reactions (like/dislike): optimistic update, then sync to API when onCommentReact provided
+  const handleReact = async (commentId: string, type: 'LIKE' | 'DISLIKE') => {
+    const reaction = type === 'LIKE' ? 'like' : 'dislike';
     setLocalComments((prev) =>
       updateCommentById(prev, commentId, (c) => {
         let likes = c.likes ?? 0;
         let dislikes = c.dislikes ?? 0;
-
-        if (type === 'LIKE') {
-          likes += 1;
-        } else {
-          dislikes += 1;
-        }
-
-        return { ...c, likes, dislikes };
+        if (type === 'LIKE') likes += 1;
+        else dislikes += 1;
+        return { ...c, likes, dislikes, userReaction: reaction };
       })
     );
+    if (onCommentReact) {
+      try {
+        await onCommentReact(commentId, reaction as 'like' | 'dislike');
+      } catch (e) {
+        console.warn('Comment react failed:', e);
+      }
+    }
   };
 
   // Handle reply press
@@ -122,20 +131,25 @@ export default function ProductCommentsSection({
   };
 
 
-  // Handle top-level comment submission
-  const handleTopLevelCommentSubmit = (text: string) => {
+  // Handle top-level comment submission: use API when onSubmitComment provided
+  const handleTopLevelCommentSubmit = async (text: string) => {
+    if (onSubmitComment) {
+      const newComment = await onSubmitComment(text);
+      if (newComment) {
+        setLocalComments((prev) => [...prev, newComment]);
+      }
+      return;
+    }
     const newComment: CommentType = {
       id: `c${Date.now()}`,
-      user: 'current_user', // TODO: Replace with actual current user
+      user: 'current_user',
       text,
       createdAt: new Date().toISOString(),
       likes: 0,
       dislikes: 0,
       replies: [],
     };
-
-    const updated = [...localComments, newComment];
-    setLocalComments(updated);
+    setLocalComments((prev) => [...prev, newComment]);
   };
 
   return (
