@@ -169,6 +169,106 @@ async function uploadPhotosToServer(
   };
 }
 
+/**
+ * Upload product photos to POST /v1/products/uploads?productId=...
+ * Stores under products/{productId}/ in storage. No fitpicId in response.
+ */
+async function uploadProductPhotosToServer(
+  photos: PhotoUploadRequest[],
+  productId: string,
+  onProgress?: (uploadId: string, progress: UploadProgress) => void
+): Promise<BatchUploadResponse> {
+  log.info("[UPLOAD] product upload start", { photoCount: photos.length, productId });
+
+  const token = await (async () => {
+    try {
+      const { getValidIdToken } = await import("@/src/services/authTokenManager");
+      return await getValidIdToken();
+    } catch {
+      return null;
+    }
+  })();
+  if (!token) {
+    return {
+      success: false,
+      uploads: photos.map(() => ({ success: false, error: "Unauthorized" })),
+      errors: ["Missing auth token"],
+    };
+  }
+
+  const formData = new FormData();
+  photos.forEach((photo) => {
+    formData.append("photos", {
+      uri: photo.uri,
+      name: photo.name,
+      type: photo.type || "image/jpeg",
+    } as unknown as Blob);
+  });
+
+  const uploadId = generateUploadId();
+  onProgress?.(uploadId, { uploadId, progress: 0, status: "uploading" });
+
+  const uploadUrl = `${BASE_API_URL}/v1/products/uploads?productId=${encodeURIComponent(productId)}`;
+  log.info("[UPLOAD] sending POST", { url: uploadUrl });
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), UPLOAD_REQUEST_TIMEOUT_MS);
+
+  let res: Response;
+  try {
+    res = await fetch(uploadUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+      signal: controller.signal,
+    });
+  } catch (err) {
+    clearTimeout(timeoutId);
+    const message = err instanceof Error ? err.message : String(err);
+    const isTimeout = err instanceof Error && err.name === "AbortError";
+    log.warn("[UPLOAD] product upload timeout or error", { error: message, isTimeout });
+    onProgress?.(uploadId, { uploadId, progress: 0, status: "failed", error: message });
+    return {
+      success: false,
+      uploads: photos.map(() => ({ success: false, error: message })),
+      errors: [isTimeout ? "Request timeout" : message],
+    };
+  }
+  clearTimeout(timeoutId);
+
+  if (!res.ok) {
+    const errText = await res.text();
+    onProgress?.(uploadId, { uploadId, progress: 0, status: "failed", error: errText || res.statusText });
+    return {
+      success: false,
+      uploads: photos.map(() => ({ success: false, error: errText || res.statusText })),
+      errors: [errText || res.statusText],
+    };
+  }
+
+  const data = (await res.json()) as { uploads?: ServerUploadItem[] };
+  const uploads = data.uploads ?? [];
+  onProgress?.(uploadId, { uploadId, progress: 100, status: "completed" });
+
+  const results: PhotoUploadResponse[] = uploads.map((u) => ({
+    success: true,
+    url: u.url,
+    thumbnailUrl: u.url,
+    uploadId: u.path,
+  }));
+  while (results.length < photos.length) {
+    results.push({ success: false, error: "Server did not return URL" });
+  }
+
+  return {
+    success: results.every((r) => r.success),
+    uploads: results,
+    errors: results.filter((r) => !r.success).map((r) => r.error).filter(Boolean) as string[],
+  };
+}
+
 // Helper function to simulate upload progress
 const simulateUploadProgress = (
   uploadId: string,
@@ -299,6 +399,51 @@ export const uploadPhotos = async (
       success: false,
       uploads: [],
       errors: [error instanceof Error ? error.message : "Batch upload failed"],
+    };
+  }
+};
+
+/**
+ * Upload product photos to products/{productId}/ in storage.
+ * When not in mock mode, uses POST /v1/products/uploads?productId=...
+ * Mock mode returns simulated URLs (path not reflected in storage).
+ */
+export const uploadProductPhotos = async (
+  photos: PhotoUploadRequest[],
+  productId: string,
+  onProgress?: (uploadId: string, progress: UploadProgress) => void
+): Promise<BatchUploadResponse> => {
+  try {
+    if (photos.length === 0) {
+      return { success: true, uploads: [] };
+    }
+    if (photos.length > 10) {
+      return {
+        success: false,
+        uploads: [],
+        errors: ["Maximum 10 photos allowed per upload"],
+      };
+    }
+    if (useRealApi()) {
+      return uploadProductPhotosToServer(photos, productId, onProgress);
+    }
+    // Mock: same simulated upload as fitpics (path not reflected)
+    const uploadPromises = photos.map((photo) =>
+      uploadPhoto(photo, (progress) => {
+        onProgress?.(progress.uploadId, progress);
+      })
+    );
+    const results = await Promise.all(uploadPromises);
+    return {
+      success: results.every((r) => r.success),
+      uploads: results,
+      errors: results.filter((r) => !r.success).map((r) => r.error).filter(Boolean) as string[],
+    };
+  } catch (error) {
+    return {
+      success: false,
+      uploads: [],
+      errors: [error instanceof Error ? error.message : "Product upload failed"],
     };
   }
 };

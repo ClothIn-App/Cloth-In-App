@@ -12,6 +12,9 @@ import {
   getFitPicsEndpoint,
   GetFitPicsRequest,
   GetFitPicsResponse,
+  createProductEndpoint,
+  CreateProductRequest,
+  CreateProductResponse,
 } from "../endpoints";
 // Import content feed endpoint directly to avoid conflict with fitpics feed endpoint
 import { getFeedEndpoint, GetFeedRequest, GetFeedResponse } from "../endpoints/content/getFeed";
@@ -31,6 +34,15 @@ export async function getFitPic(
   return callApiEndpoint<undefined, GetFitPicResponse>(getFitPicEndpoint, {
     pathParameters: { fitpicId },
   });
+}
+
+export async function createProduct(
+  request: CreateProductRequest
+): Promise<CreateProductResponse> {
+  return callApiEndpoint<CreateProductRequest, CreateProductResponse>(
+    createProductEndpoint,
+    { requestBody: request }
+  );
 }
 
 export async function getFeed(
@@ -66,6 +78,7 @@ export const contentApiClient = {
   getFeed,
   getProducts,
   getFitPics,
+  createProduct,
 };
 
 // Export types
@@ -80,5 +93,7 @@ export type {
   GetProductsResponse,
   GetFitPicsRequest,
   GetFitPicsResponse,
+  CreateProductRequest,
+  CreateProductResponse,
 };
 

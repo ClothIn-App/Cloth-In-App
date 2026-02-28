@@ -23,7 +23,7 @@ export default function ProductName() {
         placeholder="Enter Product Name"
         placeholderTextColor="#9ca3af"
         maxLength={100}
-        autoCapitalize="none"
+        autoCapitalize="words"
         autoCorrect={false}
       />
       <Text style={styles.characterCount}>{productName.length}/100</Text>

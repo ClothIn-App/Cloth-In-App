@@ -8,6 +8,9 @@ import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useAddProductContext, AddProductProvider } from '../../components/create/product/addproductcontext';
+import { uploadProductPhotos, PhotoUploadRequest } from '@/src/services/photoUploadService';
+import { contentApiClient, CreateProductRequest } from '@/src/services/apiClients/contentClient';
+import { clearFeedCache } from '@/src/utils/getFeedItem';
 import CategorySelect from '../../components/create/product/categoryselect';
 import BrandSelect from '../../components/create/product/brandselect';
 import ProductName from '../../components/create/product/productname';
@@ -57,26 +60,92 @@ function AddProductContent() {
     setShowDiscardConfirm(false);
   }, []);
 
-  const handleAddProduct = React.useCallback(() => {
+  const handleAddProduct = React.useCallback(async () => {
     if (!isValid) return;
-    
-    // TODO: Implement actual product creation logic
-    console.log('Adding product:', {
-      category,
-      brand,
-      productName,
-      specifications,
-      description,
-      link,
-      photos,
-      priceType,
-      price,
-      originalPrice,
-    });
-    
-    // For now, just go back
-    router.back();
-  }, [isValid, category, brand, productName, specifications, description, link, photos, priceType, price, originalPrice, router]);
+
+    try {
+      // Generate product ID once for storage path and Firestore document
+      const productId = Array.from({ length: 32 }, () =>
+        Math.floor(Math.random() * 16).toString(16)
+      ).join("");
+
+      const uploadRequests: PhotoUploadRequest[] = photos.map((uri, index) => ({
+        uri,
+        type: "image/jpeg",
+        name: `product_${Date.now()}_${index}.jpg`,
+      }));
+
+      const uploadResult = await uploadProductPhotos(uploadRequests, productId);
+
+      if (!uploadResult.success) {
+        const message = uploadResult.errors?.[0] ?? "Failed to upload product photos. Please try again.";
+        Alert.alert("Upload failed", message, [{ text: "OK" }]);
+        return;
+      }
+
+      const uploadedUrls =
+        uploadResult.uploads
+          .filter((u) => u.success && u.url)
+          .map((u) => u.url as string);
+
+      if (!uploadedUrls.length) {
+        Alert.alert("Upload failed", "No photo URLs were returned from the server.", [{ text: "OK" }]);
+        return;
+      }
+
+      const parsedPrice = price.trim().length > 0 ? Number(price) : undefined;
+      const parsedOriginalPrice = originalPrice.trim().length > 0 ? Number(originalPrice) : undefined;
+
+      const requestBody: CreateProductRequest = {
+        productId,
+        name: productName.trim(),
+        brand: brand.trim(),
+        category: category.trim(),
+        description: description.trim() || undefined,
+        specifications: specifications.trim() || undefined,
+        productUrl: link.trim() || undefined,
+        priceType,
+        price:
+          priceType === "fixed" || priceType === "sale" || priceType === "sold_out"
+            ? parsedPrice
+            : undefined,
+        originalPrice: parsedOriginalPrice,
+        currency: "USD",
+        images: uploadedUrls.map((url) => ({ url })),
+      };
+
+      const response = await contentApiClient.createProduct(requestBody);
+
+      if (!response.success) {
+        Alert.alert("Error", response.error ?? "Failed to create product. Please try again.", [
+          { text: "OK" },
+        ]);
+        return;
+      }
+
+      // Reset form, clear feed cache so the new product can appear, and navigate back
+      reset();
+      clearFeedCache();
+      router.back();
+    } catch (error) {
+      console.error("Error creating product:", error);
+      Alert.alert("Error", "Failed to create product. Please try again.", [{ text: "OK" }]);
+    }
+  }, [
+    isValid,
+    category,
+    brand,
+    productName,
+    specifications,
+    description,
+    link,
+    photos,
+    priceType,
+    price,
+    originalPrice,
+    reset,
+    router,
+  ]);
 
   // Flow bar: count how many of the 7 fields have any input (0–7)
   const filledCount = React.useMemo(() => {

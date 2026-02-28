@@ -1,6 +1,6 @@
 // src/create/product/productphotos.tsx
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, Modal, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Alert, Platform, ActionSheetIOS, ActivityIndicator, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAddProductContext } from './addproductcontext';
 import { MockDraftsProvider } from './mockdrafts';
@@ -10,7 +10,13 @@ const MAX_PHOTOS = 5;
 
 export default function ProductPhotos() {
   const { photos, setPhotos } = useAddProductContext();
-  const [showPhotoOptions, setShowPhotoOptions] = useState(false);
+  const [isOpeningPicker, setIsOpeningPicker] = useState(false);
+
+  // Pre-request permissions on mount so "Take photo" / "Choose from library" open immediately when tapped
+  useEffect(() => {
+    ImagePicker.requestCameraPermissionsAsync().catch(() => {});
+    ImagePicker.requestMediaLibraryPermissionsAsync().catch(() => {});
+  }, []);
 
   const handleAddPhotos = () => {
     if (photos.length >= MAX_PHOTOS) {
@@ -21,64 +27,88 @@ export default function ProductPhotos() {
       );
       return;
     }
-    setShowPhotoOptions(true);
-  };
 
-  const takePhoto = () => {
-    setShowPhotoOptions(false);
-    ImagePicker.requestCameraPermissionsAsync().then(({ status }) => {
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permission Required',
-          'We need access to your camera to take a product photo.',
-          [{ text: 'OK' }]
-        );
-        return;
-      }
-      ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
-      }).then((result) => {
-        if (!result.canceled && result.assets[0]) {
-          const uri = result.assets[0].uri;
-          setPhotos((prev) => [...prev, uri].slice(0, MAX_PHOTOS));
+    const takePhoto = () => {
+      setIsOpeningPicker(true);
+      ImagePicker.requestCameraPermissionsAsync().then(({ status }) => {
+        if (status !== 'granted') {
+          setIsOpeningPicker(false);
+          Alert.alert(
+            'Permission Required',
+            'We need access to your camera to take a product photo.',
+            [{ text: 'OK' }]
+          );
+          return;
         }
+        ImagePicker.launchCameraAsync({
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.8,
+        }).then((result) => {
+          setIsOpeningPicker(false);
+          if (!result.canceled && result.assets[0]) {
+            const uri = result.assets[0].uri;
+            setPhotos((prev) => [...prev, uri].slice(0, MAX_PHOTOS));
+          }
+        }).catch(() => {
+          setIsOpeningPicker(false);
+          Alert.alert('Error', 'Failed to take photo. Please try again.', [{ text: 'OK' }]);
+        });
       }).catch(() => {
-        Alert.alert('Error', 'Failed to take photo. Please try again.', [{ text: 'OK' }]);
+        setIsOpeningPicker(false);
       });
-    });
-  };
+    };
 
-  const chooseFromLibrary = () => {
-    setShowPhotoOptions(false);
-    ImagePicker.requestMediaLibraryPermissionsAsync().then(({ status }) => {
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permission Required',
-          'We need access to your photo library to choose a product photo.',
-          [{ text: 'OK' }]
-        );
-        return;
-      }
-      ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
-      }).then((result) => {
-        if (!result.canceled && result.assets[0]) {
-          const uri = result.assets[0].uri;
-          setPhotos((prev) => [...prev, uri].slice(0, MAX_PHOTOS));
+    const chooseFromLibrary = () => {
+      setIsOpeningPicker(true);
+      ImagePicker.requestMediaLibraryPermissionsAsync().then(({ status }) => {
+        if (status !== 'granted') {
+          setIsOpeningPicker(false);
+          Alert.alert(
+            'Permission Required',
+            'We need access to your photo library to choose a product photo.',
+            [{ text: 'OK' }]
+          );
+          return;
         }
+        ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.8,
+        }).then((result) => {
+          setIsOpeningPicker(false);
+          if (!result.canceled && result.assets[0]) {
+            const uri = result.assets[0].uri;
+            setPhotos((prev) => [...prev, uri].slice(0, MAX_PHOTOS));
+          }
+        }).catch(() => {
+          setIsOpeningPicker(false);
+          Alert.alert('Error', 'Failed to select photo. Please try again.', [{ text: 'OK' }]);
+        });
       }).catch(() => {
-        Alert.alert('Error', 'Failed to select photo. Please try again.', [{ text: 'OK' }]);
+        setIsOpeningPicker(false);
       });
-    });
-  };
+    };
 
-  const dismissPhotoOptions = () => {
-    setShowPhotoOptions(false);
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Cancel', 'Take photo', 'Choose from library'],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) takePhoto();
+          else if (buttonIndex === 2) chooseFromLibrary();
+        }
+      );
+    } else {
+      Alert.alert('Add photo', undefined, [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Take photo', onPress: takePhoto },
+        { text: 'Choose from library', onPress: chooseFromLibrary },
+      ]);
+    }
   };
 
   const handleRemovePhoto = (id: string) => {
@@ -91,6 +121,11 @@ export default function ProductPhotos() {
 
   return (
     <View style={styles.container}>
+      <Modal visible={isOpeningPicker} transparent animationType="fade">
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
+      </Modal>
       <Text style={styles.label}>Photos *</Text>
       <Text style={styles.subLabel}>Add 1-5 photos of your product</Text>
 
@@ -104,24 +139,6 @@ export default function ProductPhotos() {
           />
         </MockDraftsProvider>
       </View>
-
-      <Modal
-        visible={showPhotoOptions}
-        transparent
-        animationType="fade"
-        onRequestClose={dismissPhotoOptions}
-      >
-        <Pressable style={styles.photoOptionsOverlay} onPress={dismissPhotoOptions}>
-          <Pressable style={styles.photoOptionsCard} onPress={() => {}}>
-            <Pressable style={styles.photoOptionButton} onPress={takePhoto}>
-              <Text style={styles.photoOptionText}>Take Photo</Text>
-            </Pressable>
-            <Pressable style={[styles.photoOptionButton, styles.photoOptionButtonBorder]} onPress={chooseFromLibrary}>
-              <Text style={styles.photoOptionText}>Choose From Library</Text>
-            </Pressable>
-          </Pressable>
-        </Pressable>
-      </Modal>
     </View>
   );
 }
@@ -129,6 +146,12 @@ export default function ProductPhotos() {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 24,
+  },
+  loadingOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   label: {
     fontSize: 16,
@@ -143,32 +166,5 @@ const styles = StyleSheet.create({
   },
   photoGridContainer: {
     minHeight: 200,
-  },
-  photoOptionsOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  photoOptionsCard: {
-    width: '100%',
-    maxWidth: 320,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  photoOptionButton: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-  },
-  photoOptionButtonBorder: {
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-  },
-  photoOptionText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
   },
 });

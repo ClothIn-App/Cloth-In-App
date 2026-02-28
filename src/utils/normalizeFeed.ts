@@ -16,6 +16,8 @@ type ProductLike = {
   brand?: string;
   price?: number | null;
   description?: string;
+  imageUrl?: string | null;
+  createdAt?: string;
 };
 
 // Get image dimensions using Image.resolveAssetSource
@@ -107,9 +109,10 @@ const normalizeFitPic = async (fitpic: FitPic): Promise<FitPicItem> => {
 // Convert Product-like API type to ProductItem
 // Accepts both Product and ProductSearchResult types
 const normalizeProduct = async (product: ProductLike): Promise<ProductItem> => {
-  const source = PRODUCT_ASSETS[product.id];
-  if (!source) {
-    throw new Error(`No asset found for Product ID: ${product.id}`);
+  const staticSource = PRODUCT_ASSETS[product.id];
+  const source = staticSource ?? { uri: product.imageUrl ?? "" };
+  if (!source || (typeof source === "object" && "uri" in source && !source.uri)) {
+    throw new Error(`No image source for Product ID: ${product.id}`);
   }
 
   // Products don't need dimensions since they're always square in the grid
@@ -125,7 +128,7 @@ const normalizeProduct = async (product: ProductLike): Promise<ProductItem> => {
     salePrice: null, // Set to null for now
     category: '', // Not available in ProductLike
     description: product.description || '',
-    createdAt: new Date().toISOString(), // Not available in ProductLike
+    createdAt: product.createdAt || new Date().toISOString(),
     // No dimensions needed for products - they're always square
   };
 };
@@ -139,24 +142,40 @@ export const buildHomeFeed = async (
   products: ProductLike[] | undefined
 ): Promise<FeedItem[]> => {
   try {
-    // Handle undefined/null arrays
     const fitpicsArray = fitpics || [];
     const productsArray = products || [];
 
-    // Normalize all items in parallel
-    const [normalizedFitPics, normalizedProducts] = await Promise.all([
-      Promise.all(fitpicsArray.map(normalizeFitPic)),
-      Promise.all(productsArray.map(normalizeProduct))
+    // Use allSettled so one failing item (e.g. missing image) does not empty the feed
+    const [fitpicResults, productResults] = await Promise.all([
+      Promise.allSettled(fitpicsArray.map(normalizeFitPic)),
+      Promise.allSettled(productsArray.map(normalizeProduct)),
     ]);
 
-    // Combine and sort by creation date (newest first)
+    const normalizedFitPics: FitPicItem[] = fitpicResults
+      .filter((r): r is PromiseFulfilledResult<FitPicItem> => r.status === "fulfilled" && r.value != null)
+      .map((r) => r.value);
+
+    const normalizedProducts: ProductItem[] = productResults
+      .filter((r): r is PromiseFulfilledResult<ProductItem> => r.status === "fulfilled" && r.value != null)
+      .map((r) => r.value);
+
+    productResults.forEach((r, i) => {
+      if (r.status === "rejected") {
+        console.warn(`Feed: skipped product at index ${i}:`, r.reason?.message ?? r.reason);
+      }
+    });
+    fitpicResults.forEach((r, i) => {
+      if (r.status === "rejected") {
+        console.warn(`Feed: skipped fitpic at index ${i}:`, r.reason?.message ?? r.reason);
+      }
+    });
+
     const allItems: FeedItem[] = [...normalizedFitPics, ...normalizedProducts];
-    
-    return allItems.sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    return allItems.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   } catch (error) {
-    console.error('Error building home feed:', error);
+    console.error("Error building home feed:", error);
     return [];
   }
 };
