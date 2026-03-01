@@ -15,7 +15,8 @@ import {
 } from 'react-native';
 
 import { log } from '@/src/debug/log';
-import { authApiClient } from '@/src/services/apiClients'; // ← uses our API layer
+import { authApiClient, userApiClient } from '@/src/services/apiClients';
+import { mapGetUserResponseToRawUser, setRealCurrentUser } from '@/src/services/mockSessionUsers';
 const bgPattern = require('../../assets/images/login-bg.png');
 
 export default function Login() {
@@ -49,11 +50,25 @@ export default function Login() {
         refreshToken: res.refreshToken,
         expiresAt,
       });
-      
+
       console.log('Logged in user:', res.user.email);
 
-      // ✅ Redirect to home (tabs layout)
-      router.replace('/home');
+      if (process.env.EXPO_PUBLIC_API_MODE === 'real') {
+        const userId = await authApiClient.getMe();
+        if (userId) {
+          try {
+            const userRes = await userApiClient.getUser(userId);
+            const rawUser = userRes?.user
+              ? mapGetUserResponseToRawUser(userRes.user, userId)
+              : undefined;
+            setRealCurrentUser(userId, rawUser ?? undefined);
+          } catch {
+            setRealCurrentUser(userId);
+          }
+        }
+      }
+
+      router.replace('/(tabs)/home');
     } catch (error: any) {
       Alert.alert('Login Failed', error?.message ?? 'Please try again.');
     } finally {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { StyleSheet, View, TouchableOpacity, ScrollView, RefreshControl, KeyboardAvoidingView, Platform, Modal, Pressable, ActivityIndicator, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, ScrollView, RefreshControl, KeyboardAvoidingView, Platform, Modal, Pressable, ActivityIndicator, Text, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -233,6 +233,18 @@ export default function FitPicDetailScreen() {
     [id, currentUser, fitpic]
   );
 
+  const isOwner = Boolean(currentUser && fitpic?.authorId && fitpic.authorId === currentUser.id);
+
+  useEffect(() => {
+    if (fitpic && currentUser) {
+      console.log('[FitpicDetail] authorId vs currentUser.id:', {
+        'fitpic.authorId': fitpic.authorId,
+        'currentUser.id': currentUser.id,
+        match: fitpic.authorId === currentUser.id,
+      });
+    }
+  }, [fitpic, currentUser]);
+
   const openMoreOptions = () => setIsMenuOpen(true);
   const handleCloseMenu = () => setIsMenuOpen(false);
 
@@ -247,6 +259,29 @@ export default function FitPicDetailScreen() {
   const handleReport = () => {
     handleCloseMenu();
     // TODO: Report post
+  };
+  const handleDelete = () => {
+    handleCloseMenu();
+    if (!id) return;
+    Alert.alert(
+      'Delete post?',
+      'This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const res = await fitpicClient.remove(id);
+            if (res.success) {
+              router.back();
+            } else {
+              Alert.alert('Error', res.error ?? 'Failed to delete post');
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -300,6 +335,14 @@ export default function FitPicDetailScreen() {
                   Report
                 </Text>
               </Pressable>
+              {isOwner && (
+                <Pressable style={styles.menuDropdownItem} onPress={handleDelete}>
+                  <Ionicons name="trash-outline" size={20} color="red" />
+                  <Text style={[styles.menuDropdownItemText, styles.menuDropdownReportText, { marginLeft: 12 }]}>
+                    Delete post
+                  </Text>
+                </Pressable>
+              )}
             </Pressable>
           </View>
         </Pressable>
