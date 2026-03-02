@@ -18,6 +18,7 @@ import { useDrafts } from '../../components/create/draftcontext';
 import { usePost } from '../../components/create/post/postcontext';
 import { CAPTION_MAX } from '../../components/create/post/types';
 import { useFitPicPosting } from '../../src/hooks/useFitPicPosting';
+import { useProductSearch } from '../../src/hooks/useProductSearch';
 
 import PhotoGrid from '../../components/create/post/photogrid';
 import ProductPicker from '../../components/create/post/productpicker';
@@ -58,6 +59,10 @@ export default function FitPicPostModal({
 
   // Caption + products + location live in PostContext
   const { meta, setCaption, setLocation, removeProduct } = usePost();
+
+  // Product search (controlled query, debounced API)
+  const [searchQuery, setSearchQuery] = useState('');
+  const { results: searchResults, loading: searchLoading } = useProductSearch(searchQuery);
 
   // FitPic posting functionality
   const { postingState, handlePost, canPost } = useFitPicPosting();
@@ -157,14 +162,22 @@ export default function FitPicPostModal({
 
         {/* Products */}
         <Section title="Products">
-          {/* Selector writes to PostContext; grid reflects context */}
-          <ProductPicker />
+          <ProductPicker
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            suggestions={searchResults}
+            searchLoading={searchLoading}
+            placeholder="Search by Brand or Product Name"
+            onAddNewProduct={() =>
+              router.push({ pathname: '/create-modals/addproduct', params: { returnTo: 'fitpic' } })
+            }
+          />
 
-          <View style={{ marginTop: 8 }}>
+          <View style={{ marginTop: 4 }}>
             <ProductGrid products={products} onRemove={removeProduct} />
           </View>
 
-          <View style={{ marginTop: 0 }}>
+          <View style={{ marginTop: 20 }}>
             <Text style={S.sectionTitle}>Location</Text>
             <View style={{ marginTop: 4 }}>
               <LocationInput value={meta.location ?? ''} onChange={setLocation} />

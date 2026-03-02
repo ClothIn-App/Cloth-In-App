@@ -7,11 +7,15 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
+import ProgressiveImage from '../../common/ProgressiveImage';
+import { Ionicons } from '@expo/vector-icons';
 import type { ProductLite } from './types';
+
+const TILE_SIZE = 92;
 
 export type ProductGridProps = {
   products: ProductLite[];
-  /** Called when the × in a cell is pressed */
+  /** Called when the × on a tile is pressed */
   onRemove?: (id: string) => void;
 };
 
@@ -25,23 +29,34 @@ export default function ProductGrid({ products, onRemove }: ProductGridProps) {
       horizontal
       data={products}
       keyExtractor={item => item.id}
-      contentContainerStyle={styles.chips}
+      contentContainerStyle={styles.row}
       showsHorizontalScrollIndicator={false}
       renderItem={({ item }) => (
-        <View style={styles.chip}>
-          <Text numberOfLines={1} style={styles.chipText}>
-            {item.name ?? 'Unnamed'}
-            {item.brand ? ` · ${item.brand}` : ''}
-          </Text>
-          {onRemove && (
-            <TouchableOpacity
-              onPress={() => onRemove(item.id)}
-              style={styles.chipX}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Text style={styles.chipXText}>×</Text>
-            </TouchableOpacity>
-          )}
+        <View style={styles.tileWrapper}>
+          <View style={styles.tile}>
+            {item.imageUrl ? (
+              <ProgressiveImage
+                source={{ uri: item.imageUrl }}
+                style={styles.tileImage}
+                contentFit="cover"
+              />
+            ) : (
+              <View style={styles.tilePlaceholder}>
+                <Ionicons name="shirt-outline" size={28} color="#9ca3af" />
+              </View>
+            )}
+            {onRemove && (
+              <TouchableOpacity
+                onPress={() => onRemove(item.id)}
+                style={styles.removeButton}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <View style={styles.removeBadge}>
+                  <Text style={styles.removeText}>×</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       )}
     />
@@ -49,18 +64,51 @@ export default function ProductGrid({ products, onRemove }: ProductGridProps) {
 }
 
 const styles = StyleSheet.create({
-  chips: { paddingRight: 4 },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#E0F2FE',
-    borderRadius: 14,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    marginRight: 8,
-    maxWidth: 180,
+  row: {
+    paddingRight: 4,
+    gap: 0,
   },
-  chipText: { fontSize: 13, flexShrink: 1 },
-  chipX: { marginLeft: 6 },
-  chipXText: { fontSize: 14, fontWeight: '700' },
+  tileWrapper: {
+    width: TILE_SIZE,
+    height: TILE_SIZE,
+    marginRight: 10,
+  },
+  tile: {
+    width: TILE_SIZE,
+    height: TILE_SIZE,
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: '#f3f4f6',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  tileImage: {
+    width: '100%',
+    height: '100%',
+  },
+  tilePlaceholder: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  removeButton: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+  },
+  removeBadge: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  removeText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+    lineHeight: 18,
+  },
 });

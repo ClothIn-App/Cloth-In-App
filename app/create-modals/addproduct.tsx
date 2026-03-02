@@ -2,12 +2,13 @@
 import * as React from 'react';
 import { View, StyleSheet, Alert, Modal, Pressable, Text, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 
 import { Ionicons } from '@expo/vector-icons';
 
 import { useAddProductContext, AddProductProvider } from '../../components/create/product/addproductcontext';
+import { usePost } from '../../components/create/post/postcontext';
 import { uploadProductPhotos, PhotoUploadRequest } from '@/src/services/photoUploadService';
 import { contentApiClient, CreateProductRequest } from '@/src/services/apiClients/contentClient';
 import { clearFeedCache } from '@/src/utils/getFeedItem';
@@ -19,11 +20,29 @@ import ProductLink from '../../components/create/product/link';
 import ProductPhotos from '../../components/create/product/productphotos';
 import AddPrice from '../../components/create/product/addprice';
 
+/** Derive a string image URL from create-product response (server returns images as [{ url }], mock may use imagePath or string[]). */
+function getProductImageUrl(p: {
+  primaryImageUrl?: string;
+  images?: Array<{ url?: string } | string>;
+  imagePath?: string;
+}): string | undefined {
+  if (typeof p.primaryImageUrl === 'string' && p.primaryImageUrl) return p.primaryImageUrl;
+  const first = p.images?.[0];
+  if (first != null) {
+    if (typeof first === 'string') return first;
+    if (typeof first === 'object' && typeof first.url === 'string') return first.url;
+  }
+  if (typeof p.imagePath === 'string' && p.imagePath) return p.imagePath;
+  return undefined;
+}
+
 function AddProductContent() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ returnTo?: string }>();
+  const { addProduct } = usePost();
   const isFocused = useIsFocused();
   const insets = useSafeAreaInsets();
-  
+
   const {
     category,
     brand,
@@ -123,6 +142,19 @@ function AddProductContent() {
         return;
       }
 
+      if (params.returnTo === "fitpic" && response.product) {
+        const p = response.product;
+        const imageUrl = getProductImageUrl(p);
+        addProduct({
+          id: p.id,
+          name: p.name,
+          brand: p.brand,
+          category: "",
+          price: p.price,
+          imageUrl,
+        });
+      }
+
       // Reset form, clear feed cache so the new product can appear, and navigate back
       reset();
       clearFeedCache();
@@ -145,6 +177,8 @@ function AddProductContent() {
     originalPrice,
     reset,
     router,
+    params.returnTo,
+    addProduct,
   ]);
 
   // Flow bar: count how many of the 7 fields have any input (0–7)

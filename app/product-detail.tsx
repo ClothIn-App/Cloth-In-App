@@ -49,6 +49,13 @@ export default function ProductDetailModal() {
   const [refreshing, setRefreshing] = useState(false);
 
   const currentUser = useMemo(() => getCurrentUser(), []);
+  const hasTextSections = useMemo(() => {
+    if (!product) return false;
+    return (
+      (product.specs != null && product.specs.trim().length > 0) ||
+      (product.description != null && product.description.trim().length > 0)
+    );
+  }, [product]);
 
   useEffect(() => {
     if (!product || !currentUser) return;
@@ -297,10 +304,13 @@ export default function ProductDetailModal() {
                   onReactionPress={handleReactionPress}
                 />
               </View>
-              <ProductDescription
-                description={product.description}
-                details={(product as any).details}
-              />
+              {hasTextSections && (
+                <ProductDescription
+                  description={product.description}
+                  specs={product.specs}
+                />
+              )}
+              {!hasTextSections && <View style={styles.afterReactionsSpacer} />}
               {followersFitPics && followersFitPics.length > 0 && (
                 <ProductUserStyleCarousel
                   fitpics={followersFitPics}
@@ -383,6 +393,9 @@ const styles = StyleSheet.create({
   },
   reactionsWrapper: {
     marginTop: -12,
+  },
+  afterReactionsSpacer: {
+    height: 12,
   },
   pinnedInputContainer: {
     position: "absolute",

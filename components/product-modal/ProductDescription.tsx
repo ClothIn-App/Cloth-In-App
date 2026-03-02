@@ -3,36 +3,55 @@ import { View, Text, Pressable, StyleSheet } from "react-native";
 
 type ProductDescriptionProps = {
   description?: string;
-  details?: string;
+  specs?: string;
 };
 
 export function ProductDescription({
   description,
-  details,
+  specs,
 }: ProductDescriptionProps) {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
+  const [isSpecsExpanded, setIsSpecsExpanded] = useState(false);
 
   const hasDescription = !!description && description.trim().length > 0;
-  const hasDetails = !!details && details.trim().length > 0;
+  const hasSpecs = !!specs && specs.trim().length > 0;
 
   const shouldShowDescriptionToggle = hasDescription && description!.length > 100;
-  const shouldShowDetailsToggle = hasDetails && details!.length > 100;
+  const shouldShowSpecsToggle = hasSpecs && specs!.length > 100;
 
   const toggleDescription = () => {
     setIsDescriptionExpanded(!isDescriptionExpanded);
   };
 
-  const toggleDetails = () => {
-    setIsDetailsExpanded(!isDetailsExpanded);
+  const toggleSpecs = () => {
+    setIsSpecsExpanded(!isSpecsExpanded);
   };
 
-  if (!hasDescription && !hasDetails) return null;
+  if (!hasDescription && !hasSpecs) return null;
 
   return (
     <View style={styles.container}>
+      {hasSpecs && (
+        <View style={[styles.section, !hasDescription && styles.lastSection]}>
+          <Text style={styles.sectionTitle}>Specifications</Text>
+          <Text
+            style={styles.bodyText}
+            numberOfLines={isSpecsExpanded ? undefined : 2}
+          >
+            {specs}
+          </Text>
+          {shouldShowSpecsToggle && (
+            <Pressable onPress={toggleSpecs} hitSlop={8}>
+              <Text style={styles.toggleText}>
+                {isSpecsExpanded ? "Show less ▴" : "Show more ▾"}
+              </Text>
+            </Pressable>
+          )}
+        </View>
+      )}
+
       {hasDescription && (
-        <View style={styles.section}>
+        <View style={[styles.section, styles.lastSection]}>
           <Text style={styles.sectionTitle}>Description</Text>
           <Text
             style={styles.bodyText}
@@ -49,25 +68,6 @@ export function ProductDescription({
           )}
         </View>
       )}
-
-      {hasDetails && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Details</Text>
-          <Text
-            style={styles.bodyText}
-            numberOfLines={isDetailsExpanded ? undefined : 2}
-          >
-            {details}
-          </Text>
-          {shouldShowDetailsToggle && (
-            <Pressable onPress={toggleDetails} hitSlop={8}>
-              <Text style={styles.toggleText}>
-                {isDetailsExpanded ? "Show less ▴" : "Show more ▾"}
-              </Text>
-            </Pressable>
-          )}
-        </View>
-      )}
     </View>
   );
 }
@@ -78,7 +78,10 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 16,
+  },
+  lastSection: {
+    marginBottom: 0,
   },
   sectionTitle: {
     fontSize: 16,

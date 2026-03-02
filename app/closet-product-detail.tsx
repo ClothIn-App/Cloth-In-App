@@ -22,6 +22,8 @@ export default function ClosetProductDetailModal() {
   const { product, featuredFitPics, comments: initialComments, userFitPics } = useProductData(id, userId);
   const { data } = useAccountData(userId);
   const insets = useSafeAreaInsets();
+  const hasTextSections =
+    !!product?.specs?.trim() || !!product?.description?.trim();
   
   // Get username from account data
   const userName = (data.me as any)?.username || "User";
@@ -143,10 +145,13 @@ export default function ClosetProductDetailModal() {
               productId={product.id}
             />
           </View>
-          <ProductDescription
-            description={product.description}
-            details={(product as any).details}
-          />
+          {hasTextSections && (
+            <ProductDescription
+              description={product.description}
+              specs={product.specs}
+            />
+          )}
+          {!hasTextSections && <View style={styles.afterReactionsSpacer} />}
           {/* User's Style Section - Only show if there are user FitPics */}
           {userFitPics && userFitPics.length > 0 && (
             <ProductUserStyleCarousel fitpics={userFitPics} userName={userName} />
@@ -189,6 +194,9 @@ const styles = StyleSheet.create({
   },
   reactionsWrapper: {
     marginTop: -12,
+  },
+  afterReactionsSpacer: {
+    height: 12,
   },
   pinnedInputContainer: {
     position: 'absolute',
