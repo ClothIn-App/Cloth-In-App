@@ -57,8 +57,21 @@ export function ProductUserStyleCarousel({
     });
   };
 
-  const getImageSource = (fitpicId: string) => {
-    return FITPIC_ASSETS[fitpicId] || { uri: "" };
+  const getImageSource = (fitpic: FitPic) => {
+    if ("photos" in fitpic && fitpic.photos?.[0]) {
+      const url = fitpic.photos[0].thumbnailUrl ?? fitpic.photos[0].url;
+      if (url) return { uri: url };
+    }
+    if ("imagePath" in fitpic && fitpic.imagePath) {
+      const path = fitpic.imagePath;
+      if (
+        typeof path === "string" &&
+        (path.startsWith("http://") || path.startsWith("https://"))
+      ) {
+        return { uri: path };
+      }
+    }
+    return FITPIC_ASSETS[fitpic.id] || { uri: "" };
   };
 
   if (!fitpics || fitpics.length === 0) {
@@ -75,7 +88,7 @@ export function ProductUserStyleCarousel({
           contentContainerStyle={styles.scrollContent}
         >
           {fitpics.map((fitpic, index) => {
-            const imageSource = getImageSource(fitpic.id);
+            const imageSource = getImageSource(fitpic);
             const tileWidth = getTileWidth(imageSource);
             const isLast = index === fitpics.length - 1;
             return (
