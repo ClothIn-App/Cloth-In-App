@@ -178,6 +178,7 @@ export default function ProductCommentsSection({
             <ProductCommentItem
               key={comment.id}
               comment={comment}
+              depth={0}
               onReplyPress={handleReplyPress}
               onOpenMenu={handleOpenMenu}
               onReact={handleReact}

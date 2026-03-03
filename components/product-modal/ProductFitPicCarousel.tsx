@@ -45,6 +45,19 @@ const getTileWidth = (imageSource: any): number => {
   return TILE_HEIGHT;
 };
 
+// Prefer API/DB dimensions when available (same as feed grid); otherwise use image source
+const getTileWidthFromFitPic = (fitpic: FitPic, imageSource: any): number => {
+  const photo = "photos" in fitpic ? fitpic.photos?.[0] : undefined;
+  const w = photo?.width;
+  const h = photo?.height;
+  if (w != null && h != null && w > 0 && h > 0) {
+    const aspectRatio = w / h;
+    const computedWidth = TILE_HEIGHT * aspectRatio;
+    return Math.max(MIN_W, Math.min(MAX_W, computedWidth));
+  }
+  return getTileWidth(imageSource);
+};
+
 export function ProductFitPicCarousel({
   fitpics,
 }: ProductFitPicCarouselProps) {
@@ -94,7 +107,7 @@ export function ProductFitPicCarousel({
         >
           {fitpics.map((fitpic, index) => {
             const imageSource = getImageSource(fitpic);
-            const tileWidth = getTileWidth(imageSource);
+            const tileWidth = getTileWidthFromFitPic(fitpic, imageSource);
             const isLast = index === fitpics.length - 1;
             return (
               <TouchableOpacity
