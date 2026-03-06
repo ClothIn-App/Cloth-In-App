@@ -18,6 +18,7 @@ export type { CommentType };
 
 interface ProductCommentItemProps {
   comment: CommentType;
+  depth?: number;
   onReplyPress: (comment: CommentType) => void;
   onOpenMenu: (comment: CommentType) => void;
   onReact: (commentId: string, type: 'LIKE' | 'DISLIKE') => void;
@@ -52,6 +53,7 @@ const formatTimestamp = (dateString: string): string => {
 
 export default function ProductCommentItem({
   comment,
+  depth = 0,
   onReplyPress,
   onOpenMenu,
   onReact,
@@ -60,8 +62,6 @@ export default function ProductCommentItem({
   const [showProfileNotFound, setShowProfileNotFound] = useState(false);
   const [authorTapLoading, setAuthorTapLoading] = useState(false);
 
-  // Calculate depth from dot notation in comment.id
-  const depth = comment.id.split('.').length - 1;
   const indent = depth * 16;
 
   const getUserIdFromUsername = (username: string): string | null => {
@@ -244,6 +244,7 @@ export default function ProductCommentItem({
             <ProductCommentItem
               key={reply.id}
               comment={reply}
+              depth={depth + 1}
               onReplyPress={onReplyPress}
               onOpenMenu={onOpenMenu}
               onReact={onReact}

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {
   ActivityIndicator,
+  Platform,
   StyleProp,
   StyleSheet,
   Text,
@@ -122,6 +123,7 @@ export default function CameraSurface({
           facing={controller.facing}
           zoom={controller.zoom}        // 0..1 normalized
           flash={controller.flashMode}
+          {...(Platform.OS === 'ios' && { selectedLens: 'builtInWideAngleCamera' })}
           onCameraReady={() => setReady(true)}
         />
       </GestureDetector>

@@ -43,6 +43,8 @@ export interface FitPicItem extends BaseFeedItem {
   // Intrinsic dimensions for proper grid layout
   width?: number;
   height?: number;
+  /** Ordered photo URLs when loaded from API (for detail screen carousel) */
+  sources?: string[];
 }
 
 // Product specific data
@@ -52,9 +54,9 @@ export interface ProductItem extends BaseFeedItem {
   brand: string;
   price: number;
   salePrice: number | null;
+  priceType?: 'fixed' | 'sale' | 'sold_out' | 'tbd' | 'na';
   category: string;
   description: string;
-  // Intrinsic dimensions for proper grid layout
   width?: number;
   height?: number;
 }
@@ -94,6 +96,8 @@ export interface RawProduct {
   brand: string;
   price: number;
   salePrice: number | null;
+  priceType?: 'fixed' | 'sale' | 'sold_out' | 'tbd' | 'na';
+  originalPrice?: number;
   imagePath: string;
   category: string;
   description: string;

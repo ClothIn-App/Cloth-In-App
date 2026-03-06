@@ -68,7 +68,7 @@ export default function AddPrice() {
             style={styles.priceInput}
             value={price}
             onChangeText={handlePriceChange}
-            placeholder="0.00"
+            placeholder={priceType === 'sold_out' ? "0.00 (optional)" : "0.00"}
             placeholderTextColor="#9ca3af"
             keyboardType="numeric"
             maxLength={10}
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     borderColor: '#d1d5db',
     borderRadius: 12,
     backgroundColor: 'white',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   priceTypeText: {
     fontSize: 16,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   priceInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   priceInput: {
     flex: 1,

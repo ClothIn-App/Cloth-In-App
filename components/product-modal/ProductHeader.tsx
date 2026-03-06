@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     position: "absolute",
     top: 60,
-    right: 16,
+    right: 56,
     alignItems: "flex-end",
   },
   dropdown: {

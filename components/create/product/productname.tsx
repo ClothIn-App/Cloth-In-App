@@ -20,7 +20,7 @@ export default function ProductName() {
         style={styles.input}
         value={productName}
         onChangeText={handleNameChange}
-        placeholder="Enter product name"
+        placeholder="Enter Product Name"
         placeholderTextColor="#9ca3af"
         maxLength={100}
         autoCapitalize="words"

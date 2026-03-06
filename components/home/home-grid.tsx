@@ -61,13 +61,21 @@ export default function Home_Grid({
             const productItems = await buildProductFeed(response.products);
             setData(shuffle(productItems));
           } else if (useRealApi()) {
-            // TODO (home page): Temporary – feed uses GET /v1/fitpics only to test fitpic E2E. When building the real home page (fitpics + products), revert to GET /v1/content/feed (or new feed API) and remove this branch.
-            const response = await fitpicClient.list(undefined, 50);
-            if (!response?.success || !response.fitpics) {
-              setData([]);
-              return;
-            }
-            const feedData = await buildHomeFeed(response.fitpics, []);
+            const [fitpicResult, feedResult] = await Promise.allSettled([
+              fitpicClient.list(undefined, 50),
+              contentApiClient.getFeed({ type: feedType, limit: 50 }),
+            ]);
+            const fitpics =
+              fitpicResult.status === "fulfilled" &&
+              fitpicResult.value?.success &&
+              fitpicResult.value?.fitpics
+                ? fitpicResult.value.fitpics
+                : [];
+            const products =
+              feedResult.status === "fulfilled" && feedResult.value?.products
+                ? feedResult.value.products
+                : [];
+            const feedData = await buildHomeFeed(fitpics, products);
             setData(shuffle(feedData));
           } else {
             const response = await contentApiClient.getFeed({
@@ -105,12 +113,22 @@ export default function Home_Grid({
           setData(shuffle(productItems));
         }
       } else if (useRealApi()) {
-        // TODO (home page): Temporary – feed uses GET /v1/fitpics only to test fitpic E2E. When building the real home page (fitpics + products), revert to GET /v1/content/feed (or new feed API) and remove this branch.
-        const response = await fitpicClient.list(undefined, 50);
-        if (response?.success && response.fitpics) {
-          const feedData = await buildHomeFeed(response.fitpics, []);
-          setData(shuffle(feedData));
-        }
+        const [fitpicResult, feedResult] = await Promise.allSettled([
+          fitpicClient.list(undefined, 50),
+          contentApiClient.getFeed({ type: feedType, limit: 50 }),
+        ]);
+        const fitpics =
+          fitpicResult.status === "fulfilled" &&
+          fitpicResult.value?.success &&
+          fitpicResult.value?.fitpics
+            ? fitpicResult.value.fitpics
+            : [];
+        const products =
+          feedResult.status === "fulfilled" && feedResult.value?.products
+            ? feedResult.value.products
+            : [];
+        const feedData = await buildHomeFeed(fitpics, products);
+        setData(shuffle(feedData));
       } else {
         const response = await contentApiClient.getFeed({
           type: feedType,
@@ -217,6 +235,7 @@ export default function Home_Grid({
               name={item.name}
               price={item.price}
               salePrice={item.salePrice}
+              priceType={item.priceType}
               sharedTransitionTag={`product-${item.id}`}
             />
           </TouchableOpacity>

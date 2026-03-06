@@ -108,6 +108,8 @@ async function convertFitPicToFitPicItem(fitpic: any, commentsFromResponse?: Com
           },
         };
 
+    const sources = fitpic.photos?.map((p: any) => p.url).filter(Boolean) ?? [];
+
     return {
       id: fitpic.id,
       type: 'fitpic',
@@ -126,7 +128,8 @@ async function convertFitPicToFitPicItem(fitpic: any, commentsFromResponse?: Com
       comments,
       userReaction: fitpic.engagement?.userReaction,
       isSaved: fitpic.engagement?.isSaved,
-      ...dimensions
+      ...dimensions,
+      sources
     };
   } catch (error) {
     console.error('Error converting FitPic to FitPicItem:', error);

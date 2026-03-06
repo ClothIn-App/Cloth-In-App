@@ -2,7 +2,8 @@
 import * as SecureStore from 'expo-secure-store';
 import { useAuth } from '@/src/context/AuthContext';
 import { log } from '@/src/debug/log';
-import { authApiClient as apiClient } from '@/src/services/apiClients';
+import { authApiClient as apiClient, userApiClient } from '@/src/services/apiClients';
+import { mapGetUserResponseToRawUser, setRealCurrentUser } from '@/src/services/mockSessionUsers';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -88,6 +89,21 @@ export default function Signup() {
         refreshToken: resp.refreshToken,
         expiresAt,
       });
+
+      if (process.env.EXPO_PUBLIC_API_MODE === 'real') {
+        const userId = await apiClient.getMe();
+        if (userId) {
+          try {
+            const userRes = await userApiClient.getUser(userId);
+            const rawUser = userRes?.user
+              ? mapGetUserResponseToRawUser(userRes.user, userId)
+              : undefined;
+            setRealCurrentUser(userId, rawUser ?? undefined);
+          } catch {
+            setRealCurrentUser(userId);
+          }
+        }
+      }
 
       router.replace('/survey');
     } catch (e: any) {

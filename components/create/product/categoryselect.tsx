@@ -1,6 +1,7 @@
 // src/create/product/categoryselect.tsx
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Modal, ScrollView, TextInput } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAddProductContext } from './addproductcontext';
 
 const CATEGORIES = {
@@ -103,8 +104,27 @@ const CATEGORIES = {
   'Other / Not Listed': {},
 };
 
+type FlatCategoryEntry = { fullPath: string; main: string; sub?: string; item?: string };
+
+function buildFlatCategoryList(): FlatCategoryEntry[] {
+  const entries: FlatCategoryEntry[] = [];
+  for (const [main, subCategories] of Object.entries(CATEGORIES)) {
+    entries.push({ fullPath: main, main });
+    for (const [sub, items] of Object.entries(subCategories)) {
+      entries.push({ fullPath: `${main} > ${sub}`, main, sub });
+      for (const item of items) {
+        entries.push({ fullPath: `${main} > ${sub} > ${item}`, main, sub, item });
+      }
+    }
+  }
+  return entries;
+}
+
+const FLAT_CATEGORIES = buildFlatCategoryList();
+
 export default function CategorySelect() {
   const { category, setCategory } = useAddProductContext();
+  const insets = useSafeAreaInsets();
   const [showPicker, setShowPicker] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMainCategory, setSelectedMainCategory] = useState<string | null>(null);
@@ -124,6 +144,19 @@ export default function CategorySelect() {
     setSelectedMainCategory(null);
     setSelectedSubCategory(null);
   };
+
+  const searchTrimmed = searchQuery.trim();
+  const searchResults = React.useMemo(() => {
+    if (!searchTrimmed) return [];
+    const searchLower = searchTrimmed.toLowerCase();
+    return FLAT_CATEGORIES.filter(
+      (entry) =>
+        entry.fullPath.toLowerCase().includes(searchLower) ||
+        entry.main.toLowerCase().includes(searchLower) ||
+        (entry.sub && entry.sub.toLowerCase().includes(searchLower)) ||
+        (entry.item && entry.item.toLowerCase().includes(searchLower))
+    );
+  }, [searchTrimmed]);
 
   const filteredCategories = Object.entries(CATEGORIES).filter(([mainCategory, subCategories]) => {
     if (!searchQuery) return true;
@@ -155,8 +188,8 @@ export default function CategorySelect() {
         <Text style={styles.chevron}>›</Text>
       </Pressable>
 
-      <Modal visible={showPicker} animationType="slide" presentationStyle="pageSheet">
-        <View style={styles.pickerContainer}>
+      <Modal visible={showPicker} animationType="slide" presentationStyle="fullScreen">
+        <View style={[styles.pickerContainer, { paddingTop: insets.top }]}>
           <View style={styles.pickerHeader}>
             <Pressable onPress={() => setShowPicker(false)} style={styles.pickerHeaderButton}>
               <Text style={styles.pickerHeaderButtonText}>Cancel</Text>
@@ -168,20 +201,49 @@ export default function CategorySelect() {
           <View style={styles.searchContainer}>
             <TextInput
               style={styles.searchInput}
-              placeholder="Search categories..."
+              placeholder="Search Categories"
               value={searchQuery}
               onChangeText={setSearchQuery}
+              returnKeyType="done"
             />
           </View>
 
-          <ScrollView style={styles.pickerContent}>
-            {filteredCategories.map(([mainCategory, subCategories]) => (
+          <ScrollView
+            style={styles.pickerContent}
+            contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
+          >
+            {searchTrimmed ? (
+              searchResults.map((entry) => (
+                <Pressable
+                  key={entry.fullPath}
+                  style={styles.mainCategoryItem}
+                  onPress={() =>
+                    handleCategorySelect(entry.main, entry.sub, entry.item)
+                  }
+                >
+                  <View>
+                    <Text style={styles.mainCategoryText}>
+                      {entry.item ?? entry.sub ?? entry.main}
+                    </Text>
+                    {(entry.sub || entry.item) && (
+                      <Text style={styles.searchResultBreadcrumb}>
+                        {entry.main}
+                        {entry.sub ? ` > ${entry.sub}` : ''}
+                      </Text>
+                    )}
+                  </View>
+                </Pressable>
+              ))
+            ) : (
+            filteredCategories.map(([mainCategory, subCategories]) => (
               <View key={mainCategory}>
                 <Pressable
                   style={styles.mainCategoryItem}
                   onPress={() => {
                     if (Object.keys(subCategories).length === 0) {
                       handleCategorySelect(mainCategory);
+                    } else if (selectedMainCategory === mainCategory) {
+                      setSelectedMainCategory(null);
                     } else {
                       setSelectedMainCategory(mainCategory);
                     }
@@ -202,6 +264,8 @@ export default function CategorySelect() {
                           onPress={() => {
                             if (items.length === 0) {
                               handleCategorySelect(mainCategory, subCategory);
+                            } else if (selectedSubCategory === subCategory) {
+                              setSelectedSubCategory(null);
                             } else {
                               setSelectedSubCategory(subCategory);
                             }
@@ -229,7 +293,8 @@ export default function CategorySelect() {
                   </View>
                 )}
               </View>
-            ))}
+            ))
+            )}
           </ScrollView>
         </View>
       </Modal>
@@ -332,6 +397,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#111827',
+  },
+  searchResultBreadcrumb: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginTop: 2,
   },
   subCategoriesContainer: {
     backgroundColor: '#f9fafb',

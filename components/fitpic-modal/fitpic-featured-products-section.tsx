@@ -5,6 +5,42 @@ import type { ProductItem } from '../../src/types/feed';
 import { contentApiClient } from '../../src/services/apiClients/contentClient';
 import FeaturedProductCard from './featured-product-card';
 
+const MAX_ITEMS = 6;
+
+/** Map getProduct response to ProductLike shape (imageUrl from primaryImageUrl or images for real API). */
+function toProductLike(p: {
+  id: string;
+  name: string;
+  brand?: string | null;
+  price?: number | null;
+  originalPrice?: number | null;
+  priceType?: string;
+  description?: string | null;
+  createdAt?: string;
+  primaryImageUrl?: string | null;
+  images?: Array<{ url?: string }> | string[];
+  imagePath?: string;
+  imageUrl?: string | null;
+}): { id: string; name: string; brand?: string; price?: number | null; originalPrice?: number; priceType?: string; description?: string; imageUrl: string; createdAt: string } {
+  const firstImageUrl = Array.isArray(p.images) && p.images[0]
+    ? typeof p.images[0] === 'object'
+      ? (p.images[0] as { url?: string }).url
+      : p.images[0]
+    : undefined;
+  const imageUrl = p.primaryImageUrl ?? firstImageUrl ?? p.imagePath ?? p.imageUrl ?? '';
+  return {
+    id: p.id,
+    name: p.name,
+    brand: p.brand ?? undefined,
+    price: p.price ?? undefined,
+    originalPrice: p.originalPrice ?? undefined,
+    priceType: p.priceType,
+    description: p.description ?? undefined,
+    imageUrl,
+    createdAt: p.createdAt ?? new Date().toISOString(),
+  };
+}
+
 type Props = {
   featuredProductIds?: string[];
   onOpenProduct: (productId: string) => void;
@@ -17,7 +53,7 @@ export default function FitPicFeaturedProductsSection({
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Load products by their IDs
+  // Load products by ID using getProduct (preserves order; ignores failed lookups)
   useEffect(() => {
     if (!featuredProductIds || featuredProductIds.length === 0) {
       setProducts([]);
@@ -26,25 +62,26 @@ export default function FitPicFeaturedProductsSection({
     }
 
     const loadProducts = async () => {
+      const idsToFetch = featuredProductIds.slice(0, MAX_ITEMS);
+      const results = await Promise.allSettled(
+        idsToFetch.map((id) => contentApiClient.getProduct(id))
+      );
+
+      const productLikes = results
+        .map((result) => {
+          if (result.status !== 'fulfilled' || !result.value?.product) return null;
+          const p = result.value.product as Parameters<typeof toProductLike>[0];
+          const like = toProductLike(p);
+          if (!like.imageUrl) return null;
+          return like;
+        })
+        .filter((item): item is NonNullable<typeof item> => item !== null);
+
       try {
-        // Load products from API client
-        const response = await contentApiClient.getProducts({ limit: 100 });
-        // Normalize products to ProductItem format
-        const allProducts = await buildProductFeed(response.products);
-        // Create a map for quick lookup
-        const productMap = new Map<string, ProductItem>();
-        allProducts.forEach(product => {
-          productMap.set(product.id, product);
-        });
-        
-        // Look up products by IDs
-        const validProducts = featuredProductIds
-          .map(id => productMap.get(id))
-          .filter((product): product is ProductItem => product !== undefined);
-        
-        setProducts(validProducts);
+        const normalized = await buildProductFeed(productLikes);
+        setProducts(normalized);
       } catch (error) {
-        console.warn('Error loading featured products:', error);
+        console.warn('Error normalizing featured products:', error);
         setProducts([]);
       } finally {
         setLoading(false);
@@ -59,9 +96,8 @@ export default function FitPicFeaturedProductsSection({
     return null;
   }
 
-  // Calculate grid layout: 2 rows, 3 columns max
-  const maxItems = 6; // 2 rows × 3 columns
-  const displayProducts = products.slice(0, maxItems);
+  // Grid: 2 rows × 3 columns max (already limited by MAX_ITEMS in load)
+  const displayProducts = products.slice(0, MAX_ITEMS);
   const rows: ProductItem[][] = [];
   
   // Group products into rows of 3

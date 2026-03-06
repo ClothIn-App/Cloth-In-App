@@ -20,7 +20,7 @@ export default function BrandSelect() {
         style={styles.input}
         value={brand}
         onChangeText={handleBrandChange}
-        placeholder="Enter brand name"
+        placeholder="Enter Brand Name"
         placeholderTextColor="#9ca3af"
         maxLength={50}
         autoCapitalize="words"
