@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { userApiClient } from "../services/apiClients/userClient";
-import { getUserById } from "../services/mockSessionUsers";
-import { getCurrentUserId } from "../services/mockSessionUsers";
 
 export type PublicProfileData = {
   user: {
     uid: string;
+    name?: string | null;
     displayName?: string | null;
     username?: string;
     avatarUrl?: string;
@@ -53,9 +52,10 @@ export function usePublicProfile(userId?: string) {
 
     try {
       // Load user data and follow status in parallel
-      const [userResponse, followStatusResponse] = await Promise.all([
+      const [userResponse, followStatusResponse, countsResponse] = await Promise.all([
         userApiClient.getUser(userId),
         userApiClient.getFollowStatus(userId),
+        userApiClient.getProfileCounts(userId),
       ]);
 
       if (reqRef.current === myReq) {
@@ -64,17 +64,19 @@ export function usePublicProfile(userId?: string) {
           return;
         }
 
-        // Prefer privacy from API (supports profile edits); fallback to raw mock data
-        const isPrivateAccount =
-          userResponse.user?.privacy?.isPrivateAccount ??
-          !!getUserById(userId)?.privacy?.isPrivateAccount;
+        const isPrivateAccount = !!userResponse.user?.privacy?.isPrivateAccount;
         const isFollowing = followStatusResponse.isFollowing;
         
         // Can view content if: public account OR (private account AND following)
         const canViewContent = !isPrivateAccount || isFollowing;
+        const normalizedUser = {
+          ...userResponse.user,
+          displayName: userResponse.user.displayName ?? userResponse.user.name,
+          counts: countsResponse ?? userResponse.user.counts,
+        };
 
         setData({
-          user: userResponse.user,
+          user: normalizedUser,
           isFollowing,
           isPrivateAccount,
           canViewContent,
@@ -95,10 +97,11 @@ export function usePublicProfile(userId?: string) {
     
     try {
       const followStatusResponse = await userApiClient.getFollowStatus(userId);
-      const userResponse = await userApiClient.getUser(userId);
-      const isPrivateAccount =
-        userResponse.user?.privacy?.isPrivateAccount ??
-        !!getUserById(userId)?.privacy?.isPrivateAccount;
+      const [userResponse, countsResponse] = await Promise.all([
+        userApiClient.getUser(userId),
+        userApiClient.getProfileCounts(userId),
+      ]);
+      const isPrivateAccount = !!userResponse.user?.privacy?.isPrivateAccount;
       const isFollowing = followStatusResponse.isFollowing;
       const canViewContent = !isPrivateAccount || isFollowing;
 
@@ -106,6 +109,10 @@ export function usePublicProfile(userId?: string) {
         if (!prev) return null;
         return {
           ...prev,
+          user: {
+            ...prev.user,
+            counts: countsResponse ?? prev.user.counts,
+          },
           isFollowing,
           canViewContent,
         };

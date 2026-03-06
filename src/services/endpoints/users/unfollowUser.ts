@@ -12,7 +12,7 @@ export const unfollowUserEndpoint: EndpointDefinition<undefined, UnfollowUserRes
   key: "users.unfollow",
   method: "POST",
   pathTemplate: "/v1/users/:userId/unfollow",
-  auth: "optional",
+  auth: "required",
   mock: async ({ pathParameters }) => {
     // Simulate network latency
     await new Promise((r) => setTimeout(r, 300));

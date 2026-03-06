@@ -14,7 +14,7 @@ export const getFollowStatusEndpoint: EndpointDefinition<undefined, GetFollowSta
   key: "users.getFollowStatus",
   method: "GET",
   pathTemplate: "/v1/users/:userId/follow-status",
-  auth: "optional",
+  auth: "required",
   mock: async ({ pathParameters }) => {
     // Simulate network latency
     await new Promise((r) => setTimeout(r, 200));
@@ -26,18 +26,13 @@ export const getFollowStatusEndpoint: EndpointDefinition<undefined, GetFollowSta
       return { isFollowing: false };
     }
 
-    // Check in-memory state first (for newly created follows/unfollows)
-    const followKey = `${currentUser.id}:${targetUserId}`;
-    if (inMemoryUnfollows.has(followKey)) {
-      return { isFollowing: false };
-    }
-    if (inMemoryFollows.has(followKey)) {
-      return { isFollowing: true };
-    }
-
-    // Check static mock data
+    // Check static mock data and overlay in-memory mutations.
     const followingIds = currentUser.following?.userIds ?? [];
-    const isFollowing = followingIds.includes(targetUserId);
+    const isFollowing = isFollowEdgeActive(
+      currentUser.id,
+      targetUserId,
+      followingIds.includes(targetUserId)
+    );
 
     return { isFollowing };
   },
@@ -54,4 +49,19 @@ export function addInMemoryUnfollow(currentUserId: string, targetUserId: string)
   const followKey = `${currentUserId}:${targetUserId}`;
   inMemoryUnfollows.add(followKey);
   inMemoryFollows.delete(followKey);
+}
+
+export function isFollowEdgeActive(
+  followerId: string,
+  targetUserId: string,
+  staticIsFollowing: boolean
+): boolean {
+  const followKey = `${followerId}:${targetUserId}`;
+  if (inMemoryUnfollows.has(followKey)) return false;
+  if (inMemoryFollows.has(followKey)) return true;
+  return staticIsFollowing;
+}
+
+export function getInMemoryFollowKeys(): string[] {
+  return Array.from(inMemoryFollows);
 }

@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
 
 import ProfileHeader from "../../components/account/ProfileHeader";
 import TabContent from "../../components/account/TabContent";
@@ -8,13 +9,11 @@ import TabSwitcher from "../../components/account/TabSwitcher";
 
 import { getAccountTabs } from "../../constants/accountTabs";
 import useAccountData from "../../src/hooks/useAccountData";
+import { useCurrentUserId } from "../../src/hooks/useCurrentUserId";
 import useStreakForUser from "../../src/hooks/useStreakForUser";
-import { getCurrentUserId } from "../../src/services/mockSessionUsers";
 
 export default function AccountScreen() {
-
-  // TODO: pull from your real auth context
-  const userId = getCurrentUserId();
+  const { userId, loading: authLoading } = useCurrentUserId();
 
   const { data, loading, error, refetch } = useAccountData(userId);
   const { currentStreak, hasPostedToday } = useStreakForUser(userId);
@@ -27,12 +26,23 @@ export default function AccountScreen() {
 
   const initialKey = tabList[0]?.key ?? "fitpics";
   const [activeKey, setActiveKey] = useState(initialKey);
+  const isFirstFocus = useRef(true);
 
   useEffect(() => {
     setActiveKey((prev) => (prev ? prev : initialKey));
   }, [initialKey]);
 
-  if (loading) {
+  useFocusEffect(
+    useCallback(() => {
+      if (isFirstFocus.current) {
+        isFirstFocus.current = false;
+        return;
+      }
+      if (userId) refetch();
+    }, [userId, refetch])
+  );
+
+  if (authLoading || loading) {
     return (
       <SafeAreaView style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: '#FFFFFF' }} edges={["top", "bottom"]}>
         <ActivityIndicator />
@@ -52,6 +62,17 @@ export default function AccountScreen() {
     );
   }
 
+  if (!userId) {
+    return (
+      <SafeAreaView style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 16, backgroundColor: '#FFFFFF' }} edges={["top", "bottom"]}>
+        <Text style={{ fontSize: 18, marginBottom: 8, color: '#11181C' }}>Couldn't resolve current user.</Text>
+        <TouchableOpacity onPress={refetch}>
+          <Text style={{ textDecorationLine: "underline", color: '#11181C' }}>Try again</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: '#FFFFFF' }}
@@ -62,6 +83,7 @@ export default function AccountScreen() {
         counts={data.counts}
         currentStreak={currentStreak}
         hasPostedToday={hasPostedToday}
+        onFollowChange={refetch}
       />
       <TabSwitcher tabs={tabList} activeKey={activeKey} onChange={setActiveKey} />
       <TabContent activeKey={activeKey} userId={userId} />

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { 
+  Alert,
   Modal, 
   View, 
   Text, 
@@ -18,12 +19,17 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   userId?: string;
+  /** Called after successful follow/unfollow so parent can refresh counts. */
+  onFollowChange?: () => void;
 };
 
-export default function FollowingModal({ visible, onClose, userId }: Props) {
+export default function FollowingModal({ visible, onClose, userId, onFollowChange }: Props) {
   const router = useRouter();
   const [following, setFollowing] = useState<FollowingUser[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
   
   const backgroundColor = '#FFFFFF';
   const textColor = '#11181C';
@@ -32,36 +38,66 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
 
   useEffect(() => {
     if (visible && userId) {
-      loadFollowing();
+      void loadFollowing();
     }
   }, [visible, userId]);
 
-  const loadFollowing = async () => {
-    setLoading(true);
+  const loadFollowing = async (cursor?: string) => {
+    if (cursor) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
     try {
       if (!userId) {
         setFollowing([]);
+        setNextCursor(null);
+        setHasMore(false);
         return;
       }
 
-      const response = await userApiClient.getFollowing(userId);
-      setFollowing(response.following);
+      const response = await userApiClient.getFollowing(userId, {
+        limit: 20,
+        cursor,
+      });
+      setFollowing((prev) => (cursor ? [...prev, ...response.following] : response.following));
+      setNextCursor(response.pagination?.nextCursor ?? null);
+      setHasMore(!!response.pagination?.hasMore);
     } catch (error) {
       console.error("Error loading following:", error);
-      setFollowing([]);
+      if (!cursor) setFollowing([]);
+      if (!cursor) {
+        Alert.alert("Error", "Couldn't load following list. Please try again.");
+      }
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
-  const handleFollowToggle = (targetUserId: string) => {
-    setFollowing(prev => 
-      prev.map(user => 
-        user.uid === targetUserId 
-          ? { ...user, isFollowing: !user.isFollowing }
-          : user
-      )
-    );
+  const handleFollowToggle = async (targetUserId: string, isFollowing?: boolean) => {
+    try {
+      if (isFollowing) {
+        await userApiClient.unfollowUser(targetUserId);
+      } else {
+        await userApiClient.followUser(targetUserId);
+      }
+      setFollowing((prev) =>
+        prev.map((user) =>
+          user.uid === targetUserId
+            ? { ...user, isFollowing: !isFollowing }
+            : user
+        )
+      );
+      onFollowChange?.();
+    } catch (error) {
+      console.error("Error updating follow state:", error);
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : "Couldn't update follow status. Please try again.";
+      Alert.alert("Error", message);
+    }
   };
 
   const handleUsernamePress = (followingUserId: string) => {
@@ -102,7 +138,7 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
               borderColor: borderColor 
             }
           ]}
-          onPress={() => handleFollowToggle(item.uid)}
+          onPress={() => void handleFollowToggle(item.uid, item.isFollowing)}
         >
           <Text style={[
             styles.unfollowButtonText,
@@ -153,6 +189,19 @@ export default function FollowingModal({ visible, onClose, userId }: Props) {
             keyExtractor={(item) => item.uid}
             renderItem={renderFollowing}
             style={styles.list}
+            onEndReached={() => {
+              if (hasMore && nextCursor && !loadingMore) {
+                void loadFollowing(nextCursor);
+              }
+            }}
+            onEndReachedThreshold={0.3}
+            ListFooterComponent={
+              loadingMore ? (
+                <View style={{ paddingVertical: 12 }}>
+                  <ActivityIndicator />
+                </View>
+              ) : null
+            }
           />
         )}
       </SafeAreaView>

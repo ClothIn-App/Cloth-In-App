@@ -11,15 +11,17 @@ type Props = {
   counts?: ProfileCounts;
   currentStreak?: number;
   hasPostedToday?: boolean;
+  /** Called when follow/unfollow happens in modals so parent can refresh counts. */
+  onFollowChange?: () => void;
 };
 
-export default function ProfileHeader({ me, counts, currentStreak = 0, hasPostedToday = false }: Props) {
+export default function ProfileHeader({ me, counts, currentStreak = 0, hasPostedToday = false, onFollowChange }: Props) {
   const router = useRouter();
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
 
   const name = me?.username ? `@${me.username}` : "@username";
-  const displayName = me?.displayName ?? "";
+  const displayName = me?.displayName ?? me?.name ?? "";
   const fitpics = counts?.posts ?? (me as any)?.counts?.posts ?? 0;
   const following = counts?.following ?? (me as any)?.counts?.following ?? 0;
   const followers = counts?.followers ?? (me as any)?.counts?.followers ?? 0;
@@ -113,11 +115,13 @@ export default function ProfileHeader({ me, counts, currentStreak = 0, hasPosted
         visible={showFollowersModal}
         onClose={() => setShowFollowersModal(false)}
         userId={(me as any)?.id ?? me?.uid}
+        onFollowChange={onFollowChange}
       />
       <FollowingModal
         visible={showFollowingModal}
         onClose={() => setShowFollowingModal(false)}
         userId={(me as any)?.id ?? me?.uid}
+        onFollowChange={onFollowChange}
       />
     </View>
   );

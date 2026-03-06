@@ -12,7 +12,7 @@ export const followUserEndpoint: EndpointDefinition<undefined, FollowUserRespons
   key: "users.follow",
   method: "POST",
   pathTemplate: "/v1/users/:userId/follow",
-  auth: "optional",
+  auth: "required",
   mock: async ({ pathParameters }) => {
     // Simulate network latency
     await new Promise((r) => setTimeout(r, 300));

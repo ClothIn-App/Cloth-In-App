@@ -24,8 +24,11 @@ export default function useAccountData(userId?: string) {
     setError(null);
 
     try {
-      // Load user via API client
-      const response = await userApiClient.getUser(userId);
+      // Load profile + counts in parallel
+      const [response, countsResponse] = await Promise.all([
+        userApiClient.getUser(userId),
+        userApiClient.getProfileCounts(userId),
+      ]);
       
       if (reqRef.current === myReq) {
         if (!response.user) {
@@ -34,8 +37,11 @@ export default function useAccountData(userId?: string) {
         }
 
         // Return user object and counts separately (matching AccountData type)
-        const me = response.user as any;
-        const counts = response.user.counts;
+        const me = {
+          ...response.user,
+          displayName: response.user.displayName ?? response.user.name,
+        } as any;
+        const counts = countsResponse ?? response.user.counts;
 
         setData({ me, counts });
       }

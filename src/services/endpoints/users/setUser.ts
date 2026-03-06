@@ -5,6 +5,7 @@ import { getUserFromMockDb, setUserInMockDb } from "./mockDb";
 /** Fields the client can create/update */
 export type SetUserPayload = {
   email?: string; // optional; will be lowercased if provided
+  name?: string | null;
   displayName?: string | null;
   username?: string;
   avatarUrl?: string;
@@ -41,6 +42,7 @@ export const setUserEndpoint: EndpointDefinition<
         user: {
           uid: userId,
           email: `user+${userId}@example.com`,
+          name: "New User",
           displayName: "New User",
           username: `user_${userId}`,
           avatarUrl: undefined,
@@ -60,6 +62,7 @@ export const setUserEndpoint: EndpointDefinition<
       user: {
         ...current.user,
         email: nextEmail,
+        name: body?.name ?? body?.displayName ?? current.user.name ?? current.user.displayName,
         displayName: body?.displayName ?? current.user.displayName,
         username: body?.username ?? current.user.username,
         avatarUrl: body?.avatarUrl ?? current.user.avatarUrl,

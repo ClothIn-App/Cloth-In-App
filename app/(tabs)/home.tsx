@@ -10,9 +10,9 @@ import { runOnJS } from "react-native-reanimated";
 import Home_Grid from "../../components/home/home-grid";
 import StreakDrawer from "../../components/home/StreakDrawer";
 import FeedTypeDropdown, { type FeedType } from "../../components/home/FeedTypeDropdown";
-import { getCurrentUserId } from "../../src/services/mockSessionUsers";
 import { fitpicClient } from "../../src/services/apiClients/fitpicClient";
 import { computeStreakStats } from "../../src/utils/streakUtils";
+import { useCurrentUserId } from "../../src/hooks/useCurrentUserId";
 
 const EDGE_SWIPE_WIDTH = 32;
 
@@ -23,6 +23,7 @@ const FEED_TYPE_LABELS: Record<FeedType, string> = {
 };
 
 export default function HomeScreen() {
+  const { userId } = useCurrentUserId();
   const [feedType, setFeedType] = useState<FeedType>("forYou");
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -31,7 +32,6 @@ export default function HomeScreen() {
   const [hasPostedToday, setHasPostedToday] = useState(false);
 
   useEffect(() => {
-    const userId = getCurrentUserId();
     if (!userId) {
       setCurrentStreak(0);
       setHasPostedToday(false);
@@ -59,7 +59,7 @@ export default function HomeScreen() {
         setCurrentStreak(0);
         setHasPostedToday(false);
       });
-  }, []);
+  }, [userId]);
 
   const streakActive = currentStreak > 0 && hasPostedToday;
   const { width: screenWidth } = useWindowDimensions();
@@ -139,6 +139,7 @@ export default function HomeScreen() {
       <StreakDrawer
         visible={streakDrawerOpen}
         onClose={() => setStreakDrawerOpen(false)}
+        userId={userId}
       />
     </SafeAreaView>
   );
