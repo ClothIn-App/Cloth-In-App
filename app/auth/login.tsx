@@ -15,13 +15,9 @@ import {
 } from 'react-native';
 
 import { log } from '@/src/debug/log';
-<<<<<<< HEAD
-import { authApiClient } from '@/src/services/apiClients'; // ← uses our API layer
-import { useAuth } from '@/src/context/AuthContext';
-=======
 import { authApiClient, userApiClient } from '@/src/services/apiClients';
+import { useAuth } from '@/src/context/AuthContext';
 import { mapGetUserResponseToRawUser, setRealCurrentUser } from '@/src/services/mockSessionUsers';
->>>>>>> main
 const bgPattern = require('../../assets/images/login-bg.png');
 
 export default function Login() {

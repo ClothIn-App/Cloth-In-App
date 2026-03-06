@@ -1,10 +1,21 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-<<<<<<< HEAD
-import { isLoggedIn as isMockLoggedIn } from "@/src/services/mockSessionUsers";
-import { clearTokens, getValidIdToken } from '@/src/services/authTokenManager';
-import { authEvents } from '@/src/services/authEvents';
-import { userApiClient } from "@/src/services/apiClients/userClient";
+import {
+  ActivityIndicator,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { userApiClient } from "@/src/services/apiClients";
+import {
+  clearRealCurrentUser,
+  isLoggedIn as isMockLoggedIn,
+  mapGetUserResponseToRawUser,
+  setRealCurrentUser,
+} from "@/src/services/mockSessionUsers";
+import { getValidIdToken, clearTokens } from "@/src/services/authTokenManager";
+import { authEvents } from "@/src/services/authEvents";
 
 function decodeUidFromToken(token: string): string | null {
   try {
@@ -21,26 +32,8 @@ function decodeUidFromToken(token: string): string | null {
     return null;
   }
 }
-=======
-import {
-  ActivityIndicator,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { authApiClient, userApiClient } from "@/src/services/apiClients";
-import {
-  clearRealCurrentUser,
-  isLoggedIn as isMockLoggedIn,
-  mapGetUserResponseToRawUser,
-  setRealCurrentUser,
-} from "@/src/services/mockSessionUsers";
-import { getValidIdToken, clearTokens } from "@/src/services/authTokenManager";
-import { authEvents } from "@/src/services/authEvents";
 
 const bgPattern = require("../assets/images/login-bg.png");
->>>>>>> main
 
 export default function Index() {
   const router = useRouter();
@@ -52,52 +45,41 @@ export default function Index() {
         const apiMode = process.env.EXPO_PUBLIC_API_MODE || "mock";
 
         if (apiMode === "real") {
-<<<<<<< HEAD
-          // Real mode guard: token alone is not enough.
+          // Real mode: validate token and that user doc exists.
           // A stale token can survive while the backing user profile doc is missing,
           // which causes account/profile screens to fail-load and traps the app.
           const token = await getValidIdToken();
-          if (token) {
-            const uid = decodeUidFromToken(token);
-            if (!uid) {
-              await clearTokens();
-              router.replace("/auth/welcome");
-              return;
-            }
-
-            const userResponse = await userApiClient.getUser(uid);
-            if (!userResponse.user) {
-              await clearTokens();
-              router.replace("/auth/welcome");
-              return;
-            }
-
-            router.replace("/(tabs)/home");
-          } else {
-=======
-          const token = await getValidIdToken();
           if (!token) {
->>>>>>> main
             router.replace("/auth/welcome");
             return;
           }
-          const userId = await authApiClient.getMe();
-          if (!userId) {
+
+          const uid = decodeUidFromToken(token);
+          if (!uid) {
             await clearTokens();
             clearRealCurrentUser();
             router.replace("/auth/welcome");
             return;
           }
+
           try {
-            const userRes = await userApiClient.getUser(userId);
-            const rawUser = userRes?.user
-              ? mapGetUserResponseToRawUser(userRes.user, userId)
-              : undefined;
-            setRealCurrentUser(userId, rawUser ?? undefined);
+            const userResponse = await userApiClient.getUser(uid);
+            if (!userResponse?.user) {
+              await clearTokens();
+              clearRealCurrentUser();
+              router.replace("/auth/welcome");
+              return;
+            }
+
+            const rawUser = mapGetUserResponseToRawUser(userResponse.user, uid);
+            setRealCurrentUser(uid, rawUser);
+            router.replace("/(tabs)/home");
           } catch {
-            setRealCurrentUser(userId);
+            await clearTokens();
+            clearRealCurrentUser();
+            router.replace("/auth/welcome");
+            return;
           }
-          router.replace("/(tabs)/home");
         } else {
           if (isMockLoggedIn()) {
             router.replace("/(tabs)/home");
