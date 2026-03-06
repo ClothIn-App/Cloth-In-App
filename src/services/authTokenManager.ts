@@ -5,6 +5,7 @@ import * as SecureStore from 'expo-secure-store';
 import { AUTH_CONFIG } from '@/src/config/authConfig';
 import { TokenRefreshError, InvalidTokenError } from '@/src/services/authErrors';
 import { log } from '@/src/debug/log';
+import { clearRealCurrentUser } from '@/src/services/mockSessionUsers';
 
 const TOKEN_EXPIRY_BUFFER = AUTH_CONFIG.TOKEN_REFRESH_BUFFER_MS; // 5 minutes before expiry
 
@@ -225,6 +226,7 @@ export async function clearTokens(): Promise<void> {
     await SecureStore.deleteItemAsync('refreshToken');
     await SecureStore.deleteItemAsync('tokenExpiresAt');
     cachedToken = null; // Clear cache
+    clearRealCurrentUser();
     log.info('[AUTH:TOKENS_CLEARED]');
   } catch (error: any) {
     log.error('[AUTH:CLEAR_TOKENS_ERROR]', { error: error?.message ?? String(error) });

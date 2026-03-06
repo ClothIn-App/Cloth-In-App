@@ -6,13 +6,14 @@ export const PRODUCT_LABEL_HEIGHT = 50;
 
 type Props = {
   width: number;
-  source: any;                 // local require(...) or { uri }
+  source: any;
   brand: string;
   name: string;
   price?: number | string | null;
   salePrice?: number | string | null;
-  outlined?: boolean;          // show subtle border
-  showLabel?: boolean;         // show brand/name box
+  priceType?: 'fixed' | 'sale' | 'sold_out' | 'tbd' | 'na';
+  outlined?: boolean;
+  showLabel?: boolean;
   sharedTransitionTag?: string;
 };
 
@@ -26,12 +27,25 @@ export default function Product_Cover({
   name,
   price = null,
   salePrice = null,
+  priceType,
   outlined = true,
   showLabel = true,
   sharedTransitionTag,
 }: Props) {
-  const priceText = formatPrice(salePrice ?? price);
-  const showPrice = Boolean(priceText);
+  const getBadgeContent = (): { text: string; bg: string } | null => {
+    if (priceType === 'sold_out') {
+      const p = formatPrice(price);
+      return { text: p ? `${p} · Sold Out` : "Sold Out", bg: "rgba(107,114,128,0.85)" };
+    }
+    if (priceType === 'tbd') {
+      return { text: "TBD", bg: "rgba(0,0,0,0.70)" };
+    }
+    const displayPrice = formatPrice(salePrice ?? price);
+    if (!displayPrice) return null;
+    return { text: displayPrice, bg: "rgba(0,0,0,0.70)" };
+  };
+
+  const badge = getBadgeContent();
 
   return (
     <View
@@ -51,8 +65,7 @@ export default function Product_Cover({
           contentFit="cover"
         />
 
-        {/* Top-left price badge */}
-        {showPrice && (
+        {badge && (
           <View
             style={{
               position: "absolute",
@@ -61,10 +74,10 @@ export default function Product_Cover({
               paddingHorizontal: 8,
               paddingVertical: 4,
               borderRadius: 8,
-              backgroundColor: "rgba(0,0,0,0.70)",
+              backgroundColor: badge.bg,
             }}
           >
-            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 12 }}>{priceText}</Text>
+            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 12 }}>{badge.text}</Text>
           </View>
         )}
       </View>

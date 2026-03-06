@@ -2,10 +2,16 @@
 import * as React from 'react';
 import { View, StyleSheet, Alert, Modal, Pressable, Text, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 
+import { Ionicons } from '@expo/vector-icons';
+
 import { useAddProductContext, AddProductProvider } from '../../components/create/product/addproductcontext';
+import { usePost } from '../../components/create/post/postcontext';
+import { uploadProductPhotos, PhotoUploadRequest } from '@/src/services/photoUploadService';
+import { contentApiClient, CreateProductRequest } from '@/src/services/apiClients/contentClient';
+import { clearFeedCache } from '@/src/utils/getFeedItem';
 import CategorySelect from '../../components/create/product/categoryselect';
 import BrandSelect from '../../components/create/product/brandselect';
 import ProductName from '../../components/create/product/productname';
@@ -14,11 +20,29 @@ import ProductLink from '../../components/create/product/link';
 import ProductPhotos from '../../components/create/product/productphotos';
 import AddPrice from '../../components/create/product/addprice';
 
+/** Derive a string image URL from create-product response (server returns images as [{ url }], mock may use imagePath or string[]). */
+function getProductImageUrl(p: {
+  primaryImageUrl?: string;
+  images?: Array<{ url?: string } | string>;
+  imagePath?: string;
+}): string | undefined {
+  if (typeof p.primaryImageUrl === 'string' && p.primaryImageUrl) return p.primaryImageUrl;
+  const first = p.images?.[0];
+  if (first != null) {
+    if (typeof first === 'string') return first;
+    if (typeof first === 'object' && typeof first.url === 'string') return first.url;
+  }
+  if (typeof p.imagePath === 'string' && p.imagePath) return p.imagePath;
+  return undefined;
+}
+
 function AddProductContent() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ returnTo?: string }>();
+  const { addProduct } = usePost();
   const isFocused = useIsFocused();
   const insets = useSafeAreaInsets();
-  
+
   const {
     category,
     brand,
@@ -55,52 +79,170 @@ function AddProductContent() {
     setShowDiscardConfirm(false);
   }, []);
 
-  const handleAddProduct = React.useCallback(() => {
+  const handleAddProduct = React.useCallback(async () => {
     if (!isValid) return;
-    
-    // TODO: Implement actual product creation logic
-    console.log('Adding product:', {
-      category,
-      brand,
-      productName,
-      specifications,
-      description,
-      link,
-      photos,
-      priceType,
-      price,
-      originalPrice,
-    });
-    
-    // For now, just go back
-    router.back();
-  }, [isValid, category, brand, productName, specifications, description, link, photos, priceType, price, originalPrice, router]);
 
-  // Calculate header height similar to fitpic_post
+    try {
+      // Generate product ID once for storage path and Firestore document
+      const productId = Array.from({ length: 32 }, () =>
+        Math.floor(Math.random() * 16).toString(16)
+      ).join("");
+
+      const uploadRequests: PhotoUploadRequest[] = photos.map((uri, index) => ({
+        uri,
+        type: "image/jpeg",
+        name: `product_${Date.now()}_${index}.jpg`,
+      }));
+
+      const uploadResult = await uploadProductPhotos(uploadRequests, productId);
+
+      if (!uploadResult.success) {
+        const message = uploadResult.errors?.[0] ?? "Failed to upload product photos. Please try again.";
+        Alert.alert("Upload failed", message, [{ text: "OK" }]);
+        return;
+      }
+
+      const uploadedUrls =
+        uploadResult.uploads
+          .filter((u) => u.success && u.url)
+          .map((u) => u.url as string);
+
+      if (!uploadedUrls.length) {
+        Alert.alert("Upload failed", "No photo URLs were returned from the server.", [{ text: "OK" }]);
+        return;
+      }
+
+      const parsedPrice = price.trim().length > 0 ? Number(price) : undefined;
+      const parsedOriginalPrice = originalPrice.trim().length > 0 ? Number(originalPrice) : undefined;
+
+      const requestBody: CreateProductRequest = {
+        productId,
+        name: productName.trim(),
+        brand: brand.trim(),
+        category: category.trim(),
+        description: description.trim() || undefined,
+        specifications: specifications.trim() || undefined,
+        productUrl: link.trim() || undefined,
+        priceType,
+        price:
+          priceType === "fixed" || priceType === "sale" || priceType === "sold_out"
+            ? parsedPrice
+            : undefined,
+        originalPrice: parsedOriginalPrice,
+        currency: "USD",
+        images: uploadedUrls.map((url) => ({ url })),
+      };
+
+      const response = await contentApiClient.createProduct(requestBody);
+
+      if (!response.success) {
+        Alert.alert("Error", response.error ?? "Failed to create product. Please try again.", [
+          { text: "OK" },
+        ]);
+        return;
+      }
+
+      if (params.returnTo === "fitpic" && response.product) {
+        const p = response.product;
+        const imageUrl = getProductImageUrl(p);
+        addProduct({
+          id: p.id,
+          name: p.name,
+          brand: p.brand,
+          category: "",
+          price: p.price,
+          imageUrl,
+        });
+      }
+
+      // Reset form, clear feed cache so the new product can appear, and navigate back
+      reset();
+      clearFeedCache();
+      router.back();
+    } catch (error) {
+      console.error("Error creating product:", error);
+      Alert.alert("Error", "Failed to create product. Please try again.", [{ text: "OK" }]);
+    }
+  }, [
+    isValid,
+    category,
+    brand,
+    productName,
+    specifications,
+    description,
+    link,
+    photos,
+    priceType,
+    price,
+    originalPrice,
+    reset,
+    router,
+    params.returnTo,
+    addProduct,
+  ]);
+
+  // Flow bar: count how many of the 7 fields have any input (0–7)
+  const filledCount = React.useMemo(() => {
+    let count = 0;
+    if (category.trim().length > 0) count += 1;
+    if (brand.trim().length > 0) count += 1;
+    if (productName.trim().length > 0) count += 1;
+    if (specifications.trim().length > 0 || description.trim().length > 0) count += 1;
+    if (link.trim().length > 0) count += 1;
+    if (photos.length > 0) count += 1;
+    const priceFilled =
+      priceType === 'tbd' ||
+      priceType === 'na' ||
+      price.trim().length > 0 ||
+      originalPrice.trim().length > 0;
+    if (priceFilled) count += 1;
+    return count;
+  }, [
+    category,
+    brand,
+    productName,
+    specifications,
+    description,
+    link,
+    photos.length,
+    priceType,
+    price,
+    originalPrice,
+  ]);
+
+  // Calculate header height: top row + flow bar
   const topPad = Math.max(insets.top - 6, 0);
-  const headerHeight = 60 + topPad;
+  const FLOW_BAR_HEIGHT = 8;
+  const headerHeight = 60 + topPad + FLOW_BAR_HEIGHT + 4;
   const footerSafePad = insets.bottom;
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       {/* Header */}
       <View style={[styles.header, { paddingTop: topPad, height: headerHeight }]}>
-        <Pressable onPress={handleClose} hitSlop={8} style={styles.headerButton}>
-          <Text style={styles.headerButtonText}>Cancel</Text>
-        </Pressable>
-        
-        <Text style={styles.headerTitle}>New Product</Text>
-        
-        <Pressable
-          onPress={handleAddProduct}
-          hitSlop={8}
-          style={[styles.headerButton, !isValid && styles.headerButtonDisabled]}
-          disabled={!isValid}
-        >
-          <Text style={[styles.headerButtonText, !isValid && styles.headerButtonTextDisabled]}>
-            Post
-          </Text>
-        </Pressable>
+        <View style={styles.headerRow}>
+          <Pressable onPress={handleClose} hitSlop={8} style={styles.headerButton}>
+            <Ionicons name="chevron-back-outline" size={24} color="#111827" />
+          </Pressable>
+
+          <Text style={styles.headerTitle}>New Product</Text>
+
+          <Pressable
+            onPress={handleAddProduct}
+            hitSlop={8}
+            style={[styles.headerButton, !isValid && styles.headerButtonDisabled]}
+            disabled={!isValid}
+          >
+            <Text style={[styles.headerButtonText, !isValid && styles.headerButtonTextDisabled]}>
+              Post
+            </Text>
+          </Pressable>
+        </View>
+        <View style={styles.flowBarContainer}>
+          <View
+            style={[styles.flowBarFill, { width: `${(filledCount / 7) * 100}%` }]}
+          />
+        </View>
       </View>
 
       {/* Content */}
@@ -167,16 +309,33 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   header: {
+    flexDirection: 'column',
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
   },
   headerButton: {
     padding: 8,
+  },
+  flowBarContainer: {
+    height: 8,
+    width: '100%',
+    marginTop: 0,
+    backgroundColor: '#e5e7eb',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  flowBarFill: {
+    height: '100%',
+    backgroundColor: '#3b82f6',
+    borderRadius: 4,
   },
   headerButtonDisabled: {
     opacity: 0.5,
@@ -197,6 +356,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 16,
+    paddingTop: 24,
   },
   footer: {
     position: 'absolute',

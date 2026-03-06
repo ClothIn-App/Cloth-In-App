@@ -25,6 +25,8 @@ type Props = {
   onToggleSave?: (nextSaved: boolean) => void;
   /** Optional: product ID for sharing context */
   productId?: string;
+  /** Called when user taps a reaction (key and whether it was added or removed) for API sync */
+  onReactionPress?: (key: ReactionKey, isAdding: boolean) => void;
 };
 
 /**
@@ -50,6 +52,7 @@ export function ProductReactionsRow({
   isSaved: isSavedProp,
   onToggleSave,
   productId,
+  onReactionPress,
 }: Props) {
   // Single-reaction selection (client-only, optimistic)
   const [selected, setSelected] = useState<ReactionKey | null>(initialSelected);
@@ -85,22 +88,24 @@ export function ProductReactionsRow({
   const handleReactionPress = (key: ReactionKey) => {
     const currentCounts = reactions.counts;
     const nextCounts = { ...currentCounts };
+    let isAdding: boolean;
 
     if (selected === key) {
-      // Toggle OFF same reaction
       nextCounts[key] = Math.max(0, (nextCounts[key] ?? 0) - 1);
       setSelected(null);
+      isAdding = false;
     } else {
-      // Switch from previous to new (only one allowed)
       if (selected) {
         nextCounts[selected] = Math.max(0, (nextCounts[selected] ?? 0) - 1);
       }
       nextCounts[key] = (nextCounts[key] ?? 0) + 1;
       setSelected(key);
+      isAdding = true;
     }
 
     animatePop(key);
     onChange({ counts: nextCounts });
+    onReactionPress?.(key, isAdding);
   };
 
   const handleSavePress = () => {

@@ -8,68 +8,10 @@ export default function SpecificationsDescription() {
   const [showSpecsModal, setShowSpecsModal] = useState(false);
   const [showDescModal, setShowDescModal] = useState(false);
 
-  const SpecsModal = () => (
-    <Modal visible={showSpecsModal} animationType="slide" presentationStyle="pageSheet">
-      <View style={styles.modalContainer}>
-        <View style={styles.modalHeader}>
-          <Pressable onPress={() => setShowSpecsModal(false)} style={styles.modalHeaderButton}>
-            <Text style={styles.modalHeaderButtonText}>Cancel</Text>
-          </Pressable>
-          <Text style={styles.modalHeaderTitle}>Add Specifications</Text>
-          <Pressable onPress={() => setShowSpecsModal(false)} style={styles.modalHeaderButton}>
-            <Text style={styles.modalHeaderButtonText}>Done</Text>
-          </Pressable>
-        </View>
-        <ScrollView style={styles.modalContent}>
-          <TextInput
-            style={styles.textArea}
-            value={specifications}
-            onChangeText={setSpecifications}
-            placeholder="Add product specifications (size, material, color, etc.)"
-            placeholderTextColor="#9ca3af"
-            multiline
-            textAlignVertical="top"
-            maxLength={1000}
-          />
-          <Text style={styles.characterCount}>{specifications.length}/1000</Text>
-        </ScrollView>
-      </View>
-    </Modal>
-  );
-
-  const DescModal = () => (
-    <Modal visible={showDescModal} animationType="slide" presentationStyle="pageSheet">
-      <View style={styles.modalContainer}>
-        <View style={styles.modalHeader}>
-          <Pressable onPress={() => setShowDescModal(false)} style={styles.modalHeaderButton}>
-            <Text style={styles.modalHeaderButtonText}>Cancel</Text>
-          </Pressable>
-          <Text style={styles.modalHeaderTitle}>Add Description</Text>
-          <Pressable onPress={() => setShowDescModal(false)} style={styles.modalHeaderButton}>
-            <Text style={styles.modalHeaderButtonText}>Done</Text>
-          </Pressable>
-        </View>
-        <ScrollView style={styles.modalContent}>
-          <TextInput
-            style={styles.textArea}
-            value={description}
-            onChangeText={setDescription}
-            placeholder="Add product description"
-            placeholderTextColor="#9ca3af"
-            multiline
-            textAlignVertical="top"
-            maxLength={1000}
-          />
-          <Text style={styles.characterCount}>{description.length}/1000</Text>
-        </ScrollView>
-      </View>
-    </Modal>
-  );
-
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Specifications + Description</Text>
-      
+
       <Pressable
         style={styles.addButton}
         onPress={() => setShowSpecsModal(true)}
@@ -90,8 +32,59 @@ export default function SpecificationsDescription() {
         {description && <Text style={styles.previewText}>{description}</Text>}
       </Pressable>
 
-      <SpecsModal />
-      <DescModal />
+      <Modal visible={showSpecsModal} animationType="slide" presentationStyle="pageSheet">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Pressable onPress={() => setShowSpecsModal(false)} style={styles.modalHeaderButton}>
+              <Text style={styles.modalHeaderButtonText}>Cancel</Text>
+            </Pressable>
+            <Text style={styles.modalHeaderTitle}>Add Specifications</Text>
+            <Pressable onPress={() => setShowSpecsModal(false)} style={styles.modalHeaderButton}>
+              <Text style={styles.modalHeaderButtonText}>Done</Text>
+            </Pressable>
+          </View>
+          <ScrollView style={styles.modalContent}>
+            <TextInput
+              style={styles.textArea}
+              value={specifications}
+              onChangeText={setSpecifications}
+              placeholder="Add product specifications (size, material, color, etc.)"
+              placeholderTextColor="#9ca3af"
+              multiline
+              textAlignVertical="top"
+              maxLength={1000}
+            />
+            <Text style={styles.characterCount}>{specifications.length}/1000</Text>
+          </ScrollView>
+        </View>
+      </Modal>
+
+      <Modal visible={showDescModal} animationType="slide" presentationStyle="pageSheet">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Pressable onPress={() => setShowDescModal(false)} style={styles.modalHeaderButton}>
+              <Text style={styles.modalHeaderButtonText}>Cancel</Text>
+            </Pressable>
+            <Text style={styles.modalHeaderTitle}>Add Description</Text>
+            <Pressable onPress={() => setShowDescModal(false)} style={styles.modalHeaderButton}>
+              <Text style={styles.modalHeaderButtonText}>Done</Text>
+            </Pressable>
+          </View>
+          <ScrollView style={styles.modalContent}>
+            <TextInput
+              style={styles.textArea}
+              value={description}
+              onChangeText={setDescription}
+              placeholder="Add product description"
+              placeholderTextColor="#9ca3af"
+              multiline
+              textAlignVertical="top"
+              maxLength={1000}
+            />
+            <Text style={styles.characterCount}>{description.length}/1000</Text>
+          </ScrollView>
+        </View>
+      </Modal>
     </View>
   );
 }

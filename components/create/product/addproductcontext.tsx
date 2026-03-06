@@ -1,5 +1,6 @@
 // src/create/product/addproductcontext.tsx
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { isValidProductUrl } from './link';
 
 export type PriceType = 'fixed' | 'sale' | 'sold_out' | 'tbd' | 'na';
 
@@ -36,7 +37,7 @@ type AddProductContextType = {
   setSpecifications: (specs: string) => void;
   setDescription: (desc: string) => void;
   setLink: (link: string) => void;
-  setPhotos: (photos: string[]) => void;
+  setPhotos: (photos: string[] | ((prev: string[]) => string[])) => void;
   setPriceType: (type: PriceType) => void;
   setPrice: (price: string) => void;
   setOriginalPrice: (price: string) => void;
@@ -90,8 +91,11 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
     setFormData(prev => ({ ...prev, link }));
   }, []);
 
-  const setPhotos = useCallback((photos: string[]) => {
-    setFormData(prev => ({ ...prev, photos }));
+  const setPhotos = useCallback((photos: string[] | ((prev: string[]) => string[])) => {
+    setFormData(prev => ({
+      ...prev,
+      photos: typeof photos === 'function' ? photos(prev.photos) : photos,
+    }));
   }, []);
 
   const setPriceType = useCallback((priceType: PriceType) => {
@@ -115,7 +119,8 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
       formData.productName.trim().length <= 100 &&
       formData.photos.length >= 1 &&
       formData.photos.length <= 5 &&
-      (formData.priceType === 'tbd' || formData.priceType === 'na' || formData.price.trim().length > 0)
+      isValidProductUrl(formData.link) &&
+      (formData.priceType === 'tbd' || formData.priceType === 'na' || formData.priceType === 'sold_out' || formData.price.trim().length > 0)
     );
   }, [formData]);
 

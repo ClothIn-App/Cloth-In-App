@@ -1,6 +1,6 @@
 // app/create-modals/fitpic_media.tsx
 import * as React from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -116,6 +116,15 @@ export default function FitPicMediaScreen() {
   // Only render the live camera when focused and on the camera page
   const shouldShowCamera = isFocused && activeIndex === 1;
 
+  // Largest 9:16 (width : height) box that fits in the window — Snapchat-style full-screen framing
+  const { width: winWidth, height: winHeight } = useWindowDimensions();
+  const cameraBox = React.useMemo(() => {
+    if (winWidth / winHeight <= 9 / 16) {
+      return { width: winWidth, height: winWidth * (16 / 9) };
+    }
+    return { width: winHeight * (9 / 16), height: winHeight };
+  }, [winWidth, winHeight]);
+
   return (
     <View style={styles.container}>
       <FitPicPager
@@ -133,29 +142,43 @@ export default function FitPicMediaScreen() {
           />
         )}
         renderCapture={() => (
-          <View style={{ flex: 1 }}>
-            {shouldShowCamera ? (
-              <CameraSurface controller={controller} />
-            ) : (
-              <View style={{ flex: 1, backgroundColor: '#000' }} />
-            )}
+          <View style={styles.captureRoot}>
+            <View style={styles.cameraArea}>
+              <View
+                style={[
+                  styles.cameraBox,
+                  { width: cameraBox.width, height: cameraBox.height },
+                ]}
+                pointerEvents="box-none"
+              >
+                {shouldShowCamera ? (
+                  <CameraSurface controller={controller} style={styles.cameraFill} />
+                ) : (
+                  <View style={[styles.cameraFill, styles.cameraPlaceholder]} />
+                )}
 
-            <TopLeftControls />
-            <TopRightControls controller={controller} onNext={handleNext} />
-
-            <View style={styles.cornerStackContainer} pointerEvents="box-none">
-              <CornerThumbStack items={selectedItems} onPress={() => setDrawerOpen(true)} />
-            </View>
-
-            {/* Bottom bar: shutter centered; gallery on the left */}
-            <View style={styles.bottomBar} pointerEvents="box-none">
-              <View style={styles.centerRow} pointerEvents="box-none">
-                <GallerButton
-                  onOpen={() => pagerRef.current?.setPage(0)}
-                  style={{ marginRight: 12 }}
+                <TopLeftControls paddingTopOverride={12} />
+                <TopRightControls
+                  controller={controller}
+                  onNext={handleNext}
+                  insetsOverride={{ top: 12, right: 12 }}
                 />
-                <ShutterButton onPress={onShutterPress} />
-                <View style={{ width: 44 }} />
+
+                <View style={styles.cornerStackContainer} pointerEvents="box-none">
+                  <CornerThumbStack items={selectedItems} onPress={() => setDrawerOpen(true)} />
+                </View>
+
+                {/* Bottom bar: shutter centered; gallery on the left */}
+                <View style={styles.bottomBar} pointerEvents="box-none">
+                  <View style={styles.centerRow} pointerEvents="box-none">
+                    <GallerButton
+                      onOpen={() => pagerRef.current?.setPage(0)}
+                      style={{ marginRight: 12 }}
+                    />
+                    <ShutterButton onPress={onShutterPress} />
+                    <View style={{ width: 44 }} />
+                  </View>
+                </View>
               </View>
             </View>
           </View>
@@ -176,6 +199,16 @@ export default function FitPicMediaScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  captureRoot: { flex: 1, backgroundColor: '#0d0d0d' },
+  cameraArea: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0d0d0d',
+  },
+  cameraBox: { backgroundColor: '#000' },
+  cameraFill: { flex: 1 },
+  cameraPlaceholder: { backgroundColor: '#000' },
   cornerStackContainer: { position: 'absolute', right: 5, bottom: 30 },
   bottomBar: {
     position: 'absolute',

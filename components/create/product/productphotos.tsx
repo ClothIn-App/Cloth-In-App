@@ -1,26 +1,118 @@
 // src/create/product/productphotos.tsx
-import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Modal } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Alert, Platform, ActionSheetIOS, ActivityIndicator, Modal } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useAddProductContext } from './addproductcontext';
 import { MockDraftsProvider } from './mockdrafts';
 import PhotoGrid from '../post/photogrid';
-import CameraRollScreenProduct from './camerarollscreen-product';
+
+const MAX_PHOTOS = 5;
 
 export default function ProductPhotos() {
   const { photos, setPhotos } = useAddProductContext();
-  const [showCameraRoll, setShowCameraRoll] = useState(false);
+  const [isOpeningPicker, setIsOpeningPicker] = useState(false);
+
+  // Pre-request permissions on mount so "Take photo" / "Choose from library" open immediately when tapped
+  useEffect(() => {
+    ImagePicker.requestCameraPermissionsAsync().catch(() => {});
+    ImagePicker.requestMediaLibraryPermissionsAsync().catch(() => {});
+  }, []);
 
   const handleAddPhotos = () => {
-    setShowCameraRoll(true);
-  };
+    if (photos.length >= MAX_PHOTOS) {
+      Alert.alert(
+        'Maximum photos reached',
+        `You can add up to ${MAX_PHOTOS} photos. Remove one to add another.`,
+        [{ text: 'OK' }]
+      );
+      return;
+    }
 
-  const handlePhotosSelected = (selectedIds: string[]) => {
-    setPhotos(selectedIds);
-    setShowCameraRoll(false);
+    const takePhoto = () => {
+      setIsOpeningPicker(true);
+      ImagePicker.requestCameraPermissionsAsync().then(({ status }) => {
+        if (status !== 'granted') {
+          setIsOpeningPicker(false);
+          Alert.alert(
+            'Permission Required',
+            'We need access to your camera to take a product photo.',
+            [{ text: 'OK' }]
+          );
+          return;
+        }
+        ImagePicker.launchCameraAsync({
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.8,
+        }).then((result) => {
+          setIsOpeningPicker(false);
+          if (!result.canceled && result.assets[0]) {
+            const uri = result.assets[0].uri;
+            setPhotos((prev) => [...prev, uri].slice(0, MAX_PHOTOS));
+          }
+        }).catch(() => {
+          setIsOpeningPicker(false);
+          Alert.alert('Error', 'Failed to take photo. Please try again.', [{ text: 'OK' }]);
+        });
+      }).catch(() => {
+        setIsOpeningPicker(false);
+      });
+    };
+
+    const chooseFromLibrary = () => {
+      setIsOpeningPicker(true);
+      ImagePicker.requestMediaLibraryPermissionsAsync().then(({ status }) => {
+        if (status !== 'granted') {
+          setIsOpeningPicker(false);
+          Alert.alert(
+            'Permission Required',
+            'We need access to your photo library to choose a product photo.',
+            [{ text: 'OK' }]
+          );
+          return;
+        }
+        ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.8,
+        }).then((result) => {
+          setIsOpeningPicker(false);
+          if (!result.canceled && result.assets[0]) {
+            const uri = result.assets[0].uri;
+            setPhotos((prev) => [...prev, uri].slice(0, MAX_PHOTOS));
+          }
+        }).catch(() => {
+          setIsOpeningPicker(false);
+          Alert.alert('Error', 'Failed to select photo. Please try again.', [{ text: 'OK' }]);
+        });
+      }).catch(() => {
+        setIsOpeningPicker(false);
+      });
+    };
+
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Cancel', 'Take photo', 'Choose from library'],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) takePhoto();
+          else if (buttonIndex === 2) chooseFromLibrary();
+        }
+      );
+    } else {
+      Alert.alert('Add photo', undefined, [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Take photo', onPress: takePhoto },
+        { text: 'Choose from library', onPress: chooseFromLibrary },
+      ]);
+    }
   };
 
   const handleRemovePhoto = (id: string) => {
-    setPhotos(photos.filter(photoId => photoId !== id));
+    setPhotos(photos.filter((photoId) => photoId !== id));
   };
 
   const handleReorderPhotos = (reorderedIds: string[]) => {
@@ -29,9 +121,14 @@ export default function ProductPhotos() {
 
   return (
     <View style={styles.container}>
+      <Modal visible={isOpeningPicker} transparent animationType="fade">
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
+      </Modal>
       <Text style={styles.label}>Photos *</Text>
       <Text style={styles.subLabel}>Add 1-5 photos of your product</Text>
-      
+
       <View style={styles.photoGridContainer}>
         <MockDraftsProvider>
           <PhotoGrid
@@ -42,13 +139,6 @@ export default function ProductPhotos() {
           />
         </MockDraftsProvider>
       </View>
-
-      <Modal visible={showCameraRoll} animationType="slide" presentationStyle="fullScreen">
-        <CameraRollScreenProduct
-          onClose={() => setShowCameraRoll(false)}
-          onNext={handlePhotosSelected}
-        />
-      </Modal>
     </View>
   );
 }
@@ -56,6 +146,12 @@ export default function ProductPhotos() {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 24,
+  },
+  loadingOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   label: {
     fontSize: 16,

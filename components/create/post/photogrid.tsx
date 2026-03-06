@@ -55,7 +55,9 @@ function swapIndex<T>(arr: T[], a: number, b: number): T[] {
 }
 
 // Resolve a displayable file URI, handling iOS ph:// and Android content:// cases.
+// Also supports file:// URIs (e.g. from camera or cropped library picks for product photos).
 async function resolveAssetUri(id: string, raw?: string | null): Promise<string | null> {
+  if (id.startsWith('file://') || id.startsWith('content://')) return id;
   if (raw && !raw.startsWith('ph://') && !raw.startsWith('content://')) return raw;
   try {
     const info = await MediaLibrary.getAssetInfoAsync(id);

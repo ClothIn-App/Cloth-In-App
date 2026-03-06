@@ -18,10 +18,14 @@ type Props = {
   style?: ViewStyle | ViewStyle[];
   /** If provided, called when user taps Next (preferred). */
   onNext?: () => void;
+  /** When controls are inside the camera frame, use these instead of safe area. */
+  insetsOverride?: { top?: number; right?: number };
 };
 
-export default function TopRightControls({ controller, style, onNext }: Props) {
-  const { top, right } = useSafeAreaInsets();
+export default function TopRightControls({ controller, style, onNext, insetsOverride }: Props) {
+  const insets = useSafeAreaInsets();
+  const top = insetsOverride?.top ?? insets.top;
+  const right = insetsOverride?.right ?? insets.right;
   const router = useRouter();
   const { items, selectedIds } = useDrafts();
 

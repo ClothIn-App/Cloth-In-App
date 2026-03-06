@@ -9,14 +9,17 @@ type Props = {
    * Optional override. If provided, this is called instead of router.back().
    */
   onPressExit?: () => void;
+  /** When controls are inside the camera frame, use this instead of safe area top. */
+  paddingTopOverride?: number;
 };
 
 /**
  * Top-left close control for the camera screen.
  * Pressing the ✕ returns to the previous screen (pre-Create flow).
  */
-export default function TopLeftControls({ onPressExit }: Props) {
+export default function TopLeftControls({ onPressExit, paddingTopOverride }: Props) {
   const insets = useSafeAreaInsets();
+  const paddingTop = paddingTopOverride ?? Math.max(insets.top, 8);
 
   const handlePress = React.useCallback(() => {
     if (onPressExit) {
@@ -29,7 +32,7 @@ export default function TopLeftControls({ onPressExit }: Props) {
   return (
     <View
       pointerEvents="box-none"
-      style={[styles.container, { paddingTop: Math.max(insets.top, 8) }]}
+      style={[styles.container, { paddingTop }]}
     >
       <Pressable
         onPress={handlePress}

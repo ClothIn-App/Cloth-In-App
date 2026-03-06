@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { StyleSheet, View, TouchableOpacity, ScrollView, RefreshControl, KeyboardAvoidingView, Platform, ActionSheetIOS, Alert, ActivityIndicator, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, ScrollView, RefreshControl, KeyboardAvoidingView, Platform, Modal, Pressable, ActivityIndicator, Text, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,6 +26,7 @@ export default function FitPicDetailScreen() {
   const [comments, setComments] = useState<CommentType[]>([]);
   const [replyTarget, setReplyTarget] = useState<CommentType | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
   // Get current user and check if FitPic is saved
@@ -232,47 +233,54 @@ export default function FitPicDetailScreen() {
     [id, currentUser, fitpic]
   );
 
-  // Handle more options action sheet
-  const openMoreOptions = () => {
-    const username = fitpic?.author ?? "user";
+  const isOwner = Boolean(currentUser && fitpic?.authorId && fitpic.authorId === currentUser.id);
 
-    if (Platform.OS === "android") {
-      Alert.alert(
-        "More Options",
-        "",
-        [
-          { text: `Follow @${username}`, onPress: () => {
-            // TODO: Follow user
-          } },
-          { text: "Save Post", onPress: () => {
-            // TODO: Save post
-          } },
-          { text: "Report", style: "destructive", onPress: () => {
-            // TODO: Report post
-          } },
-          { text: "Cancel", style: "cancel" }
-        ]
-      );
-      return;
+  useEffect(() => {
+    if (fitpic && currentUser) {
+      console.log('[FitpicDetail] authorId vs currentUser.id:', {
+        'fitpic.authorId': fitpic.authorId,
+        'currentUser.id': currentUser.id,
+        match: fitpic.authorId === currentUser.id,
+      });
     }
+  }, [fitpic, currentUser]);
 
-    // iOS ActionSheet
-    ActionSheetIOS.showActionSheetWithOptions(
-      {
-        options: ["Cancel", `Follow @${username}`, "Save Post", "Report"],
-        destructiveButtonIndex: 3,
-        cancelButtonIndex: 0,
-        userInterfaceStyle: "light"
-      },
-      (buttonIndex) => {
-        if (buttonIndex === 1) {
-          // TODO: Follow user
-        } else if (buttonIndex === 2) {
-          // TODO: Save post
-        } else if (buttonIndex === 3) {
-          // TODO: Report post
-        }
-      }
+  const openMoreOptions = () => setIsMenuOpen(true);
+  const handleCloseMenu = () => setIsMenuOpen(false);
+
+  const handleFollow = () => {
+    handleCloseMenu();
+    // TODO: Follow user
+  };
+  const handleSavePost = () => {
+    handleCloseMenu();
+    // TODO: Save post
+  };
+  const handleReport = () => {
+    handleCloseMenu();
+    // TODO: Report post
+  };
+  const handleDelete = () => {
+    handleCloseMenu();
+    if (!id) return;
+    Alert.alert(
+      'Delete post?',
+      'This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const res = await fitpicClient.remove(id);
+            if (res.success) {
+              router.back();
+            } else {
+              Alert.alert('Error', res.error ?? 'Failed to delete post');
+            }
+          },
+        },
+      ]
     );
   };
 
@@ -295,6 +303,50 @@ export default function FitPicDetailScreen() {
           <Ionicons name="ellipsis-horizontal" size={24} color="#000" />
         </TouchableOpacity>
       </View>
+
+      <Modal
+        visible={isMenuOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={handleCloseMenu}
+      >
+        <Pressable style={styles.menuOverlay} onPress={handleCloseMenu}>
+          <View style={styles.menuDropdownContainer}>
+            <Pressable style={styles.menuDropdown} onPress={() => {}}>
+              <Pressable style={styles.menuDropdownItem} onPress={handleFollow}>
+                <Ionicons name="person-add-outline" size={20} color="#000" />
+                <Text style={[styles.menuDropdownItemText, { marginLeft: 12 }]}>
+                  Visit Profile
+                </Text>
+              </Pressable>
+              <Pressable style={styles.menuDropdownItem} onPress={handleSavePost}>
+                <Ionicons
+                  name={isSaved ? 'bookmark' : 'bookmark-outline'}
+                  size={20}
+                  color="#000"
+                />
+                <Text style={[styles.menuDropdownItemText, { marginLeft: 12 }]}>
+                  Save Post
+                </Text>
+              </Pressable>
+              <Pressable style={styles.menuDropdownItem} onPress={handleReport}>
+                <Ionicons name="warning-outline" size={20} color="red" />
+                <Text style={[styles.menuDropdownItemText, styles.menuDropdownReportText, { marginLeft: 12 }]}>
+                  Report
+                </Text>
+              </Pressable>
+              {isOwner && (
+                <Pressable style={styles.menuDropdownItem} onPress={handleDelete}>
+                  <Ionicons name="trash-outline" size={20} color="red" />
+                  <Text style={[styles.menuDropdownItemText, styles.menuDropdownReportText, { marginLeft: 12 }]}>
+                    Delete post
+                  </Text>
+                </Pressable>
+              )}
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
 
       {/* Keyboard Avoiding View with Scrollable Content */}
       <KeyboardAvoidingView
@@ -339,7 +391,8 @@ export default function FitPicDetailScreen() {
               />
 
               <FitPicModalMedia
-                imageUrl={fitpic.source}
+                imageUrls={fitpic.sources?.length ? fitpic.sources : undefined}
+                imageUrl={fitpic.sources?.length ? undefined : fitpic.source}
                 aspectRatio={aspectRatio}
                 borderRadius={0}
               />
@@ -414,6 +467,41 @@ const styles = StyleSheet.create({
   },
   moreButton: {
     padding: 6,
+  },
+  menuOverlay: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  menuDropdownContainer: {
+    position: 'absolute',
+    top: 60,
+    right: 56,
+    alignItems: 'flex-end',
+  },
+  menuDropdown: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+    minWidth: 180,
+  },
+  menuDropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  menuDropdownItemText: {
+    fontSize: 14,
+    color: '#111827',
+  },
+  menuDropdownReportText: {
+    color: 'red',
   },
   keyboardAvoidingView: {
     flex: 1,

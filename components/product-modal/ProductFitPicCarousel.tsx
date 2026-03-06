@@ -45,6 +45,19 @@ const getTileWidth = (imageSource: any): number => {
   return TILE_HEIGHT;
 };
 
+// Prefer API/DB dimensions when available (same as feed grid); otherwise use image source
+const getTileWidthFromFitPic = (fitpic: FitPic, imageSource: any): number => {
+  const photo = "photos" in fitpic ? fitpic.photos?.[0] : undefined;
+  const w = photo?.width;
+  const h = photo?.height;
+  if (w != null && h != null && w > 0 && h > 0) {
+    const aspectRatio = w / h;
+    const computedWidth = TILE_HEIGHT * aspectRatio;
+    return Math.max(MIN_W, Math.min(MAX_W, computedWidth));
+  }
+  return getTileWidth(imageSource);
+};
+
 export function ProductFitPicCarousel({
   fitpics,
 }: ProductFitPicCarouselProps) {
@@ -55,8 +68,21 @@ export function ProductFitPicCarousel({
     });
   };
 
-  const getImageSource = (fitpicId: string) => {
-    return FITPIC_ASSETS[fitpicId] || { uri: "" };
+  const getImageSource = (fitpic: FitPic) => {
+    if ("photos" in fitpic && fitpic.photos?.[0]) {
+      const url = fitpic.photos[0].thumbnailUrl ?? fitpic.photos[0].url;
+      if (url) return { uri: url };
+    }
+    if ("imagePath" in fitpic && fitpic.imagePath) {
+      const path = fitpic.imagePath;
+      if (
+        typeof path === "string" &&
+        (path.startsWith("http://") || path.startsWith("https://"))
+      ) {
+        return { uri: path };
+      }
+    }
+    return FITPIC_ASSETS[fitpic.id] || { uri: "" };
   };
 
   if (!fitpics || fitpics.length === 0) {
@@ -80,8 +106,8 @@ export function ProductFitPicCarousel({
           contentContainerStyle={styles.scrollContent}
         >
           {fitpics.map((fitpic, index) => {
-            const imageSource = getImageSource(fitpic.id);
-            const tileWidth = getTileWidth(imageSource);
+            const imageSource = getImageSource(fitpic);
+            const tileWidth = getTileWidthFromFitPic(fitpic, imageSource);
             const isLast = index === fitpics.length - 1;
             return (
               <TouchableOpacity
@@ -137,7 +163,6 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 20,
     paddingHorizontal: 20,
-    marginTop: -22,
     backgroundColor: "white",
   },
   sectionTitle: {

@@ -13,18 +13,22 @@ export type Reactions = {
   counts: ReactionCounts;
 };
 
+export type ProductPriceType = 'fixed' | 'sale' | 'sold_out' | 'tbd' | 'na';
+
 export type Product = {
   id: string;
   name: string;
   brand: string;
   price: number;
+  originalPrice?: number;
+  priceType?: ProductPriceType;
   imagePath: string;
   description: string;
   specs?: string;
   productUrl?: string;
   images?: string[];
   reactions?: Reactions;
-  comments?: FitPicComment[]; // Product comments use the same structure as FitPic comments
+  comments?: FitPicComment[];
 };
 
 // Comment type for FitPic comments (matching mock structure)
