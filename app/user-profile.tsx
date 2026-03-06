@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -15,9 +16,19 @@ import { userApiClient } from "../src/services/apiClients/userClient";
 
 export default function UserProfileScreen() {
   const { userId } = useLocalSearchParams<{ userId: string }>();
-  const { data, loading, error, refetch, refreshFollowStatus } = usePublicProfile(userId);
-  const { currentStreak, hasPostedToday } = useStreakForUser(
-    typeof userId === "string" ? userId : undefined
+  const profileUserId = typeof userId === "string" ? userId : undefined;
+  const { data, loading, error, refetch, refreshFollowStatus } = usePublicProfile(profileUserId);
+  const { currentStreak, hasPostedToday } = useStreakForUser(profileUserId);
+  const isFirstFocus = useRef(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isFirstFocus.current) {
+        isFirstFocus.current = false;
+        return;
+      }
+      if (profileUserId) refetch();
+    }, [profileUserId, refetch])
   );
 
   // Frontend-only tabs, dynamic by accountType

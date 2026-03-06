@@ -2,9 +2,14 @@
 import type { EndpointDefinition } from "../../http";
 import type { FollowingUser } from "../../../types/account";
 import { getCurrentUser, getUserById } from "../../mockSessionUsers";
+import { getInMemoryFollowKeys, isFollowEdgeActive } from "./getFollowStatus";
 
 export type GetFollowingResponse = {
   following: FollowingUser[];
+  pagination: {
+    hasMore: boolean;
+    nextCursor: string | null;
+  };
 };
 
 export const getFollowingEndpoint: EndpointDefinition<undefined, GetFollowingResponse> = {
@@ -18,15 +23,29 @@ export const getFollowingEndpoint: EndpointDefinition<undefined, GetFollowingRes
 
     const userId = pathParameters.userId;
     if (!userId) {
-      return { following: [] };
+      return {
+        following: [],
+        pagination: { hasMore: false, nextCursor: null },
+      };
     }
 
     const profileUser = getUserById(userId);
     if (!profileUser) {
-      return { following: [] };
+      return {
+        following: [],
+        pagination: { hasMore: false, nextCursor: null },
+      };
     }
 
-    const followingIds = profileUser.following?.userIds ?? [];
+    const staticFollowingIds = profileUser.following?.userIds ?? [];
+    const followingIdSet = new Set(staticFollowingIds);
+    for (const key of getInMemoryFollowKeys()) {
+      const [followerId, targetId] = key.split(":");
+      if (followerId === userId && targetId) {
+        followingIdSet.add(targetId);
+      }
+    }
+    const followingIds = Array.from(followingIdSet);
     const currentUser = getCurrentUser();
     const currentUserFollowingIds = new Set(
       currentUser?.following?.userIds ?? []
@@ -43,13 +62,20 @@ export const getFollowingEndpoint: EndpointDefinition<undefined, GetFollowingRes
           username: user.username,
           avatarUrl: user.avatarUrl,
           bio: user.bio,
-          isFollowing: currentUserFollowingIds.has(user.id),
+          isFollowing: isFollowEdgeActive(
+            currentUser?.id ?? "",
+            user.id,
+            currentUserFollowingIds.has(user.id)
+          ),
           isPrivateAccount: !!user.privacy?.isPrivateAccount,
         };
       })
       .filter((u): u is FollowingUser => u !== null);
 
-    return { following };
+    return {
+      following,
+      pagination: { hasMore: false, nextCursor: null },
+    };
   },
 };
 

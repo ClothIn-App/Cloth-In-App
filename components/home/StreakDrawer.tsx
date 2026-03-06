@@ -12,7 +12,6 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { router } from "expo-router";
-import { getCurrentUserId } from "../../src/services/mockSessionUsers";
 import { fitpicClient } from "../../src/services/apiClients/fitpicClient";
 import { computeStreakStats } from "../../src/utils/streakUtils";
 import {
@@ -63,6 +62,8 @@ function buildMonthGrid(year: number, month: number): (number | null)[] {
 type Props = {
   visible: boolean;
   onClose: () => void;
+  /** Current user ID from useCurrentUserId (real or mock). Required for fitpic fetch. */
+  userId?: string | null;
 };
 
 type FitpicDayInfo = {
@@ -73,7 +74,7 @@ type FitpicDayInfo = {
   items: { id: string; imageUri: string; createdAt: string }[];
 };
 
-export default function StreakDrawer({ visible, onClose }: Props) {
+export default function StreakDrawer({ visible, onClose, userId }: Props) {
   const { width: screenWidth } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const drawerWidth = screenWidth * 0.85;
@@ -238,15 +239,14 @@ export default function StreakDrawer({ visible, onClose }: Props) {
   const inGracePeriod = currentStreak > 0 && !hasPostedToday;
 
   useEffect(() => {
-    if (!visible) return;
-    let cancelled = false;
-    const currentUserId = getCurrentUserId();
-    if (!currentUserId) {
+    if (!visible || !userId) {
+      if (!visible) return;
       setFitpicsByDate({});
       return;
     }
+    let cancelled = false;
     fitpicClient
-      .listByUser(currentUserId, undefined, 200)
+      .listByUser(userId, undefined, 200)
       .then((res) => {
         if (cancelled || !res.success || !res.fitpics) return;
         const byDate: Record<string, FitpicDayInfo> = {};
@@ -277,7 +277,7 @@ export default function StreakDrawer({ visible, onClose }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [visible]);
+  }, [visible, userId]);
 
   const openHelp = useCallback(() => setStreakHelpVisible(true), []);
 

@@ -17,7 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AvatarPicker from '../components/profile/AvatarPicker';
 import { userApiClient } from '../src/services/apiClients/userClient';
 import useAccountData from '../src/hooks/useAccountData';
-import { getCurrentUserId } from '../src/services/mockSessionUsers';
+import { useCurrentUserId } from '../src/hooks/useCurrentUserId';
 
 type ProfileFormData = {
   displayName: string;
@@ -39,7 +39,7 @@ const COLORS = {
 export default function ProfileEditScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const userId = getCurrentUserId();
+  const { userId, loading: authLoading } = useCurrentUserId();
 
   const { data, loading: profileLoading } = useAccountData(userId);
   const [formData, setFormData] = useState<ProfileFormData>({
@@ -62,7 +62,7 @@ export default function ProfileEditScreen() {
     if (data.me) {
       const me = data.me as { privacy?: { isPrivateAccount?: boolean } };
       setFormData({
-        displayName: data.me.displayName || '',
+        displayName: data.me.displayName || data.me.name || '',
         username: data.me.username || '',
         bio: data.me.bio || '',
         avatarUrl: data.me.avatarUrl || '',
@@ -85,10 +85,10 @@ export default function ProfileEditScreen() {
       newErrors.username = 'Username is required';
     } else if (formData.username.length < 3) {
       newErrors.username = 'Username must be at least 3 characters';
-    } else if (formData.username.length > 20) {
-      newErrors.username = 'Username must be 20 characters or less';
-    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-      newErrors.username = 'Username can only contain letters, numbers, and underscores';
+    } else if (formData.username.length > 30) {
+      newErrors.username = 'Username must be 30 characters or less';
+    } else if (!/^[a-zA-Z0-9._]+$/.test(formData.username)) {
+      newErrors.username = 'Username can only contain letters, numbers, dots, and underscores';
     }
 
     if (formData.bio.length > 150) {
@@ -107,9 +107,9 @@ export default function ProfileEditScreen() {
     setSaving(true);
     try {
       const response = await userApiClient.setUser(userId, {
-        displayName: formData.displayName.trim(),
+        name: formData.displayName.trim(),
         username: formData.username.trim(),
-        bio: formData.bio.trim() || null,
+        bio: formData.bio.trim() || undefined,
         avatarUrl: formData.avatarUrl || undefined,
         accountType: formData.accountType,
         privacy: { isPrivateAccount: formData.isPrivateAccount },
@@ -128,9 +128,14 @@ export default function ProfileEditScreen() {
         );
       }
     } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to update profile. Please try again.';
+      if (message.toLowerCase().includes('username') && message.toLowerCase().includes('taken')) {
+        setErrors((prev) => ({ ...prev, username: 'That username is already taken' }));
+      }
       Alert.alert(
         'Error',
-        'Failed to update profile. Please try again.',
+        message,
         [{ text: 'OK' }]
       );
     } finally {
@@ -162,7 +167,7 @@ export default function ProfileEditScreen() {
     );
   }
 
-  if (profileLoading) {
+  if (authLoading || profileLoading) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: COLORS.background }]} edges={['top', 'bottom']}>
         <View style={styles.loadingContainer}>
@@ -274,13 +279,13 @@ export default function ProfileEditScreen() {
               placeholder="Enter your username"
               placeholderTextColor={COLORS.muted}
               autoCapitalize="none"
-              maxLength={20}
+              maxLength={30}
             />
             {errors.username && (
               <Text style={styles.errorText}>{errors.username}</Text>
             )}
             <Text style={[styles.characterCount, { color: COLORS.muted }]}>
-              {formData.username.length}/20
+              {formData.username.length}/30
             </Text>
           </View>
 

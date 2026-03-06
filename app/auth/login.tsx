@@ -16,10 +16,12 @@ import {
 
 import { log } from '@/src/debug/log';
 import { authApiClient } from '@/src/services/apiClients'; // ← uses our API layer
+import { useAuth } from '@/src/context/AuthContext';
 const bgPattern = require('../../assets/images/login-bg.png');
 
 export default function Login() {
   const router = useRouter();
+  const { setAuth } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -36,6 +38,12 @@ export default function Login() {
 
       // 🔑 Call your API (mock/real decided by EXPO_PUBLIC_API_MODE)
       const res = await authApiClient.login({ email, password });
+
+      setAuth({
+        idToken: res.idToken,
+        refreshToken: res.refreshToken,
+        user: res?.user ?? null,
+      });
 
       // Store tokens with expiry using token manager
       const { storeTokenData } = await import('@/src/services/authTokenManager');

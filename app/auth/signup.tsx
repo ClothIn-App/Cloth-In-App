@@ -21,6 +21,7 @@ export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { setAuth } = useAuth();
@@ -30,7 +31,8 @@ export default function Signup() {
     // 🔎 fast, presentation-only preflight checks (server still enforces real rules)
     const trimmedEmail = email.trim().toLowerCase();
 
-    if (!trimmedEmail || !password || !confirmPassword) {
+    const trimmedName = name.trim();
+    if (!trimmedEmail || !password || !confirmPassword || !trimmedName) {
       Alert.alert('Error', 'Please fill out all fields.');
       return;
     }
@@ -59,22 +61,28 @@ export default function Signup() {
         email: trimmedEmail,
         password,
         confirmPassword,
+        name: trimmedName,
       });
+
+      // Required null check: fail fast on backend regression
+      if (!resp?.idToken || !resp?.refreshToken) {
+        throw new Error('Invalid signup response');
+      }
 
       // Save auth in context (works for mock and real API)
       setAuth({
-        idToken: resp?.idToken ?? null,
-        refreshToken: resp?.refreshToken ?? null,
+        idToken: resp.idToken,
+        refreshToken: resp.refreshToken,
         user: resp?.user ?? { uid: 'mock-uid', email: trimmedEmail },
       });
 
       // Store tokens with expiry using token manager
       const { storeTokenData } = await import('@/src/services/authTokenManager');
       const { AUTH_CONFIG } = await import('@/src/config/authConfig');
-      
+
       // Calculate expiry timestamp (Firebase tokens last ~1 hour)
       const expiresAt = Date.now() + AUTH_CONFIG.TOKEN_EXPIRY_MS;
-      
+
       await storeTokenData({
         idToken: resp.idToken,
         refreshToken: resp.refreshToken,
@@ -98,6 +106,15 @@ export default function Signup() {
     >
       <View style={styles.container}>
         <Text style={styles.title}>Create Account</Text>
+
+        <TextInput
+          placeholder="Name"
+          placeholderTextColor="#999"
+          value={name}
+          onChangeText={setName}
+          autoCapitalize="words"
+          style={styles.input}
+        />
 
         <TextInput
           placeholder="Email"

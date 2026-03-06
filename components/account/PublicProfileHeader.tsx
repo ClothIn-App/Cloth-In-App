@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Image, View, TouchableOpacity, Text, ActivityIndicator } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, Image, View, TouchableOpacity, Text, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { userApiClient } from "../../src/services/apiClients/userClient";
@@ -23,7 +23,11 @@ export default function PublicProfileHeader({ profileData, onFollowChange, curre
 
   const { user, isPrivateAccount } = profileData;
   const username = user.username ? `@${user.username}` : "@username";
-  const displayName = user.displayName ?? "";
+  const displayName = user.displayName ?? user.name ?? "";
+  useEffect(() => {
+    setIsFollowing(profileData.isFollowing);
+  }, [profileData.isFollowing]);
+
   const fitpics = user.counts?.posts ?? 0;
   const following = user.counts?.following ?? 0;
   const followers = user.counts?.followers ?? 0;
@@ -49,6 +53,11 @@ export default function PublicProfileHeader({ profileData, onFollowChange, curre
       onFollowChange?.();
     } catch (error) {
       console.error("Error toggling follow:", error);
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : "Couldn't update follow status. Please try again.";
+      Alert.alert("Error", message);
     } finally {
       setIsLoadingFollow(false);
     }
@@ -194,11 +203,13 @@ export default function PublicProfileHeader({ profileData, onFollowChange, curre
         visible={showFollowersModal}
         onClose={() => setShowFollowersModal(false)}
         userId={user.uid}
+        onFollowChange={onFollowChange}
       />
       <FollowingModal
         visible={showFollowingModal}
         onClose={() => setShowFollowingModal(false)}
         userId={user.uid}
+        onFollowChange={onFollowChange}
       />
     </View>
   );

@@ -2,6 +2,7 @@
 
 export type ProfileMe = {
   uid: string;
+  name?: string;
   displayName?: string;
   username: string;
   avatarUrl?: string;

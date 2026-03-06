@@ -15,6 +15,8 @@ import {
   FollowUserResponse,
   unfollowUserEndpoint,
   UnfollowUserResponse,
+  getProfileCountsEndpoint,
+  GetProfileCountsResponse,
 } from '../endpoints'
 
 // function-style
@@ -31,15 +33,17 @@ export async function setUser(userId: string, payload: SetUserPayload) {
   });
 }
 
-export async function getFollowers(userId: string) {
+export async function getFollowers(userId: string, options?: { limit?: number; cursor?: string }) {
   return callApiEndpoint<undefined, GetFollowersResponse>(getFollowersEndpoint, {
     pathParameters: { userId },
+    queryParameters: options,
   });
 }
 
-export async function getFollowing(userId: string) {
+export async function getFollowing(userId: string, options?: { limit?: number; cursor?: string }) {
   return callApiEndpoint<undefined, GetFollowingResponse>(getFollowingEndpoint, {
     pathParameters: { userId },
+    queryParameters: options,
   });
 }
 
@@ -50,14 +54,28 @@ export async function getFollowStatus(userId: string) {
 }
 
 export async function followUser(userId: string) {
-  return callApiEndpoint<undefined, FollowUserResponse>(followUserEndpoint, {
+  const result = await callApiEndpoint<undefined, FollowUserResponse>(followUserEndpoint, {
     pathParameters: { userId },
   });
+  if (!result.success) {
+    throw new Error(result.message ?? "Couldn't follow user.");
+  }
+  return result;
 }
 
 export async function unfollowUser(userId: string) {
-  return callApiEndpoint<undefined, UnfollowUserResponse>(unfollowUserEndpoint, {
+  const result = await callApiEndpoint<undefined, UnfollowUserResponse>(unfollowUserEndpoint, {
     pathParameters: { userId },
+  });
+  if (!result.success) {
+    throw new Error(result.message ?? "Couldn't unfollow user.");
+  }
+  return result;
+}
+
+export async function getProfileCounts(userId?: string) {
+  return callApiEndpoint<undefined, GetProfileCountsResponse>(getProfileCountsEndpoint, {
+    queryParameters: userId ? { userId } : undefined,
   });
 }
 
@@ -70,7 +88,16 @@ export const userApiClient = {
   getFollowStatus,
   followUser,
   unfollowUser,
+  getProfileCounts,
 };
 
-export type { GetUserResponse, GetFollowersResponse, GetFollowingResponse, GetFollowStatusResponse, FollowUserResponse, UnfollowUserResponse };
+export type {
+  GetUserResponse,
+  GetFollowersResponse,
+  GetFollowingResponse,
+  GetFollowStatusResponse,
+  FollowUserResponse,
+  UnfollowUserResponse,
+  GetProfileCountsResponse,
+};
 

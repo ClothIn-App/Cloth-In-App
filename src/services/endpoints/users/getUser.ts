@@ -7,6 +7,7 @@ export type GetUserResponse = {
   user: {
     uid: string;
     email: string;
+    name?: string | null;
     displayName?: string | null;
     username?: string;
     avatarUrl?: string;
@@ -55,6 +56,7 @@ export const getUserEndpoint: EndpointDefinition<undefined, GetUserResponse> = {
         user: {
           uid: raw.id ?? userId,
           email: `user+${userId}@example.com`.toLowerCase(),
+          name: raw.displayName ?? raw.username,
           displayName: raw.displayName ?? raw.username,
           username: raw.username,
           avatarUrl: raw.avatarUrl,

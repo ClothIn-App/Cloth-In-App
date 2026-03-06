@@ -5,6 +5,7 @@ export type SignupPayload = {
   email: string;
   password: string;
   confirmPassword: string;
+  name: string;
 };
 
 export type SignupResponse = {
