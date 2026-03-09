@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { StyleSheet, View, TouchableOpacity, ScrollView, RefreshControl, KeyboardAvoidingView, Platform, Modal, Pressable, ActivityIndicator, Text, Alert } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, ScrollView, RefreshControl, KeyboardAvoidingView, Platform, Modal, Pressable, ActivityIndicator, Text, Alert, ImageSourcePropType } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,6 +19,17 @@ import {
 } from '../src/services/mockSessionUsers';
 import { fitpicClient } from '../src/services/apiClients/fitpicClient';
 import { userApiClient } from '../src/services/apiClients/userClient';
+
+/** Normalize ImageSourcePropType to the shape FitPicModalMedia accepts (uri required when object). */
+function toModalImageUrl(source: ImageSourcePropType | undefined): string | { uri: string } | number | undefined {
+  if (source == null) return undefined;
+  if (typeof source === 'string' || typeof source === 'number') return source;
+  if (typeof source === 'object' && source !== null && 'uri' in source) {
+    const uri = (source as { uri?: string }).uri;
+    return uri != null && uri !== '' ? { uri } : undefined;
+  }
+  return undefined;
+}
 
 export default function FitPicDetailScreen() {
   const params = useLocalSearchParams<{ id: string }>();
@@ -404,7 +415,7 @@ export default function FitPicDetailScreen() {
 
               <FitPicModalMedia
                 imageUrls={fitpic.sources?.length ? fitpic.sources : undefined}
-                imageUrl={fitpic.sources?.length ? undefined : fitpic.source}
+                imageUrl={fitpic.sources?.length ? undefined : toModalImageUrl(fitpic.source)}
                 aspectRatio={aspectRatio}
                 borderRadius={0}
               />

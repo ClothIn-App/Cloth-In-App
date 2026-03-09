@@ -164,6 +164,9 @@ export async function callApiEndpoint<RequestBodyType, ResponseBodyType>(
   // ------------------ Centralized auth policy enforcement ------------------
   const authPolicy: "required" | "optional" | "none" =
     endpointDefinition.auth ?? "required";
+  // Preserve full union for 401 block (call sites may use narrower auth type)
+  const authPolicyForRetry: "required" | "optional" | "none" = (endpointDefinition.auth ??
+    "required") as "required" | "optional" | "none";
 
   // If public, strip any Authorization header so we don't leak it
   if (authPolicy === "none" && "Authorization" in mergedHeaders) {
@@ -286,14 +289,14 @@ export async function callApiEndpoint<RequestBodyType, ResponseBodyType>(
   });
 
   // Handle 401 Unauthorized - attempt token refresh and retry
-  if (response.status === 401 && authPolicy !== "none") {
+  if (response.status === 401 && (authPolicyForRetry as "required" | "optional" | "none") !== "none") {
     log.debug("[HTTP:401_UNAUTHORIZED]", {
       key: endpointDefinition.key,
       url,
     });
 
     // Only attempt refresh if we're in real API mode and have auth
-    if (currentApiMode === "real" && authPolicy !== "none") {
+    if (currentApiMode === "real" && (authPolicyForRetry as "required" | "optional" | "none") !== "none") {
       try {
         // Dynamically import to avoid circular dependencies
         const { getValidIdToken } = await import('@/src/services/authTokenManager');
@@ -317,7 +320,7 @@ export async function callApiEndpoint<RequestBodyType, ResponseBodyType>(
           };
           
           // Strip Authorization if auth policy is "none" (shouldn't happen here, but safety check)
-          if (authPolicy === "none" && "Authorization" in retryHeaders) {
+          if ((authPolicyForRetry as "required" | "optional" | "none") === "none" && "Authorization" in retryHeaders) {
             delete retryHeaders.Authorization;
           }
           

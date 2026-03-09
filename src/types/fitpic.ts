@@ -83,7 +83,7 @@ export type FitPic = {
   comments: FitPicComment[];
 
   // Optional fields
-  location?: string;
+  location?: string | { name?: string };
 
   // Moderation
   isReported?: boolean;

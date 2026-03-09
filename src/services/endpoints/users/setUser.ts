@@ -10,7 +10,7 @@ export type SetUserPayload = {
   username?: string;
   avatarUrl?: string;
   bio?: string | null;
-  accountType?: "personal" | "brand" | "creator";
+  accountType?: "personal" | "brand" | "creator" | "business";
   privacy?: { isPrivateAccount?: boolean };
 };
 
@@ -52,6 +52,29 @@ export const setUserEndpoint: EndpointDefinition<
           counts: { posts: 0, following: 0, followers: 0 },
         },
       } as SetUserResponse);
+
+    if (!current?.user) {
+      const nextEmail =
+        body?.email !== undefined
+          ? String(body.email).toLowerCase()
+          : `user+${userId}@example.com`;
+      const newUser: SetUserResponse = {
+        user: {
+          uid: userId,
+          email: nextEmail,
+          name: body?.name ?? body?.displayName ?? "New User",
+          displayName: body?.displayName ?? body?.name ?? "New User",
+          username: body?.username ?? `user_${userId}`,
+          avatarUrl: body?.avatarUrl,
+          bio: body?.bio ?? null,
+          accountType: body?.accountType ?? "personal",
+          privacy: body?.privacy ?? { isPrivateAccount: false },
+          counts: { posts: 0, following: 0, followers: 0 },
+        },
+      };
+      setUserInMockDb(userId, newUser);
+      return newUser;
+    }
 
     const nextEmail =
       body?.email !== undefined

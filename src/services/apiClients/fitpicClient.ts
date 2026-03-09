@@ -23,7 +23,7 @@ import type {
   GetFeedResponse,
   UpdateFitPicEngagementRequest,
   UpdateFitPicEngagementResponse,
-} from "../types/fitpic";
+} from "../../types/fitpic";
 
 // API client that calls endpoints directly via callApiEndpoint
 

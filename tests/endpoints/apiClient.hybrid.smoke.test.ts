@@ -40,7 +40,7 @@ describe("hybrid smoke", () => {
 
     // 1) users.get should be served by its MOCK (no fetch call)
     const user = await userApiClient.getUser("abc-123");
-    expect(user.user.uid).toBe("abc-123");
+    expect(user.user?.uid).toBe("abc-123");
     expect(fetchSpy).not.toHaveBeenCalled();
 
     // 2) auth.signup should go through REAL transport (fetch called)

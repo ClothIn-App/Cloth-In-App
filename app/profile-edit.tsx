@@ -100,6 +100,7 @@ export default function ProfileEditScreen() {
   };
 
   const handleSave = async () => {
+    if (!userId) return;
     if (!validateForm()) {
       return;
     }
