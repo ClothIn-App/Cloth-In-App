@@ -2,9 +2,10 @@ import React, { createContext, useCallback, useContext, useMemo, useState } from
 import { CAPTION_MAX, ProductLite } from './types';
 
 export type PostContextValue = {
-  meta: { caption: string; products: ProductLite[]; location: string };
+  meta: { caption: string; products: ProductLite[]; location: string; addToCloset: boolean };
   setCaption: (v: string) => void;      // silently truncates to CAPTION_MAX
   setLocation: (v: string) => void;
+  setAddToCloset: (v: boolean) => void;
   addProduct: (p: ProductLite) => void;
   removeProduct: (id: string) => void;
   clearMeta: () => void;                 // clears caption + products
@@ -13,10 +14,11 @@ export type PostContextValue = {
 const PostContext = createContext<PostContextValue | null>(null);
 
 export function PostProvider({ children }: { children: React.ReactNode }) {
-  const [meta, setMeta] = useState<{ caption: string; products: ProductLite[]; location: string }>({
+  const [meta, setMeta] = useState<{ caption: string; products: ProductLite[]; location: string; addToCloset: boolean }>({
     caption: '',
     products: [],
     location: '',
+    addToCloset: false,
   });
 
   const setCaption = useCallback((v: string) => {
@@ -29,29 +31,34 @@ export function PostProvider({ children }: { children: React.ReactNode }) {
     setMeta(prev => (prev.location === next ? prev : { ...prev, location: next }));
   }, []);
 
+  const setAddToCloset = useCallback((v: boolean) => {
+    setMeta(prev => (prev.addToCloset === v ? prev : { ...prev, addToCloset: v }));
+  }, []);
+
   const addProduct = useCallback((p: ProductLite) => {
     if (!p?.id) return;
-    setMeta(prev =>
-      prev.products.some(x => x.id === p.id)
-        ? prev
-        : { ...prev, products: [...prev.products, p] }
-    );
+    setMeta(prev => {
+      if (prev.products.some(x => x.id === p.id)) return prev;
+      const products = [...prev.products, p];
+      return { ...prev, products, addToCloset: true };
+    });
   }, []);
 
   const removeProduct = useCallback((id: string) => {
     setMeta(prev => {
       const products = prev.products.filter(p => p.id !== id);
-      return products.length === prev.products.length ? prev : { ...prev, products };
+      const addToCloset = products.length > 0 ? prev.addToCloset : false;
+      return products.length === prev.products.length ? prev : { ...prev, products, addToCloset };
     });
   }, []);
 
   const clearMeta = useCallback(() => {
-    setMeta({ caption: '', products: [], location: '' });
+    setMeta({ caption: '', products: [], location: '', addToCloset: false });
   }, []);
 
   const value = useMemo<PostContextValue>(
-    () => ({ meta, setCaption, setLocation, addProduct, removeProduct, clearMeta }),
-    [meta, setCaption, setLocation, addProduct, removeProduct, clearMeta]
+    () => ({ meta, setCaption, setLocation, setAddToCloset, addProduct, removeProduct, clearMeta }),
+    [meta, setCaption, setLocation, setAddToCloset, addProduct, removeProduct, clearMeta]
   );
 
   return <PostContext.Provider value={value}>{children}</PostContext.Provider>;

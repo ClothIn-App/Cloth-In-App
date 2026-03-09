@@ -10,6 +10,7 @@ import TabContent from "../components/account/TabContent";
 import TabSwitcher from "../components/account/TabSwitcher";
 
 import { getAccountTabs, type AccountType } from "../constants/accountTabs";
+import { useCurrentUserId } from "../src/hooks/useCurrentUserId";
 import { usePublicProfile } from "../src/hooks/usePublicProfile";
 import useStreakForUser from "../src/hooks/useStreakForUser";
 import { userApiClient } from "../src/services/apiClients/userClient";
@@ -17,6 +18,7 @@ import { userApiClient } from "../src/services/apiClients/userClient";
 export default function UserProfileScreen() {
   const { userId } = useLocalSearchParams<{ userId: string }>();
   const profileUserId = typeof userId === "string" ? userId : undefined;
+  const { userId: currentUserId } = useCurrentUserId();
   const { data, loading, error, refetch, refreshFollowStatus } = usePublicProfile(profileUserId);
   const { currentStreak, hasPostedToday } = useStreakForUser(profileUserId);
   const isFirstFocus = useRef(true);
@@ -31,15 +33,15 @@ export default function UserProfileScreen() {
     }, [profileUserId, refetch])
   );
 
-  // Frontend-only tabs, dynamic by accountType
-  // For public profiles, exclude "Saved" tab (only show FitPics and Closet)
-  const tabList = useMemo(
-    () =>
-      getAccountTabs((data?.user.accountType ?? undefined) as AccountType).filter(
-        (tab) => tab.key !== "saved"
-      ),
-    [data?.user.accountType]
-  );
+  // Tabs by accountType; show Saved only on own profile
+  const tabList = useMemo(() => {
+    const tabs = getAccountTabs((data?.user.accountType ?? undefined) as AccountType);
+    const isOwnProfile = Boolean(currentUserId && profileUserId === currentUserId);
+    if (!isOwnProfile) {
+      return tabs.filter((tab) => tab.key !== "saved");
+    }
+    return tabs;
+  }, [data?.user.accountType, currentUserId, profileUserId]);
 
   const initialKey = tabList[0]?.key ?? "fitpics";
   const [activeKey, setActiveKey] = useState(initialKey);
@@ -159,7 +161,7 @@ export default function UserProfileScreen() {
         hasPostedToday={hasPostedToday}
       />
       <TabSwitcher tabs={tabList} activeKey={activeKey} onChange={setActiveKey} />
-      <TabContent activeKey={activeKey} userId={userId} isViewOnly={true} />
+      <TabContent activeKey={activeKey} userId={profileUserId} isViewOnly={true} />
     </SafeAreaView>
   );
 }

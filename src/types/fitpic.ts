@@ -97,6 +97,7 @@ export type CreateFitPicRequest = {
   products: ProductLite[];
   location?: string;
   fitpicId?: string;
+  addToCloset?: boolean;
 };
 
 export type CreateFitPicResponse = {

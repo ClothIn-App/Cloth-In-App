@@ -12,8 +12,13 @@ import MockFitPicReactionBar from '../components/fitpic-modal/fitpic-modal-react
 import FitPicFeaturedProductsSection from '../components/fitpic-modal/fitpic-featured-products-section';
 import FitPicCommentsSection from '../components/fitpic-modal/comments/fitpic-comments-section';
 import FitPicCommentInput from '../components/fitpic-modal/comments/fitpic-comment-input';
-import { getCurrentUser } from '../src/services/mockSessionUsers';
+import {
+  getCurrentUser,
+  mapGetUserResponseToRawUser,
+  setRealCurrentUser,
+} from '../src/services/mockSessionUsers';
 import { fitpicClient } from '../src/services/apiClients/fitpicClient';
+import { userApiClient } from '../src/services/apiClients/userClient';
 
 export default function FitPicDetailScreen() {
   const params = useLocalSearchParams<{ id: string }>();
@@ -204,6 +209,7 @@ export default function FitPicDetailScreen() {
   const handleToggleSave = useCallback(
     async (nextSaved: boolean) => {
       if (!id) return;
+      const isRealMode = process.env.EXPO_PUBLIC_API_MODE === 'real';
       try {
         const res = await fitpicClient.updateEngagement({
           fitpicId: id,
@@ -211,6 +217,12 @@ export default function FitPicDetailScreen() {
         });
         if (res.success && res.engagement) {
           setIsSaved(res.engagement.isSaved ?? nextSaved);
+          if (isRealMode && currentUser?.id) {
+            const response = await userApiClient.getUser(currentUser.id);
+            if (response?.user) {
+              setRealCurrentUser(currentUser.id, mapGetUserResponseToRawUser(response.user, currentUser.id));
+            }
+          }
         } else {
           setIsSaved(nextSaved);
         }
@@ -219,7 +231,7 @@ export default function FitPicDetailScreen() {
         setIsSaved(nextSaved);
       }
       // Keep mock user saved list in sync when using mock
-      if (currentUser && fitpic) {
+      if (!isRealMode && currentUser && fitpic) {
         if (!currentUser.saved) currentUser.saved = [];
         const saved = currentUser.saved;
         if (nextSaved && !saved.some((item: { id: string; type: string }) => item.id === fitpic.id && item.type === 'fitpic')) {

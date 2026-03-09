@@ -159,6 +159,37 @@ export async function getFitPicById(id: string): Promise<FitPicItem | null> {
   return item && item.type === 'fitpic' ? item : null;
 }
 
+/** Fetch product by ID from API and return as FeedItem (for saved tab in real mode). */
+export async function getProductByIdFromApi(id: string): Promise<ProductItem | null> {
+  try {
+    const response = await contentApiClient.getProduct(id);
+    const p = response?.product as any;
+    if (!p) return null;
+    // API returns primaryImageUrl (string) and images (array of { url }) — not imagePath
+    const imageUrl =
+      p.primaryImageUrl ??
+      (Array.isArray(p.images) && p.images[0]?.url ? p.images[0].url : undefined) ??
+      p.imagePath ??
+      '';
+    return {
+      id: p.id,
+      type: 'product',
+      source: { uri: imageUrl || '' },
+      createdAt: (p as any).createdAt ?? '',
+      name: p.name ?? '',
+      brand: p.brand ?? '',
+      price: p.price ?? 0,
+      salePrice: p.originalPrice ?? null,
+      priceType: p.priceType,
+      category: (p as any).category ?? '',
+      description: p.description ?? '',
+    };
+  } catch (error) {
+    console.warn('Failed to load product from API:', error);
+    return null;
+  }
+}
+
 export async function getProductById(id: string): Promise<ProductItem | null> {
   const item = await getFeedItemById(id);
   return item && item.type === 'product' ? item : null;

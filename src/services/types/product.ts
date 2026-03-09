@@ -20,7 +20,7 @@ export type ProductComment = {
 
 export type UpdateProductEngagementRequest = {
   productId: string;
-  action: "react" | "unreact";
+  action: "react" | "unreact" | "save" | "unsave";
   reaction?: ReactionType;
 };
 

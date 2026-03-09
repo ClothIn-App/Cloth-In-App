@@ -3,7 +3,8 @@
  * Used in account screen and profile views
  */
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { fitpicClient } from '../services/apiClients/fitpicClient';
 import type { FitPic } from '../types/fitpic';
 
@@ -17,6 +18,7 @@ export type UserFitPicsState = {
 };
 
 export const useUserFitPics = (userId: string) => {
+  const isFirstFocus = useRef(true);
   const [state, setState] = useState<UserFitPicsState>({
     fitpics: [],
     loading: true,
@@ -27,7 +29,10 @@ export const useUserFitPics = (userId: string) => {
   });
 
   const loadFitPics = useCallback(async (refresh = false) => {
-    if (!userId) return;
+    if (!userId) {
+      setState(prev => ({ ...prev, loading: false, refreshing: false }));
+      return;
+    }
 
     if (refresh) {
       setState(prev => ({ ...prev, refreshing: true, error: null }));
@@ -130,8 +135,22 @@ export const useUserFitPics = (userId: string) => {
   }, []);
 
   useEffect(() => {
+    if (!userId) {
+      setState(prev => ({ ...prev, loading: false }));
+      return;
+    }
     loadFitPics();
   }, [userId]); // Reload when user changes
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isFirstFocus.current) {
+        isFirstFocus.current = false;
+        return;
+      }
+      if (userId) refresh();
+    }, [userId, refresh])
+  );
 
   return {
     ...state,

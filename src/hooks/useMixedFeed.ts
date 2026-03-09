@@ -145,7 +145,7 @@ export function useMixedFeed(feedType: FeedType): UseMixedFeedReturn {
             engagement: {
               ...fitpic.engagement,
               isSaved: !isSaved,
-              saves: isSaved ? fitpic.engagement.saves - 1 : fitpic.engagement.saves + 1,
+              saves: isSaved ? (fitpic.engagement.saves ?? 0) - 1 : (fitpic.engagement.saves ?? 0) + 1,
             },
           };
         }
