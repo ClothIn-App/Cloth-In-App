@@ -12,15 +12,15 @@ export default function Survey() {
   const { auth } = useAuth();
 
   const handleSkip = () => {
-    router.replace('/(tabs)' as any);
+    router.replace('/(tabs)/home');
   };
 
   const handleSubmit = async (finalResponses: SurveyResponses) => {
     const uid = auth?.user?.uid;
     if (uid) {
-      await userClient.setUser(uid, { survey: finalResponses } as any);
+      await userClient.setUser(uid, { survey: finalResponses });
     }
-    router.replace('/(tabs)' as any);
+    router.replace('/(tabs)/home');
   };
 
   return (

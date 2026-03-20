@@ -94,6 +94,8 @@ export type FitPic = {
 export type CreateFitPicRequest = {
   photos: { url: string; width?: number; height?: number }[];
   caption: string;
+  /** Canonical tag strings (no leading #, lowercase). Backend appends them to the stored caption. */
+  tags?: string[];
   products: ProductLite[];
   location?: string;
   fitpicId?: string;

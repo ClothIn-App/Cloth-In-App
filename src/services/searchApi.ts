@@ -27,6 +27,7 @@ import type {
 } from "./search/types";
 import {
   getTrendingSearchesEndpoint,
+  getTrendingHashtagsEndpoint,
   getSuggestionsEndpoint,
   searchTopEndpoint,
   searchUsersEndpoint,
@@ -58,6 +59,10 @@ export { getRecents, addRecent, clearRecents } from "./search/recentsStorage";
 
 export async function getTrending(): Promise<SearchSuggestion[]> {
   return callApiEndpoint(getTrendingSearchesEndpoint);
+}
+
+export async function getTrendingHashtags(): Promise<import('../types/search').HashtagSearchResult[]> {
+  return callApiEndpoint(getTrendingHashtagsEndpoint);
 }
 
 export async function getSuggestions(

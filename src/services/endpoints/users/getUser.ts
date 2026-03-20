@@ -28,6 +28,7 @@ export type GetUserResponse = {
         createdAt?: number;
       }>;
     };
+    survey?: Record<string, string[]>;
   } | null;
 };
 
