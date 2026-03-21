@@ -1,6 +1,6 @@
 // app/user-settings.tsx
 import * as React from 'react';
-import { View, StyleSheet, Pressable, Text, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, Pressable, Text, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 function SettingsContent() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const [deletingAccount, setDeletingAccount] = React.useState(false);
   
   const handleClose = React.useCallback(() => {
     router.back();
@@ -33,6 +34,52 @@ function SettingsContent() {
             // Reset navigation stack to welcome page (no back history)
             router.dismissAll();
             router.replace('/auth/welcome');
+          },
+        },
+      ]
+    );
+  }, [router]);
+
+  const handleDeleteAccount = React.useCallback(() => {
+    Alert.alert(
+      "Delete Account",
+      "This will permanently delete your account, all your fit pics, and your profile. This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Continue",
+          style: "destructive",
+          onPress: () => {
+            // Second confirmation step
+            Alert.alert(
+              "Are you sure?",
+              "Your account and all associated data will be deleted immediately. There is no way to recover your account after this.",
+              [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Delete My Account",
+                  style: "destructive",
+                  onPress: async () => {
+                    setDeletingAccount(true);
+                    try {
+                      const { deleteMe } = await import('@/src/services/apiClients/userClient');
+                      await deleteMe();
+                      const { clearTokens } = await import('@/src/services/authTokenManager');
+                      await clearTokens();
+                      router.dismissAll();
+                      router.replace('/auth/welcome');
+                    } catch (err) {
+                      setDeletingAccount(false);
+                      Alert.alert(
+                        "Couldn't Delete Account",
+                        "Something went wrong. Please try again or contact support.",
+                        [{ text: "OK" }]
+                      );
+                    }
+                  },
+                },
+              ]
+            );
           },
         },
       ]
@@ -116,6 +163,26 @@ function SettingsContent() {
           >
             <Text style={styles.settingItemText}>Log Out</Text>
             <Text style={styles.settingItemArrow}>›</Text>
+          </Pressable>
+
+          <Pressable 
+            style={styles.settingItem}
+            onPress={handleDeleteAccount}
+            disabled={deletingAccount}
+          >
+            {deletingAccount ? (
+              <View style={styles.deleteLoadingRow}>
+                <ActivityIndicator size="small" color="#ef4444" />
+                <Text style={[styles.settingItemText, styles.deleteAccountText, { marginLeft: 8 }]}>
+                  Deleting Account…
+                </Text>
+              </View>
+            ) : (
+              <>
+                <Text style={[styles.settingItemText, styles.deleteAccountText]}>Delete Account</Text>
+                <Text style={styles.settingItemArrow}>›</Text>
+              </>
+            )}
           </Pressable>
         </View>
 
@@ -222,6 +289,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#d1d5db',
     fontWeight: '300',
+  },
+  deleteAccountText: {
+    color: '#ef4444',
+  },
+  deleteLoadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 
