@@ -83,7 +83,7 @@ export type FitPic = {
   comments: FitPicComment[];
 
   // Optional fields
-  location?: string;
+  location?: string | { name?: string };
 
   // Moderation
   isReported?: boolean;
@@ -97,6 +97,7 @@ export type CreateFitPicRequest = {
   products: ProductLite[];
   location?: string;
   fitpicId?: string;
+  addToCloset?: boolean;
 };
 
 export type CreateFitPicResponse = {

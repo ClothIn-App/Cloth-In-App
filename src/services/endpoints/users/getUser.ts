@@ -28,6 +28,8 @@ export type GetUserResponse = {
         createdAt?: number;
       }>;
     };
+    savedFitpics?: string[];
+    savedProducts?: string[];
   } | null;
 };
 
@@ -52,6 +54,7 @@ export const getUserEndpoint: EndpointDefinition<undefined, GetUserResponse> = {
     const raw = getUserById(userId);
 
     if (raw) {
+      const saved = raw.saved ?? [];
       const hydrated: GetUserResponse = {
         user: {
           uid: raw.id ?? userId,
@@ -68,8 +71,9 @@ export const getUserEndpoint: EndpointDefinition<undefined, GetUserResponse> = {
             following: raw.following?.total ?? 0,
             followers: raw.followers?.total ?? 0,
           },
-          // Include closet data from mock JSON
           closet: raw.closet,
+          savedFitpics: saved.filter((s) => s.type === "fitpic").map((s) => s.id),
+          savedProducts: saved.filter((s) => s.type === "product").map((s) => s.id),
         },
       };
 

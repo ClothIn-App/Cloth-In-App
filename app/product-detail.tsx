@@ -23,8 +23,13 @@ import { ProductUserStyleCarousel } from "@/components/product-modal/ProductUser
 import ProductCommentsSection from "@/components/product-modal/comments/product-comments-section";
 import ProductCommentInput from "@/components/product-modal/comments/product-comment-input";
 import type { Reactions, CommentType, ReactionKey } from "@/src/types/feed";
-import { getCurrentUser } from "@/src/services/mockSessionUsers";
+import {
+  getCurrentUser,
+  mapGetUserResponseToRawUser,
+  setRealCurrentUser,
+} from "@/src/services/mockSessionUsers";
 import { contentApiClient } from "@/src/services/apiClients/contentClient";
+import { userApiClient } from "@/src/services/apiClients/userClient";
 
 const DEFAULT_REACTIONS: Reactions = { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } };
 
@@ -210,7 +215,29 @@ export default function ProductDetailModal() {
   }, []);
 
   const handleToggleSave = useCallback(
-    (nextSaved: boolean) => {
+    async (nextSaved: boolean) => {
+      const isRealMode = process.env.EXPO_PUBLIC_API_MODE === "real";
+      if (isRealMode && product?.id) {
+        try {
+          const res = await contentApiClient.updateProductEngagement({
+            productId: product.id,
+            action: nextSaved ? "save" : "unsave",
+          });
+          if (res.success) {
+            setIsSaved(nextSaved);
+            const uid = currentUser?.id;
+            if (uid) {
+              const response = await userApiClient.getUser(uid);
+              if (response?.user) {
+                setRealCurrentUser(uid, mapGetUserResponseToRawUser(response.user, uid));
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Failed to update save:", e);
+        }
+        return;
+      }
       setIsSaved(nextSaved);
       if (currentUser && product) {
         if (!currentUser.saved) currentUser.saved = [];

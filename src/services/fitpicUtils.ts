@@ -140,7 +140,7 @@ export function sortFitPics(fitpics: FitPic[], sort: FitPicSortOptions): FitPic[
     case 'most_liked':
       return sorted.sort((a, b) => b.engagement.likes - a.engagement.likes);
     case 'most_saved':
-      return sorted.sort((a, b) => b.engagement.saves - a.engagement.saves);
+      return sorted.sort((a, b) => (b.engagement.saves ?? 0) - (a.engagement.saves ?? 0));
     case 'trending':
       // Simple trending algorithm: combination of recent likes and recency
       return sorted.sort((a, b) => {
@@ -171,7 +171,7 @@ export function filterFitPics(fitpics: FitPic[], filters?: FitPicFilters): FitPi
     }
     if (filters.engagement) {
       if (filters.engagement.minLikes && fitpic.engagement.likes < filters.engagement.minLikes) return false;
-      if (filters.engagement.minSaves && fitpic.engagement.saves < filters.engagement.minSaves) return false;
+      if (filters.engagement.minSaves && (fitpic.engagement.saves ?? 0) < filters.engagement.minSaves) return false;
     }
     return true;
   });

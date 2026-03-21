@@ -6,6 +6,8 @@ import type {
 } from "../../../types/fitpic";
 import { inMemoryFitpics } from "./createFitPic";
 
+type EngagementCountKey = "likes" | "dislikes" | "heart" | "fire" | "saves";
+
 export const updateFitPicEngagementEndpoint: EndpointDefinition<
   UpdateFitPicEngagementRequest,
   UpdateFitPicEngagementResponse
@@ -51,14 +53,17 @@ export const updateFitPicEngagementEndpoint: EndpointDefinition<
         if (request.reaction) {
           const prev = (fitpic.engagement as any).userReaction;
           if (prev && reactionToKey[prev]) {
-            engagement[reactionToKey[prev]] = Math.max(
+            const prevKey = reactionToKey[prev] as EngagementCountKey;
+            (engagement as Record<EngagementCountKey, number>)[prevKey] = Math.max(
               0,
-              (engagement[reactionToKey[prev]] as number) - 1
+              (engagement[prevKey] as number) - 1
             );
           }
           (engagement as any).userReaction = request.reaction;
           const key = reactionToKey[request.reaction];
-          if (key) engagement[key] = ((engagement[key] as number) ?? 0) + 1;
+          if (key)
+            (engagement as Record<EngagementCountKey, number>)[key as EngagementCountKey] =
+              ((engagement[key] as number) ?? 0) + 1;
         }
         break;
       case "unreact":
@@ -66,7 +71,11 @@ export const updateFitPicEngagementEndpoint: EndpointDefinition<
           const prev = (fitpic.engagement as any).userReaction;
           if (prev === request.reaction) {
             const k = reactionToKey[request.reaction];
-            if (k) engagement[k] = Math.max(0, (engagement[k] as number) - 1);
+            if (k)
+              (engagement as Record<EngagementCountKey, number>)[k as EngagementCountKey] = Math.max(
+                0,
+                (engagement[k] as number) - 1
+              );
             (engagement as any).userReaction = undefined;
           }
         }

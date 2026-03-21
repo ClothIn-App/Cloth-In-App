@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { Product, FitPic, Reactions as ProductReactions } from "../types/content";
+import { Product, Reactions as ProductReactions } from "../types/content";
+import type { FitPic } from "../types/fitpic";
 import type { CommentType } from "../types/feed";
 import { contentApiClient } from "../services/apiClients/contentClient";
 import { fitpicClient } from "../services/apiClients/fitpicClient";

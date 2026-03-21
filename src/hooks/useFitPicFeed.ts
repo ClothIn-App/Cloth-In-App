@@ -47,8 +47,8 @@ export const useFitPicFeed = (type: FeedType) => {
           const newFitpics = refresh ? response.fitpics : [...prev.fitpics, ...response.fitpics];
           
           // Remove duplicates based on ID
-          const uniqueFitpics = newFitpics.filter((fitpic, index, self) => 
-            index === self.findIndex(f => f.id === fitpic.id)
+          const uniqueFitpics = newFitpics.filter((fitpic: FitPic, index: number, self: FitPic[]) =>
+            index === self.findIndex((f: FitPic) => f.id === fitpic.id)
           );
           
           return {

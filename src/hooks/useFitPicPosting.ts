@@ -120,6 +120,7 @@ export const useFitPicPosting = () => {
         caption: meta.caption,
         products: meta.products || [],
         location: meta.location?.trim() || undefined,
+        addToCloset: meta.addToCloset ?? true,
         ...(uploadResult.fitpicId && { fitpicId: uploadResult.fitpicId }),
       };
 

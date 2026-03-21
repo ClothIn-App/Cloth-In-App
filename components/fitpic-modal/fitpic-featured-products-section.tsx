@@ -5,6 +5,8 @@ import type { ProductItem } from '../../src/types/feed';
 import { contentApiClient } from '../../src/services/apiClients/contentClient';
 import FeaturedProductCard from './featured-product-card';
 
+type PriceType = NonNullable<ProductItem['priceType']>;
+
 const MAX_ITEMS = 6;
 
 /** Map getProduct response to ProductLike shape (imageUrl from primaryImageUrl or images for real API). */
@@ -21,7 +23,7 @@ function toProductLike(p: {
   images?: Array<{ url?: string }> | string[];
   imagePath?: string;
   imageUrl?: string | null;
-}): { id: string; name: string; brand?: string; price?: number | null; originalPrice?: number; priceType?: string; description?: string; imageUrl: string; createdAt: string } {
+}): { id: string; name: string; brand?: string; price?: number | null; originalPrice?: number; priceType?: PriceType; description?: string; imageUrl: string; createdAt: string } {
   const firstImageUrl = Array.isArray(p.images) && p.images[0]
     ? typeof p.images[0] === 'object'
       ? (p.images[0] as { url?: string }).url
@@ -34,7 +36,7 @@ function toProductLike(p: {
     brand: p.brand ?? undefined,
     price: p.price ?? undefined,
     originalPrice: p.originalPrice ?? undefined,
-    priceType: p.priceType,
+    priceType: (p.priceType as PriceType) ?? undefined,
     description: p.description ?? undefined,
     imageUrl,
     createdAt: p.createdAt ?? new Date().toISOString(),

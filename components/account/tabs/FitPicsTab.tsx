@@ -30,9 +30,10 @@ export default function FitPicsTab({ userId }: Props) {
     return fitpics.map((fitpic): FitPicItem => {
       const coverPhoto = fitpic.photos[0]; // Get the first/cover photo
       const productCount = fitpic.products.length;
-      
-      // Get image source from FITPIC_ASSETS map (matches the pattern used elsewhere)
-      const imageSource = FITPIC_ASSETS[fitpic.id] || require('../../../assets/images/icon.png');
+      const photoUrl = coverPhoto?.url ?? coverPhoto?.thumbnailUrl ?? '';
+      // Use static asset for mock fitpics; use API photo URL for user-created fitpics
+      const imageSource =
+        FITPIC_ASSETS[fitpic.id] ?? (photoUrl ? { uri: photoUrl } : require('../../../assets/images/icon.png'));
 
       return {
         id: fitpic.id,

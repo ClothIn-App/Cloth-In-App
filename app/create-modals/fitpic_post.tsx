@@ -3,14 +3,14 @@ import React, { useCallback, useState } from 'react';
 import {
   Alert,
   ActivityIndicator,
-  Keyboard,
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
-  TextInput,
   View,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
@@ -57,8 +57,8 @@ export default function FitPicPostModal({
   // Photos live in DraftsContext
   const { selectedIds, removeSelected, setSelectedOrder } = useDrafts();
 
-  // Caption + products + location live in PostContext
-  const { meta, setCaption, setLocation, removeProduct } = usePost();
+  // Caption + products + location + addToCloset live in PostContext
+  const { meta, setCaption, setLocation, setAddToCloset, removeProduct } = usePost();
 
   // Product search (controlled query, debounced API)
   const [searchQuery, setSearchQuery] = useState('');
@@ -177,6 +177,32 @@ export default function FitPicPostModal({
             <ProductGrid products={products} onRemove={removeProduct} />
           </View>
 
+          <View style={S.addToClosetRow}>
+            <View style={S.addToClosetLabelWrap}>
+              <Text style={S.addToClosetLabel}>Add to closet</Text>
+              <Pressable
+                hitSlop={8}
+                onPress={() =>
+                  Alert.alert(
+                    'Add to closet',
+                    'Tagged products can be saved to your Closet so you can organize them in racks and find them later.'
+                  )
+                }
+                accessibilityLabel="What is Add to closet?"
+                accessibilityRole="button"
+              >
+                <Ionicons name="information-circle-outline" size={20} color="#6b7280" />
+              </Pressable>
+            </View>
+            <Switch
+              value={meta.addToCloset ?? false}
+              onValueChange={setAddToCloset}
+              disabled={products.length === 0}
+              trackColor={{ false: '#e5e7eb', true: '#34d399' }}
+              thumbColor="#ffffff"
+            />
+          </View>
+
           <View style={{ marginTop: 20 }}>
             <Text style={S.sectionTitle}>Location</Text>
             <View style={{ marginTop: 4 }}>
@@ -244,6 +270,14 @@ const S = StyleSheet.create({
 
   section: { gap: 10 },
   sectionTitle: { color: '#111827', fontSize: 15, fontWeight: '700', letterSpacing: 0.2 },
+  addToClosetRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  addToClosetLabelWrap: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  addToClosetLabel: { color: '#111827', fontSize: 15 },
   help: { color: '#6b7280', fontSize: 12, marginTop: 6 },
   muted: { color: '#6b7280', fontSize: 14 },
 

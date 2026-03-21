@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { StyleSheet, View, TouchableOpacity, ScrollView, RefreshControl, KeyboardAvoidingView, Platform, Modal, Pressable, ActivityIndicator, Text, Alert } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, ScrollView, RefreshControl, KeyboardAvoidingView, Platform, Modal, Pressable, ActivityIndicator, Text, Alert, ImageSourcePropType } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,8 +12,24 @@ import MockFitPicReactionBar from '../components/fitpic-modal/fitpic-modal-react
 import FitPicFeaturedProductsSection from '../components/fitpic-modal/fitpic-featured-products-section';
 import FitPicCommentsSection from '../components/fitpic-modal/comments/fitpic-comments-section';
 import FitPicCommentInput from '../components/fitpic-modal/comments/fitpic-comment-input';
-import { getCurrentUser } from '../src/services/mockSessionUsers';
+import {
+  getCurrentUser,
+  mapGetUserResponseToRawUser,
+  setRealCurrentUser,
+} from '../src/services/mockSessionUsers';
 import { fitpicClient } from '../src/services/apiClients/fitpicClient';
+import { userApiClient } from '../src/services/apiClients/userClient';
+
+/** Normalize ImageSourcePropType to the shape FitPicModalMedia accepts (uri required when object). */
+function toModalImageUrl(source: ImageSourcePropType | undefined): string | { uri: string } | number | undefined {
+  if (source == null) return undefined;
+  if (typeof source === 'string' || typeof source === 'number') return source;
+  if (typeof source === 'object' && source !== null && 'uri' in source) {
+    const uri = (source as { uri?: string }).uri;
+    return uri != null && uri !== '' ? { uri } : undefined;
+  }
+  return undefined;
+}
 
 export default function FitPicDetailScreen() {
   const params = useLocalSearchParams<{ id: string }>();
@@ -204,6 +220,7 @@ export default function FitPicDetailScreen() {
   const handleToggleSave = useCallback(
     async (nextSaved: boolean) => {
       if (!id) return;
+      const isRealMode = process.env.EXPO_PUBLIC_API_MODE === 'real';
       try {
         const res = await fitpicClient.updateEngagement({
           fitpicId: id,
@@ -211,6 +228,12 @@ export default function FitPicDetailScreen() {
         });
         if (res.success && res.engagement) {
           setIsSaved(res.engagement.isSaved ?? nextSaved);
+          if (isRealMode && currentUser?.id) {
+            const response = await userApiClient.getUser(currentUser.id);
+            if (response?.user) {
+              setRealCurrentUser(currentUser.id, mapGetUserResponseToRawUser(response.user, currentUser.id));
+            }
+          }
         } else {
           setIsSaved(nextSaved);
         }
@@ -219,7 +242,7 @@ export default function FitPicDetailScreen() {
         setIsSaved(nextSaved);
       }
       // Keep mock user saved list in sync when using mock
-      if (currentUser && fitpic) {
+      if (!isRealMode && currentUser && fitpic) {
         if (!currentUser.saved) currentUser.saved = [];
         const saved = currentUser.saved;
         if (nextSaved && !saved.some((item: { id: string; type: string }) => item.id === fitpic.id && item.type === 'fitpic')) {
@@ -392,7 +415,7 @@ export default function FitPicDetailScreen() {
 
               <FitPicModalMedia
                 imageUrls={fitpic.sources?.length ? fitpic.sources : undefined}
-                imageUrl={fitpic.sources?.length ? undefined : fitpic.source}
+                imageUrl={fitpic.sources?.length ? undefined : toModalImageUrl(fitpic.source)}
                 aspectRatio={aspectRatio}
                 borderRadius={0}
               />
