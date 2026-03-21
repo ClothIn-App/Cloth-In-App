@@ -45,12 +45,12 @@ describe("users.set endpoint — mock behavior", () => {
       },
     });
 
-    expect(created.user.uid).toBe("u_demo");
-    expect(created.user.email).toBe("user+udemo@example.com"); // lowercased
-    expect(created.user.displayName).toBe("New User");
-    expect(created.user.username).toBe("demo");
-    expect(created.user.accountType).toBe("personal");
-    expect(created.user.counts).toEqual({ posts: 0, following: 0, followers: 0 });
+    expect(created.user!.uid).toBe("u_demo");
+    expect(created.user!.email).toBe("user+udemo@example.com"); // lowercased
+    expect(created.user!.displayName).toBe("New User");
+    expect(created.user!.username).toBe("demo");
+    expect(created.user!.accountType).toBe("personal");
+    expect(created.user!.counts).toEqual({ posts: 0, following: 0, followers: 0 });
 
     // 2) Update — same userId, change a couple of fields (persistence check)
     const updated = await setUserEndpoint.mock!({
@@ -64,12 +64,12 @@ describe("users.set endpoint — mock behavior", () => {
       },
     });
 
-    expect(updated.user.uid).toBe("u_demo");
-    expect(updated.user.email).toBe("user+udemo@example.com"); // unchanged
-    expect(updated.user.displayName).toBe("Jane D.");
-    expect(updated.user.accountType).toBe("business");
+    expect(updated.user!.uid).toBe("u_demo");
+    expect(updated.user!.email).toBe("user+udemo@example.com"); // unchanged
+    expect(updated.user!.displayName).toBe("Jane D.");
+    expect(updated.user!.accountType).toBe("business");
     // counts remain unchanged by setUser
-    expect(updated.user.counts).toEqual({ posts: 0, following: 0, followers: 0 });
+    expect(updated.user!.counts).toEqual({ posts: 0, following: 0, followers: 0 });
   });
 });
 
@@ -133,7 +133,7 @@ describe("users.set endpoint — transport integration (auth + mock/real)", () =
       requestBody: { displayName: "X" },
     });
 
-    expect(res.user.uid).toBe("u1");
+    expect(res.user!.uid).toBe("u1");
     if (fetchSpy) {
       expect(fetchSpy).not.toHaveBeenCalled();
       fetchSpy.mockRestore();

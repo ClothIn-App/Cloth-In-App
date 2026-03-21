@@ -121,6 +121,7 @@ export const useFitPicPosting = () => {
         tags: meta.tags?.length ? meta.tags : undefined,
         products: meta.products || [],
         location: meta.location?.trim() || undefined,
+        addToCloset: meta.addToCloset ?? true,
         ...(uploadResult.fitpicId && { fitpicId: uploadResult.fitpicId }),
       };
 

@@ -1,12 +1,18 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { View, Text, TouchableOpacity, RefreshControl, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import MasonryGrid from "../../masonry-grid";
 import FitPic_Cover from "../../home/fitpic-cover";
 import Product_Cover, { PRODUCT_LABEL_HEIGHT } from "../../home/product-cover";
 import type { FeedItem } from "../../../src/types/feed";
-import { getFeedItemById } from "../../../src/utils/getFeedItem";
+import {
+  getFeedItemById,
+  getFitPicById,
+  getProductByIdFromApi,
+} from "../../../src/utils/getFeedItem";
 import { getCurrentUser } from "../../../src/services/mockSessionUsers";
+import { useCurrentUserId } from "../../../src/hooks/useCurrentUserId";
+import { userApiClient } from "../../../src/services/apiClients/userClient";
 
 type Props = {
   userId?: string;
@@ -14,50 +20,75 @@ type Props = {
 
 type FilterType = "all" | "fitpics" | "products";
 
+type SavedRef = { id: string; type: string };
+
 export default function SavedTab({ userId }: Props) {
   const [savedItems, setSavedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState<FilterType>("all");
+  const { userId: currentUserId } = useCurrentUserId();
 
-  // Get the user ID (use provided userId or fall back to session)
-  const currentUser = useMemo(
-    () => getCurrentUser(userId),
-    [userId]
-  );
+  const currentUser = useMemo(() => getCurrentUser(userId), [userId]);
+  const isRealMode = process.env.EXPO_PUBLIC_API_MODE === "real";
+  const isOwnProfile = Boolean(userId && currentUserId && userId === currentUserId);
 
-  // Load saved items
-  const loadSavedItems = async () => {
-    if (!currentUser) {
+  const loadSavedItems = useCallback(async () => {
+    let saved: SavedRef[] = [];
+
+    if (isRealMode && isOwnProfile && userId) {
+      try {
+        const response = await userApiClient.getUser(userId);
+        if (response?.user) {
+          const fitpics = response.user.savedFitpics ?? [];
+          const products = response.user.savedProducts ?? [];
+          saved = [
+            ...fitpics.map((id: string) => ({ id, type: "fitpic" })),
+            ...products.map((id: string) => ({ id, type: "product" })),
+          ];
+        }
+      } catch (e) {
+        console.error("Error loading saved list from API:", e);
+      }
+    } else if (currentUser?.saved) {
+      saved = currentUser.saved;
+    }
+
+    if (saved.length === 0) {
+      setSavedItems([]);
       setLoading(false);
       return;
     }
 
     setLoading(true);
     try {
-      const saved = currentUser.saved || [];
-
-      // Load all saved items (already in order - most recent first)
       const items: FeedItem[] = [];
-
       for (const savedItem of saved) {
-        const item = await getFeedItemById(savedItem.id);
+        let item: FeedItem | null = null;
+        if (isRealMode) {
+          if (savedItem.type === "fitpic") {
+            item = await getFitPicById(savedItem.id);
+          } else {
+            item = await getProductByIdFromApi(savedItem.id);
+          }
+        } else {
+          item = await getFeedItemById(savedItem.id);
+        }
         if (item && item.type === savedItem.type) {
           items.push(item);
         }
       }
-
       setSavedItems(items);
     } catch (error) {
       console.error("Error loading saved items:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser, isRealMode, isOwnProfile, userId]);
 
   useEffect(() => {
     loadSavedItems();
-  }, [currentUser]);
+  }, [loadSavedItems]);
 
   const handleRefresh = async () => {
     setRefreshing(true);

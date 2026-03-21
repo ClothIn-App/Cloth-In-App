@@ -16,6 +16,9 @@ export const commentReactEndpoint: EndpointDefinition<
   auth: "required",
   mock: async ({ pathParameters, body }) => {
     await new Promise((resolve) => setTimeout(resolve, 150));
+    if (!body) {
+      return { success: false, error: "Missing request body" };
+    }
     const fitpic = inMemoryFitpics.find((fp) => fp.id === pathParameters.fitpicId);
     if (!fitpic) {
       return { success: false, error: "FitPic not found" };

@@ -1,6 +1,5 @@
 import type { EndpointDefinition } from "../../http";
-import type { PriceType } from "../../../components/create/product/addproductcontext";
-import type { Product } from "../../../types/content";
+import type { Product, ProductPriceType } from "../../../types/content";
 
 export type CreateProductImage = {
   url: string;
@@ -16,7 +15,7 @@ export type CreateProductRequest = {
   description?: string;
   specifications?: string;
   productUrl?: string;
-  priceType: PriceType;
+  priceType: ProductPriceType;
   price?: number;
   originalPrice?: number;
   currency?: string;

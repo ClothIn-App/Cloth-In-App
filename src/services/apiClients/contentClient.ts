@@ -3,15 +3,9 @@ import {
   getProductEndpoint,
   GetProductRequest,
   GetProductResponse,
-  getFitPicEndpoint,
-  GetFitPicRequest,
-  GetFitPicResponse,
   getProductsEndpoint,
   GetProductsRequest,
   GetProductsResponse,
-  getFitPicsEndpoint,
-  GetFitPicsRequest,
-  GetFitPicsResponse,
   createProductEndpoint,
   CreateProductRequest,
   CreateProductResponse,
@@ -19,7 +13,8 @@ import {
   addProductCommentEndpoint,
   productCommentReactEndpoint,
 } from "../endpoints";
-// Import content feed endpoint directly to avoid conflict with fitpics feed endpoint
+import { getFitPicEndpoint, GetFitPicRequest, GetFitPicResponse } from "../endpoints/content/getFitPic";
+import { getFitPicsEndpoint, GetFitPicsRequest, GetFitPicsResponse } from "../endpoints/content/getFitPics";
 import { getFeedEndpoint, GetFeedRequest, GetFeedResponse } from "../endpoints/content/getFeed";
 import type {
   UpdateProductEngagementRequest,

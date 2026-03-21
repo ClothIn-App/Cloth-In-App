@@ -59,9 +59,17 @@ export function mapGetUserResponseToRawUser(
     privacy?: { isPrivateAccount?: boolean };
     counts?: { posts?: number; following?: number; followers?: number };
     closet?: RawUser["closet"];
+    savedFitpics?: string[];
+    savedProducts?: string[];
   },
   userId: string
 ): RawUser {
+  const savedFitpics = user.savedFitpics ?? [];
+  const savedProducts = user.savedProducts ?? [];
+  const saved: { id: string; type: string }[] = [
+    ...savedFitpics.map((id) => ({ id, type: "fitpic" as const })),
+    ...savedProducts.map((id) => ({ id, type: "product" as const })),
+  ];
   return {
     id: user.uid ?? userId,
     username: user.username ?? user.uid ?? userId,
@@ -74,7 +82,7 @@ export function mapGetUserResponseToRawUser(
     followers: user.counts ? { total: user.counts.followers } : undefined,
     following: user.counts ? { total: user.counts.following } : undefined,
     fitpics: user.counts ? { total: user.counts.posts } : undefined,
-    saved: [],
+    saved,
   };
 }
 

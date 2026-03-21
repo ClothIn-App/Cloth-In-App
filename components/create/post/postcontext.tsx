@@ -1,19 +1,26 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { CAPTION_MAX, ProductLite } from './types';
 
-type PostMeta = { caption: string; products: ProductLite[]; location: string; tags: string[] };
+type PostMeta = {
+  caption: string;
+  products: ProductLite[];
+  location: string;
+  tags: string[];
+  addToCloset: boolean;
+};
 
 export type PostContextValue = {
   meta: PostMeta;
   setCaption: (v: string) => void;      // silently truncates to CAPTION_MAX
   setLocation: (v: string) => void;
+  setAddToCloset: (v: boolean) => void;
   addProduct: (p: ProductLite) => void;
   removeProduct: (id: string) => void;
   /** Replace the entire tags array (dedupe + lowercase handled here) */
   setTags: (tags: string[]) => void;
   /** Remove a single tag by canonical name (no leading #) */
   removeTag: (tag: string) => void;
-  clearMeta: () => void;                 // clears caption, products, location, tags
+  clearMeta: () => void;                 // clears caption, products, location, tags, addToCloset
 };
 
 const PostContext = createContext<PostContextValue | null>(null);
@@ -24,6 +31,7 @@ export function PostProvider({ children }: { children: React.ReactNode }) {
     products: [],
     location: '',
     tags: [],
+    addToCloset: false,
   });
 
   const setCaption = useCallback((v: string) => {
@@ -36,19 +44,24 @@ export function PostProvider({ children }: { children: React.ReactNode }) {
     setMeta(prev => (prev.location === next ? prev : { ...prev, location: next }));
   }, []);
 
+  const setAddToCloset = useCallback((v: boolean) => {
+    setMeta(prev => (prev.addToCloset === v ? prev : { ...prev, addToCloset: v }));
+  }, []);
+
   const addProduct = useCallback((p: ProductLite) => {
     if (!p?.id) return;
-    setMeta(prev =>
-      prev.products.some(x => x.id === p.id)
-        ? prev
-        : { ...prev, products: [...prev.products, p] }
-    );
+    setMeta(prev => {
+      if (prev.products.some(x => x.id === p.id)) return prev;
+      const products = [...prev.products, p];
+      return { ...prev, products, addToCloset: true };
+    });
   }, []);
 
   const removeProduct = useCallback((id: string) => {
     setMeta(prev => {
       const products = prev.products.filter(p => p.id !== id);
-      return products.length === prev.products.length ? prev : { ...prev, products };
+      const addToCloset = products.length > 0 ? prev.addToCloset : false;
+      return products.length === prev.products.length ? prev : { ...prev, products, addToCloset };
     });
   }, []);
 
@@ -77,12 +90,32 @@ export function PostProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const clearMeta = useCallback(() => {
-    setMeta({ caption: '', products: [], location: '', tags: [] });
+    setMeta({ caption: '', products: [], location: '', tags: [], addToCloset: false });
   }, []);
 
   const value = useMemo<PostContextValue>(
-    () => ({ meta, setCaption, setLocation, addProduct, removeProduct, setTags, removeTag, clearMeta }),
-    [meta, setCaption, setLocation, addProduct, removeProduct, setTags, removeTag, clearMeta]
+    () => ({
+      meta,
+      setCaption,
+      setLocation,
+      setAddToCloset,
+      addProduct,
+      removeProduct,
+      setTags,
+      removeTag,
+      clearMeta,
+    }),
+    [
+      meta,
+      setCaption,
+      setLocation,
+      setAddToCloset,
+      addProduct,
+      removeProduct,
+      setTags,
+      removeTag,
+      clearMeta,
+    ],
   );
 
   return <PostContext.Provider value={value}>{children}</PostContext.Provider>;

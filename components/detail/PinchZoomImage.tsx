@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Dimensions, StyleSheet } from 'react-native';
+import { View, Dimensions, StyleSheet, ImageStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -88,7 +88,7 @@ export default function PinchZoomImage({ source, style, sharedTransitionTag }: P
       <Animated.View style={[styles.container, style]}>
         <ProgressiveImage
           source={source}
-          style={StyleSheet.absoluteFill}
+          style={StyleSheet.absoluteFill as ImageStyle}
           contentFit="contain"
         />
       </Animated.View>

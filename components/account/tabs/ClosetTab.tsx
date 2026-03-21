@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import type { ImageSourcePropType } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
@@ -20,6 +21,8 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import useAccountData from "../../../src/hooks/useAccountData";
+import { contentApiClient } from "../../../src/services/apiClients/contentClient";
+import { userApiClient } from "../../../src/services/apiClients/userClient";
 import { PRODUCT_ASSETS } from "../../../src/maps/images";
 import ClosetProductCard from "../closet/ClosetProductCard";
 import EndlessRackCarousel, {
@@ -119,19 +122,17 @@ const AllProductsCarouselItem = React.memo(function AllProductsCarouselItem({
   );
 });
 
-// Get products by IDs (helper function outside component for stability)
+// Get products by IDs – return all IDs so closet shows every product (images resolved via PRODUCT_ASSETS or API)
 const getProductsByIds = (productIds: string[]): Product[] => {
   if (!productIds || !Array.isArray(productIds)) return [];
-  return productIds
-    .filter((id) => !!PRODUCT_ASSETS[id])
-    .map((id) => ({ id }));
+  return productIds.map((id) => ({ id }));
 };
 
 export default function ClosetTab({ userId, isViewOnly = false }: Props) {
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
   const isFocused = useIsFocused();
-  const { data, loading } = useAccountData(userId);
+  const { data, loading, refetch } = useAccountData(userId);
   const initializedRef = useRef(false);
   const allProductsCarouselRef = useRef<EndlessRackCarouselHandle | null>(null);
   const preInitCreatedAtBaseRef = useRef(Date.now());
@@ -149,6 +150,7 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
   const [rackDetailVisible, setRackDetailVisible] = useState(false);
   const [selectedRackId, setSelectedRackId] = useState<string | null>(null);
   const [allProductsDetailVisible, setAllProductsDetailVisible] = useState(false);
+  const [productImageMap, setProductImageMap] = useState<Record<string, ImageSourcePropType>>({});
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Track which modal should be restored when returning from product detail
   const pendingRackIdRef = useRef<string | null>(null);
@@ -173,6 +175,33 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
     carousel.pauseAutoDrift();
     carousel.resumeAutoDrift();
   };
+
+  const persistCloset = React.useCallback(
+    (baseIds: string[], nextRacks: Rack[]) => {
+      if (!userId || isViewOnly || !initializedRef.current) return;
+      const payload = {
+        base: { productIds: baseIds },
+        racks: nextRacks.map((r) => ({
+          id: r.id,
+          name: r.name,
+          productIds: r.productIds ?? [],
+          createdAt: r.createdAt,
+        })),
+      };
+      userApiClient
+        .setCloset(userId, payload)
+        .then(() => {
+          void refetch();
+        })
+        .catch((err) => {
+          Alert.alert(
+            "Could not save closet",
+            err?.message ?? "Your changes could not be saved. Please try again."
+          );
+        });
+    },
+    [userId, isViewOnly, refetch]
+  );
 
   // When the carousel is continuously moving, it can interfere with press recognition.
   // Pausing it on any touch within the Closet scroll area keeps taps responsive,
@@ -291,6 +320,52 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
     return rackSections.find((r) => r.id === selectedRackId) ?? null;
   }, [selectedRackId, rackSections]);
 
+  // Resolve image sources for products not in PRODUCT_ASSETS (e.g. created via app, stored in Firebase)
+  const allClosetProductIds = useMemo(() => {
+    const ids = new Set<string>(effectiveBaseProductIds);
+    effectiveRacks.forEach((r) => (r.productIds || []).forEach((id) => ids.add(id)));
+    return Array.from(ids);
+  }, [effectiveBaseProductIds, effectiveRacks]);
+
+  useEffect(() => {
+    const idsToFetch = allClosetProductIds.filter((id) => !PRODUCT_ASSETS[id]);
+    if (idsToFetch.length === 0) return;
+
+    let cancelled = false;
+    Promise.allSettled(
+      idsToFetch.map((id) => contentApiClient.getProduct(id))
+    ).then((results) => {
+      if (cancelled) return;
+      const next: Record<string, ImageSourcePropType> = {};
+      results.forEach((result, i) => {
+        const id = idsToFetch[i];
+        if (!id || result.status !== "fulfilled" || !result.value?.product) return;
+        const p = result.value.product as {
+          primaryImageUrl?: string | null;
+          imagePath?: string;
+          images?: Array<{ url?: string } | string>;
+        };
+        const firstImg = Array.isArray(p.images) && p.images[0]
+          ? typeof p.images[0] === "object" && p.images[0] && "url" in p.images[0]
+            ? (p.images[0] as { url?: string }).url
+            : (p.images[0] as string)
+          : undefined;
+        const imageUrl = p.primaryImageUrl ?? firstImg ?? p.imagePath ?? "";
+        if (imageUrl) next[id] = { uri: imageUrl };
+      });
+      setProductImageMap((prev) => ({ ...prev, ...next }));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [allClosetProductIds]);
+
+  const getProductImageSource = useCallback(
+    (productId: string): ImageSourcePropType | undefined =>
+      productImageMap[productId] ?? PRODUCT_ASSETS[productId],
+    [productImageMap]
+  );
+
   if (loading || !userId) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -312,9 +387,9 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
       return null;
     }
 
-    // Filter products that have valid image sources
+    // Include products that have an image source (local PRODUCT_ASSETS or API-fetched)
     const productsWithImages = products.filter(
-      (product) => PRODUCT_ASSETS[product.id]
+      (product) => getProductImageSource(product.id)
     );
 
     if (!alwaysShow && productsWithImages.length === 0) {
@@ -396,7 +471,7 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
           ref={title === "All Products" ? allProductsCarouselRef : undefined}
           products={productsWithImages}
           renderItem={(product, width) => {
-            const imageSource = PRODUCT_ASSETS[product.id];
+            const imageSource = getProductImageSource(product.id);
             if (!imageSource) {
               return null;
             }
@@ -456,11 +531,11 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
         <View style={[styles.racksGrid, { paddingHorizontal: gridHorizontalPadding }]}>
           {rackSections.map((rack, idx) => {
             const items = rack.products
-              .filter((p) => PRODUCT_ASSETS[p.id])
+              .filter((p) => getProductImageSource(p.id))
               .slice(0, 3)
               .map((p) => ({
                 id: p.id,
-                source: PRODUCT_ASSETS[p.id],
+                source: getProductImageSource(p.id)!,
               }));
 
             const isLeftColumn = idx % 2 === 0;
@@ -505,10 +580,9 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
         onClose={() => setCreateRackVisible(false)}
         onSubmit={(name) => {
           const id = `rack-${Date.now()}`;
-          setRacks((prev) => [
-            ...prev,
-            { id, name, productIds: [], createdAt: Date.now() },
-          ]);
+          const newRack = { id, name, productIds: [] as string[], createdAt: Date.now() };
+          setRacks((prev) => [...prev, newRack]);
+          persistCloset(baseProductIds, [...racks, newRack]);
         }}
       />
 
@@ -536,8 +610,10 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
                 text: "Delete",
                 style: "destructive",
                 onPress: () => {
-                  setRacks((prev) => prev.filter((r) => r.id !== selectedRack.id));
+                  const nextRacks = racks.filter((r) => r.id !== selectedRack.id);
+                  setRacks(() => nextRacks);
                   setRackOptionsRackId(null);
+                  persistCloset(baseProductIds, nextRacks);
                 },
               },
             ]
@@ -554,10 +630,12 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
         onClose={() => setRenameRackId(null)}
         onSubmit={(name) => {
           if (!renamingRack) return;
-          setRacks((prev) =>
-            prev.map((r) => (r.id === renamingRack.id ? { ...r, name } : r))
+          const nextRacks = racks.map((r) =>
+            r.id === renamingRack.id ? { ...r, name } : r
           );
+          setRacks(() => nextRacks);
           setRenameRackId(null);
+          persistCloset(baseProductIds, nextRacks);
         }}
       />
 
@@ -592,14 +670,15 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
                 text: "Delete",
                 style: "destructive",
                 onPress: () => {
-                  setBaseProductIds((prev) => prev.filter((id) => id !== productId));
-                  setRacks((prev) =>
-                    prev.map((r) => ({
-                      ...r,
-                      productIds: (r.productIds || []).filter((id) => id !== productId),
-                    }))
-                  );
+                  const nextBase = baseProductIds.filter((id) => id !== productId);
+                  const nextRacks = racks.map((r) => ({
+                    ...r,
+                    productIds: (r.productIds || []).filter((id) => id !== productId),
+                  }));
+                  setBaseProductIds(() => nextBase);
+                  setRacks(() => nextRacks);
                   setActiveProductId(null);
+                  persistCloset(nextBase, nextRacks);
                 },
               },
             ]
@@ -620,13 +699,13 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
           setRackPickerVisible(false);
           setActiveProductId(null);
 
-          setRacks((prev) =>
-            prev.map((r) => {
-              if (r.id !== rackId) return r;
-              const next = new Set([...(r.productIds || []), productId]);
-              return { ...r, productIds: Array.from(next) };
-            })
-          );
+          const nextRacks = racks.map((r) => {
+            if (r.id !== rackId) return r;
+            const next = new Set([...(r.productIds || []), productId]);
+            return { ...r, productIds: Array.from(next) };
+          });
+          setRacks(() => nextRacks);
+          persistCloset(baseProductIds, nextRacks);
 
           setHighlightedRackId(rackId);
           if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
@@ -639,10 +718,10 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
         rackName={selectedRackForDetail?.name ?? ""}
         products={
           selectedRackForDetail?.products
-            ?.filter((p) => PRODUCT_ASSETS[p.id])
+            ?.filter((p) => getProductImageSource(p.id))
             .map((p) => ({
               id: p.id,
-              source: PRODUCT_ASSETS[p.id],
+              source: getProductImageSource(p.id)!,
             })) ?? []
         }
         onClose={() => {
@@ -656,15 +735,15 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
         }}
         onProductRemoveFromRack={(productId) => {
           if (!selectedRackId) return;
-          setRacks((prev) =>
-            prev.map((r) => {
-              if (r.id !== selectedRackId) return r;
-              return {
-                ...r,
-                productIds: (r.productIds || []).filter((id) => id !== productId),
-              };
-            })
-          );
+          const nextRacks = racks.map((r) => {
+            if (r.id !== selectedRackId) return r;
+            return {
+              ...r,
+              productIds: (r.productIds || []).filter((id) => id !== productId),
+            };
+          });
+          setRacks(() => nextRacks);
+          persistCloset(baseProductIds, nextRacks);
         }}
         onProductMove={(productId) => {
           setActiveProductId(productId);
@@ -680,13 +759,14 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
                 text: "Delete",
                 style: "destructive",
                 onPress: () => {
-                  setBaseProductIds((prev) => prev.filter((id) => id !== productId));
-                  setRacks((prev) =>
-                    prev.map((r) => ({
-                      ...r,
-                      productIds: (r.productIds || []).filter((id) => id !== productId),
-                    }))
-                  );
+                  const nextBase = baseProductIds.filter((id) => id !== productId);
+                  const nextRacks = racks.map((r) => ({
+                    ...r,
+                    productIds: (r.productIds || []).filter((id) => id !== productId),
+                  }));
+                  setBaseProductIds(() => nextBase);
+                  setRacks(() => nextRacks);
+                  persistCloset(nextBase, nextRacks);
                 },
               },
             ]
@@ -710,10 +790,10 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
         visible={allProductsDetailVisible}
         rackName="All Products"
         products={allProducts
-          .filter((p) => PRODUCT_ASSETS[p.id])
+          .filter((p) => getProductImageSource(p.id))
           .map((p) => ({
             id: p.id,
-            source: PRODUCT_ASSETS[p.id],
+            source: getProductImageSource(p.id)!,
           }))}
         onClose={() => {
           setAllProductsDetailVisible(false);
@@ -725,7 +805,9 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
           // It will be cleared after restoration in the useEffect
         }}
         onProductRemoveFromRack={(productId) => {
-          setBaseProductIds((prev) => prev.filter((id) => id !== productId));
+          const nextBase = baseProductIds.filter((id) => id !== productId);
+          setBaseProductIds(() => nextBase);
+          persistCloset(nextBase, racks);
         }}
         onProductMove={(productId) => {
           setActiveProductId(productId);
@@ -741,13 +823,14 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
                 text: "Delete",
                 style: "destructive",
                 onPress: () => {
-                  setBaseProductIds((prev) => prev.filter((id) => id !== productId));
-                  setRacks((prev) =>
-                    prev.map((r) => ({
-                      ...r,
-                      productIds: (r.productIds || []).filter((id) => id !== productId),
-                    }))
-                  );
+                  const nextBase = baseProductIds.filter((id) => id !== productId);
+                  const nextRacks = racks.map((r) => ({
+                    ...r,
+                    productIds: (r.productIds || []).filter((id) => id !== productId),
+                  }));
+                  setBaseProductIds(() => nextBase);
+                  setRacks(() => nextRacks);
+                  persistCloset(nextBase, nextRacks);
                 },
               },
             ]

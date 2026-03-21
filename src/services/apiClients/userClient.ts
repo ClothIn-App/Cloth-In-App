@@ -5,6 +5,9 @@ import {
   setUserEndpoint,
   SetUserPayload,
   SetUserResponse,
+  setClosetEndpoint,
+  SetClosetPayload,
+  SetClosetResponse,
   getFollowersEndpoint,
   GetFollowersResponse,
   getFollowingEndpoint,
@@ -30,6 +33,13 @@ export async function getUser(userId: string) {
 
 export async function setUser(userId: string, payload: SetUserPayload) {
   return callApiEndpoint<SetUserPayload, SetUserResponse>(setUserEndpoint, {
+    pathParameters: { userId },
+    requestBody: payload,
+  });
+}
+
+export async function setCloset(userId: string, payload: SetClosetPayload) {
+  return callApiEndpoint<SetClosetPayload, SetClosetResponse>(setClosetEndpoint, {
     pathParameters: { userId },
     requestBody: payload,
   });
@@ -89,6 +99,7 @@ export async function deleteMe() {
 export const userApiClient = { 
   getUser, 
   setUser, 
+  setCloset,
   getFollowers, 
   getFollowing,
   getFollowStatus,
@@ -100,6 +111,7 @@ export const userApiClient = {
 
 export type {
   GetUserResponse,
+  SetClosetPayload,
   GetFollowersResponse,
   GetFollowingResponse,
   GetFollowStatusResponse,
