@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
@@ -14,11 +14,12 @@ import { ProductUserStyleCarousel } from "@/components/product-modal/ProductUser
 import ProductCommentsSection from "@/components/product-modal/comments/product-comments-section";
 import ProductCommentInput from "@/components/product-modal/comments/product-comment-input";
 import type { Reactions, CommentType } from "@/src/types/feed";
+import { analyticsClient } from "@/src/services/apiClients/analyticsClient";
 
 const DEFAULT_REACTIONS: Reactions = { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } };
 
 export default function ClosetProductDetailModal() {
-  const { id, userId } = useLocalSearchParams<{ id?: string; userId?: string }>();
+  const { id, userId, source } = useLocalSearchParams<{ id?: string; userId?: string; source?: string }>();
   const { product, featuredFitPics, comments: initialComments, userFitPics } = useProductData(id, userId);
   const { data } = useAccountData(userId);
   const insets = useSafeAreaInsets();
@@ -43,10 +44,17 @@ export default function ClosetProductDetailModal() {
     }
   }, [product]);
 
-  // Sync comments when initialComments change
   useEffect(() => {
     setComments(initialComments);
   }, [initialComments]);
+
+  const viewFired = useRef(false);
+  useEffect(() => {
+    if (product && id && !viewFired.current) {
+      viewFired.current = true;
+      analyticsClient.recordProductView(id, source ?? "closet");
+    }
+  }, [product, id, source]);
 
   if (!product) {
     // For now, a simple fallback is fine. Later we can improve loading states.

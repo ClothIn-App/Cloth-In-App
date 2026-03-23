@@ -204,7 +204,7 @@ export default function Home_Grid({
           } else {
             router.push({
               pathname: "/product-detail",
-              params: { id: item.id },
+              params: { id: item.id, source: `home_feed_${feedType}` },
             });
           }
         };

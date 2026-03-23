@@ -441,7 +441,7 @@ export default function FitPicDetailScreen() {
                 onOpenProduct={(productId) => {
                   router.push({
                     pathname: '/product-detail',
-                    params: { id: productId },
+                    params: { id: productId, source: 'fitpic_detail' },
                   });
                 }}
               />

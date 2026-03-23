@@ -30,11 +30,12 @@ import {
 } from "@/src/services/mockSessionUsers";
 import { contentApiClient } from "@/src/services/apiClients/contentClient";
 import { userApiClient } from "@/src/services/apiClients/userClient";
+import { analyticsClient } from "@/src/services/apiClients/analyticsClient";
 
 const DEFAULT_REACTIONS: Reactions = { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } };
 
 export default function ProductDetailModal() {
-  const { id } = useLocalSearchParams<{ id?: string }>();
+  const { id, source } = useLocalSearchParams<{ id?: string; source?: string }>();
   const {
     product,
     featuredFitPics,
@@ -82,6 +83,14 @@ export default function ProductDetailModal() {
   useEffect(() => {
     setComments(initialComments);
   }, [initialComments]);
+
+  const viewFired = useRef(false);
+  useEffect(() => {
+    if (product && id && !viewFired.current) {
+      viewFired.current = true;
+      analyticsClient.recordProductView(id, source ?? "unknown");
+    }
+  }, [product, id, source]);
 
   const handleClose = useCallback(() => {
     router.back();

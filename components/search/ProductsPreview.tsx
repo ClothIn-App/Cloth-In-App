@@ -48,7 +48,7 @@ export default function ProductsPreview({ products, onSeeAll }: Props) {
             const handlePress = () => {
               router.push({
                 pathname: '/product-detail',
-                params: { id: product.id },
+                params: { id: product.id, source: 'search' },
               });
             };
 
