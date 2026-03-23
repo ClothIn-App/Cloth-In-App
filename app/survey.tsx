@@ -2,6 +2,7 @@
 export const options = { headerShown: false };
 
 import React from 'react';
+import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/src/context/AuthContext';
 import { onboardingApiClient } from '@/src/services/apiClients';
@@ -35,22 +36,39 @@ export default function Survey() {
 
   const handleSubmit = async (answers: OnboardingAnswers) => {
     const uid = auth?.user?.uid;
-    if (uid) {
-      try {
-        await onboardingApiClient.saveOnboarding(uid, {
-          styleIdentity: answers.styleIdentity,
-          styleVibes: answers.styleVibes,
-          categories: answers.categories,
-          occasions: answers.occasions,
-          priceTiers: answers.priceTiers,
-          selectedBrandIds: answers.selectedBrandIds,
-          onboardingVersion: ONBOARDING_VERSION,
-        });
-      } catch {
-        // Non-blocking: navigate home even if save fails
-      }
+    if (!uid) {
+      router.replace('/(tabs)/home');
+      return;
     }
-    router.replace('/(tabs)/home');
+
+    try {
+      await onboardingApiClient.saveOnboarding(uid, {
+        styleIdentity: answers.styleIdentity,
+        styleVibes: answers.styleVibes,
+        categories: answers.categories,
+        occasions: answers.occasions,
+        priceTiers: answers.priceTiers,
+        selectedBrandIds: answers.selectedBrandIds,
+        onboardingVersion: ONBOARDING_VERSION,
+      });
+      router.replace('/(tabs)/home');
+    } catch {
+      Alert.alert(
+        'Could not save your preferences',
+        'Your style choices could not be saved. Would you like to try again or continue without saving?',
+        [
+          {
+            text: 'Try Again',
+            onPress: () => handleSubmit(answers),
+          },
+          {
+            text: 'Continue Anyway',
+            style: 'destructive',
+            onPress: () => router.replace('/(tabs)/home'),
+          },
+        ]
+      );
+    }
   };
 
   return (

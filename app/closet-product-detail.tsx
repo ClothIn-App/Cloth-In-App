@@ -3,6 +3,7 @@ import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from "re
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { useProductData } from "@/src/hooks/useProductData";
+import { useProductEngagement } from "@/src/hooks/useProductEngagement";
 import useAccountData from "@/src/hooks/useAccountData";
 import { ProductHeader } from "@/components/product-modal/ProductHeader";
 import { ProductMedia } from "@/components/product-modal/ProductMedia";
@@ -25,24 +26,30 @@ export default function ClosetProductDetailModal() {
   const insets = useSafeAreaInsets();
   const hasTextSections =
     !!product?.specs?.trim() || !!product?.description?.trim();
-  
-  // Get username from account data
+
   const userName = (data.me as any)?.username || "User";
-  
-  // Local state for reactions (optimistic updates)
-  const [reactions, setReactions] = useState<Reactions>(DEFAULT_REACTIONS);
-  
-  // Local state for comments
+
   const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [replyTarget, setReplyTarget] = useState<CommentType | null>(null);
-  
-  // Sync reactions state when product loads
+
+  const {
+    reactions,
+    setReactions,
+    isSaved,
+    handleReactionPress,
+    handleToggleSave,
+    handleSubmitComment,
+    handleCommentReact,
+    addReplyToCommentTree,
+  } = useProductEngagement(id);
+
+  // Sync reactions from loaded product
   useEffect(() => {
     if (product) {
       const productReactions = (product as any).reactions as Reactions | undefined;
       setReactions(productReactions ?? DEFAULT_REACTIONS);
     }
-  }, [product]);
+  }, [product, setReactions]);
 
   useEffect(() => {
     setComments(initialComments);
@@ -57,7 +64,6 @@ export default function ClosetProductDetailModal() {
   }, [product, id, source]);
 
   if (!product) {
-    // For now, a simple fallback is fine. Later we can improve loading states.
     return null;
   }
 
@@ -66,54 +72,18 @@ export default function ClosetProductDetailModal() {
   };
 
   const handleAddToWishlist = () => {
-    // For now, this can just be a placeholder (e.g., console.log).
-    // Later we will wire this to real wishlist logic.
     console.log("Add to wishlist:", product.id);
   };
 
-  // Helper function to add reply to nested comment tree
-  const addReplyToCommentTree = (
-    comments: CommentType[],
-    targetCommentId: string,
-    newReply: CommentType
-  ): CommentType[] => {
-    return comments.map((comment) => {
-      if (comment.id === targetCommentId) {
-        return {
-          ...comment,
-          replies: [...(comment.replies || []), newReply],
-        };
-      }
-      if (comment.replies && comment.replies.length > 0) {
-        return {
-          ...comment,
-          replies: addReplyToCommentTree(comment.replies, targetCommentId, newReply),
-        };
-      }
-      return comment;
-    });
-  };
-
-  // Handle reply submission
-  const handleReplySubmit = (text: string, replyingTo?: { id: string; user: string } | null) => {
-    if (!replyTarget || !replyingTo) return;
-
-    const newReply: CommentType = {
-      id: `${replyTarget.id}.${Date.now()}`,
-      user: 'current_user', // TODO: Replace with actual current user
-      text,
-      createdAt: new Date().toISOString(),
-      likes: 0,
-      dislikes: 0,
-      replies: [],
-    };
-
-    const updatedComments = addReplyToCommentTree(comments, replyTarget.id, newReply);
-    setComments(updatedComments);
+  const handleReplySubmit = async (text: string, replyingTo?: { id: string; user: string } | null) => {
+    if (!replyTarget || !replyingTo || !id) return;
+    const newReply = await handleSubmitComment(text, replyTarget.id);
+    if (newReply) {
+      setComments(addReplyToCommentTree(comments, replyTarget.id, newReply));
+    }
     setReplyTarget(null);
   };
 
-  // Handle reply press
   const handleReplyPress = (comment: CommentType) => {
     setReplyTarget(comment);
   };
@@ -146,11 +116,11 @@ export default function ClosetProductDetailModal() {
           <View style={styles.reactionsWrapper}>
             <ProductReactionsRow
               reactions={reactions}
-              onChange={(newReactions) => {
-                setReactions(newReactions);
-                // later: persist to API
-              }}
+              onChange={(newReactions) => setReactions(newReactions)}
               productId={product.id}
+              isSaved={isSaved}
+              onToggleSave={handleToggleSave}
+              onReactionPress={handleReactionPress}
             />
           </View>
           {hasTextSections && (
@@ -160,21 +130,20 @@ export default function ClosetProductDetailModal() {
             />
           )}
           {!hasTextSections && <View style={styles.afterReactionsSpacer} />}
-          {/* User's Style Section - Only show if there are user FitPics */}
           {userFitPics && userFitPics.length > 0 && (
             <ProductUserStyleCarousel fitpics={userFitPics} userName={userName} />
           )}
           <ProductFitPicCarousel fitpics={featuredFitPics} />
-          
-          {/* Comments Section */}
+
           <ProductCommentsSection
             comments={comments}
             onReplyPress={handleReplyPress}
             onCommentUpdate={setComments}
+            onSubmitComment={handleSubmitComment}
+            onCommentReact={handleCommentReact}
           />
         </ScrollView>
 
-        {/* Pinned Reply Input - Only shown when replying */}
         {replyTarget && (
           <View style={[styles.pinnedInputContainer, { paddingBottom: insets.bottom }]}>
             <ProductCommentInput

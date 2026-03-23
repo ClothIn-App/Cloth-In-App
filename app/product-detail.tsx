@@ -13,6 +13,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { useProductData } from "@/src/hooks/useProductData";
+import { useProductEngagement } from "@/src/hooks/useProductEngagement";
 import { ProductHeader } from "@/components/product-modal/ProductHeader";
 import { ProductMedia } from "@/components/product-modal/ProductMedia";
 import { ProductSummary } from "@/components/product-modal/ProductSummary";
@@ -22,14 +23,8 @@ import { ProductFitPicCarousel } from "@/components/product-modal/ProductFitPicC
 import { ProductUserStyleCarousel } from "@/components/product-modal/ProductUserStyleCarousel";
 import ProductCommentsSection from "@/components/product-modal/comments/product-comments-section";
 import ProductCommentInput from "@/components/product-modal/comments/product-comment-input";
-import type { Reactions, CommentType, ReactionKey } from "@/src/types/feed";
-import {
-  getCurrentUser,
-  mapGetUserResponseToRawUser,
-  setRealCurrentUser,
-} from "@/src/services/mockSessionUsers";
-import { contentApiClient } from "@/src/services/apiClients/contentClient";
-import { userApiClient } from "@/src/services/apiClients/userClient";
+import type { Reactions, CommentType } from "@/src/types/feed";
+import { getCurrentUser } from "@/src/services/mockSessionUsers";
 import { analyticsClient } from "@/src/services/apiClients/analyticsClient";
 
 const DEFAULT_REACTIONS: Reactions = { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } };
@@ -48,10 +43,8 @@ export default function ProductDetailModal() {
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const [reactions, setReactions] = useState<Reactions>(DEFAULT_REACTIONS);
   const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [replyTarget, setReplyTarget] = useState<CommentType | null>(null);
-  const [isSaved, setIsSaved] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const currentUser = useMemo(() => getCurrentUser(), []);
@@ -63,6 +56,27 @@ export default function ProductDetailModal() {
     );
   }, [product]);
 
+  const {
+    reactions,
+    setReactions,
+    isSaved,
+    setIsSaved,
+    handleReactionPress,
+    handleToggleSave,
+    handleSubmitComment,
+    handleCommentReact,
+    addReplyToCommentTree,
+  } = useProductEngagement(id);
+
+  // Sync reactions from loaded product
+  useEffect(() => {
+    if (product) {
+      const productReactions = (product as any).reactions as Reactions | undefined;
+      setReactions(productReactions ?? DEFAULT_REACTIONS);
+    }
+  }, [product, setReactions]);
+
+  // Sync save state from current user (mock mode)
   useEffect(() => {
     if (!product || !currentUser) return;
     const saved = currentUser.saved || [];
@@ -71,14 +85,7 @@ export default function ProductDetailModal() {
         item.id === product.id && item.type === "product"
     );
     setIsSaved(isProductSaved);
-  }, [product, currentUser]);
-
-  useEffect(() => {
-    if (product) {
-      const productReactions = (product as any).reactions as Reactions | undefined;
-      setReactions(productReactions ?? DEFAULT_REACTIONS);
-    }
-  }, [product]);
+  }, [product, currentUser, setIsSaved]);
 
   useEffect(() => {
     setComments(initialComments);
@@ -111,108 +118,12 @@ export default function ProductDetailModal() {
     }
   }, [refresh]);
 
-  const handleReactionPress = useCallback(
-    async (key: ReactionKey, isAdding: boolean) => {
-      if (!id) return;
-      try {
-        const res = await contentApiClient.updateProductEngagement({
-          productId: id,
-          action: isAdding ? "react" : "unreact",
-          reaction: key,
-        });
-        if (res.success && res.reactions) {
-          setReactions({
-            counts: {
-              LIKE: res.reactions.LIKE ?? 0,
-              THUMBS_UP: res.reactions.THUMBS_UP ?? 0,
-              FIRE: res.reactions.FIRE ?? 0,
-              DISLIKE: res.reactions.DISLIKE ?? 0,
-            },
-          });
-        }
-      } catch (e) {
-        console.warn("Failed to update reaction:", e);
-      }
-    },
-    [id]
-  );
-
-  const handleSubmitComment = useCallback(
-    async (
-      text: string,
-      parentCommentId?: string
-    ): Promise<CommentType | null> => {
-      if (!id) return null;
-      try {
-        const res = await contentApiClient.addProductComment(id, {
-          text: text.trim(),
-          parentCommentId: parentCommentId || undefined,
-        });
-        if (!res.success || !res.comment) return null;
-        const c = res.comment;
-        return {
-          id: c.id,
-          user: c.user,
-          text: c.text,
-          createdAt: c.createdAt,
-          likes: c.like ?? 0,
-          dislikes: c.dislike ?? 0,
-          replies: [],
-          userReaction: c.userReaction,
-        };
-      } catch (e) {
-        console.warn("Failed to add comment:", e);
-        return null;
-      }
-    },
-    [id]
-  );
-
-  const handleCommentReact = useCallback(
-    async (commentId: string, reaction: "like" | "dislike") => {
-      if (!id) return;
-      await contentApiClient.productCommentReact(id, { commentId, reaction });
-    },
-    [id]
-  );
-
-  const addReplyToCommentTree = useCallback(
-    (
-      comments: CommentType[],
-      targetCommentId: string,
-      newReply: CommentType
-    ): CommentType[] => {
-      return comments.map((comment) => {
-        if (comment.id === targetCommentId) {
-          return {
-            ...comment,
-            replies: [...(comment.replies || []), newReply],
-          };
-        }
-        if (comment.replies && comment.replies.length > 0) {
-          return {
-            ...comment,
-            replies: addReplyToCommentTree(
-              comment.replies,
-              targetCommentId,
-              newReply
-            ),
-          };
-        }
-        return comment;
-      });
-    },
-    []
-  );
-
   const handleReplySubmit = useCallback(
     async (text: string, replyingTo?: { id: string; user: string } | null) => {
       if (!replyTarget || !replyingTo || !id) return;
       const newReply = await handleSubmitComment(text, replyTarget.id);
       if (newReply) {
-        setComments(
-          addReplyToCommentTree(comments, replyTarget.id, newReply)
-        );
+        setComments(addReplyToCommentTree(comments, replyTarget.id, newReply));
       }
       setReplyTarget(null);
     },
@@ -222,55 +133,6 @@ export default function ProductDetailModal() {
   const handleReplyPress = useCallback((comment: CommentType) => {
     setReplyTarget(comment);
   }, []);
-
-  const handleToggleSave = useCallback(
-    async (nextSaved: boolean) => {
-      const isRealMode = process.env.EXPO_PUBLIC_API_MODE === "real";
-      if (isRealMode && product?.id) {
-        try {
-          const res = await contentApiClient.updateProductEngagement({
-            productId: product.id,
-            action: nextSaved ? "save" : "unsave",
-          });
-          if (res.success) {
-            setIsSaved(nextSaved);
-            const uid = currentUser?.id;
-            if (uid) {
-              const response = await userApiClient.getUser(uid);
-              if (response?.user) {
-                setRealCurrentUser(uid, mapGetUserResponseToRawUser(response.user, uid));
-              }
-            }
-          }
-        } catch (e) {
-          console.warn("Failed to update save:", e);
-        }
-        return;
-      }
-      setIsSaved(nextSaved);
-      if (currentUser && product) {
-        if (!currentUser.saved) currentUser.saved = [];
-        const saved = currentUser.saved;
-        if (nextSaved) {
-          if (
-            !saved.some(
-              (item: { id: string; type: string }) =>
-                item.id === product.id && item.type === "product"
-            )
-          ) {
-            saved.unshift({ id: product.id, type: "product" });
-          }
-        } else {
-          const index = saved.findIndex(
-            (item: { id: string; type: string }) =>
-              item.id === product.id && item.type === "product"
-          );
-          if (index !== -1) saved.splice(index, 1);
-        }
-      }
-    },
-    [currentUser, product]
-  );
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
