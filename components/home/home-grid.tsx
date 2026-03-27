@@ -13,11 +13,13 @@ import MasonryGrid from "../masonry-grid";
 import FitPic_Cover from "../home/fitpic-cover";
 import Product_Cover, { PRODUCT_LABEL_HEIGHT } from "../home/product-cover";
 import type { FeedItem } from "../../src/types/feed";
-import { buildHomeFeed, buildProductFeed } from "../../src/utils/normalizeFeed";
+import { buildHomeFeed } from "../../src/utils/normalizeFeed";
 import { contentApiClient } from "../../src/services/apiClients/contentClient";
 import { fitpicClient } from "../../src/services/apiClients/fitpicClient";
 import { consumeFeedRefetch } from "../../src/feedRefresh";
 import { useForYouFeed } from "../../src/hooks/useForYouFeed";
+import { useFollowingFeed } from "../../src/hooks/useFollowingFeed";
+import { useBrowseFeed } from "../../src/hooks/useBrowseFeed";
 
 const useRealApi = (): boolean =>
   process.env.EXPO_PUBLIC_API_MODE === "real";
@@ -104,25 +106,39 @@ export default function Home_Grid({
   // and no dataOverride is present.
   const forYouFeed = useForYouFeed();
 
-  // Legacy state for browse / following / dataOverride paths.
+  // Following state — always initialised; only drives UI when feedType === "following"
+  // and no dataOverride is present.
+  const followingFeed = useFollowingFeed();
+
+  // Browse state — always initialised; only drives UI when feedType === "browse"
+  // and no dataOverride is present.
+  const browseFeed = useBrowseFeed();
+
+  // Legacy state for dataOverride path.
   const [refreshing, setRefreshing] = useState(false);
   const [data, setData] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(!dataOverride);
 
   const isForYouMode = feedType === "forYou" && !dataOverride;
+  const isFollowingMode = feedType === "following" && !dataOverride;
+  const isBrowseMode = feedType === "browse" && !dataOverride;
 
-  // ── For You: initialise on mount and on feedType change ──────────────────
+  // ── For You / Following / Browse: initialise on mount and on feedType change ──
   useEffect(() => {
     if (isForYouMode) {
       forYouFeed.initialize();
+    } else if (isFollowingMode) {
+      followingFeed.initialize();
+    } else if (isBrowseMode) {
+      browseFeed.initialize();
     }
-    // forYouFeed.initialize is a stable callback (useCallback with [])
+    // initialize callbacks are stable (useCallback with [])
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isForYouMode]);
+  }, [isForYouMode, isFollowingMode, isBrowseMode]);
 
-  // ── Legacy feeds: browse / following / dataOverride ──────────────────────
+  // ── Legacy feeds: dataOverride ────────────────────────────────────────────
   useEffect(() => {
-    if (isForYouMode) return; // handled by hook above
+    if (isForYouMode || isFollowingMode || isBrowseMode) return; // handled by dedicated hooks above
 
     if (dataOverride) {
       setData(shuffle(dataOverride));
@@ -133,15 +149,11 @@ export default function Home_Grid({
     const loadFeed = async () => {
       setLoading(true);
       try {
-        if (feedType === "browse") {
-          const response = await contentApiClient.getProducts({ limit: 50 });
-          if (!response?.products) { setData([]); return; }
-          const productItems = await buildProductFeed(response.products);
-          setData(shuffle(productItems));
-        } else if (useRealApi()) {
+        const legacyFeedType = feedType as "forYou" | "following" | "trending";
+        if (useRealApi()) {
           const [fitpicResult, feedResult] = await Promise.allSettled([
             fitpicClient.list(undefined, 50),
-            contentApiClient.getFeed({ type: feedType, limit: 50 }),
+            contentApiClient.getFeed({ type: legacyFeedType, limit: 50 }),
           ]);
           const fitpics =
             fitpicResult.status === "fulfilled" &&
@@ -157,7 +169,7 @@ export default function Home_Grid({
           setData(shuffle(feedData));
         } else {
           const response = await contentApiClient.getFeed({
-            type: feedType,
+            type: legacyFeedType,
             limit: 50,
           });
           if (!response) {
@@ -177,7 +189,7 @@ export default function Home_Grid({
     };
 
     loadFeed();
-  }, [dataOverride, feedType, isForYouMode]);
+  }, [dataOverride, feedType, isForYouMode, isFollowingMode, isBrowseMode]);
 
   // ── Unified refresh (called by RefreshControl + useFocusEffect) ──────────
   const onRefresh = useCallback(async () => {
@@ -185,21 +197,22 @@ export default function Home_Grid({
       // Refresh path: calls getForYou({ cursor: undefined }) — first page replace.
       return forYouFeed.refresh();
     }
+    if (isFollowingMode) {
+      return followingFeed.refresh();
+    }
+    if (isBrowseMode) {
+      return browseFeed.refresh();
+    }
 
     setRefreshing(true);
     try {
+      const legacyFeedType = feedType as "forYou" | "following" | "trending";
       if (dataOverride) {
         setData(shuffle(dataOverride));
-      } else if (feedType === "browse") {
-        const response = await contentApiClient.getProducts({ limit: 50 });
-        if (response?.products) {
-          const productItems = await buildProductFeed(response.products);
-          setData(shuffle(productItems));
-        }
       } else if (useRealApi()) {
         const [fitpicResult, feedResult] = await Promise.allSettled([
           fitpicClient.list(undefined, 50),
-          contentApiClient.getFeed({ type: feedType, limit: 50 }),
+          contentApiClient.getFeed({ type: legacyFeedType, limit: 50 }),
         ]);
         const fitpics =
           fitpicResult.status === "fulfilled" &&
@@ -215,7 +228,7 @@ export default function Home_Grid({
         setData(shuffle(feedData));
       } else {
         const response = await contentApiClient.getFeed({
-          type: feedType,
+          type: legacyFeedType,
           limit: 50,
         });
         if (!response) {
@@ -230,7 +243,7 @@ export default function Home_Grid({
     } finally {
       setRefreshing(false);
     }
-  }, [dataOverride, feedType, isForYouMode, forYouFeed]);
+  }, [dataOverride, feedType, isForYouMode, isFollowingMode, isBrowseMode, forYouFeed, followingFeed, browseFeed]);
 
   // Refetch after returning from create flow
   useFocusEffect(
@@ -302,17 +315,137 @@ export default function Home_Grid({
     );
   }
 
-  // ── Legacy render path (browse / following / dataOverride) ────────────────
+  // ── Following render path ─────────────────────────────────────────────────
+  if (isFollowingMode) {
+    const { status, items, error } = followingFeed.state;
+
+    if (status === "loading") {
+      return (
+        <View style={styles.centeredContainer}>
+          <ActivityIndicator size="large" color="#6B7280" />
+        </View>
+      );
+    }
+
+    if (status === "error") {
+      return (
+        <View style={styles.centeredContainer}>
+          <Text style={styles.emptyText}>Something went wrong</Text>
+          <TouchableOpacity
+            onPress={followingFeed.initialize}
+            style={styles.retryButton}
+          >
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    if (items.length === 0 && status === "idle") {
+      return (
+        <View style={styles.centeredContainer}>
+          <Text style={styles.emptyText}>Follow users to see their posts here</Text>
+        </View>
+      );
+    }
+
+    return (
+      <MasonryGrid<FeedItem>
+        data={items}
+        columns={columns}
+        gutter={gutter}
+        contentPadding={contentPadding}
+        refreshControl={
+          <RefreshControl
+            refreshing={status === "refreshing"}
+            onRefresh={followingFeed.refresh}
+          />
+        }
+        onEndReached={followingFeed.loadNextPage}
+        ListFooterComponent={
+          status === "loadingMore" ? (
+            <View style={styles.footerLoader}>
+              <ActivityIndicator size="small" color="#6B7280" />
+            </View>
+          ) : undefined
+        }
+        getItemHeight={getItemHeight}
+        renderItem={(item, colW) => renderTile(item, colW, feedType)}
+        keyExtractor={(item: FeedItem) => `${item.type}:${item.id}`}
+      />
+    );
+  }
+
+  // ── Browse render path ────────────────────────────────────────────────────
+  if (isBrowseMode) {
+    const { status, items, error } = browseFeed.state;
+
+    if (status === "loading") {
+      return (
+        <View style={styles.centeredContainer}>
+          <ActivityIndicator size="large" color="#6B7280" />
+        </View>
+      );
+    }
+
+    if (status === "error") {
+      return (
+        <View style={styles.centeredContainer}>
+          <Text style={styles.emptyText}>Something went wrong</Text>
+          <TouchableOpacity
+            onPress={browseFeed.initialize}
+            style={styles.retryButton}
+          >
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    if (items.length === 0 && status === "idle") {
+      return (
+        <View style={styles.centeredContainer}>
+          <Text style={styles.emptyText}>No products to browse yet</Text>
+        </View>
+      );
+    }
+
+    return (
+      <MasonryGrid<FeedItem>
+        data={items}
+        columns={columns}
+        gutter={gutter}
+        contentPadding={contentPadding}
+        refreshControl={
+          <RefreshControl
+            refreshing={status === "refreshing"}
+            onRefresh={browseFeed.refresh}
+          />
+        }
+        onEndReached={browseFeed.loadNextPage}
+        ListFooterComponent={
+          status === "loadingMore" ? (
+            <View style={styles.footerLoader}>
+              <ActivityIndicator size="small" color="#6B7280" />
+            </View>
+          ) : undefined
+        }
+        getItemHeight={getItemHeight}
+        renderItem={(item, colW) => renderTile(item, colW, feedType)}
+        keyExtractor={(item: FeedItem) => `${item.type}:${item.id}`}
+      />
+    );
+  }
+
+  // ── Legacy render path (dataOverride) ─────────────────────────────────────
   if (loading) {
     return null;
   }
 
   if (data.length === 0) {
-    const emptyMessage =
-      feedType === "browse" ? "No products to browse yet" : "No posts yet";
     return (
       <View style={styles.centeredContainer}>
-        <Text style={styles.emptyText}>{emptyMessage}</Text>
+        <Text style={styles.emptyText}>No posts yet</Text>
       </View>
     );
   }
