@@ -16,6 +16,15 @@ import {
 import { getFitPicEndpoint, GetFitPicRequest, GetFitPicResponse } from "../endpoints/content/getFitPic";
 import { getFitPicsEndpoint, GetFitPicsRequest, GetFitPicsResponse } from "../endpoints/content/getFitPics";
 import { getFeedEndpoint, GetFeedRequest, GetFeedResponse } from "../endpoints/content/getFeed";
+import {
+  getForYouEndpoint,
+  GetForYouRequest,
+  GetForYouResponse,
+  ForYouFeedItem,
+  ForYouFitPicItem,
+  ForYouProductItem,
+  ForYouProductData,
+} from "../endpoints/content/getForYou";
 import type {
   UpdateProductEngagementRequest,
   UpdateProductEngagementResponse,
@@ -57,6 +66,15 @@ export async function getFeed(
   return callApiEndpoint<GetFeedRequest, GetFeedResponse>(getFeedEndpoint, {
     queryParameters: params || {},
   });
+}
+
+export async function getForYou(
+  params?: GetForYouRequest
+): Promise<GetForYouResponse> {
+  return callApiEndpoint<GetForYouRequest, GetForYouResponse>(
+    getForYouEndpoint,
+    { queryParameters: params || {} }
+  );
 }
 
 export async function getProducts(
@@ -120,6 +138,7 @@ export const contentApiClient = {
   getProduct,
   getFitPic,
   getFeed,
+  getForYou,
   getProducts,
   getFitPics,
   createProduct,
@@ -136,6 +155,12 @@ export type {
   GetFitPicResponse,
   GetFeedRequest,
   GetFeedResponse,
+  GetForYouRequest,
+  GetForYouResponse,
+  ForYouFeedItem,
+  ForYouFitPicItem,
+  ForYouProductItem,
+  ForYouProductData,
   GetProductsRequest,
   GetProductsResponse,
   GetFitPicsRequest,

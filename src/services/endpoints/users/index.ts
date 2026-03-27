@@ -6,4 +6,5 @@ export * from "./getFollowing";
 export * from "./getFollowStatus";
 export * from "./followUser";
 export * from "./unfollowUser";
+export * from "./deleteMe";
 export * from "./setCloset";

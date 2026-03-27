@@ -12,6 +12,7 @@ export type SetUserPayload = {
   bio?: string | null;
   accountType?: "personal" | "brand" | "creator" | "business";
   privacy?: { isPrivateAccount?: boolean };
+  survey?: Record<string, string[]>;
 };
 
 /** Reuse the same response shape as getUser */
@@ -93,6 +94,7 @@ export const setUserEndpoint: EndpointDefinition<
         accountType: body?.accountType ?? current.user.accountType,
         privacy: body?.privacy ?? current.user?.privacy ?? { isPrivateAccount: false },
         counts: current.user.counts, // counts not modified by this endpoint
+        survey: body?.survey ?? current.user.survey,
       },
     };
 

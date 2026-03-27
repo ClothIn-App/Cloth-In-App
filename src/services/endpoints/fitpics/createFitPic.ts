@@ -70,6 +70,17 @@ export const createFitPicEndpoint: EndpointDefinition<
       fire: 0,
     };
 
+    // Assemble the final stored caption: base caption + blank line + #tags (same logic as backend)
+    const canonicalTags = (request.tags ?? [])
+      .map(t => t.replace(/^#/, '').toLowerCase().replace(/[^a-z0-9_]/g, ''))
+      .filter(Boolean);
+    const storedCaption =
+      canonicalTags.length === 0
+        ? request.caption
+        : request.caption
+        ? `${request.caption}\n\n${canonicalTags.map(t => `#${t}`).join(' ')}`
+        : canonicalTags.map(t => `#${t}`).join(' ');
+
     const fitpic: FitPic = {
       id: generateId("fp"),
       authorId,
@@ -80,7 +91,7 @@ export const createFitPicEndpoint: EndpointDefinition<
         avatarUrl: currentUser?.avatarUrl ?? "https://placehold.co/150x150",
       },
       photos,
-      caption: request.caption,
+      caption: storedCaption,
       products: request.products ?? [],
       createdAt: now,
       updatedAt: now,

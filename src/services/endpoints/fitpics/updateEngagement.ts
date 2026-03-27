@@ -15,7 +15,8 @@ export const updateFitPicEngagementEndpoint: EndpointDefinition<
   key: "fitpics.updateEngagement",
   method: "POST",
   pathTemplate: "/v1/fitpics/:fitpicId/engagement",
-  auth: "optional",
+  // Server route uses current_user_id (required); must send Bearer token.
+  auth: "required",
   mock: async ({ pathParameters, body }) => {
     await new Promise((resolve) => setTimeout(resolve, 200));
 

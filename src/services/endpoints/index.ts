@@ -24,3 +24,4 @@ export {
 export { updateProductEngagementEndpoint } from "./content/updateProductEngagement";
 export { addProductCommentEndpoint } from "./content/addProductComment";
 export { productCommentReactEndpoint } from "./content/productCommentReact";
+export * from "./onboarding";

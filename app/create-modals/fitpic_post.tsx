@@ -25,6 +25,7 @@ import ProductPicker from '../../components/create/post/productpicker';
 import ProductGrid from '../../components/create/post/productgrid';
 import CaptionInput from '../../components/create/post/captioninput';
 import LocationInput from '../../components/create/post/locationinput';
+import HashtagPickerModal from '../../components/create/post/HashtagPickerModal';
 
 type Props = {
   onBackToCamera?: () => void;
@@ -57,8 +58,27 @@ export default function FitPicPostModal({
   // Photos live in DraftsContext
   const { selectedIds, removeSelected, setSelectedOrder } = useDrafts();
 
-  // Caption + products + location + addToCloset live in PostContext
-  const { meta, setCaption, setLocation, setAddToCloset, removeProduct } = usePost();
+  // Caption + products + location + tags + addToCloset live in PostContext
+  const {
+    meta,
+    setCaption,
+    setLocation,
+    setAddToCloset,
+    removeProduct,
+    setTags,
+    removeTag,
+  } = usePost();
+
+  // Hashtag picker modal
+  const [isHashtagModalOpen, setIsHashtagModalOpen] = useState(false);
+
+  const handleApplyHashtags = useCallback(
+    (selectedTags: string[]) => {
+      setTags(selectedTags);
+      setIsHashtagModalOpen(false);
+    },
+    [setTags],
+  );
 
   // Product search (controlled query, debounced API)
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,6 +89,7 @@ export default function FitPicPostModal({
 
   const caption = meta.caption ?? '';
   const products = meta.products ?? [];
+  const chosenHashtags = meta.tags;
 
   const hasPhotos = selectedIds.length > 0;
   const postDisabled = !canPost || postingState.isPosting;
@@ -173,6 +194,28 @@ export default function FitPicPostModal({
             }
           />
 
+          {/* Hashtag picker button */}
+          <Pressable
+            onPress={() => setIsHashtagModalOpen(true)}
+            style={S.hashtagBtn}
+          >
+            <Text style={S.hashtagBtnText}># Add Tags</Text>
+          </Pressable>
+
+          {chosenHashtags.length > 0 && (
+            <View style={S.chosenHashtagsWrap}>
+              {chosenHashtags.map(tag => (
+                <Pressable
+                  key={tag}
+                  style={S.chosenHashtagPill}
+                  onPress={() => removeTag(tag)}
+                >
+                  <Text style={S.chosenHashtagPillText}>#{tag} ✕</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
+
           <View style={{ marginTop: 4 }}>
             <ProductGrid products={products} onRemove={removeProduct} />
           </View>
@@ -210,6 +253,14 @@ export default function FitPicPostModal({
             </View>
           </View>
         </Section>
+
+        {/* Hashtag picker modal */}
+        <HashtagPickerModal
+          visible={isHashtagModalOpen}
+          onClose={() => setIsHashtagModalOpen(false)}
+          initialSelectedTags={meta.tags}
+          onApply={handleApplyHashtags}
+        />
 
         {/* Spacer so last content isn't obscured by sticky footer */}
         <View style={{ height: 64 + footerSafePad + footerInnerExtra }} />
@@ -315,6 +366,37 @@ const S = StyleSheet.create({
   },
   rowBtnPrimary: { borderColor: '#2563eb' },
   rowBtnText: { color: '#111827', fontSize: 14, fontWeight: '600' },
+
+  hashtagBtn: {
+    marginTop: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    backgroundColor: '#f9fafb',
+    alignSelf: 'stretch',
+    width: '100%',
+  },
+  hashtagBtnText: { color: '#111827', fontSize: 14, fontWeight: '600' },
+
+  chosenHashtagsWrap: {
+    marginTop: 8,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  chosenHashtagPill: {
+    backgroundColor: '#111827',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    fontSize: 13,
+    fontWeight: '600',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  chosenHashtagPillText: { color: '#ffffff', fontSize: 13, fontWeight: '600' },
 
   captionInput: {
     minHeight: 120,

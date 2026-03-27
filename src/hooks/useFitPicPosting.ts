@@ -118,6 +118,7 @@ export const useFitPicPosting = () => {
           };
         }),
         caption: meta.caption,
+        tags: meta.tags?.length ? meta.tags : undefined,
         products: meta.products || [],
         location: meta.location?.trim() || undefined,
         addToCloset: meta.addToCloset ?? true,

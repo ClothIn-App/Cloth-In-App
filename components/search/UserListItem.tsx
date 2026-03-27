@@ -3,10 +3,12 @@
  * Individual user item for search results lists
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import type { UserSearchResult } from '../../src/types/search';
+import { userApiClient } from '../../src/services/apiClients/userClient';
 
 type Props = {
   user: UserSearchResult;
@@ -16,7 +18,8 @@ type Props = {
 
 export default function UserListItem({ user, onPress, onFollowPress }: Props) {
   const router = useRouter();
-  
+  const [isFollowing, setIsFollowing] = useState(user.isFollowing ?? false);
+
   const handlePress = () => {
     if (onPress) {
       onPress(user);
@@ -28,12 +31,23 @@ export default function UserListItem({ user, onPress, onFollowPress }: Props) {
     }
   };
 
-  const handleFollowPress = () => {
+  const handleFollowPress = async () => {
     if (onFollowPress) {
       onFollowPress(user);
-    } else {
-      // TODO: Implement follow/unfollow
-      console.log('Toggle follow:', user.uid);
+      return;
+    }
+    const nextFollowing = !isFollowing;
+    setIsFollowing(nextFollowing);
+    try {
+      if (nextFollowing) {
+        await userApiClient.followUser(user.uid);
+      } else {
+        await userApiClient.unfollowUser(user.uid);
+      }
+    } catch (e) {
+      // Revert optimistic update on failure
+      setIsFollowing(!nextFollowing);
+      console.warn('Failed to update follow:', e);
     }
   };
 
@@ -71,7 +85,7 @@ export default function UserListItem({ user, onPress, onFollowPress }: Props) {
       <TouchableOpacity
         style={[
           styles.followButton,
-          user.isFollowing && styles.followingButton,
+          isFollowing && styles.followingButton,
         ]}
         onPress={(e) => {
           e.stopPropagation();
@@ -82,10 +96,10 @@ export default function UserListItem({ user, onPress, onFollowPress }: Props) {
         <Text
           style={[
             styles.followButtonText,
-            user.isFollowing && styles.followingButtonText,
+            isFollowing && styles.followingButtonText,
           ]}
         >
-          {user.isFollowing ? 'Following' : 'Follow'}
+          {isFollowing ? 'Following' : 'Follow'}
         </Text>
       </TouchableOpacity>
     </TouchableOpacity>
@@ -158,4 +172,3 @@ const styles = StyleSheet.create({
     color: '#11181C',
   },
 });
-

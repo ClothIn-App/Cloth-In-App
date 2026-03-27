@@ -1,16 +1,30 @@
-import React, { useMemo } from "react";
-import { View, ScrollView, useWindowDimensions, RefreshControl, RefreshControlProps } from "react-native";
+import React, { useMemo, useCallback } from "react";
+import {
+  View,
+  ScrollView,
+  useWindowDimensions,
+  RefreshControl,
+  RefreshControlProps,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type MasonryGridProps<T> = {
   data: T[];
-  columns?: number;          // default 2
-  gutter?: number;           // spacing between tiles (px)
-  contentPadding?: number;   // horizontal padding on the container (px)
+  columns?: number;
+  gutter?: number;
+  contentPadding?: number;
   getItemHeight: (item: T, columnWidth: number) => number;
   renderItem: (item: T, columnWidth: number) => React.ReactNode;
   keyExtractor: (item: T, index: number) => string;
   refreshControl?: React.ReactElement<RefreshControlProps>;
+  /** Called when the user scrolls within `onEndReachedThreshold` px of the bottom. */
+  onEndReached?: () => void;
+  /** Distance from the bottom (in px) that triggers onEndReached. Default: 300. */
+  onEndReachedThreshold?: number;
+  /** Rendered below all grid columns (e.g. a loading spinner). */
+  ListFooterComponent?: React.ReactNode;
 };
 
 export default function MasonryGrid<T>({
@@ -22,10 +36,26 @@ export default function MasonryGrid<T>({
   renderItem,
   keyExtractor,
   refreshControl,
+  onEndReached,
+  onEndReachedThreshold = 300,
+  ListFooterComponent,
 }: MasonryGridProps<T>) {
   // Portrait-only assumption is fine; this will still work if rotation gets enabled later.
   const { width: screenWidth } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (!onEndReached) return;
+      const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+      const distanceFromBottom =
+        contentSize.height - (contentOffset.y + layoutMeasurement.height);
+      if (distanceFromBottom < onEndReachedThreshold) {
+        onEndReached();
+      }
+    },
+    [onEndReached, onEndReachedThreshold]
+  );
 
   const columnWidth = useMemo(() => {
     const usable = screenWidth - contentPadding * 2 - gutter * (columns - 1);
@@ -59,6 +89,8 @@ export default function MasonryGrid<T>({
       style={{ flex: 1 }}
       showsVerticalScrollIndicator={false}
       refreshControl={refreshControl}
+      onScroll={onEndReached ? handleScroll : undefined}
+      scrollEventThrottle={onEndReached ? 200 : undefined}
       contentContainerStyle={{
         paddingLeft: contentPadding,
         paddingRight: contentPadding,
@@ -72,7 +104,7 @@ export default function MasonryGrid<T>({
             key={`masonry-col-${idx}`}
             style={{
               width: columnWidth,
-              marginLeft: idx === 0 ? 0 : gutter, // horizontal gutter between columns
+              marginLeft: idx === 0 ? 0 : gutter,
             }}
           >
             {col.map(({ key, node }, j) => (
@@ -83,6 +115,7 @@ export default function MasonryGrid<T>({
           </View>
         ))}
       </View>
+      {ListFooterComponent ?? null}
     </ScrollView>
   );
 }

@@ -222,7 +222,7 @@ export default function SavedTab({ userId }: Props) {
               } else {
                 router.push({
                   pathname: "/product-detail",
-                  params: { id: item.id },
+                  params: { id: item.id, source: "saved_tab" },
                 });
               }
             };

@@ -6,7 +6,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Alert,
 } from 'react-native';
 
 import bgPattern from '../../assets/images/login-bg.png';
@@ -56,36 +55,6 @@ export default function Welcome() {
           >
             <Text style={styles.buttonText}>Log In</Text>
           </TouchableOpacity>
-
-          {/* Dev-only Clear Auth State button */}
-          {__DEV__ && (
-            <TouchableOpacity
-              style={[styles.button, styles.devButton]}
-              onPress={async () => {
-                Alert.alert(
-                  "Clear Auth State (Dev)",
-                  "Clear all tokens and auth state. Useful after code pushes or when testing.",
-                  [
-                    { text: "Cancel", style: "cancel" },
-                    {
-                      text: "Clear",
-                      style: "destructive",
-                      onPress: async () => {
-                        const { clearTokens } = await import('@/src/services/authTokenManager');
-                        await clearTokens();
-                        // Already on welcome screen, just refresh
-                        router.replace('/auth/welcome');
-                      },
-                    },
-                  ]
-                );
-              }}
-            >
-              <Text style={[styles.buttonText, { color: '#ef4444' }]}>
-                🧹 Clear Auth State (Dev)
-              </Text>
-            </TouchableOpacity>
-          )}
         </View>
       </View>
     </ImageBackground>
@@ -145,12 +114,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#ccc',
-  },
-  devButton: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ef4444',
-    marginTop: 8,
   },
   buttonText: {
     fontSize: 16,

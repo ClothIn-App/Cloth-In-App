@@ -8,6 +8,7 @@ import type { FitPic } from '../types/fitpic';
 import type { Product } from '../types/content';
 import type { ProductSearchResult } from '../types/search';
 import { FITPIC_ASSETS, PRODUCT_ASSETS } from '../maps/images';
+import type { ForYouFeedItem } from '../services/endpoints/content/getForYou';
 
 type ProductLike = {
   id: string;
@@ -210,6 +211,66 @@ export const buildProductFeed = async (products: ProductLike[] | undefined): Pro
     return Promise.all(productsArray.map(normalizeProduct));
   } catch (error) {
     console.error('Error building product feed:', error);
+    return [];
+  }
+};
+
+// Maps the server's display-string priceStatus ("Fixed", "Sale", …) back to the
+// client's internal priceType enum used by normalizeProduct.
+const PRICE_STATUS_MAP: Record<string, ProductLike['priceType']> = {
+  Fixed: 'fixed',
+  Sale: 'sale',
+  'Sold Out': 'sold_out',
+  TBD: 'tbd',
+  'N/A': 'na',
+};
+
+/**
+ * Build For You feed from a server-ordered mixed items array.
+ *
+ * Preserves the server's item order — no createdAt sort, no shuffle.
+ * Output index i corresponds to server position i for the current page.
+ */
+export const buildForYouFeed = async (
+  items: ForYouFeedItem[] | undefined
+): Promise<FeedItem[]> => {
+  try {
+    const safeItems = items ?? [];
+    const results = await Promise.allSettled(
+      safeItems.map((item) => {
+        if (item.type === 'fitpic') {
+          return normalizeFitPic(item.fitpic as FitPic);
+        }
+        const p = item.product;
+        return normalizeProduct({
+          id: p.id,
+          name: p.name,
+          brand: p.brand ?? undefined,
+          price: p.price ?? undefined,
+          originalPrice: p.originalPrice ?? undefined,
+          priceType: p.priceStatus ? PRICE_STATUS_MAP[p.priceStatus] : undefined,
+          description: p.description ?? undefined,
+          imageUrl: p.imageUrl ?? undefined,
+          createdAt: p.createdAt ?? undefined,
+        });
+      })
+    );
+
+    const feedItems: FeedItem[] = [];
+    results.forEach((result, i) => {
+      if (result.status === 'fulfilled' && result.value != null) {
+        feedItems.push(result.value);
+      } else if (result.status === 'rejected') {
+        console.warn(
+          `For You feed: skipped item at index ${i}:`,
+          result.reason?.message ?? result.reason
+        );
+      }
+    });
+
+    return feedItems;
+  } catch (error) {
+    console.error('Error building For You feed:', error);
     return [];
   }
 };

@@ -73,6 +73,46 @@ describe("users.set endpoint — mock behavior", () => {
   });
 });
 
+describe("users.set endpoint — survey field", () => {
+  test("mock: survey is stored and returned on the user", async () => {
+    const { setUserEndpoint } = await importFreshSetUser();
+    const survey = { style: ["casual", "minimal"], size: ["M"] };
+
+    const res = await setUserEndpoint.mock!({
+      pathParameters: { userId: "u_survey" },
+      queryParameters: {},
+      headers: {},
+      body: { survey },
+    });
+
+    expect(res.user.survey).toEqual(survey);
+  });
+
+  test("mock: survey persists across a second update that omits it", async () => {
+    const { setUserEndpoint } = await importFreshSetUser();
+    const survey = { style: ["streetwear"] };
+
+    // First call sets survey
+    await setUserEndpoint.mock!({
+      pathParameters: { userId: "u_survey2" },
+      queryParameters: {},
+      headers: {},
+      body: { survey },
+    });
+
+    // Second call changes name only
+    const updated = await setUserEndpoint.mock!({
+      pathParameters: { userId: "u_survey2" },
+      queryParameters: {},
+      headers: {},
+      body: { name: "New Name" },
+    });
+
+    expect(updated.user.survey).toEqual(survey);
+    expect(updated.user.name).toBe("New Name");
+  });
+});
+
 describe("users.set endpoint — transport integration (auth + mock/real)", () => {
   test("mock mode: requires Authorization (from token provider) and never calls fetch", async () => {
     process.env.EXPO_PUBLIC_API_MODE = "mock";

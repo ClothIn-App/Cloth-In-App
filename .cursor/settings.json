@@ -1,0 +1,10 @@
+{
+  "plugins": {
+    "firebase": {
+      "enabled": true
+    },
+    "slack": {
+      "enabled": true
+    }
+  }
+}

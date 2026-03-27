@@ -20,6 +20,8 @@ import {
   UnfollowUserResponse,
   getProfileCountsEndpoint,
   GetProfileCountsResponse,
+  deleteMeEndpoint,
+  DeleteAccountResponse,
 } from '../endpoints'
 
 // function-style
@@ -89,6 +91,10 @@ export async function getProfileCounts(userId?: string) {
   });
 }
 
+export async function deleteMe() {
+  return callApiEndpoint<undefined, DeleteAccountResponse>(deleteMeEndpoint, {});
+}
+
 // object-style
 export const userApiClient = { 
   getUser, 
@@ -100,6 +106,7 @@ export const userApiClient = {
   followUser,
   unfollowUser,
   getProfileCounts,
+  deleteMe,
 };
 
 export type {
@@ -111,5 +118,6 @@ export type {
   FollowUserResponse,
   UnfollowUserResponse,
   GetProfileCountsResponse,
+  DeleteAccountResponse,
 };
 
