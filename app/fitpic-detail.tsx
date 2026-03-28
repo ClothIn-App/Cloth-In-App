@@ -407,8 +407,11 @@ export default function FitPicDetailScreen() {
               }
             >
               <FitPicModalUser
-                author={fitpic.author}
-                authorId={fitpic.authorId}
+                author={{
+                  uid: fitpic.authorId ?? fitpic.author,
+                  username: fitpic.author,
+                  avatarUrl: fitpic.authorAvatarUrl,
+                }}
                 createdAt={fitpic.createdAt}
                 location={fitpic.location}
               />

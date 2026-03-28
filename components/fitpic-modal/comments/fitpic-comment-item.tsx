@@ -150,7 +150,11 @@ export default function FitPicCommentItem({
           activeOpacity={0.7}
         >
           <Image
-            source={require('../../../assets/images/icon.png')}
+            source={
+              comment.avatarUrl
+                ? { uri: comment.avatarUrl }
+                : require('../../../assets/images/icon.png')
+            }
             style={styles.avatar}
             defaultSource={require('../../../assets/images/icon.png')}
           />
