@@ -106,15 +106,8 @@ export default function Home_Grid({
   // and no dataOverride is present.
   const forYouFeed = useForYouFeed();
 
-  // Following state — always initialised; only drives UI when feedType === "following"
-  // and no dataOverride is present.
   const followingFeed = useFollowingFeed();
-
-  // Browse state — always initialised; only drives UI when feedType === "browse"
-  // and no dataOverride is present.
   const browseFeed = useBrowseFeed();
-
-  // Legacy state for dataOverride path.
   const [refreshing, setRefreshing] = useState(false);
   const [data, setData] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(!dataOverride);
@@ -132,13 +125,12 @@ export default function Home_Grid({
     } else if (isBrowseMode) {
       browseFeed.initialize();
     }
-    // initialize callbacks are stable (useCallback with [])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isForYouMode, isFollowingMode, isBrowseMode]);
 
-  // ── Legacy feeds: dataOverride ────────────────────────────────────────────
+  // ── Legacy feeds: dataOverride only (hook-driven modes skip) ─────────────
   useEffect(() => {
-    if (isForYouMode || isFollowingMode || isBrowseMode) return; // handled by dedicated hooks above
+    if (isForYouMode || isFollowingMode || isBrowseMode) return;
 
     if (dataOverride) {
       setData(shuffle(dataOverride));
@@ -351,7 +343,7 @@ export default function Home_Grid({
 
     return (
       <MasonryGrid<FeedItem>
-        data={items}
+        data={items as FeedItem[]}
         columns={columns}
         gutter={gutter}
         contentPadding={contentPadding}
@@ -443,9 +435,11 @@ export default function Home_Grid({
   }
 
   if (data.length === 0) {
+    const emptyMessage =
+      feedType === "browse" ? "No products to browse yet" : "No posts yet";
     return (
       <View style={styles.centeredContainer}>
-        <Text style={styles.emptyText}>No posts yet</Text>
+        <Text style={styles.emptyText}>{emptyMessage}</Text>
       </View>
     );
   }

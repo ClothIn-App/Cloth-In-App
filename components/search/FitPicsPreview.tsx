@@ -10,6 +10,7 @@ import {
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { FitPicSearchResult } from '../../src/types/search';
+import { recordSearchEvent } from '../../src/services/apiClients/analyticsClient';
 
 type Props = {
   fitpics: FitPicSearchResult[];
@@ -40,6 +41,10 @@ export default function FitPicsPreview({ fitpics, onSeeAll }: Props) {
 
     const handlePress = () => {
       if (item.id) {
+        recordSearchEvent(item.caption || item.id, "search_result_click", {
+          resultType: "fitpic",
+          resultId: item.id,
+        });
         router.push({
           pathname: '/fitpic-detail',
           params: { id: item.id },

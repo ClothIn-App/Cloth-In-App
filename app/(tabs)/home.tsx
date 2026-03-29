@@ -13,6 +13,8 @@ import FeedTypeDropdown, { type FeedType } from "../../components/home/FeedTypeD
 import { fitpicClient } from "../../src/services/apiClients/fitpicClient";
 import { computeStreakStats } from "../../src/utils/streakUtils";
 import { useCurrentUserId } from "../../src/hooks/useCurrentUserId";
+import { useUnreadNotificationCount } from "../../src/hooks/useUnreadNotificationCount";
+import { NotificationBellButton } from "../../components/common/NotificationBellButton";
 
 const EDGE_SWIPE_WIDTH = 32;
 
@@ -24,6 +26,7 @@ const FEED_TYPE_LABELS: Record<FeedType, string> = {
 
 export default function HomeScreen() {
   const { userId } = useCurrentUserId();
+  const { unreadCount } = useUnreadNotificationCount();
   const [feedType, setFeedType] = useState<FeedType>("forYou");
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -109,12 +112,18 @@ export default function HomeScreen() {
             <Text style={styles.feedSelectorLabel}>{FEED_TYPE_LABELS[feedType]}</Text>
             <Ionicons name="chevron-down" size={20} color="#11181C" />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => router.push('/search-modal')}
-            style={styles.searchButton}
-          >
-            <Ionicons name="search-outline" size={24} color="#11181C" />
-          </TouchableOpacity>
+          <View style={styles.headerRight}>
+            <NotificationBellButton
+              unreadCount={unreadCount}
+              onPress={() => router.push("/notifications")}
+            />
+            <TouchableOpacity
+              onPress={() => router.push("/search-modal")}
+              style={styles.searchButton}
+            >
+              <Ionicons name="search-outline" size={24} color="#11181C" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Home Grid with Feed Data */}
@@ -179,6 +188,10 @@ const styles = StyleSheet.create({
   },
   streakNumberZero: {
     color: '#9CA3AF',
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   searchButton: {
     padding: 8,

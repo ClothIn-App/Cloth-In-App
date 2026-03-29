@@ -6,6 +6,8 @@ import FollowersModal from "./FollowersModal";
 import FollowingModal from "./FollowingModal";
 import { Ionicons } from "@expo/vector-icons";
 import UserAvatar from "../common/UserAvatar";
+import { useUnreadNotificationCount } from "../../src/hooks/useUnreadNotificationCount";
+import { NotificationBellButton } from "../common/NotificationBellButton";
 
 type Props = {
   me?: ProfileMe;
@@ -18,6 +20,7 @@ type Props = {
 
 export default function ProfileHeader({ me, counts, currentStreak = 0, hasPostedToday = false, onFollowChange }: Props) {
   const router = useRouter();
+  const { unreadCount } = useUnreadNotificationCount();
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
 
@@ -52,13 +55,10 @@ export default function ProfileHeader({ me, counts, currentStreak = 0, hasPosted
           </View>
         </View>
         <View style={{ flexDirection: "row", gap: 8 }}>
-          <TouchableOpacity
+          <NotificationBellButton
+            unreadCount={unreadCount}
             onPress={() => router.push("../notifications")}
-            style={{ padding: 8 }}
-            hitSlop={8}
-          >
-            <Ionicons name="notifications-outline" size={24} color="#11181C" />
-          </TouchableOpacity>
+          />
           <TouchableOpacity
             onPress={() => router.push("../profile-edit")}
             style={{ padding: 8, marginTop: -1 }}

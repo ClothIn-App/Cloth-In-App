@@ -48,8 +48,8 @@ function feedReducer(state: FollowingFeedState, action: FeedAction): FollowingFe
         error: null,
       };
     case 'NEXT_PAGE_SUCCESS': {
-      const seenKeys = new Set(state.items.map(i => `fitpic:${i.id}`));
-      const uniqueNew = action.newItems.filter(i => !seenKeys.has(`fitpic:${i.id}`));
+      const seenKeys = new Set(state.items.map((i) => `fitpic:${i.id}`));
+      const uniqueNew = action.newItems.filter((i) => !seenKeys.has(`fitpic:${i.id}`));
       return {
         items: [...state.items, ...uniqueNew],
         nextCursor: action.nextCursor,
@@ -68,11 +68,7 @@ function feedReducer(state: FollowingFeedState, action: FeedAction): FollowingFe
 export function useFollowingFeed() {
   const [state, dispatch] = useReducer(feedReducer, initialState);
 
-  // Incremented on every new request; used to discard stale responses.
   const generationRef = useRef(0);
-
-  // Refs shadow the latest state values so callbacks can read them without
-  // stale-closure issues while remaining stable references.
   const nextCursorRef = useRef<string | undefined>(undefined);
   const hasMoreRef = useRef(true);
   const statusRef = useRef<FeedStatus>('idle');

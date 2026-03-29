@@ -1,5 +1,6 @@
 import type { EndpointDefinition } from "../../http";
 import type { FitPic } from "../../../types/fitpic";
+import { getCurrentUserId, getUserById } from "../../mockSessionUsers";
 import { transformRawFitPic } from "../../fitpicUtils";
 
 // ── Server response types ─────────────────────────────────────────────────
@@ -40,28 +41,33 @@ export const getFollowingEndpoint: EndpointDefinition<
   mock: async ({ queryParameters }) => {
     await new Promise((r) => setTimeout(r, 600));
 
-    const [fitpicsModule, usersModule] = await Promise.all([
+    const [fitpicsModule, productsModule, usersModule] = await Promise.all([
       import("../../../mocks/mock-fitpics.json"),
+      import("../../../mocks/mock-products.json"),
       import("../../../mocks/mock-users.json"),
     ]);
 
     const rawFitpics = fitpicsModule.default.fitpics;
+    const rawProducts = productsModule.default.products;
     const usersData = usersModule.default;
 
-    // Return fitpics in chronological order (newest first), no products.
-    const allItems: FollowingFitPicItem[] = rawFitpics
-      .slice()
-      .sort((a: any, b: any) =>
-        new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()
-      )
-      .reduce<FollowingFitPicItem[]>((acc, fp: any) => {
-        const userData = usersData[fp.author as keyof typeof usersData];
-        const transformed = transformRawFitPic(fp, userData, []);
-        if (transformed) {
-          acc.push({ type: "fitpic", fitpic: transformed });
-        }
-        return acc;
-      }, []);
+    const currentUserId = getCurrentUserId();
+    const currentUser = getUserById(currentUserId);
+    const followingIds = new Set(currentUser?.following?.userIds ?? []);
+
+    const fromFollowed = rawFitpics.filter((fp: any) => followingIds.has(fp.author));
+    const sorted = fromFollowed.slice().sort((a: any, b: any) =>
+      new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()
+    );
+
+    const allItems: FollowingFitPicItem[] = sorted.reduce<FollowingFitPicItem[]>((acc, fp: any) => {
+      const userData = usersData[fp.author as keyof typeof usersData];
+      const transformed = transformRawFitPic(fp, userData, rawProducts as any[]);
+      if (transformed) {
+        acc.push({ type: "fitpic", fitpic: transformed });
+      }
+      return acc;
+    }, []);
 
     const limit = Math.min(Number(queryParameters.limit) || 20, 100);
     const cursor = queryParameters.cursor as string | undefined;
