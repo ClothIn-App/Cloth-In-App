@@ -58,7 +58,8 @@ export { getRecents, addRecent, clearRecents } from "./search/recentsStorage";
 // -------- Basic search entry points (top/suggestions/trending) --------
 
 export async function getTrending(): Promise<SearchSuggestion[]> {
-  return callApiEndpoint(getTrendingEndpoint);
+  const res = await callApiEndpoint(getTrendingEndpoint);
+  return res.trending;
 }
 
 export async function getTrendingHashtags(): Promise<import('../types/search').HashtagSearchResult[]> {

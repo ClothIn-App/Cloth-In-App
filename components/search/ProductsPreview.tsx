@@ -9,6 +9,7 @@ import {
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { ProductSearchResult } from '../../src/types/search';
+import { recordSearchEvent } from '../../src/services/apiClients/analyticsClient';
 
 type Props = {
   products: ProductSearchResult[];
@@ -46,6 +47,10 @@ export default function ProductsPreview({ products, onSeeAll }: Props) {
         <View style={styles.list}>
           {previewProducts.map((product) => {
             const handlePress = () => {
+              recordSearchEvent(product.name || product.id, "search_result_click", {
+                resultType: "product",
+                resultId: product.id,
+              });
               router.push({
                 pathname: '/product-detail',
                 params: { id: product.id, source: 'search' },

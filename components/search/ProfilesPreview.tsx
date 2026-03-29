@@ -9,6 +9,7 @@ import {
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { UserSearchResult } from '../../src/types/search';
+import { recordSearchEvent } from '../../src/services/apiClients/analyticsClient';
 
 type Props = {
   users: UserSearchResult[];
@@ -18,10 +19,14 @@ type Props = {
 export default function ProfilesPreview({ users, onSeeAll }: Props) {
   const previewUsers = users.slice(0, 5);
 
-  const handleUserPress = (userId: string) => {
+  const handleUserPress = (user: UserSearchResult) => {
+    recordSearchEvent(user.username || user.uid, "search_result_click", {
+      resultType: "user",
+      resultId: user.uid,
+    });
     router.push({
       pathname: '/user-profile',
-      params: { userId },
+      params: { userId: user.uid },
     });
   };
 
@@ -47,7 +52,7 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
             <TouchableOpacity
               key={user.id}
               style={styles.userItem}
-              onPress={() => handleUserPress(user.uid)}
+              onPress={() => handleUserPress(user)}
               activeOpacity={0.7}
             >
               <Image

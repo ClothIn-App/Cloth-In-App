@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { getSuggestions, getTrending, getRecents, clearRecents, type RecentSearchItem } from '../src/services/searchApi';
+import { recordSearchEvent } from '../src/services/apiClients/analyticsClient';
 import type { SearchSuggestion } from '../src/types/search';
 
 export default function SearchModalScreen() {
@@ -95,7 +96,7 @@ export default function SearchModalScreen() {
 
   const handleSearchPress = () => {
     if (query.trim()) {
-      // Navigate to search results page
+      recordSearchEvent(query.trim(), "search_submit");
       router.push({
         pathname: '/search-results',
         params: { q: query.trim() },
@@ -104,11 +105,17 @@ export default function SearchModalScreen() {
   };
 
   const handleSuggestionPress = (suggestion: SearchSuggestion | string) => {
-    // Handle both SearchSuggestion type and legacy string type
     const suggestionText = typeof suggestion === 'string' 
       ? suggestion.trim() 
       : suggestion.text.trim();
     
+    const isTrending = typeof suggestion !== 'string' && suggestion.type === 'trending';
+    recordSearchEvent(
+      suggestionText,
+      isTrending ? "search_suggestion_click" : "search_submit",
+      { category: isTrending ? "trending" : undefined }
+    );
+
     router.push({
       pathname: '/search-results',
       params: { q: suggestionText },
