@@ -25,6 +25,10 @@ import {
   ForYouProductItem,
   ForYouProductData,
 } from "../endpoints/content/getForYou";
+import {
+  getFollowingFeedEndpoint,
+  FollowingFeedResponse,
+} from "../endpoints/content/getFollowingFeed";
 import type {
   UpdateProductEngagementRequest,
   UpdateProductEngagementResponse,
@@ -74,6 +78,19 @@ export async function getForYou(
   return callApiEndpoint<GetForYouRequest, GetForYouResponse>(
     getForYouEndpoint,
     { queryParameters: params || {} }
+  );
+}
+
+export async function getFollowingFeed(
+  cursor?: string,
+  limit?: number
+): Promise<FollowingFeedResponse> {
+  const params: Record<string, string | number> = {};
+  if (cursor !== undefined) params.cursor = cursor;
+  if (limit !== undefined) params.limit = limit;
+  return callApiEndpoint<Record<string, never>, FollowingFeedResponse>(
+    getFollowingFeedEndpoint,
+    { queryParameters: params as Record<string, string> }
   );
 }
 
@@ -139,6 +156,7 @@ export const contentApiClient = {
   getFitPic,
   getFeed,
   getForYou,
+  getFollowingFeed,
   getProducts,
   getFitPics,
   createProduct,
@@ -161,6 +179,7 @@ export type {
   ForYouFitPicItem,
   ForYouProductItem,
   ForYouProductData,
+  FollowingFeedResponse,
   GetProductsRequest,
   GetProductsResponse,
   GetFitPicsRequest,
