@@ -18,6 +18,7 @@ import { contentApiClient } from "../../src/services/apiClients/contentClient";
 import { fitpicClient } from "../../src/services/apiClients/fitpicClient";
 import { consumeFeedRefetch } from "../../src/feedRefresh";
 import { useForYouFeed } from "../../src/hooks/useForYouFeed";
+import { useFollowingFeed } from "../../src/hooks/useFollowingFeed";
 
 const useRealApi = (): boolean =>
   process.env.EXPO_PUBLIC_API_MODE === "real";
@@ -104,12 +105,17 @@ export default function Home_Grid({
   // and no dataOverride is present.
   const forYouFeed = useForYouFeed();
 
-  // Legacy state for browse / following / dataOverride paths.
+  // Following feed state — always initialised; only drives UI when feedType === "following"
+  // and no dataOverride is present.
+  const followingFeed = useFollowingFeed();
+
+  // Legacy state for browse / dataOverride paths.
   const [refreshing, setRefreshing] = useState(false);
   const [data, setData] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(!dataOverride);
 
   const isForYouMode = feedType === "forYou" && !dataOverride;
+  const isFollowingMode = feedType === "following" && !dataOverride;
 
   // ── For You: initialise on mount and on feedType change ──────────────────
   useEffect(() => {
@@ -120,9 +126,19 @@ export default function Home_Grid({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isForYouMode]);
 
-  // ── Legacy feeds: browse / following / dataOverride ──────────────────────
+  // ── Following: initialise on mount and on feedType change ─────────────────
   useEffect(() => {
-    if (isForYouMode) return; // handled by hook above
+    if (isFollowingMode) {
+      followingFeed.initialize();
+    }
+    // followingFeed.initialize is a stable callback (useCallback with [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFollowingMode]);
+
+  // ── Legacy feeds: browse / dataOverride ──────────────────────────────────
+  useEffect(() => {
+    if (isForYouMode) return;    // handled by useForYouFeed above
+    if (isFollowingMode) return; // handled by useFollowingFeed above
 
     if (dataOverride) {
       setData(shuffle(dataOverride));
@@ -177,13 +193,18 @@ export default function Home_Grid({
     };
 
     loadFeed();
-  }, [dataOverride, feedType, isForYouMode]);
+  }, [dataOverride, feedType, isForYouMode, isFollowingMode]);
 
   // ── Unified refresh (called by RefreshControl + useFocusEffect) ──────────
   const onRefresh = useCallback(async () => {
     if (isForYouMode) {
       // Refresh path: calls getForYou({ cursor: undefined }) — first page replace.
       return forYouFeed.refresh();
+    }
+
+    if (isFollowingMode) {
+      // Refresh path: resets cursor and re-fetches first page from following-feed.
+      return followingFeed.refresh();
     }
 
     setRefreshing(true);
@@ -230,7 +251,7 @@ export default function Home_Grid({
     } finally {
       setRefreshing(false);
     }
-  }, [dataOverride, feedType, isForYouMode, forYouFeed]);
+  }, [dataOverride, feedType, isForYouMode, isFollowingMode, forYouFeed, followingFeed]);
 
   // Refetch after returning from create flow
   useFocusEffect(
@@ -302,7 +323,68 @@ export default function Home_Grid({
     );
   }
 
-  // ── Legacy render path (browse / following / dataOverride) ────────────────
+  // ── Following render path ─────────────────────────────────────────────────
+  if (isFollowingMode) {
+    const { status, items, error } = followingFeed.state;
+
+    if (status === "loading") {
+      return (
+        <View style={styles.centeredContainer}>
+          <ActivityIndicator size="large" color="#6B7280" />
+        </View>
+      );
+    }
+
+    if (status === "error") {
+      return (
+        <View style={styles.centeredContainer}>
+          <Text style={styles.emptyText}>Something went wrong</Text>
+          <TouchableOpacity
+            onPress={followingFeed.initialize}
+            style={styles.retryButton}
+          >
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    if (items.length === 0 && status === "idle") {
+      return (
+        <View style={styles.centeredContainer}>
+          <Text style={styles.emptyText}>No posts yet</Text>
+        </View>
+      );
+    }
+
+    return (
+      <MasonryGrid<FeedItem>
+        data={items}
+        columns={columns}
+        gutter={gutter}
+        contentPadding={contentPadding}
+        refreshControl={
+          <RefreshControl
+            refreshing={status === "refreshing"}
+            onRefresh={followingFeed.refresh}
+          />
+        }
+        onEndReached={followingFeed.loadNextPage}
+        ListFooterComponent={
+          status === "loadingMore" ? (
+            <View style={styles.footerLoader}>
+              <ActivityIndicator size="small" color="#6B7280" />
+            </View>
+          ) : undefined
+        }
+        getItemHeight={getItemHeight}
+        renderItem={(item, colW) => renderTile(item, colW, feedType)}
+        keyExtractor={(item: FeedItem) => `${item.type}:${item.id}`}
+      />
+    );
+  }
+
+  // ── Legacy render path (browse / dataOverride) ────────────────────────────
   if (loading) {
     return null;
   }
