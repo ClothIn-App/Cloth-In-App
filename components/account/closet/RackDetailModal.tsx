@@ -44,22 +44,22 @@ type Props = {
   onProductMove?: (productId: string) => void;
   onProductDelete?: (productId: string) => void;
   onProductPress?: (productId: string) => void;
-  userId?: string;
-  isViewOnly?: boolean;
+  /** Hides per-product overflow and actions menu (e.g. other-user read-only closet). */
+  readOnly?: boolean;
 };
 
-const RackProductCard = React.memo(function RackProductCard({
+const RackDetailProductCard = React.memo(function RackDetailProductCard({
   product,
   width,
+  readOnly,
   onOpenMenu,
   onProductPress,
-  isViewOnly = false,
 }: {
   product: Product;
   width: number;
+  readOnly?: boolean;
   onOpenMenu: (productId: string) => void;
   onProductPress?: (productId: string) => void;
-  isViewOnly?: boolean;
 }) {
   const dotScale = useSharedValue(1);
   const dotStyle = useAnimatedStyle(() => ({
@@ -79,7 +79,7 @@ const RackProductCard = React.memo(function RackProductCard({
         >
           <ClosetProductCard width={width} source={product.source} borderRadius={16} />
         </Pressable>
-        {!isViewOnly && (
+        {!readOnly && (
           <ReanimatedAnimated.View style={[styles.productOverflowWrap, dotStyle]}>
             <Pressable
               onPress={() => {
@@ -113,8 +113,7 @@ export default function RackDetailModal({
   onProductMove,
   onProductDelete,
   onProductPress,
-  userId,
-  isViewOnly = false,
+  readOnly = false,
 }: Props) {
   const { width: screenWidth } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -300,23 +299,25 @@ export default function RackDetailModal({
             >
               {products.length === 0 ? (
                 <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>Add Products to This Rack</Text>
+                  <Text style={styles.emptyText}>
+                    {readOnly ? "No products in this rack" : "Add Products to This Rack"}
+                  </Text>
                 </View>
               ) : (
                 <View style={styles.grid}>
                   {rows.map((row, rowIndex) => (
                     <View key={rowIndex} style={styles.row}>
                       {row.map((product) => (
-                        <RackProductCard
+                        <RackDetailProductCard
                           key={product.id}
                           product={product}
                           width={itemWidth}
+                          readOnly={readOnly}
                           onOpenMenu={(id) => {
                             setActiveProductId(id);
                             setProductActionsVisible(true);
                           }}
                           onProductPress={handleProductPress}
-                          isViewOnly={isViewOnly}
                         />
                       ))}
                       {/* Fill remaining space if row has less than 3 items */}
@@ -333,34 +334,36 @@ export default function RackDetailModal({
         </PanGestureHandler>
       </GestureHandlerRootView>
 
-      <RackProductActionsMenu
-        visible={productActionsVisible}
-        onClose={() => {
-          setProductActionsVisible(false);
-          setActiveProductId(null);
-        }}
-        onRemoveFromRack={() => {
-          if (activeProductId && onProductRemoveFromRack) {
-            onProductRemoveFromRack(activeProductId);
-          }
-          setProductActionsVisible(false);
-          setActiveProductId(null);
-        }}
-        onMoveToAnotherRack={() => {
-          if (activeProductId && onProductMove) {
-            onProductMove(activeProductId);
-          }
-          setProductActionsVisible(false);
-          setActiveProductId(null);
-        }}
-        onDelete={() => {
-          if (activeProductId && onProductDelete) {
-            onProductDelete(activeProductId);
-          }
-          setProductActionsVisible(false);
-          setActiveProductId(null);
-        }}
-      />
+      {!readOnly && (
+        <RackProductActionsMenu
+          visible={productActionsVisible}
+          onClose={() => {
+            setProductActionsVisible(false);
+            setActiveProductId(null);
+          }}
+          onRemoveFromRack={() => {
+            if (activeProductId && onProductRemoveFromRack) {
+              onProductRemoveFromRack(activeProductId);
+            }
+            setProductActionsVisible(false);
+            setActiveProductId(null);
+          }}
+          onMoveToAnotherRack={() => {
+            if (activeProductId && onProductMove) {
+              onProductMove(activeProductId);
+            }
+            setProductActionsVisible(false);
+            setActiveProductId(null);
+          }}
+          onDelete={() => {
+            if (activeProductId && onProductDelete) {
+              onProductDelete(activeProductId);
+            }
+            setProductActionsVisible(false);
+            setActiveProductId(null);
+          }}
+        />
+      )}
     </Modal>
   );
 }

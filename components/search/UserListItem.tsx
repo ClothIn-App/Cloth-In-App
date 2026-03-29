@@ -6,10 +6,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import type { UserSearchResult } from '../../src/types/search';
 import { userApiClient } from '../../src/services/apiClients/userClient';
 import UserAvatar from '../common/UserAvatar';
+import { openUserProfile } from '../../src/navigation/openUserProfile';
 
 type Props = {
   user: UserSearchResult;
@@ -18,17 +18,13 @@ type Props = {
 };
 
 export default function UserListItem({ user, onPress, onFollowPress }: Props) {
-  const router = useRouter();
   const [isFollowing, setIsFollowing] = useState(user.isFollowing ?? false);
 
   const handlePress = () => {
     if (onPress) {
       onPress(user);
     } else {
-      router.push({
-        pathname: '/user-profile',
-        params: { userId: user.uid },
-      });
+      openUserProfile(user.uid);
     }
   };
 

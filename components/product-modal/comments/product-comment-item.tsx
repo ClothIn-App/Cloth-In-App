@@ -6,12 +6,12 @@ import {
   StyleSheet,
   Animated,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { CommentType } from '../../../src/types/feed';
 import { userApiClient } from '../../../src/services/apiClients/userClient';
 import ProfileNotFoundModal from '../../common/ProfileNotFoundModal';
 import UserAvatar from '../../common/UserAvatar';
+import { openUserProfile } from '../../../src/navigation/openUserProfile';
 
 // Re-export CommentType for convenience
 export type { CommentType };
@@ -58,7 +58,6 @@ export default function ProductCommentItem({
   onOpenMenu,
   onReact,
 }: ProductCommentItemProps) {
-  const router = useRouter();
   const [showProfileNotFound, setShowProfileNotFound] = useState(false);
   const [authorTapLoading, setAuthorTapLoading] = useState(false);
 
@@ -80,10 +79,7 @@ export default function ProductCommentItem({
         setShowProfileNotFound(true);
         return;
       }
-      router.push({
-        pathname: '/user-profile',
-        params: { userId },
-      });
+      openUserProfile(userId);
     } finally {
       setAuthorTapLoading(false);
     }

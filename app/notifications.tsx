@@ -16,6 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNotifications } from "../src/hooks/useNotifications";
 import { notificationsApiClient } from "../src/services/apiClients/notificationsClient";
 import type { NotificationItem } from "../src/types/notification";
+import { openUserProfile } from "../src/navigation/openUserProfile";
 
 function formatRelativeTime(iso: string): string {
   const date = new Date(iso).getTime();
@@ -95,10 +96,7 @@ function NotificationsContent() {
       if (item.type === "follow") {
         const targetUserId = item.actorUserId || item.entityId;
         if (!targetUserId) return;
-        router.push({
-          pathname: "/user-profile",
-          params: { userId: targetUserId },
-        } as any);
+        openUserProfile(targetUserId);
         return;
       }
 

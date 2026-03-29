@@ -38,7 +38,6 @@ import RackDetailModal from "../closet/RackDetailModal";
 
 type Props = {
   userId?: string;
-  isViewOnly?: boolean;
 };
 
 type Product = {
@@ -67,18 +66,13 @@ type AllProductsCarouselItemProps = {
   onProductPress?: (productId: string) => void;
 };
 
-type AllProductsCarouselItemPropsWithViewOnly = AllProductsCarouselItemProps & {
-  isViewOnly?: boolean;
-};
-
 const AllProductsCarouselItem = React.memo(function AllProductsCarouselItem({
   width,
   imageSource,
   productId,
   onOpenMenu,
   onProductPress,
-  isViewOnly = false,
-}: AllProductsCarouselItemPropsWithViewOnly) {
+}: AllProductsCarouselItemProps) {
   const dotScale = useSharedValue(1);
   const dotStyle = useAnimatedStyle(() => ({
     transform: [{ scale: dotScale.value }],
@@ -97,26 +91,24 @@ const AllProductsCarouselItem = React.memo(function AllProductsCarouselItem({
         >
           <ClosetProductCard width={width} source={imageSource} borderRadius={16} />
         </Pressable>
-        {!isViewOnly && (
-          <Animated.View style={[styles.productOverflowWrap, dotStyle]}>
-            <Pressable
-              onPress={() => {
-                dotScale.value = withSequence(
-                  withSpring(1.12, { damping: 14, stiffness: 240 }),
-                  withSpring(1, { damping: 14, stiffness: 240 })
-                );
-                onOpenMenu(productId);
-              }}
-              accessibilityRole="button"
-              accessibilityLabel="Product options"
-              pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
-              hitSlop={8}
-              style={styles.productOverflowButton}
-            >
-              <Ionicons name="ellipsis-horizontal" size={16} color="#11181C" />
-            </Pressable>
-          </Animated.View>
-        )}
+        <Animated.View style={[styles.productOverflowWrap, dotStyle]}>
+          <Pressable
+            onPress={() => {
+              dotScale.value = withSequence(
+                withSpring(1.12, { damping: 14, stiffness: 240 }),
+                withSpring(1, { damping: 14, stiffness: 240 })
+              );
+              onOpenMenu(productId);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Product options"
+            pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
+            hitSlop={8}
+            style={styles.productOverflowButton}
+          >
+            <Ionicons name="ellipsis-horizontal" size={16} color="#11181C" />
+          </Pressable>
+        </Animated.View>
       </View>
     </View>
   );
@@ -128,7 +120,7 @@ const getProductsByIds = (productIds: string[]): Product[] => {
   return productIds.map((id) => ({ id }));
 };
 
-export default function ClosetTab({ userId, isViewOnly = false }: Props) {
+export default function ClosetTab({ userId }: Props) {
   const insets = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
   const isFocused = useIsFocused();
@@ -178,7 +170,7 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
 
   const persistCloset = React.useCallback(
     (baseIds: string[], nextRacks: Rack[]) => {
-      if (!userId || isViewOnly || !initializedRef.current) return;
+      if (!userId || !initializedRef.current) return;
       const payload = {
         base: { productIds: baseIds },
         racks: nextRacks.map((r) => ({
@@ -200,7 +192,7 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
           );
         });
     },
-    [userId, isViewOnly, refetch]
+    [userId, refetch]
   );
 
   // When the carousel is continuously moving, it can interfere with press recognition.
@@ -433,24 +425,22 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
                 <Ionicons name="expand" size={20} color="#11181C" />
               </Pressable>
             )}
-            {!isViewOnly && (
-              <Pressable
-                onPress={() => {
-                  pauseAndResumeCarousel();
-                  setAllProductsOptionsVisible(true);
-                }}
-                accessibilityRole="button"
-                accessibilityLabel="Rack options"
-                // Make scroll gestures win over accidental presses.
-                pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
-                hitSlop={6}
-                style={styles.expandButton}
-              >
-                <Ionicons name="ellipsis-horizontal" size={20} color="#11181C" />
-              </Pressable>
-            )}
+            <Pressable
+              onPress={() => {
+                pauseAndResumeCarousel();
+                setAllProductsOptionsVisible(true);
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Rack options"
+              // Make scroll gestures win over accidental presses.
+              pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
+              hitSlop={6}
+              style={styles.expandButton}
+            >
+              <Ionicons name="ellipsis-horizontal" size={20} color="#11181C" />
+            </Pressable>
           </View>
-          {title === "All Products" && !isViewOnly && (
+          {title === "All Products" && (
             <Pressable
               onPress={() => {
                 pauseAndResumeCarousel();
@@ -497,7 +487,6 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
                     });
                   }
                 }}
-                isViewOnly={isViewOnly}
               />
             );
           }}
@@ -556,7 +545,7 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
                   items={items}
                   maxPreviewCount={3}
                   highlighted={highlightedRackId === rack.id}
-                  onPressExpand={isViewOnly ? undefined : () => {
+                  onPressExpand={() => {
                     pauseAndResumeCarousel();
                     setRackOptionsRackId(rack.id);
                   }}
@@ -782,8 +771,6 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
             });
           }
         }}
-        userId={userId}
-        isViewOnly={isViewOnly}
       />
 
       <RackDetailModal
@@ -846,8 +833,6 @@ export default function ClosetTab({ userId, isViewOnly = false }: Props) {
             });
           }
         }}
-        userId={userId}
-        isViewOnly={isViewOnly}
       />
     </View>
   );

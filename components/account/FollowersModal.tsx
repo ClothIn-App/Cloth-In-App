@@ -9,11 +9,11 @@ import {
   ActivityIndicator,
   StyleSheet 
 } from "react-native";
-import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { FollowerUser } from "../../src/types/account";
 import { userApiClient } from "../../src/services/apiClients/userClient";
 import UserAvatar from "../common/UserAvatar";
+import { openUserProfile } from "../../src/navigation/openUserProfile";
 
 type Props = {
   visible: boolean;
@@ -24,7 +24,6 @@ type Props = {
 };
 
 export default function FollowersModal({ visible, onClose, userId, onFollowChange }: Props) {
-  const router = useRouter();
   const [followers, setFollowers] = useState<FollowerUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -101,10 +100,7 @@ export default function FollowersModal({ visible, onClose, userId, onFollowChang
   };
 
   const handleUsernamePress = (followerUserId: string) => {
-    router.push({
-      pathname: '/user-profile',
-      params: { userId: followerUserId },
-    });
+    openUserProfile(followerUserId);
     onClose();
   };
 

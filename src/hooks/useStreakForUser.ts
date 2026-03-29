@@ -3,8 +3,8 @@ import { fitpicClient } from "../services/apiClients/fitpicClient";
 import { computeStreakStats } from "../utils/streakUtils";
 
 /**
- * Returns current streak and hasPostedToday for a user (own profile or viewed profile).
- * Used to display the streak badge on ProfileHeader and PublicProfileHeader.
+ * Returns current streak and hasPostedToday for a user.
+ * Used to display the streak badge on ProfileHeader (Account tab).
  */
 export default function useStreakForUser(userId: string | undefined) {
   const [currentStreak, setCurrentStreak] = useState(0);

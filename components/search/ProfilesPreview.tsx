@@ -5,11 +5,11 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { UserSearchResult } from '../../src/types/search';
 import UserAvatar from '../common/UserAvatar';
 import { recordSearchEvent } from '../../src/services/apiClients/analyticsClient';
+import { openUserProfile } from '../../src/navigation/openUserProfile';
 
 type Props = {
   users: UserSearchResult[];
@@ -24,10 +24,7 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
       resultType: "user",
       resultId: user.uid,
     });
-    router.push({
-      pathname: '/user-profile',
-      params: { userId: user.uid },
-    });
+    openUserProfile(user.uid);
   };
 
   return (

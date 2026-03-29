@@ -111,14 +111,12 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
-            name="user-profile"
+            name="user/[userId]"
             options={{
               headerShown: false,
               presentation: 'card',
               gestureEnabled: true,
               animation: 'slide_from_right',
-              // Edge-only back swipe: full-screen gesture fights vertical scroll on FitPics masonry.
-              fullScreenGestureEnabled: false,
             }}
           />
         </Stack>

@@ -7,7 +7,6 @@ import { useUserFitPics } from "../../../src/hooks/useUserFitPics";
 import { useCurrentUserId } from "../../../src/hooks/useCurrentUserId";
 import type { FitPicItem } from "../../../src/types/feed";
 import { FITPIC_ASSETS } from "../../../src/maps/images";
-import FitPicsTabPublic from "./FitPicsTabPublic";
 
 type Props = {
   userId?: string;
@@ -175,9 +174,22 @@ export default function FitPicsTab({ userId }: Props) {
     );
   }
 
-  if (userId === currentUserId) {
-    return <FitPicsTabOwn userId={userId} />;
+  if (userId !== currentUserId) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 24,
+        }}
+      >
+        <Text style={{ color: "#666A70", textAlign: "center" }}>
+          Profile preview is unavailable.
+        </Text>
+      </View>
+    );
   }
 
-  return <FitPicsTabPublic userId={userId} />;
+  return <FitPicsTabOwn userId={userId} />;
 }

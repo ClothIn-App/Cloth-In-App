@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { openUserProfile } from '../../src/navigation/openUserProfile';
 import { useThemeColor } from '../../hooks/useThemeColor';
 import UserAvatar from '../common/UserAvatar';
 
@@ -20,7 +20,6 @@ type Props = {
 };
 
 export default function FitPicModalUser({ author, authorId, createdAt, location }: Props) {
-  const router = useRouter();
   const muted = useThemeColor({}, 'mutedText') || '#999';
 
   // Normalize author data - handle both string (authorId) and object formats
@@ -53,10 +52,7 @@ export default function FitPicModalUser({ author, authorId, createdAt, location 
 
   const handleUsernamePress = () => {
     if (userId) {
-      router.push({
-        pathname: '/user-profile',
-        params: { userId },
-      });
+      openUserProfile(userId);
     }
   };
 
