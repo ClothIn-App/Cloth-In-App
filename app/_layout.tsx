@@ -117,6 +117,8 @@ export default function RootLayout() {
               presentation: 'card',
               gestureEnabled: true,
               animation: 'slide_from_right',
+              // Edge-only back swipe: full-screen gesture fights vertical scroll on FitPics masonry.
+              fullScreenGestureEnabled: false,
             }}
           />
         </Stack>
