@@ -8,7 +8,8 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { hasAvatarUrl } from '../../src/utils/avatarUrl';
+import { log } from '../../src/debug/log';
+import { hasAvatarUrl, resolveAvatarDisplayUrl } from '../../src/utils/avatarUrl';
 
 const DEFAULT_ICON_COLOR = '#9CA3AF';
 
@@ -29,11 +30,13 @@ export default function UserAvatar({
 }: Props) {
   const [loadFailed, setLoadFailed] = useState(false);
 
+  const displayUri = resolveAvatarDisplayUrl(avatarUrl);
+
   useEffect(() => {
     setLoadFailed(false);
   }, [avatarUrl]);
 
-  const tryImage = hasAvatarUrl(avatarUrl) && !loadFailed;
+  const tryImage = hasAvatarUrl(displayUri) && !loadFailed;
   const radius = size / 2;
 
   const fallback = (
@@ -53,9 +56,12 @@ export default function UserAvatar({
   const content = tryImage ? (
     <View style={[styles.clip, { width: size, height: size, borderRadius: radius }, style]}>
       <Image
-        source={{ uri: avatarUrl!.trim() }}
+        source={{ uri: displayUri! }}
         style={{ width: size, height: size, borderRadius: radius }}
-        onError={() => setLoadFailed(true)}
+        onError={(e) => {
+          log.debug('[UserAvatar] avatar image failed to load', displayUri, e?.nativeEvent);
+          setLoadFailed(true);
+        }}
         accessibilityRole="image"
         accessibilityLabel="Profile picture"
       />

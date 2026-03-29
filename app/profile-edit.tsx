@@ -14,16 +14,23 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import AvatarPicker from '../components/profile/AvatarPicker';
+import * as ImagePicker from 'expo-image-picker';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { userApiClient } from '../src/services/apiClients/userClient';
 import useAccountData from '../src/hooks/useAccountData';
 import { useCurrentUserId } from '../src/hooks/useCurrentUserId';
+import { uploadAvatarPhoto } from '../src/services/avatarUploadService';
+import {
+  setRealCurrentUser,
+  mapGetUserResponseToRawUser,
+} from '../src/services/mockSessionUsers';
+import AvatarPickerRow from '../components/profile/AvatarPickerRow';
+import AvatarPhotoOptionsModal from '../components/profile/AvatarPhotoOptionsModal';
 
 type ProfileFormData = {
   displayName: string;
   username: string;
   bio: string;
-  avatarUrl: string;
   accountType: 'personal' | 'brand' | 'creator';
   isPrivateAccount: boolean;
 };
@@ -41,17 +48,17 @@ export default function ProfileEditScreen() {
   const insets = useSafeAreaInsets();
   const { userId, loading: authLoading } = useCurrentUserId();
 
-  const { data, loading: profileLoading } = useAccountData(userId);
+  const { data, loading: profileLoading, refetch } = useAccountData(userId);
   const [formData, setFormData] = useState<ProfileFormData>({
     displayName: '',
     username: '',
     bio: '',
-    avatarUrl: '',
     accountType: 'personal',
     isPrivateAccount: false,
   });
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Partial<ProfileFormData>>({});
+  const [avatarOptionsVisible, setAvatarOptionsVisible] = useState(false);
 
   const topPad = Math.max(insets.top - 6, 0);
   const headerHeight = 60 + topPad;
@@ -65,12 +72,108 @@ export default function ProfileEditScreen() {
         displayName: data.me.displayName || data.me.name || '',
         username: data.me.username || '',
         bio: data.me.bio || '',
-        avatarUrl: data.me.avatarUrl || '',
         accountType: (data.me.accountType as 'personal' | 'brand' | 'creator') || 'personal',
         isPrivateAccount: !!me?.privacy?.isPrivateAccount,
       });
     }
   }, [data.me]);
+
+  // ---------------------------------------------------------------------------
+  // Avatar helpers
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Permission → picker → manipulate → upload → setUser → refetch.
+   * Returns true only when the new avatar is fully persisted (modal should close).
+   */
+  const pickAndUploadAvatar = async (source: 'camera' | 'library'): Promise<boolean> => {
+    if (!userId) return false;
+
+    let permissionResult: { granted: boolean };
+    if (source === 'camera') {
+      permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    } else {
+      permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    }
+
+    if (!permissionResult.granted) {
+      Alert.alert(
+        source === 'camera' ? 'Camera access needed' : 'Photo library access needed',
+        source === 'camera'
+          ? 'Please allow camera access in Settings to take a profile photo.'
+          : 'Please allow photo library access in Settings to choose a profile photo.'
+      );
+      return false;
+    }
+
+    const pickerOptions: ImagePicker.ImagePickerOptions = {
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    };
+
+    const result =
+      source === 'camera'
+        ? await ImagePicker.launchCameraAsync(pickerOptions)
+        : await ImagePicker.launchImageLibraryAsync(pickerOptions);
+
+    if (result.canceled || !result.assets?.[0]?.uri) {
+      return false;
+    }
+
+    const pickedUri = result.assets[0].uri;
+
+    try {
+      const manipulated = await manipulateAsync(
+        pickedUri,
+        [{ resize: { width: 1024 } }],
+        { compress: 0.85, format: SaveFormat.JPEG }
+      );
+
+      const { url } = await uploadAvatarPhoto(manipulated.uri);
+
+      const response = await userApiClient.setUser(userId, { avatarUrl: url });
+      if (!response.user) throw new Error('Failed to update profile.');
+
+      if (process.env.EXPO_PUBLIC_API_MODE === 'real') {
+        setRealCurrentUser(userId, mapGetUserResponseToRawUser(response.user, userId));
+      }
+
+      await refetch();
+      return true;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update photo. Please try again.';
+      Alert.alert("Couldn't update photo", message);
+      return false;
+    }
+  };
+
+  /** Returns true when removal persisted (modal should close). */
+  const executeAvatarRemove = async (): Promise<boolean> => {
+    if (!userId) return false;
+    try {
+      const response = await userApiClient.setUser(userId, { avatarUrl: '' });
+      if (!response.user) throw new Error('Failed to update profile.');
+
+      if (process.env.EXPO_PUBLIC_API_MODE === 'real') {
+        setRealCurrentUser(userId, mapGetUserResponseToRawUser(response.user, userId));
+      }
+
+      await refetch();
+      return true;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to remove photo. Please try again.';
+      Alert.alert("Couldn't remove photo", message);
+      return false;
+    }
+  };
+
+  const hasAvatar = !!data.me?.avatarUrl;
+
+  const openAvatarSheet = () => {
+    setAvatarOptionsVisible(true);
+  };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<ProfileFormData> = {};
@@ -111,7 +214,6 @@ export default function ProfileEditScreen() {
         name: formData.displayName.trim(),
         username: formData.username.trim(),
         bio: formData.bio.trim() || undefined,
-        avatarUrl: formData.avatarUrl || undefined,
         accountType: formData.accountType,
         privacy: { isPrivateAccount: formData.isPrivateAccount },
       });
@@ -221,19 +323,8 @@ export default function ProfileEditScreen() {
         contentInsetAdjustmentBehavior="never"
         contentContainerStyle={[styles.scrollContent, { paddingBottom: bottomPad + 40 }]}
       >
-        {/* Avatar Section */}
-        <View style={styles.firstSection}>
-          <Text style={styles.sectionTitle}>Profile Photo</Text>
-          <View style={styles.avatarSection}>
-            <AvatarPicker
-              value={formData.avatarUrl}
-              onChange={(url) => updateField('avatarUrl', url)}
-            />
-            <Text style={[styles.avatarHint, { color: COLORS.muted }]}>
-              Tap to change your profile photo
-            </Text>
-          </View>
-        </View>
+        {/* Avatar section */}
+        <AvatarPickerRow avatarUrl={data.me?.avatarUrl} uploading={false} onPress={openAvatarSheet} />
 
         {/* Basic Info Section */}
         <View style={styles.section}>
@@ -386,6 +477,16 @@ export default function ProfileEditScreen() {
           ))}
         </View>
       </ScrollView>
+
+      <AvatarPhotoOptionsModal
+        visible={avatarOptionsVisible}
+        onClose={() => setAvatarOptionsVisible(false)}
+        hasAvatar={hasAvatar}
+        colors={COLORS}
+        onCamera={() => pickAndUploadAvatar('camera')}
+        onLibrary={() => pickAndUploadAvatar('library')}
+        onRemove={executeAvatarRemove}
+      />
     </SafeAreaView>
   );
 }
@@ -437,11 +538,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 20,
   },
-  firstSection: {
-    paddingHorizontal: 16,
-    paddingTop: 0, // No top padding
-    paddingBottom: 20,
-  },
   scrollContent: {
     paddingTop: 0, // Remove default scroll padding
   },
@@ -473,13 +569,6 @@ const styles = StyleSheet.create({
   },
   toggleDescription: {
     fontSize: 14,
-  },
-  avatarSection: {
-    alignItems: 'center',
-  },
-  avatarHint: {
-    fontSize: 14,
-    marginTop: 8,
   },
   inputGroup: {
     marginBottom: 20,
