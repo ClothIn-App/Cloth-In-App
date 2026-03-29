@@ -4,6 +4,7 @@ export * from "./users";
 export * from "./profile";
 export * from "./fitpics";
 export * from "./search";
+export * from "./notifications";
 // Content: explicit re-exports only (exclude getFeed, getFitPic, getFitPics to avoid collision with fitpics)
 export {
   getProductEndpoint,

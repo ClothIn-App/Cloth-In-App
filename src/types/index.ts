@@ -3,3 +3,4 @@ export * from './post';
 export * from './fitpic';
 export * from './account';
 export * from './search';
+export * from './notification';
