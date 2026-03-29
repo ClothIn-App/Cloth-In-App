@@ -9,6 +9,11 @@ import { clearRealCurrentUser } from '@/src/services/mockSessionUsers';
 
 const TOKEN_EXPIRY_BUFFER = AUTH_CONFIG.TOKEN_REFRESH_BUFFER_MS; // 5 minutes before expiry
 
+const STORAGE_KEY_SUFFIX = '_cloth-in-dev-shaan';
+const KEY_ID_TOKEN = `idToken${STORAGE_KEY_SUFFIX}`;
+const KEY_REFRESH_TOKEN = `refreshToken${STORAGE_KEY_SUFFIX}`;
+const KEY_TOKEN_EXPIRES_AT = `tokenExpiresAt${STORAGE_KEY_SUFFIX}`;
+
 interface TokenData {
   idToken: string;
   refreshToken: string;
@@ -183,9 +188,9 @@ async function refreshIdToken(
  */
 export async function storeTokenData(tokenData: TokenData): Promise<void> {
   try {
-    await SecureStore.setItemAsync('idToken', tokenData.idToken);
-    await SecureStore.setItemAsync('refreshToken', tokenData.refreshToken);
-    await SecureStore.setItemAsync('tokenExpiresAt', tokenData.expiresAt.toString());
+    await SecureStore.setItemAsync(KEY_ID_TOKEN, tokenData.idToken);
+    await SecureStore.setItemAsync(KEY_REFRESH_TOKEN, tokenData.refreshToken);
+    await SecureStore.setItemAsync(KEY_TOKEN_EXPIRES_AT, tokenData.expiresAt.toString());
     cachedToken = { token: tokenData.idToken, expiresAt: tokenData.expiresAt }; // Update cache
     log.debug('[AUTH:TOKENS_STORED]');
   } catch (error: any) {
@@ -199,13 +204,13 @@ export async function storeTokenData(tokenData: TokenData): Promise<void> {
  */
 async function getStoredTokenData(): Promise<TokenData | null> {
   try {
-    const idToken = await SecureStore.getItemAsync('idToken');
+    const idToken = await SecureStore.getItemAsync(KEY_ID_TOKEN);
     if (!idToken) return null;
 
-    const refreshToken = await SecureStore.getItemAsync('refreshToken');
+    const refreshToken = await SecureStore.getItemAsync(KEY_REFRESH_TOKEN);
     if (!refreshToken) return null;
 
-    const expiresAtStr = await SecureStore.getItemAsync('tokenExpiresAt');
+    const expiresAtStr = await SecureStore.getItemAsync(KEY_TOKEN_EXPIRES_AT);
     // If tokenExpiresAt is missing, assume token is expired (old token from before expiry tracking)
     // Set to 0 to force refresh attempt
     const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : 0;
@@ -222,9 +227,9 @@ async function getStoredTokenData(): Promise<TokenData | null> {
  */
 export async function clearTokens(): Promise<void> {
   try {
-    await SecureStore.deleteItemAsync('idToken');
-    await SecureStore.deleteItemAsync('refreshToken');
-    await SecureStore.deleteItemAsync('tokenExpiresAt');
+    await SecureStore.deleteItemAsync(KEY_ID_TOKEN);
+    await SecureStore.deleteItemAsync(KEY_REFRESH_TOKEN);
+    await SecureStore.deleteItemAsync(KEY_TOKEN_EXPIRES_AT);
     cachedToken = null; // Clear cache
     clearRealCurrentUser();
     log.info('[AUTH:TOKENS_CLEARED]');

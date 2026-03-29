@@ -13,6 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import type { HashtagSearchResult } from '../../src/types/search';
+import { recordSearchEvent } from '../../src/services/apiClients/analyticsClient';
 
 type Props = {
   hashtags: HashtagSearchResult[];
@@ -27,8 +28,10 @@ export default function HashtagsPreview({ hashtags, onSeeAll }: Props) {
   const previewHashtags = validHashtags.slice(0, 5);
 
   const handleHashtagPress = (tag: string) => {
-    // TODO: Navigate to hashtag detail page when implemented
-    // For now, search for the hashtag
+    recordSearchEvent(`#${tag}`, "search_result_click", {
+      resultType: "hashtag",
+      resultId: tag,
+    });
     router.push({
       pathname: '/search-results',
       params: { q: `#${tag}`, category: 'hashtags' },
