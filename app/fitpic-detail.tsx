@@ -464,6 +464,7 @@ export default function FitPicDetailScreen() {
                   replyingTo={{ id: replyTarget.id, user: replyTarget.user }}
                   onSubmit={handleReplySubmit}
                   onCancel={() => setReplyTarget(null)}
+                  composerAvatarUrl={currentUser?.avatarUrl}
                 />
               </View>
             )}

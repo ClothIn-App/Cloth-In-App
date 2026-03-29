@@ -5,20 +5,23 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import UserAvatar from '../../common/UserAvatar';
 
 interface FitPicCommentInputProps {
   replyingTo?: { id: string; user: string } | null;
   onSubmit: (text: string, replyingTo?: { id: string; user: string } | null) => void;
   onCancel?: () => void;
+  /** Current user's avatar from session (API); omit for default icon */
+  composerAvatarUrl?: string | null;
 }
 
 export default function FitPicCommentInput({
   replyingTo,
   onSubmit,
   onCancel,
+  composerAvatarUrl,
 }: FitPicCommentInputProps) {
   const [text, setText] = useState('');
 
@@ -54,12 +57,7 @@ export default function FitPicCommentInput({
 
       {/* Input row */}
       <View style={styles.inputRow}>
-        {/* Avatar */}
-        <Image
-          source={require('../../../assets/images/icon.png')}
-          style={styles.avatar}
-          defaultSource={require('../../../assets/images/icon.png')}
-        />
+        <UserAvatar avatarUrl={composerAvatarUrl} size={26} style={styles.avatar} />
 
         {/* TextInput */}
         <TextInput
@@ -120,10 +118,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: '#E5E5E5',
     marginRight: 8,
   },
   textInput: {

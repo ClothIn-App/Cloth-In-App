@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Image, View, TouchableOpacity, Text } from "react-native";
+import { View, TouchableOpacity, Text } from "react-native";
 import { useRouter } from "expo-router";
 import type { ProfileMe, ProfileCounts } from "../../src/types/account";
 import FollowersModal from "./FollowersModal";
 import FollowingModal from "./FollowingModal";
 import { Ionicons } from "@expo/vector-icons";
+import UserAvatar from "../common/UserAvatar";
 
 type Props = {
   me?: ProfileMe;
@@ -77,16 +78,7 @@ export default function ProfileHeader({ me, counts, currentStreak = 0, hasPosted
 
       {/* Avatar + display name */}
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Image
-          source={{ uri: me?.avatarUrl || "https://placehold.co/80x80" }}
-          style={{
-            width: 60,
-            height: 60,
-            borderRadius: 30,
-            marginRight: 12,
-            backgroundColor: "#ccc",
-          }}
-        />
+        <UserAvatar avatarUrl={me?.avatarUrl} size={60} style={{ marginRight: 12 }} />
         {!!displayName && (
           <Text style={{ fontSize: 16, fontWeight: "600", color: '#11181C' }}>
             {displayName}

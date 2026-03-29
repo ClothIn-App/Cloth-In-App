@@ -88,7 +88,7 @@ export const createFitPicEndpoint: EndpointDefinition<
         uid: authorId,
         username: currentUser?.username ?? "current_user",
         displayName: currentUser?.displayName ?? "Current User",
-        avatarUrl: currentUser?.avatarUrl ?? "https://placehold.co/150x150",
+        avatarUrl: currentUser?.avatarUrl,
       },
       photos,
       caption: storedCaption,

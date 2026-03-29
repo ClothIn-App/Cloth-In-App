@@ -120,7 +120,7 @@ export default function AvatarPicker({ value, onChange }: Props) {
           <Image source={{ uri: value }} style={styles.avatar} />
         ) : (
           <View style={[styles.avatar, styles.avatarPlaceholder, { backgroundColor: borderColor }]}>
-            <Ionicons name="person" size={40} color={mutedTextColor} />
+            <Ionicons name="person-circle-outline" size={40} color={mutedTextColor} />
           </View>
         )}
         

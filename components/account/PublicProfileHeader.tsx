@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Image, View, TouchableOpacity, Text, ActivityIndicator } from "react-native";
+import { Alert, View, TouchableOpacity, Text, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { userApiClient } from "../../src/services/apiClients/userClient";
 import type { PublicProfileData } from "../../src/hooks/usePublicProfile";
 import FollowersModal from "./FollowersModal";
 import FollowingModal from "./FollowingModal";
+import UserAvatar from "../common/UserAvatar";
 
 type Props = {
   profileData: PublicProfileData;
@@ -137,16 +138,7 @@ export default function PublicProfileHeader({ profileData, onFollowChange, curre
 
       {/* Avatar + display name or username (private, not following = username only) */}
       <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
-        <Image
-          source={{ uri: user.avatarUrl || "https://placehold.co/80x80" }}
-          style={{
-            width: 60,
-            height: 60,
-            borderRadius: 30,
-            marginRight: 12,
-            backgroundColor: "#ccc",
-          }}
-        />
+        <UserAvatar avatarUrl={user.avatarUrl} size={60} style={{ marginRight: 12 }} />
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 16, fontWeight: "600", color: '#11181C' }}>
             {shouldShowDisplayName ? (displayName || username) : username}

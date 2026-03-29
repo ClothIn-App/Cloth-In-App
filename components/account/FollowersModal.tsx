@@ -6,7 +6,6 @@ import {
   Text, 
   FlatList, 
   TouchableOpacity, 
-  Image, 
   ActivityIndicator,
   StyleSheet 
 } from "react-native";
@@ -14,6 +13,7 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { FollowerUser } from "../../src/types/account";
 import { userApiClient } from "../../src/services/apiClients/userClient";
+import UserAvatar from "../common/UserAvatar";
 
 type Props = {
   visible: boolean;
@@ -112,12 +112,12 @@ export default function FollowersModal({ visible, onClose, userId, onFollowChang
     const shouldShowDisplayName = !!item.isFollowing || !item.isPrivateAccount;
     return (
       <View style={[styles.followerItem, { borderBottomColor: borderColor }]}>
-        <TouchableOpacity onPress={() => handleUsernamePress(item.uid)}>
-          <Image
-            source={{ uri: item.avatarUrl || "https://placehold.co/60x60" }}
-            style={styles.avatar}
-          />
-        </TouchableOpacity>
+        <UserAvatar
+          avatarUrl={item.avatarUrl}
+          size={50}
+          style={styles.avatar}
+          onPress={() => handleUsernamePress(item.uid)}
+        />
         <View style={[styles.userInfo, !shouldShowDisplayName && styles.centerVertically]}>
           <TouchableOpacity onPress={() => handleUsernamePress(item.uid)}>
             <Text style={[styles.username, { color: textColor }]}>
@@ -266,11 +266,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
     marginRight: 12,
-    backgroundColor: "#ccc",
   },
   userInfo: {
     flex: 1,
