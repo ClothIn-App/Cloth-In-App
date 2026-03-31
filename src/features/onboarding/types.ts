@@ -1,3 +1,8 @@
+/** Aligns with server `ONBOARDING_MAX_SELECTED_BRANDS` for optional client UX checks. */
+export const ONBOARDING_MAX_SELECTED_BRANDS = 30;
+
+export const SURVEY_BRAND_TEXT_MAX_CHARS = 100;
+
 export type OnboardingAnswers = {
   styleIdentity: string[];
   styleVibes: string[];
@@ -5,6 +10,8 @@ export type OnboardingAnswers = {
   occasions: string[];
   priceTiers: string[];
   selectedBrandIds: string[];
+  /** Free-text brand names to resolve/create on save (API); not canonical ids. */
+  typedBrandNames: string[];
 };
 
 export type RecommendedBrand = {
@@ -32,6 +39,7 @@ export type SaveOnboardingPayload = {
   occasions: string[];
   priceTiers: string[];
   selectedBrandIds: string[];
+  typedBrandNames: string[];
   onboardingVersion: string;
 };
 

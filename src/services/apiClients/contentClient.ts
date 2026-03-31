@@ -9,6 +9,14 @@ import {
   createProductEndpoint,
   CreateProductRequest,
   CreateProductResponse,
+  searchBrandsEndpoint,
+  SearchBrandsParams,
+  SearchBrandsResponse,
+  BrandSearchHit,
+  getTrendingBrandsEndpoint,
+  GetTrendingBrandsParams,
+  GetTrendingBrandsResponse,
+  BrandTrendingHit,
   updateProductEngagementEndpoint,
   addProductCommentEndpoint,
   productCommentReactEndpoint,
@@ -70,6 +78,30 @@ export async function createProduct(
   return callApiEndpoint<CreateProductRequest, CreateProductResponse>(
     createProductEndpoint,
     { requestBody: request }
+  );
+}
+
+export async function searchBrands(
+  params?: SearchBrandsParams
+): Promise<SearchBrandsResponse> {
+  return callApiEndpoint<undefined, SearchBrandsResponse>(searchBrandsEndpoint, {
+    queryParameters: {
+      q: params?.q ?? "",
+      ...(params?.limit != null ? { limit: String(params.limit) } : {}),
+    },
+  });
+}
+
+export async function getTrendingBrands(
+  params?: GetTrendingBrandsParams
+): Promise<GetTrendingBrandsResponse> {
+  return callApiEndpoint<undefined, GetTrendingBrandsResponse>(
+    getTrendingBrandsEndpoint,
+    {
+      queryParameters: {
+        ...(params?.limit != null ? { limit: String(params.limit) } : {}),
+      },
+    }
   );
 }
 
@@ -175,6 +207,8 @@ export const contentApiClient = {
   getProducts,
   getFitPics,
   createProduct,
+  searchBrands,
+  getTrendingBrands,
   updateProductEngagement,
   addProductComment,
   productCommentReact,
@@ -207,6 +241,12 @@ export type {
   GetFitPicsResponse,
   CreateProductRequest,
   CreateProductResponse,
+  SearchBrandsParams,
+  SearchBrandsResponse,
+  BrandSearchHit,
+  GetTrendingBrandsParams,
+  GetTrendingBrandsResponse,
+  BrandTrendingHit,
   UpdateProductEngagementRequest,
   UpdateProductEngagementResponse,
   AddProductCommentRequest,

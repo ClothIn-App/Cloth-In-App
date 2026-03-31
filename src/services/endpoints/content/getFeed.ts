@@ -76,6 +76,8 @@ export const getFeedEndpoint: EndpointDefinition<
         id: p.id,
         name: p.name,
         brand: p.brand,
+        brandId: p.brandId,
+        brandNameCanonical: p.brandNameCanonical,
         category: undefined,
         price: p.price,
         currency: "USD",

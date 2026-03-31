@@ -46,6 +46,7 @@ function AddProductContent() {
   const {
     category,
     brand,
+    selectedBrandId,
     productName,
     specifications,
     description,
@@ -119,6 +120,7 @@ function AddProductContent() {
         productId,
         name: productName.trim(),
         brand: brand.trim(),
+        ...(selectedBrandId ? { brandId: selectedBrandId } : {}),
         category: category.trim(),
         description: description.trim() || undefined,
         specifications: specifications.trim() || undefined,

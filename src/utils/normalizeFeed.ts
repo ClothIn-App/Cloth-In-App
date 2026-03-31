@@ -16,6 +16,8 @@ type ProductLike = {
   id: string;
   name: string;
   brand?: string;
+  brandId?: string | null;
+  brandNameCanonical?: string | null;
   price?: number | null;
   originalPrice?: number;
   priceType?: 'fixed' | 'sale' | 'sold_out' | 'tbd' | 'na';
@@ -127,7 +129,7 @@ const normalizeProduct = async (product: ProductLike): Promise<ProductItem> => {
     ? price
     : null;
 
-  return {
+  const out: ProductItem = {
     id: product.id,
     type: 'product',
     source,
@@ -140,6 +142,13 @@ const normalizeProduct = async (product: ProductLike): Promise<ProductItem> => {
     description: product.description || '',
     createdAt: product.createdAt || new Date().toISOString(),
   };
+  if (product.brandId) {
+    out.brandId = product.brandId;
+  }
+  if (product.brandNameCanonical) {
+    out.brandNameCanonical = product.brandNameCanonical ?? undefined;
+  }
+  return out;
 };
 
 /**
@@ -248,6 +257,8 @@ export const buildForYouFeed = async (
           id: p.id,
           name: p.name,
           brand: p.brand ?? undefined,
+          brandId: p.brandId ?? undefined,
+          brandNameCanonical: p.brandNameCanonical ?? undefined,
           price: p.price ?? undefined,
           originalPrice: p.originalPrice ?? undefined,
           priceType: p.priceStatus ? PRICE_STATUS_MAP[p.priceStatus] : undefined,
@@ -328,6 +339,8 @@ export const buildBrowseFeed = async (
           id: p.id,
           name: p.name,
           brand: p.brand ?? undefined,
+          brandId: p.brandId ?? undefined,
+          brandNameCanonical: p.brandNameCanonical ?? undefined,
           price: p.price ?? undefined,
           originalPrice: p.originalPrice ?? undefined,
           priceType: p.priceStatus ? PRICE_STATUS_MAP[p.priceStatus] : undefined,

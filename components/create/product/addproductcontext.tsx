@@ -2,6 +2,8 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { isValidProductUrl } from './link';
 
+export const BRAND_MAX_LEN = 100;
+
 export type PriceType = 'fixed' | 'sale' | 'sold_out' | 'tbd' | 'na';
 
 export type ProductFormData = {
@@ -41,6 +43,8 @@ type AddProductContextType = {
   setPriceType: (type: PriceType) => void;
   setPrice: (price: string) => void;
   setOriginalPrice: (price: string) => void;
+  selectedBrandId: string | null;
+  setBrandFromSuggestion: (brand: string, brandId: string) => void;
   
   // Computed
   isValid: boolean;
@@ -66,6 +70,7 @@ const initialData: ProductFormData = {
 export function AddProductProvider({ children }: { children: React.ReactNode }) {
   const [formData, setFormData] = useState<ProductFormData>(initialData);
   const [initialFormData] = useState<ProductFormData>(initialData);
+  const [selectedBrandId, setSelectedBrandId] = useState<string | null>(null);
 
   const setCategory = useCallback((category: string) => {
     setFormData(prev => ({ ...prev, category }));
@@ -73,6 +78,12 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
 
   const setBrand = useCallback((brand: string) => {
     setFormData(prev => ({ ...prev, brand }));
+    setSelectedBrandId(null);
+  }, []);
+
+  const setBrandFromSuggestion = useCallback((brand: string, brandId: string) => {
+    setFormData(prev => ({ ...prev, brand }));
+    setSelectedBrandId(brandId);
   }, []);
 
   const setProductName = useCallback((productName: string) => {
@@ -114,7 +125,7 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
     return (
       formData.category.trim().length > 0 &&
       formData.brand.trim().length >= 2 &&
-      formData.brand.trim().length <= 50 &&
+      formData.brand.trim().length <= BRAND_MAX_LEN &&
       formData.productName.trim().length >= 2 &&
       formData.productName.trim().length <= 100 &&
       formData.photos.length >= 1 &&
@@ -130,6 +141,7 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
 
   const reset = useCallback(() => {
     setFormData(initialData);
+    setSelectedBrandId(null);
   }, []);
 
   const value: AddProductContextType = {
@@ -144,6 +156,8 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
     setPriceType,
     setPrice,
     setOriginalPrice,
+    selectedBrandId,
+    setBrandFromSuggestion,
     isValid,
     hasUnsavedChanges,
     reset,

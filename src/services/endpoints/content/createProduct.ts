@@ -11,6 +11,7 @@ export type CreateProductRequest = {
   productId?: string;
   name: string;
   brand: string;
+  brandId?: string;
   category: string;
   description?: string;
   specifications?: string;
