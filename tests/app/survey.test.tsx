@@ -7,7 +7,6 @@ import SurveyScreen from '@/src/screens/SurveyScreen';
 
 jest.mock('@/src/services/apiClients/contentClient', () => ({
   contentApiClient: {
-    getTrendingBrands: jest.fn().mockResolvedValue({ brands: [] }),
     searchBrands: jest.fn().mockResolvedValue({ brands: [] }),
   },
 }));
@@ -84,7 +83,7 @@ describe('SurveyScreen (pure)', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Suggested for you|Trending|No suggestions yet|Search \/ add your own/)
+        screen.getByText(/Suggested for you|No suggestions yet|Search \/ add your own/)
       ).toBeTruthy();
     });
 

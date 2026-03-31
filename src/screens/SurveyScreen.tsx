@@ -55,10 +55,8 @@ export default function SurveyScreen({ onSkip, onSubmit, onFetchBrands }: Props)
 
   // Q6 state
   const [recommendedBrands, setRecommendedBrands] = useState<RecommendedBrand[]>([]);
-  const [trendingBrands, setTrendingBrands] = useState<RecommendedBrand[]>([]);
   const [brandsLoading, setBrandsLoading] = useState(false);
-  const [trendingError, setTrendingError] = useState<string | null>(null);
-  /** Suggested / Trending lane only — not shown under Your picks. */
+  /** Suggested lane only — not shown under Your picks. */
   const [laneSelectedBrandIds, setLaneSelectedBrandIds] = useState<string[]>([]);
   /** Brands chosen from search results — shown under Your picks. */
   const [searchSelectedBrandIds, setSearchSelectedBrandIds] = useState<string[]>([]);
@@ -111,7 +109,6 @@ export default function SurveyScreen({ onSkip, onSubmit, onFetchBrands }: Props)
 
   const fetchBrands = async () => {
     setBrandsLoading(true);
-    setTrendingError(null);
     try {
       const answersSlice = {
         styleIdentity: answers.styleIdentity,
@@ -120,25 +117,8 @@ export default function SurveyScreen({ onSkip, onSubmit, onFetchBrands }: Props)
         occasions: answers.occasions,
         priceTiers: answers.priceTiers,
       };
-      const [recommended, trendingRes] = await Promise.all([
-        onFetchBrands(answersSlice),
-        contentApiClient.getTrendingBrands({ limit: 24 }).catch(() => null),
-      ]);
+      const recommended = await onFetchBrands(answersSlice);
       setRecommendedBrands(recommended);
-      if (trendingRes?.brands?.length) {
-        setTrendingBrands(
-          trendingRes.brands.map((b) => ({
-            brandId: b.brandId,
-            name: b.name,
-            score: 0,
-          }))
-        );
-      } else {
-        setTrendingBrands([]);
-        if (trendingRes === null) {
-          setTrendingError('Trending brands could not be loaded.');
-        }
-      }
     } finally {
       setBrandsLoading(false);
     }
@@ -173,9 +153,7 @@ export default function SurveyScreen({ onSkip, onSubmit, onFetchBrands }: Props)
   };
 
   const labelForBrandId = (id: string) => {
-    const fromLane =
-      recommendedBrands.find((b) => b.brandId === id) ||
-      trendingBrands.find((b) => b.brandId === id);
+    const fromLane = recommendedBrands.find((b) => b.brandId === id);
     if (fromLane) return fromLane.name;
     return brandLabelById[id] ?? id;
   };
@@ -272,7 +250,7 @@ export default function SurveyScreen({ onSkip, onSubmit, onFetchBrands }: Props)
             <ProgressBar progress={progress} step={TOTAL_STEPS} total={TOTAL_STEPS} />
             <ScrollView contentContainerStyle={styles.scroll}>
               <Text style={styles.question}>
-                {recommendedBrands.length > 0 || trendingBrands.length > 0
+                {recommendedBrands.length > 0
                   ? "Here are some brands we think you'll love."
                   : 'Any brands you love — or want to explore?'}
               </Text>
@@ -308,32 +286,7 @@ export default function SurveyScreen({ onSkip, onSubmit, onFetchBrands }: Props)
                       </View>
                     </>
                   ) : null}
-                  {trendingBrands.length > 0 ? (
-                    <>
-                      <Text style={styles.laneLabel}>Trending</Text>
-                      <View style={styles.chipWrap}>
-                        {trendingBrands.map((brand) => {
-                          const isSelected = laneSelectedBrandIds.includes(brand.brandId);
-                          return (
-                            <TouchableOpacity
-                              key={`trending-${brand.brandId}`}
-                              style={[styles.chip, isSelected && styles.chipSelected]}
-                              onPress={() => toggleLaneBrand(brand.brandId, brand.name)}
-                            >
-                              <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
-                                {brand.name}
-                              </Text>
-                            </TouchableOpacity>
-                          );
-                        })}
-                      </View>
-                    </>
-                  ) : null}
-                  {trendingError ? <Text style={styles.trendingErrorText}>{trendingError}</Text> : null}
-                  {!brandsLoading &&
-                  recommendedBrands.length === 0 &&
-                  trendingBrands.length === 0 &&
-                  !trendingError ? (
+                  {!brandsLoading && recommendedBrands.length === 0 ? (
                     <Text style={styles.emptyBrandsHint}>
                       No suggestions yet — add brands below or finish to continue.
                     </Text>
@@ -359,12 +312,12 @@ export default function SurveyScreen({ onSkip, onSubmit, onFetchBrands }: Props)
                     {typedBrandNames.map((name) => (
                       <TouchableOpacity
                         key={`typed-${name}`}
-                        style={[styles.chip, styles.typedChip]}
+                        style={[styles.chip, styles.chipSelected]}
                         onPress={() =>
                           setTypedBrandNames((prev) => prev.filter((n) => n !== name))
                         }
                       >
-                        <Text style={styles.typedChipText}>{name}</Text>
+                        <Text style={[styles.chipText, styles.chipTextSelected]}>{name}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -604,11 +557,6 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.6,
   },
-  trendingErrorText: {
-    fontSize: 13,
-    color: '#b45309',
-    marginBottom: 8,
-  },
   emptyBrandsHint: {
     fontSize: 14,
     color: '#888',
@@ -646,21 +594,6 @@ const styles = StyleSheet.create({
   },
   chipTextSelected: {
     color: '#fff',
-  },
-
-  typedChip: {
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 100,
-    backgroundColor: '#F8F8F8',
-    borderWidth: 1.5,
-    borderColor: '#C4C4C4',
-    borderStyle: 'dashed',
-  },
-  typedChipText: {
-    fontSize: 14,
-    color: '#333',
-    fontWeight: '500',
   },
 
   suggestionsBox: {
