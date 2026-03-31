@@ -4,6 +4,7 @@ import ProductCommentItem from './product-comment-item';
 import ProductCommentOptionsMenu from './product-comment-options-menu';
 import ProductCommentInput from './product-comment-input';
 import type { CommentType } from '../../../src/types/feed';
+import { getCurrentUser } from '../../../src/services/mockSessionUsers';
 
 interface ProductCommentsSectionProps {
   comments: CommentType[];
@@ -165,6 +166,7 @@ export default function ProductCommentsSection({
       <ProductCommentInput
         replyingTo={null}
         onSubmit={handleTopLevelCommentSubmit}
+        composerAvatarUrl={getCurrentUser()?.avatarUrl}
       />
 
       {/* Comments List or Empty State */}

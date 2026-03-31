@@ -78,108 +78,102 @@ export async function getValidIdToken(): Promise<string | null> {
  * Refresh ID token using refresh token
  * Implements request queue to prevent multiple simultaneous refresh calls
  */
-async function refreshIdToken(
-  refreshToken: string,
-  retries = AUTH_CONFIG.TOKEN_REFRESH_RETRIES
-): Promise<TokenData | null> {
+async function refreshIdToken(refreshToken: string): Promise<TokenData | null> {
   // If refresh is already in progress, queue this request
   if (refreshPromise) {
     log.debug('[AUTH:TOKEN_REFRESH_QUEUE] Refresh already in progress, queuing request');
     return new Promise<TokenData | null>((resolve, reject) => {
-      pendingRequests.push({
-        resolve: (tokenData: TokenData | null) => {
-          resolve(tokenData);
-        },
-        reject,
-      });
+      pendingRequests.push({ resolve, reject });
     });
   }
 
   refreshPromise = (async () => {
     log.debug('[AUTH:TOKEN_REFRESH_START]');
     const startTime = Date.now();
-    try {
-      const api_key = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
-      if (!api_key) {
-        throw new InvalidTokenError('EXPO_PUBLIC_FIREBASE_API_KEY is missing for token refresh');
+    const maxAttempts = AUTH_CONFIG.TOKEN_REFRESH_RETRIES + 1;
+    let lastError: any;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      if (attempt > 1) {
+        log.warn('[AUTH:TOKEN_REFRESH_RETRY]', { attempt: attempt - 1, error: lastError?.message ?? String(lastError) });
+        await new Promise((resolve) => setTimeout(resolve, AUTH_CONFIG.TOKEN_REFRESH_RETRY_DELAY_MS));
       }
 
-      const response = await fetch(
-        `https://securetoken.googleapis.com/v1/token?key=${api_key}`,
-        {
+      try {
+        const api_key = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
+        if (!api_key) {
+          throw new InvalidTokenError('EXPO_PUBLIC_FIREBASE_API_KEY is missing for token refresh');
+        }
+
+        const emulatorHost = process.env.EXPO_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST;
+        const tokenRefreshUrl = emulatorHost
+          ? `http://${emulatorHost}/securetoken.googleapis.com/v1/token?key=${api_key}`
+          : `https://securetoken.googleapis.com/v1/token?key=${api_key}`;
+
+        const response = await fetch(tokenRefreshUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             grant_type: 'refresh_token',
             refresh_token: refreshToken,
           }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          log.error('[AUTH:TOKEN_REFRESH_FAILED_API]', {
+            status: response.status,
+            error: errorData,
+            elapsedMs: Date.now() - startTime,
+          });
+          throw new TokenRefreshError(
+            new Error(errorData.error?.message || 'Firebase token refresh failed')
+          );
         }
-      );
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        log.error('[AUTH:TOKEN_REFRESH_FAILED_API]', {
-          status: response.status,
-          error: errorData,
-          elapsedMs: Date.now() - startTime,
-        });
-        throw new TokenRefreshError(
-          new Error(errorData.error?.message || 'Firebase token refresh failed')
-        );
+        const data = await response.json();
+        const expiresAt = Date.now() + AUTH_CONFIG.TOKEN_EXPIRY_MS;
+
+        const tokenData: TokenData = {
+          idToken: data.id_token,
+          refreshToken: data.refresh_token || refreshToken,
+          expiresAt,
+        };
+
+        await storeTokenData(tokenData);
+        log.debug('[AUTH:TOKEN_REFRESH_SUCCESS]', { elapsedMs: Date.now() - startTime });
+
+        const requestsToResolve = [...pendingRequests];
+        pendingRequests.length = 0;
+        requestsToResolve.forEach(({ resolve }) => resolve(tokenData));
+
+        return tokenData;
+      } catch (error: any) {
+        lastError = error;
+        // Don't retry on non-recoverable errors (invalid token, missing config)
+        const isRetryable = error instanceof TokenRefreshError || error instanceof TypeError;
+        if (!isRetryable || attempt === maxAttempts) {
+          break;
+        }
       }
-
-      const data = await response.json();
-      
-      // Calculate expiry (Firebase tokens last ~1 hour)
-      const expiresAt = Date.now() + AUTH_CONFIG.TOKEN_EXPIRY_MS;
-      
-      const tokenData: TokenData = {
-        idToken: data.id_token,
-        refreshToken: data.refresh_token || refreshToken, // Use new refresh token if provided
-        expiresAt,
-      };
-
-      await storeTokenData(tokenData);
-      log.debug('[AUTH:TOKEN_REFRESH_SUCCESS]', { elapsedMs: Date.now() - startTime });
-
-      // Resolve all pending requests with the new token data
-      const requestsToResolve = [...pendingRequests];
-      pendingRequests.length = 0;
-      requestsToResolve.forEach(({ resolve }) => {
-        resolve(tokenData);
-      });
-
-      return tokenData;
-    } catch (error: any) {
-      if (retries > 0 && (error instanceof TokenRefreshError || error instanceof TypeError)) {
-        // TypeError for network errors
-        log.warn('[AUTH:TOKEN_REFRESH_RETRY]', {
-          attempt: AUTH_CONFIG.TOKEN_REFRESH_RETRIES - retries + 1,
-          error: error?.message ?? String(error),
-        });
-        await new Promise((resolve) => setTimeout(resolve, AUTH_CONFIG.TOKEN_REFRESH_RETRY_DELAY_MS));
-        return refreshIdToken(refreshToken, retries - 1);
-      }
-      log.error('[AUTH:TOKEN_REFRESH_FAILED]', {
-        error: error?.message ?? String(error),
-        elapsedMs: Date.now() - startTime,
-      });
-      // Reject all pending requests
-      const requestsToReject = [...pendingRequests];
-      pendingRequests.length = 0;
-      requestsToReject.forEach(({ reject }) => reject(error as Error));
-      throw error;
-    } finally {
-      refreshPromise = null; // Clear promise when done
     }
+
+    log.error('[AUTH:TOKEN_REFRESH_FAILED]', {
+      error: lastError?.message ?? String(lastError),
+      elapsedMs: Date.now() - startTime,
+    });
+    const requestsToReject = [...pendingRequests];
+    pendingRequests.length = 0;
+    requestsToReject.forEach(({ reject }) => reject(lastError as Error));
+    throw lastError;
   })();
 
   try {
-    const result = await refreshPromise;
-    return result;
-  } catch (error) {
-    // If refresh fails, return null (errors are already logged)
+    return await refreshPromise;
+  } catch {
     return null;
+  } finally {
+    refreshPromise = null;
   }
 }
 

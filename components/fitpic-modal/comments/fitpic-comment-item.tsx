@@ -4,14 +4,14 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
   Animated,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { CommentType } from '../../../src/types/feed';
 import { userApiClient } from '../../../src/services/apiClients/userClient';
 import ProfileNotFoundModal from '../../common/ProfileNotFoundModal';
+import UserAvatar from '../../common/UserAvatar';
+import { openUserProfile } from '../../../src/navigation/openUserProfile';
 
 // Re-export CommentType for convenience
 export type { CommentType };
@@ -58,7 +58,6 @@ export default function FitPicCommentItem({
   onOpenMenu,
   onReact,
 }: FitPicCommentItemProps) {
-  const router = useRouter();
   const [showProfileNotFound, setShowProfileNotFound] = useState(false);
   const [authorTapLoading, setAuthorTapLoading] = useState(false);
 
@@ -80,10 +79,7 @@ export default function FitPicCommentItem({
         setShowProfileNotFound(true);
         return;
       }
-      router.push({
-        pathname: '/user-profile',
-        params: { userId },
-      });
+      openUserProfile(userId);
     } finally {
       setAuthorTapLoading(false);
     }
@@ -144,17 +140,12 @@ export default function FitPicCommentItem({
     <View style={[styles.container, { marginLeft: indent }]}>
       {/* Avatar and Username Row */}
       <View style={styles.headerRow}>
-        <TouchableOpacity
-          onPress={handleAuthorPress}
-          disabled={!userId}
-          activeOpacity={0.7}
-        >
-          <Image
-            source={require('../../../assets/images/icon.png')}
-            style={styles.avatar}
-            defaultSource={require('../../../assets/images/icon.png')}
-          />
-        </TouchableOpacity>
+        <UserAvatar
+          avatarUrl={comment.avatarUrl}
+          size={26}
+          style={styles.avatar}
+          onPress={userId ? handleAuthorPress : undefined}
+        />
         <View style={styles.userInfo}>
           <TouchableOpacity
             onPress={handleAuthorPress}
@@ -271,10 +262,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   avatar: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: '#E5E5E5',
     marginRight: 8,
   },
   userInfo: {

@@ -111,7 +111,7 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
-            name="user-profile"
+            name="user/[userId]"
             options={{
               headerShown: false,
               presentation: 'card',

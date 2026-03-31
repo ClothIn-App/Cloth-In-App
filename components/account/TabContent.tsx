@@ -4,19 +4,18 @@ import FitPicsTab from "./tabs/FitPicsTab";
 import ClosetTab from "./tabs/ClosetTab";
 import SavedTab from "./tabs/SavedTab";
 
-type Props = { 
+type Props = {
   activeKey: string;
   userId?: string;
-  isViewOnly?: boolean;
 };
 
-export default function TabContent({ activeKey, userId, isViewOnly = false }: Props) {
+export default function TabContent({ activeKey, userId }: Props) {
   const content = (() => {
     switch (activeKey) {
       case "fitpics":
         return <FitPicsTab userId={userId} />;
       case "closet":
-        return <ClosetTab userId={userId} isViewOnly={isViewOnly} />;
+        return <ClosetTab userId={userId} />;
       case "saved":
         return <SavedTab userId={userId} />;
       default:

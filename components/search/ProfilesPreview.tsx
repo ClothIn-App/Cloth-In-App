@@ -3,13 +3,13 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image,
   StyleSheet,
 } from 'react-native';
-import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import type { UserSearchResult } from '../../src/types/search';
+import UserAvatar from '../common/UserAvatar';
 import { recordSearchEvent } from '../../src/services/apiClients/analyticsClient';
+import { openUserProfile } from '../../src/navigation/openUserProfile';
 
 type Props = {
   users: UserSearchResult[];
@@ -24,10 +24,7 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
       resultType: "user",
       resultId: user.uid,
     });
-    router.push({
-      pathname: '/user-profile',
-      params: { userId: user.uid },
-    });
+    openUserProfile(user.uid);
   };
 
   return (
@@ -55,10 +52,7 @@ export default function ProfilesPreview({ users, onSeeAll }: Props) {
               onPress={() => handleUserPress(user)}
               activeOpacity={0.7}
             >
-              <Image
-                source={{ uri: user.avatarUrl || 'https://placehold.co/50x50' }}
-                style={styles.avatar}
-              />
+              <UserAvatar avatarUrl={user.avatarUrl} size={50} style={styles.avatar} />
               <View style={styles.userInfo}>
                 <View style={styles.userNameRow}>
                   <Text style={styles.displayName} numberOfLines={1}>
@@ -145,11 +139,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
     marginRight: 12,
-    backgroundColor: '#e5e7eb',
   },
   userInfo: {
     flex: 1,

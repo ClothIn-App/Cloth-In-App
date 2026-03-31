@@ -43,6 +43,8 @@ function normalizeComment(rawComment: any): CommentType {
     likes: rawComment.likes ?? rawComment.like ?? 0,
     dislikes: rawComment.dislikes ?? rawComment.dislike ?? 0,
     replies: (rawComment.replies || []).map(normalizeComment),
+    authorId: rawComment.authorId,
+    avatarUrl: rawComment.avatarUrl,
     userReaction: rawComment.userReaction,
   };
 }
@@ -121,7 +123,8 @@ async function convertFitPicToFitPicItem(fitpic: any, commentsFromResponse?: Com
       },
       likes: fitpic.engagement?.likes || 0,
       author: fitpic.author?.username || fitpic.authorId,
-      authorId: fitpic.authorId || fitpic.author?.uid, // Preserve authorId for navigation
+      authorId: fitpic.authorId || fitpic.author?.uid,
+      authorAvatarUrl: fitpic.author?.avatarUrl,
       createdAt: fitpic.createdAt,
       location: locationString,
       reactions,

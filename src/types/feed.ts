@@ -18,6 +18,7 @@ export interface CommentType {
   dislikes: number;
   replies: CommentType[];
   authorId?: string; // When set, use for navigation; user is display username
+  avatarUrl?: string; // Avatar URL of the comment author
   /** Current user's reaction when auth present (like | dislike) */
   userReaction?: string;
 }
@@ -33,6 +34,7 @@ export interface FitPicItem extends BaseFeedItem {
   likes: number;
   author: string;
   authorId?: string; // Optional authorId for navigation (when author is username string)
+  authorAvatarUrl?: string; // Avatar URL of the post author
   reactions: Reactions;
   comments?: CommentType[]; // Optional comments array
   location?: string; // Optional location string (e.g., "New York, NY")

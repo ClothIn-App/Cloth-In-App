@@ -38,12 +38,18 @@ jest.mock("@/src/services/apiClients/notificationsClient", () => ({
   },
 }));
 
+jest.mock("@/src/navigation/openUserProfile", () => ({
+  openUserProfile: jest.fn(),
+}));
+
 import NotificationsScreen from "@/app/notifications";
+import { openUserProfile } from "@/src/navigation/openUserProfile";
 import { notificationsApiClient } from "@/src/services/apiClients/notificationsClient";
 import { useNotifications } from "@/src/hooks/useNotifications";
 
 const mockedUseNotifications = useNotifications as jest.Mock;
 const mockedMarkAllRead = notificationsApiClient.markAllNotificationsRead as jest.Mock;
+const mockedOpenUserProfile = openUserProfile as jest.Mock;
 
 function baseHookState(overrides?: Record<string, unknown>) {
   return {
@@ -121,7 +127,7 @@ describe("NotificationsScreen", () => {
     expect(loadMore).toHaveBeenCalledTimes(1);
   });
 
-  test("maps follow row press to user profile navigation", () => {
+  test("maps follow row press to openUserProfile stub", () => {
     mockedUseNotifications.mockReturnValue(
       baseHookState({
         notifications: [
@@ -143,10 +149,8 @@ describe("NotificationsScreen", () => {
     );
     const screen = render(<NotificationsScreen />);
     fireEvent.press(screen.getByTestId("notification-row-n-follow"));
-    expect(mockPush).toHaveBeenCalledWith({
-      pathname: "/user-profile",
-      params: { userId: "u-actor" },
-    });
+    expect(mockedOpenUserProfile).toHaveBeenCalledWith("u-actor");
+    expect(mockPush).not.toHaveBeenCalled();
   });
 
   test("maps fitpic row press to fitpic detail", () => {

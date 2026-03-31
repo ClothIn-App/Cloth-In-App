@@ -4,11 +4,12 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import type { UserSearchResult } from '../../src/types/search';
 import { userApiClient } from '../../src/services/apiClients/userClient';
+import UserAvatar from '../common/UserAvatar';
+import { openUserProfile } from '../../src/navigation/openUserProfile';
 
 type Props = {
   user: UserSearchResult;
@@ -17,17 +18,13 @@ type Props = {
 };
 
 export default function UserListItem({ user, onPress, onFollowPress }: Props) {
-  const router = useRouter();
   const [isFollowing, setIsFollowing] = useState(user.isFollowing ?? false);
 
   const handlePress = () => {
     if (onPress) {
       onPress(user);
     } else {
-      router.push({
-        pathname: '/user-profile',
-        params: { userId: user.uid },
-      });
+      openUserProfile(user.uid);
     }
   };
 
@@ -57,10 +54,7 @@ export default function UserListItem({ user, onPress, onFollowPress }: Props) {
       onPress={handlePress}
       activeOpacity={0.7}
     >
-      <Image
-        source={{ uri: user.avatarUrl || 'https://placehold.co/50x50' }}
-        style={styles.avatar}
-      />
+      <UserAvatar avatarUrl={user.avatarUrl} size={50} style={styles.avatar} />
       <View style={styles.userInfo}>
         <View style={styles.userNameRow}>
           <Text style={styles.displayName} numberOfLines={1}>
@@ -116,11 +110,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#e5e5e5',
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
     marginRight: 12,
-    backgroundColor: '#e5e7eb',
   },
   userInfo: {
     flex: 1,

@@ -8,6 +8,7 @@ import {
   Image,
 } from "react-native";
 import { router } from "expo-router";
+import { openUserProfile } from "@/src/navigation/openUserProfile";
 import type { FitPic as ContentFitPic } from "@/src/types/content";
 import type { FitPic as FitpicFitPic } from "@/src/types/fitpic";
 
@@ -132,10 +133,7 @@ export function ProductUserStyleCarousel({
                       userId = (fitpic as any).authorId || (fitpic.author?.startsWith('u_') ? fitpic.author : undefined);
                     }
                     if (userId) {
-                      router.push({
-                        pathname: '/user-profile',
-                        params: { userId },
-                      });
+                      openUserProfile(userId);
                     }
                   }}
                   activeOpacity={0.8}

@@ -1,39 +1,29 @@
 /**
  * Tests for useFollowingFeed hook.
- *
- * Covers:
- *  1. Empty state: backend returns empty items → status goes idle with empty list.
- *  2. Populated state: items are mapped and appear in state.
- *  3. Pagination: fetchMore sends the cursor from the previous response and
- *     appends results.
- *  4. Error state: backend failure puts hook in error state without crashing.
  */
 
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { render, fireEvent, waitFor } from "@testing-library/react-native";
 
-// ── Mock the API client ────────────────────────────────────────────────────
 jest.mock("@/src/services/apiClients/contentClient", () => ({
   contentApiClient: {
-    getFollowingFeed: jest.fn(),
+    getFollowing: jest.fn(),
   },
 }));
 
-// ── Mock normalizeFeed so we avoid Image.resolveAssetSource in tests ───────
 jest.mock("@/src/utils/normalizeFeed", () => ({
-  buildFitPicFeed: jest.fn(),
+  buildFollowingFeed: jest.fn(),
 }));
 
 import { contentApiClient } from "@/src/services/apiClients/contentClient";
-import { buildFitPicFeed } from "@/src/utils/normalizeFeed";
+import { buildFollowingFeed } from "@/src/utils/normalizeFeed";
 import { useFollowingFeed } from "@/src/hooks/useFollowingFeed";
 import type { FeedItem } from "@/src/types/feed";
 
-const mockedGetFollowingFeed = contentApiClient.getFollowingFeed as jest.Mock;
-const mockedBuildFitPicFeed = buildFitPicFeed as jest.Mock;
+const mockedGetFollowing = contentApiClient.getFollowing as jest.Mock;
+const mockedBuildFollowingFeed = buildFollowingFeed as jest.Mock;
 
-// Minimal FeedItem stubs that satisfy the FitPicItem interface shape
 function makeFitPicItem(id: string): FeedItem {
   return {
     id,
@@ -48,7 +38,6 @@ function makeFitPicItem(id: string): FeedItem {
   };
 }
 
-// ── Hook harness ─────────────────────────────────────────────────────────
 function HookHarness() {
   const { state, initialize, refresh, loadNextPage } = useFollowingFeed();
 
@@ -73,18 +62,16 @@ function HookHarness() {
 
 describe("useFollowingFeed", () => {
   beforeEach(() => {
-    mockedGetFollowingFeed.mockReset();
-    mockedBuildFitPicFeed.mockReset();
+    mockedGetFollowing.mockReset();
+    mockedBuildFollowingFeed.mockReset();
   });
 
-  // ── 1. Empty state ──────────────────────────────────────────────────────
   test("empty state: backend returns no items → idle with empty list", async () => {
-    mockedGetFollowingFeed.mockResolvedValueOnce({
+    mockedGetFollowing.mockResolvedValueOnce({
       items: [],
-      nextCursor: null,
-      hasMore: false,
+      pagination: null,
     });
-    mockedBuildFitPicFeed.mockResolvedValueOnce([]);
+    mockedBuildFollowingFeed.mockResolvedValueOnce([]);
 
     const screen = render(<HookHarness />);
 
@@ -99,16 +86,14 @@ describe("useFollowingFeed", () => {
     expect(screen.getByTestId("error").props.children).toBe("");
   });
 
-  // ── 2. Populated state ──────────────────────────────────────────────────
   test("populated state: items are mapped and appear in state", async () => {
     const mockItems = [makeFitPicItem("fp-1"), makeFitPicItem("fp-2")];
 
-    mockedGetFollowingFeed.mockResolvedValueOnce({
-      items: [{ id: "fp-1" }, { id: "fp-2" }], // raw server items (passed to buildFitPicFeed)
-      nextCursor: null,
-      hasMore: false,
+    mockedGetFollowing.mockResolvedValueOnce({
+      items: [{ type: "fitpic", fitpic: { id: "fp-1" } }, { type: "fitpic", fitpic: { id: "fp-2" } }],
+      pagination: null,
     });
-    mockedBuildFitPicFeed.mockResolvedValueOnce(mockItems);
+    mockedBuildFollowingFeed.mockResolvedValueOnce(mockItems);
 
     const screen = render(<HookHarness />);
     fireEvent.press(screen.getByTestId("initialize"));
@@ -121,30 +106,26 @@ describe("useFollowingFeed", () => {
     expect(screen.getByTestId("hasMore").props.children).toBe("false");
   });
 
-  // ── 3. Pagination ────────────────────────────────────────────────────────
   test("pagination: fetchMore sends cursor and appends results", async () => {
     const page1Items = [makeFitPicItem("fp-1")];
     const page2Items = [makeFitPicItem("fp-2")];
 
-    mockedGetFollowingFeed
+    mockedGetFollowing
       .mockResolvedValueOnce({
-        items: [{ id: "fp-1" }],
-        nextCursor: "cursor-20",
-        hasMore: true,
+        items: [{ type: "fitpic", fitpic: { id: "fp-1" } }],
+        pagination: { hasMore: true, nextCursor: "cursor-20" },
       })
       .mockResolvedValueOnce({
-        items: [{ id: "fp-2" }],
-        nextCursor: null,
-        hasMore: false,
+        items: [{ type: "fitpic", fitpic: { id: "fp-2" } }],
+        pagination: { hasMore: false, nextCursor: undefined },
       });
 
-    mockedBuildFitPicFeed
+    mockedBuildFollowingFeed
       .mockResolvedValueOnce(page1Items)
       .mockResolvedValueOnce(page2Items);
 
     const screen = render(<HookHarness />);
 
-    // Load first page
     fireEvent.press(screen.getByTestId("initialize"));
     await waitFor(() => {
       expect(screen.getByTestId("count").props.children).toBe("1");
@@ -152,21 +133,21 @@ describe("useFollowingFeed", () => {
 
     expect(screen.getByTestId("hasMore").props.children).toBe("true");
 
-    // Load more (should send cursor)
     fireEvent.press(screen.getByTestId("loadMore"));
     await waitFor(() => {
       expect(screen.getByTestId("count").props.children).toBe("2");
     });
 
-    expect(mockedGetFollowingFeed).toHaveBeenCalledTimes(2);
-    // Second call must include the cursor from the first response
-    expect(mockedGetFollowingFeed).toHaveBeenNthCalledWith(2, "cursor-20", 20);
+    expect(mockedGetFollowing).toHaveBeenCalledTimes(2);
+    expect(mockedGetFollowing).toHaveBeenNthCalledWith(2, {
+      limit: 20,
+      cursor: "cursor-20",
+    });
     expect(screen.getByTestId("hasMore").props.children).toBe("false");
   });
 
-  // ── 4. Error state ───────────────────────────────────────────────────────
   test("error state: backend failure surfaces error without crashing", async () => {
-    mockedGetFollowingFeed.mockRejectedValueOnce(new Error("network failure"));
+    mockedGetFollowing.mockRejectedValueOnce(new Error("network failure"));
 
     const screen = render(<HookHarness />);
     fireEvent.press(screen.getByTestId("initialize"));
@@ -179,24 +160,21 @@ describe("useFollowingFeed", () => {
     expect(screen.getByTestId("count").props.children).toBe("0");
   });
 
-  // ── Pull-to-refresh resets cursor ────────────────────────────────────────
   test("pull-to-refresh resets cursor and re-fetches from the top", async () => {
     const page1Items = [makeFitPicItem("fp-1")];
     const refreshItems = [makeFitPicItem("fp-A")];
 
-    mockedGetFollowingFeed
+    mockedGetFollowing
       .mockResolvedValueOnce({
-        items: [{ id: "fp-1" }],
-        nextCursor: "cursor-20",
-        hasMore: true,
+        items: [{ type: "fitpic", fitpic: { id: "fp-1" } }],
+        pagination: { hasMore: true, nextCursor: "cursor-20" },
       })
       .mockResolvedValueOnce({
-        items: [{ id: "fp-A" }],
-        nextCursor: null,
-        hasMore: false,
+        items: [{ type: "fitpic", fitpic: { id: "fp-A" } }],
+        pagination: null,
       });
 
-    mockedBuildFitPicFeed
+    mockedBuildFollowingFeed
       .mockResolvedValueOnce(page1Items)
       .mockResolvedValueOnce(refreshItems);
 
@@ -211,8 +189,7 @@ describe("useFollowingFeed", () => {
       expect(screen.getByTestId("count").props.children).toBe("1");
     });
 
-    // Refresh must call without cursor (undefined)
-    expect(mockedGetFollowingFeed).toHaveBeenCalledTimes(2);
-    expect(mockedGetFollowingFeed).toHaveBeenNthCalledWith(2, undefined, 20);
+    expect(mockedGetFollowing).toHaveBeenCalledTimes(2);
+    expect(mockedGetFollowing).toHaveBeenNthCalledWith(2, { limit: 20 });
   });
 });

@@ -9,6 +9,8 @@ import type { Product } from '../types/content';
 import type { ProductSearchResult } from '../types/search';
 import { FITPIC_ASSETS, PRODUCT_ASSETS } from '../maps/images';
 import type { ForYouFeedItem } from '../services/endpoints/content/getForYou';
+import type { FollowingFitPicItem } from '../services/endpoints/content/getFollowing';
+import type { BrowseProductItem } from '../services/endpoints/content/getBrowse';
 
 type ProductLike = {
   id: string;
@@ -271,6 +273,86 @@ export const buildForYouFeed = async (
     return feedItems;
   } catch (error) {
     console.error('Error building For You feed:', error);
+    return [];
+  }
+};
+
+/**
+ * Build Following feed from a server-ordered fitpic-only items array.
+ *
+ * Preserves the server's chronological order — no shuffle, no products.
+ */
+export const buildFollowingFeed = async (
+  items: FollowingFitPicItem[] | undefined
+): Promise<FitPicItem[]> => {
+  try {
+    const safeItems = (items ?? []).filter((item) => item.type === 'fitpic');
+    const results = await Promise.allSettled(
+      safeItems.map((item) => normalizeFitPic(item.fitpic as FitPic))
+    );
+
+    const feedItems: FitPicItem[] = [];
+    results.forEach((result, i) => {
+      if (result.status === 'fulfilled' && result.value != null) {
+        feedItems.push(result.value);
+      } else if (result.status === 'rejected') {
+        console.warn(
+          `Following feed: skipped item at index ${i}:`,
+          result.reason?.message ?? result.reason
+        );
+      }
+    });
+
+    return feedItems;
+  } catch (error) {
+    console.error('Error building Following feed:', error);
+    return [];
+  }
+};
+
+/**
+ * Build Browse feed from a server-ordered products-only items array.
+ *
+ * Preserves the server's ranked order — no createdAt sort, no shuffle.
+ * Output index i corresponds to server position i for the current page.
+ */
+export const buildBrowseFeed = async (
+  items: BrowseProductItem[] | undefined
+): Promise<ProductItem[]> => {
+  try {
+    const safeItems = (items ?? []).filter((item) => item.type === 'product');
+    const results = await Promise.allSettled(
+      safeItems.map((item) => {
+        const p = item.product;
+        return normalizeProduct({
+          id: p.id,
+          name: p.name,
+          brand: p.brand ?? undefined,
+          price: p.price ?? undefined,
+          originalPrice: p.originalPrice ?? undefined,
+          priceType: p.priceStatus ? PRICE_STATUS_MAP[p.priceStatus] : undefined,
+          description: p.description ?? undefined,
+          imageUrl: p.imageUrl ?? undefined,
+          createdAt: p.createdAt ?? undefined,
+        });
+      })
+    );
+
+    const feedItems: ProductItem[] = [];
+    results.forEach((result, i) => {
+      if (result.status === 'fulfilled' && result.value != null) {
+        feedItems.push(result.value);
+      } else if (result.status === 'rejected') {
+        console.warn(
+          `Browse feed: skipped product at index ${i}:`,
+          result.reason?.message ?? result.reason
+        );
+      }
+    });
+
+    return feedItems;
+  } catch (error) {
+    console.error('Error building Browse feed:', error);
     return [];
   }
 };

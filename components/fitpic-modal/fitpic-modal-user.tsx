@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { openUserProfile } from '../../src/navigation/openUserProfile';
 import { useThemeColor } from '../../hooks/useThemeColor';
+import UserAvatar from '../common/UserAvatar';
 
 type AuthorInfo = {
   uid: string;
@@ -19,7 +20,6 @@ type Props = {
 };
 
 export default function FitPicModalUser({ author, authorId, createdAt, location }: Props) {
-  const router = useRouter();
   const muted = useThemeColor({}, 'mutedText') || '#999';
 
   // Normalize author data - handle both string (authorId) and object formats
@@ -52,10 +52,7 @@ export default function FitPicModalUser({ author, authorId, createdAt, location 
 
   const handleUsernamePress = () => {
     if (userId) {
-      router.push({
-        pathname: '/user-profile',
-        params: { userId },
-      });
+      openUserProfile(userId);
     }
   };
 
@@ -80,20 +77,14 @@ export default function FitPicModalUser({ author, authorId, createdAt, location 
   return (
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
-        <TouchableOpacity onPress={handleUsernamePress} disabled={!userId} activeOpacity={0.7}>
-          <Image
-            source={
-              avatarUrl
-                ? { uri: avatarUrl }
-                : require('../../assets/images/icon.png') // Placeholder
-            }
-            style={styles.avatar}
-            defaultSource={require('../../assets/images/icon.png')}
-          />
-        </TouchableOpacity>
+        <UserAvatar
+          avatarUrl={avatarUrl}
+          size={32}
+          onPress={userId ? handleUsernamePress : undefined}
+        />
       </View>
       <View style={styles.userInfo}>
-        <TouchableOpacity onPress={handleUsernamePress} disabled={!userId}>
+        <TouchableOpacity onPress={handleUsernamePress} disabled={!userId} activeOpacity={0.7}>
           <Text style={[styles.username, userId && styles.usernameTappable]}>@{username}</Text>
         </TouchableOpacity>
         {hasMetadata && (
@@ -132,12 +123,6 @@ const styles = StyleSheet.create({
   },
   avatarContainer: {
     marginRight: 12,
-  },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#E5E5E5',
   },
   userInfo: {
     flex: 1,

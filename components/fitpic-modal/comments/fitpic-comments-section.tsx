@@ -4,6 +4,7 @@ import FitPicCommentItem from './fitpic-comment-item';
 import FitPicCommentOptionsMenu from './fitpic-comment-options-menu';
 import FitPicCommentInput from './fitpic-comment-input';
 import type { CommentType } from '../../../src/types/feed';
+import { getCurrentUser } from '../../../src/services/mockSessionUsers';
 
 interface FitPicCommentsSectionProps {
   comments: CommentType[];
@@ -165,6 +166,7 @@ export default function FitPicCommentsSection({
       <FitPicCommentInput
         replyingTo={null}
         onSubmit={handleTopLevelCommentSubmit}
+        composerAvatarUrl={getCurrentUser()?.avatarUrl}
       />
 
       {/* Comments List or Empty State */}

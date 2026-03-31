@@ -26,9 +26,18 @@ import {
   ForYouProductData,
 } from "../endpoints/content/getForYou";
 import {
-  getFollowingFeedEndpoint,
-  FollowingFeedResponse,
-} from "../endpoints/content/getFollowingFeed";
+  getFollowingEndpoint,
+  GetFollowingRequest,
+  GetFollowingResponse,
+  FollowingFitPicItem,
+} from "../endpoints/content/getFollowing";
+import {
+  getBrowseEndpoint,
+  GetBrowseRequest,
+  GetBrowseResponse,
+  BrowseProductItem,
+  BrowseProductData,
+} from "../endpoints/content/getBrowse";
 import type {
   UpdateProductEngagementRequest,
   UpdateProductEngagementResponse,
@@ -81,16 +90,21 @@ export async function getForYou(
   );
 }
 
-export async function getFollowingFeed(
-  cursor?: string,
-  limit?: number
-): Promise<FollowingFeedResponse> {
-  const params: Record<string, string | number> = {};
-  if (cursor !== undefined) params.cursor = cursor;
-  if (limit !== undefined) params.limit = limit;
-  return callApiEndpoint<Record<string, never>, FollowingFeedResponse>(
-    getFollowingFeedEndpoint,
-    { queryParameters: params as Record<string, string> }
+export async function getFollowing(
+  params?: GetFollowingRequest
+): Promise<GetFollowingResponse> {
+  return callApiEndpoint<GetFollowingRequest, GetFollowingResponse>(
+    getFollowingEndpoint,
+    { queryParameters: params || {} }
+  );
+}
+
+export async function getBrowse(
+  params?: GetBrowseRequest
+): Promise<GetBrowseResponse> {
+  return callApiEndpoint<GetBrowseRequest, GetBrowseResponse>(
+    getBrowseEndpoint,
+    { queryParameters: params || {} }
   );
 }
 
@@ -156,7 +170,8 @@ export const contentApiClient = {
   getFitPic,
   getFeed,
   getForYou,
-  getFollowingFeed,
+  getFollowing,
+  getBrowse,
   getProducts,
   getFitPics,
   createProduct,
@@ -179,7 +194,13 @@ export type {
   ForYouFitPicItem,
   ForYouProductItem,
   ForYouProductData,
-  FollowingFeedResponse,
+  GetFollowingRequest,
+  GetFollowingResponse,
+  FollowingFitPicItem,
+  GetBrowseRequest,
+  GetBrowseResponse,
+  BrowseProductItem,
+  BrowseProductData,
   GetProductsRequest,
   GetProductsResponse,
   GetFitPicsRequest,

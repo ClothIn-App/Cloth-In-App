@@ -8,12 +8,10 @@
     "scheme": "clothin",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.CLOTH-IN"
     },
-
     "plugins": [
       "expo-router",
       [
@@ -39,9 +37,25 @@
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos."
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to set a profile picture.",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to take a profile photo."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
     ],
-
-    "experiments": { "typedRoutes": true }
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }

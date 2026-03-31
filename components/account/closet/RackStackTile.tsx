@@ -17,6 +17,10 @@ type Props = {
   onPressExpand?: () => void;
   onPress?: () => void;
   highlighted?: boolean;
+  /** When false, hides rack header ellipsis (e.g. other-user read-only closet). Default true. */
+  showOptionsButton?: boolean;
+  /** Shown on front placeholder when rack has zero products. Defaults to "Add Products to This Rack". */
+  emptyRackLabel?: string;
 };
 
 export default function RackStackTile({
@@ -27,6 +31,8 @@ export default function RackStackTile({
   onPressExpand = () => {},
   onPress,
   highlighted = false,
+  showOptionsButton = true,
+  emptyRackLabel,
 }: Props) {
   const previewItems = useMemo(() => items.slice(0, maxPreviewCount), [items, maxPreviewCount]);
   const previewCount = previewItems.length;
@@ -96,17 +102,21 @@ export default function RackStackTile({
           >
             {title}
           </Text>
-          <Pressable
-            onPress={onPressExpand}
-            accessibilityRole="button"
-            accessibilityLabel={`${title} options`}
-            // Make scroll gestures win over accidental presses.
-            pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
-            hitSlop={6}
-            style={styles.expandButton}
-          >
-            <Ionicons name="ellipsis-horizontal" size={18} color="#11181C" />
-          </Pressable>
+          {showOptionsButton ? (
+            <Pressable
+              onPress={onPressExpand}
+              accessibilityRole="button"
+              accessibilityLabel={`${title} options`}
+              // Make scroll gestures win over accidental presses.
+              pressRetentionOffset={{ top: 0, left: 0, right: 0, bottom: 0 }}
+              hitSlop={6}
+              style={styles.expandButton}
+            >
+              <Ionicons name="ellipsis-horizontal" size={18} color="#11181C" />
+            </Pressable>
+          ) : (
+            <View style={styles.expandButton} />
+          )}
         </View>
 
         <View style={[styles.stackContainer, { height: containerHeight }]}>
@@ -121,9 +131,10 @@ export default function RackStackTile({
             // Front card (i === 2) should show "Add Products" text when there are 0 products
             const isFrontCard = i === 2;
             const shouldShowAddText = previewCount === 0 && isFrontCard;
+            const emptyLabel = emptyRackLabel ?? "Add Products to This Rack";
             return (
               <View
-                key={it ? it.id : `placeholder-${i}`}
+                key={`layer-${i}-${it?.id ?? "placeholder"}`}
                 style={{
                   position: "absolute",
                   left: baseLeft + offset.x,
@@ -135,7 +146,7 @@ export default function RackStackTile({
                 ) : (
                   <ClosetPlaceholderCard 
                     width={cardWidth} 
-                    text={shouldShowAddText ? "Add Products to This Rack" : ""} 
+                    text={shouldShowAddText ? emptyLabel : ""} 
                     borderRadius={16} 
                   />
                 )}

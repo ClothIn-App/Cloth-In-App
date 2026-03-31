@@ -407,8 +407,11 @@ export default function FitPicDetailScreen() {
               }
             >
               <FitPicModalUser
-                author={fitpic.author}
-                authorId={fitpic.authorId}
+                author={{
+                  uid: fitpic.authorId ?? fitpic.author,
+                  username: fitpic.author,
+                  avatarUrl: fitpic.authorAvatarUrl,
+                }}
                 createdAt={fitpic.createdAt}
                 location={fitpic.location}
               />
@@ -461,6 +464,7 @@ export default function FitPicDetailScreen() {
                   replyingTo={{ id: replyTarget.id, user: replyTarget.user }}
                   onSubmit={handleReplySubmit}
                   onCancel={() => setReplyTarget(null)}
+                  composerAvatarUrl={currentUser?.avatarUrl}
                 />
               </View>
             )}
