@@ -181,6 +181,8 @@ export async function getProductByIdFromApi(id: string): Promise<ProductItem | n
       createdAt: (p as any).createdAt ?? '',
       name: p.name ?? '',
       brand: p.brand ?? '',
+      ...(p.brandId ? { brandId: p.brandId } : {}),
+      ...(p.brandNameCanonical ? { brandNameCanonical: p.brandNameCanonical } : {}),
       price: p.price ?? 0,
       salePrice: p.originalPrice ?? null,
       priceType: p.priceType,

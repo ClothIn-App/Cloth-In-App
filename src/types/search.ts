@@ -40,6 +40,8 @@ export type ProductSearchResult = {
   id: string;
   name: string;
   brand?: string;
+  brandId?: string;
+  brandNameCanonical?: string;
   category?: string;
   price?: number | null;
   originalPrice?: number;

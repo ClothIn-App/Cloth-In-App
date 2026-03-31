@@ -49,6 +49,7 @@ export default function Survey() {
         occasions: answers.occasions,
         priceTiers: answers.priceTiers,
         selectedBrandIds: answers.selectedBrandIds,
+        typedBrandNames: answers.typedBrandNames,
         onboardingVersion: ONBOARDING_VERSION,
       });
       router.replace('/(tabs)/home');

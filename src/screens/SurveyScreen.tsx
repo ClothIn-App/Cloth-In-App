@@ -1,10 +1,11 @@
 // src/screens/SurveyScreen.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -18,7 +19,15 @@ import {
   ONBOARDING_QUESTIONS,
   type OnboardingQuestionId,
 } from '@/src/features/onboarding/questions';
-import type { OnboardingAnswers, RecommendedBrand } from '@/src/features/onboarding/types';
+import {
+  SURVEY_BRAND_TEXT_MAX_CHARS,
+  type OnboardingAnswers,
+  type RecommendedBrand,
+} from '@/src/features/onboarding/types';
+import type { BrandSearchHit } from '@/src/services/apiClients/contentClient';
+import { contentApiClient } from '@/src/services/apiClients/contentClient';
+
+const BRAND_SEARCH_DEBOUNCE_MS = 280;
 
 const bgPattern = require('@/assets/images/login-bg.png');
 
@@ -47,9 +56,16 @@ export default function SurveyScreen({ onSkip, onSubmit, onFetchBrands }: Props)
   // Q6 state
   const [recommendedBrands, setRecommendedBrands] = useState<RecommendedBrand[]>([]);
   const [brandsLoading, setBrandsLoading] = useState(false);
-  const [selectedBrandIds, setSelectedBrandIds] = useState<string[]>([]);
+  /** Suggested lane only — not shown under Your picks. */
+  const [laneSelectedBrandIds, setLaneSelectedBrandIds] = useState<string[]>([]);
+  /** Brands chosen from search results — shown under Your picks. */
+  const [searchSelectedBrandIds, setSearchSelectedBrandIds] = useState<string[]>([]);
+  const [typedBrandNames, setTypedBrandNames] = useState<string[]>([]);
+  const [brandLabelById, setBrandLabelById] = useState<Record<string, string>>({});
   const [brandDraft, setBrandDraft] = useState<string>('');
-  const [brandDraftError, setBrandDraftError] = useState<string>('');
+  const [searchHits, setSearchHits] = useState<BrandSearchHit[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isBrandsScreen = currentIndex === ONBOARDING_QUESTIONS.length;
   const currentQuestion = !isBrandsScreen ? ONBOARDING_QUESTIONS[currentIndex] : null;
@@ -61,17 +77,48 @@ export default function SurveyScreen({ onSkip, onSubmit, onFetchBrands }: Props)
     }
   }, [currentIndex]);
 
+  useEffect(() => {
+    if (!isBrandsScreen) {
+      setSearchHits([]);
+      return;
+    }
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    const q = brandDraft.trim();
+    if (q.length < 1) {
+      setSearchHits([]);
+      setSearchLoading(false);
+      return;
+    }
+    searchDebounceRef.current = setTimeout(() => {
+      void (async () => {
+        setSearchLoading(true);
+        try {
+          const res = await contentApiClient.searchBrands({ q, limit: 20 });
+          setSearchHits(res.brands ?? []);
+        } catch {
+          setSearchHits([]);
+        } finally {
+          setSearchLoading(false);
+        }
+      })();
+    }, BRAND_SEARCH_DEBOUNCE_MS);
+    return () => {
+      if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    };
+  }, [brandDraft, isBrandsScreen]);
+
   const fetchBrands = async () => {
     setBrandsLoading(true);
     try {
-      const brands = await onFetchBrands({
+      const answersSlice = {
         styleIdentity: answers.styleIdentity,
         styleVibes: answers.styleVibes,
         categories: answers.categories,
         occasions: answers.occasions,
         priceTiers: answers.priceTiers,
-      });
-      setRecommendedBrands(brands);
+      };
+      const recommended = await onFetchBrands(answersSlice);
+      setRecommendedBrands(recommended);
     } finally {
       setBrandsLoading(false);
     }
@@ -89,34 +136,47 @@ export default function SurveyScreen({ onSkip, onSubmit, onFetchBrands }: Props)
     });
   };
 
-  const toggleBrand = (brandId: string) => {
-    setSelectedBrandIds((prev) =>
-      prev.includes(brandId) ? prev.filter((id) => id !== brandId) : [...prev, brandId]
-    );
+  const toggleLaneBrand = (brandId: string, displayName?: string) => {
+    setLaneSelectedBrandIds((prev) => {
+      if (prev.includes(brandId)) {
+        return prev.filter((id) => id !== brandId);
+      }
+      return [...prev, brandId];
+    });
+    if (displayName) {
+      setBrandLabelById((prev) => ({ ...prev, [brandId]: displayName }));
+    }
   };
 
-  /**
-   * Try to resolve typed brand text to an existing brandId (case-insensitive).
-   * If found, select it. If not, show a brief error.
-   */
-  const tryAddCustomBrand = () => {
+  const removeSearchPick = (brandId: string) => {
+    setSearchSelectedBrandIds((prev) => prev.filter((id) => id !== brandId));
+  };
+
+  const labelForBrandId = (id: string) => {
+    const fromLane = recommendedBrands.find((b) => b.brandId === id);
+    if (fromLane) return fromLane.name;
+    return brandLabelById[id] ?? id;
+  };
+
+  const pickSearchBrand = (hit: BrandSearchHit) => {
+    setSearchSelectedBrandIds((prev) =>
+      prev.includes(hit.brandId) ? prev : [...prev, hit.brandId]
+    );
+    setBrandLabelById((prev) => ({ ...prev, [hit.brandId]: hit.name }));
+    setBrandDraft('');
+    setSearchHits([]);
+  };
+
+  const addTypedBrandFromDraft = () => {
     const trimmed = brandDraft.trim();
     if (!trimmed) return;
-
-    const lowerInput = trimmed.toLowerCase();
-    const match = recommendedBrands.find(
-      (b) => b.brandId.toLowerCase() === lowerInput || b.name.toLowerCase() === lowerInput
-    );
-
-    if (match) {
-      if (!selectedBrandIds.includes(match.brandId)) {
-        setSelectedBrandIds((prev) => [...prev, match.brandId]);
-      }
-      setBrandDraft('');
-      setBrandDraftError('');
-    } else {
-      setBrandDraftError("We couldn't find that brand. Try searching by exact name.");
-    }
+    const lower = trimmed.toLowerCase();
+    setTypedBrandNames((prev) => {
+      if (prev.some((p) => p.toLowerCase() === lower)) return prev;
+      return [...prev, trimmed];
+    });
+    setBrandDraft('');
+    setSearchHits([]);
   };
 
   const handleNext = () => {
@@ -132,13 +192,17 @@ export default function SurveyScreen({ onSkip, onSubmit, onFetchBrands }: Props)
   };
 
   const handleFinish = async () => {
+    const mergedBrandIds = [
+      ...new Set([...laneSelectedBrandIds, ...searchSelectedBrandIds]),
+    ];
     const finalAnswers: OnboardingAnswers = {
       styleIdentity: answers.styleIdentity,
       styleVibes: answers.styleVibes,
       categories: answers.categories,
       occasions: answers.occasions,
       priceTiers: answers.priceTiers,
-      selectedBrandIds,
+      selectedBrandIds: mergedBrandIds,
+      typedBrandNames,
     };
     await Promise.resolve(onSubmit(finalAnswers));
   };
@@ -200,45 +264,127 @@ export default function SurveyScreen({ onSkip, onSubmit, onFetchBrands }: Props)
                   <Text style={styles.loadingText}>Finding your matches…</Text>
                 </View>
               ) : (
-                <View style={styles.chipWrap}>
-                  {recommendedBrands.map((brand) => {
-                    const isSelected = selectedBrandIds.includes(brand.brandId);
-                    return (
-                      <TouchableOpacity
-                        key={brand.brandId}
-                        style={[styles.chip, isSelected && styles.chipSelected]}
-                        onPress={() => toggleBrand(brand.brandId)}
-                      >
-                        <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
-                          {brand.name}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
+                <>
+                  {recommendedBrands.length > 0 ? (
+                    <>
+                      <Text style={styles.laneLabel}>Suggested for you</Text>
+                      <View style={styles.chipWrap}>
+                        {recommendedBrands.map((brand) => {
+                          const isSelected = laneSelectedBrandIds.includes(brand.brandId);
+                          return (
+                            <TouchableOpacity
+                              key={brand.brandId}
+                              style={[styles.chip, isSelected && styles.chipSelected]}
+                              onPress={() => toggleLaneBrand(brand.brandId, brand.name)}
+                            >
+                              <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
+                                {brand.name}
+                              </Text>
+                            </TouchableOpacity>
+                          );
+                        })}
+                      </View>
+                    </>
+                  ) : null}
+                  {!brandsLoading && recommendedBrands.length === 0 ? (
+                    <Text style={styles.emptyBrandsHint}>
+                      No suggestions yet — add brands below or finish to continue.
+                    </Text>
+                  ) : null}
+                </>
               )}
 
+              {searchSelectedBrandIds.length > 0 || typedBrandNames.length > 0 ? (
+                <>
+                  <Text style={styles.laneLabel}>Your picks</Text>
+                  <View style={styles.chipWrap}>
+                    {searchSelectedBrandIds.map((id) => (
+                      <TouchableOpacity
+                        key={`pick-${id}`}
+                        style={[styles.chip, styles.chipSelected]}
+                        onPress={() => removeSearchPick(id)}
+                      >
+                        <Text style={[styles.chipText, styles.chipTextSelected]}>
+                          {labelForBrandId(id)}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                    {typedBrandNames.map((name) => (
+                      <TouchableOpacity
+                        key={`typed-${name}`}
+                        style={[styles.chip, styles.chipSelected]}
+                        onPress={() =>
+                          setTypedBrandNames((prev) => prev.filter((n) => n !== name))
+                        }
+                      >
+                        <Text style={[styles.chipText, styles.chipTextSelected]}>{name}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </>
+              ) : null}
+
+              <Text style={styles.laneLabel}>Search / add your own</Text>
               <View style={styles.customInputRow}>
                 <TextInput
-                  style={[styles.customInput, brandDraftError ? styles.customInputError : null]}
+                  style={styles.customInput}
                   value={brandDraft}
                   onChangeText={(t) => {
-                    setBrandDraft(t);
-                    if (brandDraftError) setBrandDraftError('');
+                    if (t.length <= SURVEY_BRAND_TEXT_MAX_CHARS) {
+                      setBrandDraft(t);
+                    }
                   }}
                   placeholder="Search for a brand…"
                   placeholderTextColor="#aaa"
                   returnKeyType="done"
-                  onSubmitEditing={tryAddCustomBrand}
+                  maxLength={SURVEY_BRAND_TEXT_MAX_CHARS}
+                  onSubmitEditing={addTypedBrandFromDraft}
                 />
                 {brandDraft.trim().length > 0 && (
-                  <TouchableOpacity style={styles.addBtn} onPress={tryAddCustomBrand}>
+                  <TouchableOpacity style={styles.addBtn} onPress={addTypedBrandFromDraft}>
                     <Text style={styles.addBtnText}>Add</Text>
                   </TouchableOpacity>
                 )}
               </View>
-              {brandDraftError ? (
-                <Text style={styles.errorText}>{brandDraftError}</Text>
+              {brandDraft.trim().length > 0 ? (
+                <View style={styles.suggestionsBox}>
+                  <ScrollView
+                    keyboardShouldPersistTaps="handled"
+                    nestedScrollEnabled
+                    style={styles.suggestionsScroll}
+                  >
+                    {searchLoading ? (
+                      <ActivityIndicator style={styles.suggestionsLoader} color="#666" />
+                    ) : null}
+                    {(searchLoading ? [] : searchHits)
+                      .filter(
+                        (hit) =>
+                          hit.name.trim().toLowerCase() !== brandDraft.trim().toLowerCase()
+                      )
+                      .map((hit) => (
+                        <Pressable
+                          key={hit.brandId}
+                          style={({ pressed }) => [
+                            styles.suggestionRow,
+                            pressed && styles.suggestionRowPressed,
+                          ]}
+                          onPress={() => pickSearchBrand(hit)}
+                        >
+                          <Text style={styles.suggestionText}>{hit.name}</Text>
+                        </Pressable>
+                      ))}
+                    <Pressable
+                      style={({ pressed }) => [
+                        styles.suggestionRow,
+                        styles.useTypedRow,
+                        pressed && styles.suggestionRowPressed,
+                      ]}
+                      onPress={addTypedBrandFromDraft}
+                    >
+                      <Text style={styles.suggestionText}>{brandDraft.trim()}</Text>
+                    </Pressable>
+                  </ScrollView>
+                </View>
               ) : null}
             </ScrollView>
 
@@ -402,6 +548,21 @@ const styles = StyleSheet.create({
     color: '#888',
     marginBottom: 8,
   },
+  laneLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#444',
+    marginTop: 4,
+    marginBottom: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
+  emptyBrandsHint: {
+    fontSize: 14,
+    color: '#888',
+    marginBottom: 8,
+    lineHeight: 20,
+  },
   selectHint: {
     fontSize: 13,
     color: '#bbb',
@@ -435,6 +596,38 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 
+  suggestionsBox: {
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+    borderRadius: 12,
+    backgroundColor: '#fafafa',
+    maxHeight: 220,
+    overflow: 'hidden',
+  },
+  suggestionsScroll: {
+    maxHeight: 220,
+  },
+  suggestionsLoader: {
+    paddingVertical: 16,
+  },
+  suggestionRow: {
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#e5e5e5',
+  },
+  suggestionRowPressed: {
+    backgroundColor: '#f0f0f0',
+  },
+  suggestionText: {
+    fontSize: 15,
+    color: '#111',
+  },
+  useTypedRow: {
+    borderBottomWidth: 0,
+  },
+
   customInputRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -451,14 +644,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#111',
     backgroundColor: '#FAFAFA',
-  },
-  customInputError: {
-    borderColor: '#FF3B30',
-  },
-  errorText: {
-    fontSize: 12,
-    color: '#FF3B30',
-    marginTop: 6,
   },
   addBtn: {
     backgroundColor: '#111',

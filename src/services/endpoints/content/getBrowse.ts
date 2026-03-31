@@ -8,6 +8,8 @@ export type BrowseProductData = {
   id: string;
   name: string;
   brand?: string | null;
+  brandId?: string | null;
+  brandNameCanonical?: string | null;
   category?: string | null;
   price?: number | null;
   originalPrice?: number | null;
@@ -68,6 +70,8 @@ export const getBrowseEndpoint: EndpointDefinition<
           id: p.id,
           name: p.name,
           brand: p.brand ?? null,
+          brandId: p.brandId ?? null,
+          brandNameCanonical: p.brandNameCanonical ?? null,
           category: p.category ?? null,
           price: p.price ?? null,
           originalPrice: p.originalPrice ?? null,

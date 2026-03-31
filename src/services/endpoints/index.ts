@@ -22,6 +22,18 @@ export {
   CreateProductResponse,
   CreateProductImage,
 } from "./content/createProduct";
+export {
+  searchBrandsEndpoint,
+  SearchBrandsParams,
+  SearchBrandsResponse,
+  BrandSearchHit,
+} from "./content/searchBrands";
+export {
+  getTrendingBrandsEndpoint,
+  GetTrendingBrandsParams,
+  GetTrendingBrandsResponse,
+  BrandTrendingHit,
+} from "./content/getTrendingBrands";
 export { updateProductEngagementEndpoint } from "./content/updateProductEngagement";
 export { addProductCommentEndpoint } from "./content/addProductComment";
 export { productCommentReactEndpoint } from "./content/productCommentReact";

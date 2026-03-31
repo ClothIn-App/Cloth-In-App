@@ -54,6 +54,9 @@ export interface ProductItem extends BaseFeedItem {
   type: 'product';
   name: string;
   brand: string;
+  /** Present when API returns canonical brand id (Phase 6+). */
+  brandId?: string;
+  brandNameCanonical?: string;
   price: number;
   salePrice: number | null;
   priceType?: 'fixed' | 'sale' | 'sold_out' | 'tbd' | 'na';
