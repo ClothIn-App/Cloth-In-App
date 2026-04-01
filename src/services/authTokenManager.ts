@@ -110,14 +110,23 @@ async function refreshIdToken(refreshToken: string): Promise<TokenData | null> {
           ? `http://${emulatorHost}/securetoken.googleapis.com/v1/token?key=${api_key}`
           : `https://securetoken.googleapis.com/v1/token?key=${api_key}`;
 
-        const response = await fetch(tokenRefreshUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            grant_type: 'refresh_token',
-            refresh_token: refreshToken,
-          }),
-        });
+        const timeoutMs = AUTH_CONFIG.TOKEN_REFRESH_FETCH_TIMEOUT_MS;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        let response: Response;
+        try {
+          response = await fetch(tokenRefreshUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              grant_type: 'refresh_token',
+              refresh_token: refreshToken,
+            }),
+            signal: controller.signal,
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -150,8 +159,14 @@ async function refreshIdToken(refreshToken: string): Promise<TokenData | null> {
         return tokenData;
       } catch (error: any) {
         lastError = error;
+        const isAbort =
+          error?.name === 'AbortError' ||
+          (typeof error?.message === 'string' && error.message.includes('aborted'));
         // Don't retry on non-recoverable errors (invalid token, missing config)
-        const isRetryable = error instanceof TokenRefreshError || error instanceof TypeError;
+        const isRetryable =
+          error instanceof TokenRefreshError ||
+          error instanceof TypeError ||
+          isAbort;
         if (!isRetryable || attempt === maxAttempts) {
           break;
         }
@@ -162,16 +177,14 @@ async function refreshIdToken(refreshToken: string): Promise<TokenData | null> {
       error: lastError?.message ?? String(lastError),
       elapsedMs: Date.now() - startTime,
     });
-    const requestsToReject = [...pendingRequests];
+    const requestsToFlush = [...pendingRequests];
     pendingRequests.length = 0;
-    requestsToReject.forEach(({ reject }) => reject(lastError as Error));
-    throw lastError;
+    requestsToFlush.forEach(({ resolve }) => resolve(null));
+    return null;
   })();
 
   try {
     return await refreshPromise;
-  } catch {
-    return null;
   } finally {
     refreshPromise = null;
   }

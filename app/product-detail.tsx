@@ -185,6 +185,7 @@ export default function ProductDetailModal() {
               <ProductSummary
                 brandName={product.brand}
                 productName={product.name}
+                color={product.color}
                 price={product.price}
                 originalPrice={product.originalPrice}
                 priceType={product.priceType}

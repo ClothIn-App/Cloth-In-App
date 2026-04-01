@@ -1,8 +1,10 @@
 // src/create/product/addproductcontext.tsx
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { isValidProductUrl } from './link';
+import { isColorOptionalForCategory } from './colorCategoryRules';
 
 export const BRAND_MAX_LEN = 100;
+export const COLOR_MAX_LEN = 100;
 
 export type PriceType = 'fixed' | 'sale' | 'sold_out' | 'tbd' | 'na';
 
@@ -10,6 +12,7 @@ export type ProductFormData = {
   category: string;
   brand: string;
   productName: string;
+  color: string;
   specifications: string;
   description: string;
   link: string;
@@ -24,6 +27,7 @@ type AddProductContextType = {
   category: string;
   brand: string;
   productName: string;
+  color: string;
   specifications: string;
   description: string;
   link: string;
@@ -36,6 +40,7 @@ type AddProductContextType = {
   setCategory: (category: string) => void;
   setBrand: (brand: string) => void;
   setProductName: (name: string) => void;
+  setColor: (color: string) => void;
   setSpecifications: (specs: string) => void;
   setDescription: (desc: string) => void;
   setLink: (link: string) => void;
@@ -45,7 +50,13 @@ type AddProductContextType = {
   setOriginalPrice: (price: string) => void;
   selectedBrandId: string | null;
   setBrandFromSuggestion: (brand: string, brandId: string) => void;
-  
+  isBrandConfirmed: boolean;
+  isProductConfirmed: boolean;
+  confirmBrandTyped: (brand: string) => void;
+  clearBrandSelection: () => void;
+  confirmProductName: (name: string) => void;
+  clearProductSelection: () => void;
+
   // Computed
   isValid: boolean;
   hasUnsavedChanges: boolean;
@@ -58,6 +69,7 @@ const initialData: ProductFormData = {
   category: '',
   brand: '',
   productName: '',
+  color: '',
   specifications: '',
   description: '',
   link: '',
@@ -71,6 +83,8 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
   const [formData, setFormData] = useState<ProductFormData>(initialData);
   const [initialFormData] = useState<ProductFormData>(initialData);
   const [selectedBrandId, setSelectedBrandId] = useState<string | null>(null);
+  const [isBrandConfirmed, setIsBrandConfirmed] = useState(false);
+  const [isProductConfirmed, setIsProductConfirmed] = useState(false);
 
   const setCategory = useCallback((category: string) => {
     setFormData(prev => ({ ...prev, category }));
@@ -79,15 +93,51 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
   const setBrand = useCallback((brand: string) => {
     setFormData(prev => ({ ...prev, brand }));
     setSelectedBrandId(null);
+    setIsBrandConfirmed(false);
   }, []);
 
   const setBrandFromSuggestion = useCallback((brand: string, brandId: string) => {
     setFormData(prev => ({ ...prev, brand }));
     setSelectedBrandId(brandId);
+    setIsBrandConfirmed(true);
+  }, []);
+
+  const confirmBrandTyped = useCallback((brandValue: string) => {
+    const t = brandValue.trim();
+    setFormData(prev => ({ ...prev, brand: t }));
+    setSelectedBrandId(null);
+    setIsBrandConfirmed(true);
+  }, []);
+
+  const clearBrandSelection = useCallback(() => {
+    setFormData(prev => ({
+      ...prev,
+      brand: '',
+      productName: '',
+      color: '',
+    }));
+    setSelectedBrandId(null);
+    setIsBrandConfirmed(false);
+    setIsProductConfirmed(false);
   }, []);
 
   const setProductName = useCallback((productName: string) => {
     setFormData(prev => ({ ...prev, productName }));
+  }, []);
+
+  const setColor = useCallback((color: string) => {
+    setFormData(prev => ({ ...prev, color }));
+  }, []);
+
+  const confirmProductName = useCallback((name: string) => {
+    const t = name.trim();
+    setFormData(prev => ({ ...prev, productName: t }));
+    setIsProductConfirmed(true);
+  }, []);
+
+  const clearProductSelection = useCallback(() => {
+    setFormData(prev => ({ ...prev, productName: '', color: '' }));
+    setIsProductConfirmed(false);
   }, []);
 
   const setSpecifications = useCallback((specifications: string) => {
@@ -122,12 +172,18 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   const isValid = useMemo(() => {
+    const colorOk =
+      isColorOptionalForCategory(formData.category) ||
+      formData.color.trim().length > 0;
+    const colorLenOk = formData.color.trim().length <= COLOR_MAX_LEN;
     return (
       formData.category.trim().length > 0 &&
       formData.brand.trim().length >= 2 &&
       formData.brand.trim().length <= BRAND_MAX_LEN &&
       formData.productName.trim().length >= 2 &&
       formData.productName.trim().length <= 100 &&
+      colorOk &&
+      colorLenOk &&
       formData.photos.length >= 1 &&
       formData.photos.length <= 5 &&
       isValidProductUrl(formData.link) &&
@@ -142,6 +198,8 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
   const reset = useCallback(() => {
     setFormData(initialData);
     setSelectedBrandId(null);
+    setIsBrandConfirmed(false);
+    setIsProductConfirmed(false);
   }, []);
 
   const value: AddProductContextType = {
@@ -149,6 +207,7 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
     setCategory,
     setBrand,
     setProductName,
+    setColor,
     setSpecifications,
     setDescription,
     setLink,
@@ -158,6 +217,12 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
     setOriginalPrice,
     selectedBrandId,
     setBrandFromSuggestion,
+    isBrandConfirmed,
+    isProductConfirmed,
+    confirmBrandTyped,
+    clearBrandSelection,
+    confirmProductName,
+    clearProductSelection,
     isValid,
     hasUnsavedChanges,
     reset,

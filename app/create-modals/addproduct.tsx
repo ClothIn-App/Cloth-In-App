@@ -15,6 +15,7 @@ import { clearFeedCache } from '@/src/utils/getFeedItem';
 import CategorySelect from '../../components/create/product/categoryselect';
 import BrandSelect from '../../components/create/product/brandselect';
 import ProductName from '../../components/create/product/productname';
+import ProductColor from '../../components/create/product/productcolor';
 import SpecificationsDescription from '../../components/create/product/specificationsdescription';
 import ProductLink from '../../components/create/product/link';
 import ProductPhotos from '../../components/create/product/productphotos';
@@ -48,6 +49,7 @@ function AddProductContent() {
     brand,
     selectedBrandId,
     productName,
+    color,
     specifications,
     description,
     link,
@@ -122,6 +124,7 @@ function AddProductContent() {
         brand: brand.trim(),
         ...(selectedBrandId ? { brandId: selectedBrandId } : {}),
         category: category.trim(),
+        ...(color.trim() ? { color: color.trim() } : {}),
         description: description.trim() || undefined,
         specifications: specifications.trim() || undefined,
         productUrl: link.trim() || undefined,
@@ -170,6 +173,7 @@ function AddProductContent() {
     category,
     brand,
     productName,
+    color,
     specifications,
     description,
     link,
@@ -177,18 +181,20 @@ function AddProductContent() {
     priceType,
     price,
     originalPrice,
+    selectedBrandId,
     reset,
     router,
     params.returnTo,
     addProduct,
   ]);
 
-  // Flow bar: count how many of the 7 fields have any input (0–7)
+  // Flow bar: count how many of the 8 fields have any input (0–8)
   const filledCount = React.useMemo(() => {
     let count = 0;
     if (category.trim().length > 0) count += 1;
     if (brand.trim().length > 0) count += 1;
     if (productName.trim().length > 0) count += 1;
+    if (color.trim().length > 0) count += 1;
     if (specifications.trim().length > 0 || description.trim().length > 0) count += 1;
     if (link.trim().length > 0) count += 1;
     if (photos.length > 0) count += 1;
@@ -203,6 +209,7 @@ function AddProductContent() {
     category,
     brand,
     productName,
+    color,
     specifications,
     description,
     link,
@@ -242,7 +249,7 @@ function AddProductContent() {
         </View>
         <View style={styles.flowBarContainer}>
           <View
-            style={[styles.flowBarFill, { width: `${(filledCount / 7) * 100}%` }]}
+            style={[styles.flowBarFill, { width: `${(filledCount / 8) * 100}%` }]}
           />
         </View>
       </View>
@@ -258,6 +265,7 @@ function AddProductContent() {
         <CategorySelect />
         <BrandSelect />
         <ProductName />
+        <ProductColor />
         <SpecificationsDescription />
         <ProductLink />
         <ProductPhotos />

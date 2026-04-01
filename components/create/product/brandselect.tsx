@@ -9,6 +9,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAddProductContext, BRAND_MAX_LEN } from './addproductcontext';
 import { contentApiClient } from '@/src/services/apiClients/contentClient';
 import type { BrandSearchHit } from '@/src/services/apiClients/contentClient';
@@ -16,7 +17,14 @@ import type { BrandSearchHit } from '@/src/services/apiClients/contentClient';
 const SEARCH_DEBOUNCE_MS = 280;
 
 export default function BrandSelect() {
-  const { brand, setBrand, setBrandFromSuggestion } = useAddProductContext();
+  const {
+    brand,
+    setBrand,
+    setBrandFromSuggestion,
+    isBrandConfirmed,
+    confirmBrandTyped,
+    clearBrandSelection,
+  } = useAddProductContext();
   const [suggestions, setSuggestions] = useState<BrandSearchHit[]>([]);
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -34,6 +42,12 @@ export default function BrandSelect() {
   }, []);
 
   useEffect(() => {
+    if (isBrandConfirmed) {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      setSuggestions([]);
+      setLoading(false);
+      return;
+    }
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       void runSearch(brand.trim());
@@ -41,7 +55,7 @@ export default function BrandSelect() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [brand, runSearch]);
+  }, [brand, runSearch, isBrandConfirmed]);
 
   const handleBrandChange = (text: string) => {
     if (text.length <= BRAND_MAX_LEN) {
@@ -57,11 +71,11 @@ export default function BrandSelect() {
   const handleCommitTyped = () => {
     const t = brand.trim();
     if (!t) return;
-    setBrand(t);
+    confirmBrandTyped(t);
     setSuggestions([]);
   };
 
-  const showPanel = brand.trim().length >= 1;
+  const showPanel = !isBrandConfirmed && brand.trim().length >= 1;
   const trimmed = brand.trim();
   const filteredSuggestions = suggestions.filter(
     (hit) => hit.name.trim().toLowerCase() !== trimmed.toLowerCase()
@@ -70,17 +84,35 @@ export default function BrandSelect() {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Brand *</Text>
-      <TextInput
-        style={styles.input}
-        value={brand}
-        onChangeText={handleBrandChange}
-        placeholder="Enter brand or search"
-        placeholderTextColor="#9ca3af"
-        maxLength={BRAND_MAX_LEN}
-        autoCapitalize="words"
-        autoCorrect={false}
-      />
-      <Text style={styles.characterCount}>{brand.length}/{BRAND_MAX_LEN}</Text>
+      {isBrandConfirmed ? (
+        <View style={styles.chipRow}>
+          <Text style={styles.chipLabel} numberOfLines={1}>
+            {brand.trim()}
+          </Text>
+          <Pressable
+            onPress={clearBrandSelection}
+            style={({ pressed }) => [styles.chipClear, pressed && styles.chipClearPressed]}
+            accessibilityLabel="Clear brand"
+            hitSlop={8}
+          >
+            <Ionicons name="close-circle" size={22} color="#6b7280" />
+          </Pressable>
+        </View>
+      ) : (
+        <>
+          <TextInput
+            style={styles.input}
+            value={brand}
+            onChangeText={handleBrandChange}
+            placeholder="Enter brand or search"
+            placeholderTextColor="#9ca3af"
+            maxLength={BRAND_MAX_LEN}
+            autoCapitalize="words"
+            autoCorrect={false}
+          />
+          <Text style={styles.characterCount}>{brand.length}/{BRAND_MAX_LEN}</Text>
+        </>
+      )}
 
       {showPanel ? (
         <View style={styles.suggestionsBox}>
@@ -136,6 +168,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#111827',
     backgroundColor: 'white',
+  },
+  chipRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 12,
+    backgroundColor: '#f9fafb',
+    minHeight: 48,
+  },
+  chipLabel: {
+    flex: 1,
+    fontSize: 16,
+    color: '#111827',
+    marginRight: 8,
+  },
+  chipClear: {
+    padding: 2,
+  },
+  chipClearPressed: {
+    opacity: 0.6,
   },
   characterCount: {
     fontSize: 12,

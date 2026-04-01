@@ -6,6 +6,7 @@ import type { ProductPriceType } from "@/src/types/content";
 type ProductSummaryProps = {
   brandName: string;
   productName: string;
+  color?: string;
   price: number;
   originalPrice?: number;
   priceType?: ProductPriceType;
@@ -15,11 +16,13 @@ type ProductSummaryProps = {
 export function ProductSummary({
   brandName,
   productName,
+  color,
   price,
   originalPrice,
   priceType,
   productUrl,
 }: ProductSummaryProps) {
+  const displayColor = color?.trim() ?? "";
   const handleViewProduct = async () => {
     let url: string;
     if (productUrl) {
@@ -73,7 +76,17 @@ export function ProductSummary({
   return (
     <View style={styles.container}>
       <Text style={styles.brand}>{brandName}</Text>
-      <Text style={styles.name}>{productName}</Text>
+      <Text
+        style={[
+          styles.name,
+          displayColor ? styles.nameWithColorAbove : styles.nameOnly,
+        ]}
+      >
+        {productName}
+      </Text>
+      {displayColor ? (
+        <Text style={styles.colorLine}>{displayColor}</Text>
+      ) : null}
       {renderPrice()}
 
       <Pressable style={styles.button} onPress={handleViewProduct}>
@@ -99,8 +112,19 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#000000",
-    marginBottom: 12,
     flexWrap: "wrap",
+  },
+  nameOnly: {
+    marginBottom: 12,
+  },
+  nameWithColorAbove: {
+    marginBottom: 4,
+  },
+  colorLine: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#6B7280",
+    marginBottom: 9,
   },
   priceRow: {
     flexDirection: "row",

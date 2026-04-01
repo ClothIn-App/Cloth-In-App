@@ -10,6 +10,8 @@ export interface AuthConfig {
   TOKEN_REFRESH_RETRIES: number;
   /** Delay between retry attempts in milliseconds (default: 1000ms / 1 second) */
   TOKEN_REFRESH_RETRY_DELAY_MS: number;
+  /** Max time for each token refresh HTTP request (avoids indefinite hang when emulator/host is unreachable) */
+  TOKEN_REFRESH_FETCH_TIMEOUT_MS: number;
 }
 
 /**
@@ -35,6 +37,10 @@ export const AUTH_CONFIG: AuthConfig = {
   // Default: 1 second delay between retries
   TOKEN_REFRESH_RETRY_DELAY_MS: Number(
     process.env.EXPO_PUBLIC_TOKEN_REFRESH_RETRY_DELAY_MS ?? 1000
+  ),
+
+  TOKEN_REFRESH_FETCH_TIMEOUT_MS: Number(
+    process.env.EXPO_PUBLIC_TOKEN_REFRESH_FETCH_TIMEOUT_MS ?? 15000
   ),
 };
 
