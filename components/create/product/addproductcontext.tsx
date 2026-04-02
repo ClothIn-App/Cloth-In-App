@@ -22,8 +22,37 @@ export type ProductFormData = {
   originalPrice: string;
 };
 
+type BaselineState = {
+  form: ProductFormData;
+  selectedBrandId: string | null;
+  brandConfirmed: boolean;
+  productConfirmed: boolean;
+  colorConfirmed: boolean;
+};
+
+function buildInitialForm(override?: Partial<ProductFormData>): ProductFormData {
+  return {
+    ...initialData,
+    ...(override ?? {}),
+    photos: Array.isArray(override?.photos) ? [...override.photos] : [...initialData.photos],
+  };
+}
+
+function computeBaseline(
+  initialForm?: Partial<ProductFormData>,
+  initialBrandId?: string | null
+): BaselineState {
+  const form = buildInitialForm(initialForm);
+  return {
+    form,
+    selectedBrandId: initialBrandId ?? null,
+    brandConfirmed: form.brand.trim().length >= 2,
+    productConfirmed: form.productName.trim().length >= 2,
+    colorConfirmed: form.color.trim().length > 0,
+  };
+}
+
 type AddProductContextType = {
-  // Form data
   category: string;
   brand: string;
   productName: string;
@@ -35,8 +64,7 @@ type AddProductContextType = {
   priceType: PriceType;
   price: string;
   originalPrice: string;
-  
-  // Actions
+
   setCategory: (category: string) => void;
   setBrand: (brand: string) => void;
   setProductName: (name: string) => void;
@@ -57,7 +85,10 @@ type AddProductContextType = {
   confirmProductName: (name: string) => void;
   clearProductSelection: () => void;
 
-  // Computed
+  isColorConfirmed: boolean;
+  confirmColor: (value: string) => void;
+  clearColorSelection: () => void;
+
   isValid: boolean;
   hasUnsavedChanges: boolean;
   reset: () => void;
@@ -79,12 +110,29 @@ const initialData: ProductFormData = {
   originalPrice: '',
 };
 
-export function AddProductProvider({ children }: { children: React.ReactNode }) {
-  const [formData, setFormData] = useState<ProductFormData>(initialData);
-  const [initialFormData] = useState<ProductFormData>(initialData);
-  const [selectedBrandId, setSelectedBrandId] = useState<string | null>(null);
-  const [isBrandConfirmed, setIsBrandConfirmed] = useState(false);
-  const [isProductConfirmed, setIsProductConfirmed] = useState(false);
+export type AddProductProviderProps = {
+  children: React.ReactNode;
+  initialForm?: Partial<ProductFormData>;
+  initialBrandId?: string | null;
+};
+
+export function AddProductProvider({
+  children,
+  initialForm,
+  initialBrandId = null,
+}: AddProductProviderProps) {
+  const [baseline] = useState(() => computeBaseline(initialForm, initialBrandId));
+
+  const [formData, setFormData] = useState<ProductFormData>(() => ({
+    ...baseline.form,
+    photos: [...baseline.form.photos],
+  }));
+  const [selectedBrandId, setSelectedBrandId] = useState<string | null>(
+    () => baseline.selectedBrandId
+  );
+  const [isBrandConfirmed, setIsBrandConfirmed] = useState(() => baseline.brandConfirmed);
+  const [isProductConfirmed, setIsProductConfirmed] = useState(() => baseline.productConfirmed);
+  const [isColorConfirmed, setIsColorConfirmed] = useState(() => baseline.colorConfirmed);
 
   const setCategory = useCallback((category: string) => {
     setFormData(prev => ({ ...prev, category }));
@@ -119,6 +167,7 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
     setSelectedBrandId(null);
     setIsBrandConfirmed(false);
     setIsProductConfirmed(false);
+    setIsColorConfirmed(false);
   }, []);
 
   const setProductName = useCallback((productName: string) => {
@@ -127,6 +176,18 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
 
   const setColor = useCallback((color: string) => {
     setFormData(prev => ({ ...prev, color }));
+    setIsColorConfirmed(false);
+  }, []);
+
+  const confirmColor = useCallback((value: string) => {
+    const t = value.trim().slice(0, COLOR_MAX_LEN);
+    setFormData(prev => ({ ...prev, color: t }));
+    setIsColorConfirmed(true);
+  }, []);
+
+  const clearColorSelection = useCallback(() => {
+    setFormData(prev => ({ ...prev, color: '' }));
+    setIsColorConfirmed(false);
   }, []);
 
   const confirmProductName = useCallback((name: string) => {
@@ -138,6 +199,7 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
   const clearProductSelection = useCallback(() => {
     setFormData(prev => ({ ...prev, productName: '', color: '' }));
     setIsProductConfirmed(false);
+    setIsColorConfirmed(false);
   }, []);
 
   const setSpecifications = useCallback((specifications: string) => {
@@ -192,15 +254,16 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
   }, [formData]);
 
   const hasUnsavedChanges = useMemo(() => {
-    return JSON.stringify(formData) !== JSON.stringify(initialFormData);
-  }, [formData, initialFormData]);
+    return JSON.stringify(formData) !== JSON.stringify(baseline.form);
+  }, [formData, baseline.form]);
 
   const reset = useCallback(() => {
-    setFormData(initialData);
-    setSelectedBrandId(null);
-    setIsBrandConfirmed(false);
-    setIsProductConfirmed(false);
-  }, []);
+    setFormData({ ...baseline.form, photos: [...baseline.form.photos] });
+    setSelectedBrandId(baseline.selectedBrandId);
+    setIsBrandConfirmed(baseline.brandConfirmed);
+    setIsProductConfirmed(baseline.productConfirmed);
+    setIsColorConfirmed(baseline.colorConfirmed);
+  }, [baseline]);
 
   const value: AddProductContextType = {
     ...formData,
@@ -223,6 +286,9 @@ export function AddProductProvider({ children }: { children: React.ReactNode }) 
     clearBrandSelection,
     confirmProductName,
     clearProductSelection,
+    isColorConfirmed,
+    confirmColor,
+    clearColorSelection,
     isValid,
     hasUnsavedChanges,
     reset,

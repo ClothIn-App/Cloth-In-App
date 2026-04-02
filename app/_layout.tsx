@@ -102,6 +102,15 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="product-edit"
+            options={{
+              headerShown: false,
+              presentation: 'card',
+              gestureEnabled: true,
+              animation: 'slide_from_right',
+            }}
+          />
+          <Stack.Screen
             name="closet-product-detail"
             options={{
               headerShown: false,

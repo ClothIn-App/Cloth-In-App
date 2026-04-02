@@ -33,8 +33,8 @@ const normalizeComment = (rawComment: any): CommentType => {
   return result;
 };
 
-// Normalize product from either mock JSON shape or real API shape into Product
-const normalizeProduct = (rawProduct: any): Product => {
+/** Normalize product from either mock JSON shape or real API shape into Product */
+export function normalizeProduct(rawProduct: any): Product {
   if (!rawProduct) {
     // This should never be used, but provides a safe fallback
     return {
@@ -82,10 +82,21 @@ const normalizeProduct = (rawProduct: any): Product => {
     typeof rawProduct.color === "string" ? rawProduct.color.trim() : "";
   const color = rawColor.length > 0 ? rawColor : undefined;
 
+  const categoryRaw =
+    typeof rawProduct.category === "string" ? rawProduct.category.trim() : "";
+  const category = categoryRaw.length > 0 ? categoryRaw : undefined;
+
+  const brandId =
+    typeof rawProduct.brandId === "string" && rawProduct.brandId.trim()
+      ? rawProduct.brandId.trim()
+      : undefined;
+
   return {
     id: rawProduct.id,
     name: rawProduct.name,
     brand: rawProduct.brand ?? "",
+    ...(brandId ? { brandId } : {}),
+    ...(category ? { category } : {}),
     color,
     price: rawProduct.price ?? 0,
     originalPrice: rawProduct.originalPrice,
@@ -98,7 +109,7 @@ const normalizeProduct = (rawProduct: any): Product => {
     reactions,
     comments: rawProduct.comments,
   };
-};
+}
 
 export function useProductData(productId: string | undefined, userId?: string | undefined): UseProductDataResult {
   const [product, setProduct] = useState<Product | undefined>(undefined);

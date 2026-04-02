@@ -23,6 +23,11 @@ export {
   CreateProductImage,
 } from "./content/createProduct";
 export {
+  submitProductEditSuggestionEndpoint,
+  SubmitProductEditSuggestionRequest,
+  SubmitProductEditSuggestionResponse,
+} from "./content/submitProductEditSuggestion";
+export {
   searchBrandsEndpoint,
   SearchBrandsParams,
   SearchBrandsResponse,

@@ -9,9 +9,11 @@ import {
   ActivityIndicator,
   Text,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 import { useProductData } from "@/src/hooks/useProductData";
 import { useProductEngagement } from "@/src/hooks/useProductEngagement";
 import { ProductHeader } from "@/components/product-modal/ProductHeader";
@@ -26,6 +28,8 @@ import ProductCommentInput from "@/components/product-modal/comments/product-com
 import type { Reactions, CommentType } from "@/src/types/feed";
 import { getCurrentUser } from "@/src/services/mockSessionUsers";
 import { analyticsClient } from "@/src/services/apiClients/analyticsClient";
+import { stashProductForEdit } from "@/src/utils/productEditHandoff";
+import { consumePendingEditSubmissionThankYou } from "@/src/utils/pendingEditSubmissionToast";
 
 const DEFAULT_REACTIONS: Reactions = { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } };
 
@@ -99,14 +103,26 @@ export default function ProductDetailModal() {
     }
   }, [product, id, source]);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (consumePendingEditSubmissionThankYou()) {
+        Alert.alert(
+          "Submitted",
+          "Thank you! Your edit has been submitted for review.",
+          [{ text: "OK" }]
+        );
+      }
+    }, [])
+  );
+
   const handleClose = useCallback(() => {
     router.back();
   }, []);
 
-  const handleAddToWishlist = useCallback(() => {
-    if (product) {
-      console.log("Add to wishlist:", product.id);
-    }
+  const handleEditProduct = useCallback(() => {
+    if (!product) return;
+    stashProductForEdit(product);
+    router.push({ pathname: "/product-edit", params: { id: product.id } });
   }, [product]);
 
   const handleRefresh = useCallback(async () => {
@@ -140,7 +156,7 @@ export default function ProductDetailModal() {
         brandName={product?.brand ?? ""}
         productName={product?.name ?? ""}
         onClose={handleClose}
-        onAddToWishlist={handleAddToWishlist}
+        onEditProduct={handleEditProduct}
       />
 
       <KeyboardAvoidingView
