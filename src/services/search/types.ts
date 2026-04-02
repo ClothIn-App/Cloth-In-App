@@ -57,6 +57,12 @@ export type ProductSearchFilters = {
     min: number;
     max: number;
   };
+  /** Canonical brand document id — server filters products to this brand when set. */
+  brandId?: string;
+  /** Exact display brand string (case-insensitive) when user confirmed a typed brand without id. */
+  brandDisplayName?: string;
+  /** Full category path; server ranks in-category hits first, then backfills other categories. */
+  categoryPath?: string;
   brands?: string[];
   categories?: string[];
   availableOnly?: boolean;

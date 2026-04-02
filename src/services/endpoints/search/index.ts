@@ -5,5 +5,6 @@ export * from "./searchTop";
 export * from "./searchUsers";
 export * from "./searchFitPics";
 export * from "./searchProducts";
+export * from "./searchProductColors";
 export * from "./searchHashtags";
 

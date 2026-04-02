@@ -33,6 +33,7 @@ import {
   searchUsersEndpoint,
   searchFitPicsEndpoint,
   searchProductsEndpoint,
+  searchProductColorsEndpoint,
   searchHashtagsEndpoint,
 } from "./endpoints";
 
@@ -158,6 +159,31 @@ export async function searchFitPics(
   };
 }
 
+export type ProductColorSearchParams = {
+  productName?: string;
+  categoryPath?: string;
+  brandId?: string | null;
+  brandDisplayName?: string;
+  limit?: number;
+};
+
+export async function searchProductColors(
+  q: string,
+  params: ProductColorSearchParams = {}
+): Promise<string[]> {
+  const raw = await callApiEndpoint(searchProductColorsEndpoint, {
+    queryParameters: {
+      q,
+      productName: params.productName?.trim() || undefined,
+      category: params.categoryPath?.trim() || undefined,
+      brandId: params.brandId?.trim() || undefined,
+      brandName: params.brandDisplayName?.trim() || undefined,
+      limit: params.limit,
+    },
+  });
+  return (raw as { colors?: string[] })?.colors ?? [];
+}
+
 export async function searchProducts(
   q: string,
   filters: ProductSearchFilters = {},
@@ -169,6 +195,9 @@ export async function searchProducts(
       q,
       cursor: cursor ?? undefined,
       sortBy,
+      brandId: filters.brandId,
+      brandName: filters.brandDisplayName,
+      category: filters.categoryPath?.trim() || undefined,
     },
   });
 

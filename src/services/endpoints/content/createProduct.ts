@@ -13,6 +13,7 @@ export type CreateProductRequest = {
   brand: string;
   brandId?: string;
   category: string;
+  color?: string;
   description?: string;
   specifications?: string;
   productUrl?: string;
@@ -52,6 +53,7 @@ export const createProductEndpoint: EndpointDefinition<
       priceType: body?.priceType,
       imagePath: firstImage || "assets/mock-products/c-d-x-PDX_a_82obo-unsplash.jpg",
       description: body?.description ?? "",
+      ...(body?.color?.trim() ? { color: body.color.trim() } : {}),
       specs: body?.specifications,
       productUrl: body?.productUrl,
       images: body?.images?.map((img) => img.url) ?? [],

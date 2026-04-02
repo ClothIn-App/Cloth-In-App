@@ -78,10 +78,15 @@ const normalizeProduct = (rawProduct: any): Product => {
     }
   }
 
+  const rawColor =
+    typeof rawProduct.color === "string" ? rawProduct.color.trim() : "";
+  const color = rawColor.length > 0 ? rawColor : undefined;
+
   return {
     id: rawProduct.id,
     name: rawProduct.name,
     brand: rawProduct.brand ?? "",
+    color,
     price: rawProduct.price ?? 0,
     originalPrice: rawProduct.originalPrice,
     priceType: rawProduct.priceType,

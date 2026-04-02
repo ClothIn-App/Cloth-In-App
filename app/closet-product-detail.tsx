@@ -110,6 +110,7 @@ export default function ClosetProductDetailModal() {
           <ProductSummary
             brandName={product.brand}
             productName={product.name}
+            color={product.color}
             price={product.price}
             productUrl={product.productUrl}
           />

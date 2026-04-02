@@ -22,6 +22,7 @@ export type Product = {
   /** Canonical brand id when product matches API / emulator shape (optional in legacy mocks). */
   brandId?: string;
   brandNameCanonical?: string;
+  color?: string;
   price: number;
   originalPrice?: number;
   priceType?: ProductPriceType;
