@@ -1,10 +1,8 @@
 // app/create-modals/addproduct.tsx
 import * as React from 'react';
-import { View, StyleSheet, Alert, Modal, Pressable, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Alert, Modal, Pressable, Text } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useIsFocused } from '@react-navigation/native';
-
 import { Ionicons } from '@expo/vector-icons';
 
 import { useAddProductContext, AddProductProvider } from '../../components/create/product/addproductcontext';
@@ -12,14 +10,7 @@ import { usePost } from '../../components/create/post/postcontext';
 import { uploadProductPhotos, PhotoUploadRequest } from '@/src/services/photoUploadService';
 import { contentApiClient, CreateProductRequest } from '@/src/services/apiClients/contentClient';
 import { clearFeedCache } from '@/src/utils/getFeedItem';
-import CategorySelect from '../../components/create/product/categoryselect';
-import BrandSelect from '../../components/create/product/brandselect';
-import ProductName from '../../components/create/product/productname';
-import ProductColor from '../../components/create/product/productcolor';
-import SpecificationsDescription from '../../components/create/product/specificationsdescription';
-import ProductLink from '../../components/create/product/link';
-import ProductPhotos from '../../components/create/product/productphotos';
-import AddPrice from '../../components/create/product/addprice';
+import { ProductFormBody } from '../../components/create/product/ProductFormBody';
 
 /** Derive a string image URL from create-product response (server returns images as [{ url }], mock may use imagePath or string[]). */
 function getProductImageUrl(p: {
@@ -41,7 +32,6 @@ function AddProductContent() {
   const router = useRouter();
   const params = useLocalSearchParams<{ returnTo?: string }>();
   const { addProduct } = usePost();
-  const isFocused = useIsFocused();
   const insets = useSafeAreaInsets();
 
   const {
@@ -234,8 +224,6 @@ function AddProductContent() {
             <Ionicons name="chevron-back-outline" size={24} color="#111827" />
           </Pressable>
 
-          <Text style={styles.headerTitle}>New Product</Text>
-
           <Pressable
             onPress={handleAddProduct}
             hitSlop={8}
@@ -243,7 +231,7 @@ function AddProductContent() {
             disabled={!isValid}
           >
             <Text style={[styles.headerButtonText, !isValid && styles.headerButtonTextDisabled]}>
-              Post
+              Add Product
             </Text>
           </Pressable>
         </View>
@@ -254,26 +242,7 @@ function AddProductContent() {
         </View>
       </View>
 
-      {/* Content */}
-      <ScrollView 
-        style={styles.content} 
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="interactive"
-        automaticallyAdjustKeyboardInsets={true}
-      >
-        <CategorySelect />
-        <BrandSelect />
-        <ProductName />
-        <ProductColor />
-        <SpecificationsDescription />
-        <ProductLink />
-        <ProductPhotos />
-        <AddPrice />
-        
-        {/* Spacer so last content isn't obscured by sticky footer */}
-        <View style={{ height: 64 + footerSafePad }} />
-      </ScrollView>
+      <ProductFormBody footerSpacerHeight={64 + footerSafePad} />
 
       {/* Sticky Footer */}
       <SafeAreaView style={[styles.footer, { paddingBottom: footerSafePad }]} edges={[]}>
@@ -357,16 +326,6 @@ const styles = StyleSheet.create({
   },
   headerButtonTextDisabled: {
     color: '#9ca3af',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 24,
   },
   footer: {
     position: 'absolute',

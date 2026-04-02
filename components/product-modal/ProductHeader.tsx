@@ -6,29 +6,22 @@ type ProductHeaderProps = {
   brandName: string;
   productName: string;
   onClose: () => void;
-  onAddToWishlist: () => void;
+  onEditProduct?: () => void;
 };
 
 export function ProductHeader({
   brandName,
   productName,
   onClose,
-  onAddToWishlist,
+  onEditProduct,
 }: ProductHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const handleToggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleCloseMenu = () => {
-    setIsMenuOpen(false);
-  };
-
-  const handleAddToWishlist = () => {
-    setIsWishlisted(!isWishlisted);
-    onAddToWishlist();
     setIsMenuOpen(false);
   };
 
@@ -39,6 +32,11 @@ export function ProductHeader({
 
   const handleReport = () => {
     console.log("Report pressed");
+    setIsMenuOpen(false);
+  };
+
+  const handleEditProduct = () => {
+    onEditProduct?.();
     setIsMenuOpen(false);
   };
 
@@ -73,23 +71,14 @@ export function ProductHeader({
           <Pressable style={styles.overlay} onPress={handleCloseMenu}>
             <View style={styles.dropdownContainer}>
               <Pressable style={styles.dropdown} onPress={() => {}}>
-                <Pressable
-                  style={styles.menuItem}
-                  onPress={handleAddToWishlist}
-                >
-                  <Ionicons
-                    name={
-                      isWishlisted
-                        ? "heart-circle-outline"
-                        : "heart-dislike-circle-outline"
-                    }
-                    size={20}
-                    color="#000"
-                  />
-                  <Text style={[styles.menuItemText, { marginLeft: 12 }]}>
-                    Add to Wishlist
-                  </Text>
-                </Pressable>
+                {onEditProduct ? (
+                  <Pressable style={styles.menuItem} onPress={handleEditProduct}>
+                    <Ionicons name="create-outline" size={20} color="#000" />
+                    <Text style={[styles.menuItemText, { marginLeft: 12 }]}>
+                      Edit Product
+                    </Text>
+                  </Pressable>
+                ) : null}
 
                 <Pressable style={styles.menuItem} onPress={handleShare}>
                   <Ionicons name="share-outline" size={20} color="#000" />

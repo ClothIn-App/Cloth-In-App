@@ -19,6 +19,8 @@ export type Product = {
   id: string;
   name: string;
   brand: string;
+  /** Category path or label from API (optional in legacy mocks). */
+  category?: string;
   /** Canonical brand id when product matches API / emulator shape (optional in legacy mocks). */
   brandId?: string;
   brandNameCanonical?: string;

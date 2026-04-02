@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { useProductData } from "@/src/hooks/useProductData";
@@ -16,6 +17,8 @@ import ProductCommentsSection from "@/components/product-modal/comments/product-
 import ProductCommentInput from "@/components/product-modal/comments/product-comment-input";
 import type { Reactions, CommentType } from "@/src/types/feed";
 import { analyticsClient } from "@/src/services/apiClients/analyticsClient";
+import { stashProductForEdit } from "@/src/utils/productEditHandoff";
+import { consumePendingEditSubmissionThankYou } from "@/src/utils/pendingEditSubmissionToast";
 
 const DEFAULT_REACTIONS: Reactions = { counts: { LIKE: 0, THUMBS_UP: 0, FIRE: 0, DISLIKE: 0 } };
 
@@ -63,6 +66,18 @@ export default function ClosetProductDetailModal() {
     }
   }, [product, id, source]);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (consumePendingEditSubmissionThankYou()) {
+        Alert.alert(
+          "Submitted",
+          "Thank you! Your edit has been submitted for review.",
+          [{ text: "OK" }]
+        );
+      }
+    }, [])
+  );
+
   if (!product) {
     return null;
   }
@@ -71,8 +86,9 @@ export default function ClosetProductDetailModal() {
     router.back();
   };
 
-  const handleAddToWishlist = () => {
-    console.log("Add to wishlist:", product.id);
+  const handleEditProduct = () => {
+    stashProductForEdit(product);
+    router.push({ pathname: "/product-edit", params: { id: product.id } });
   };
 
   const handleReplySubmit = async (text: string, replyingTo?: { id: string; user: string } | null) => {
@@ -94,7 +110,7 @@ export default function ClosetProductDetailModal() {
         brandName={product.brand}
         productName={product.name}
         onClose={handleClose}
-        onAddToWishlist={handleAddToWishlist}
+        onEditProduct={handleEditProduct}
       />
 
       <KeyboardAvoidingView

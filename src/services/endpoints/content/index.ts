@@ -7,6 +7,7 @@ export * from "./getBrowse";
 export * from "./getProducts";
 export * from "./getFitPics";
 export * from "./createProduct";
+export * from "./submitProductEditSuggestion";
 export * from "./updateProductEngagement";
 export * from "./addProductComment";
 export * from "./productCommentReact";

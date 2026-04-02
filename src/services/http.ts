@@ -1,6 +1,39 @@
 // src/services/http.ts
 import { log } from '../debug/log'; // adjust path if needed
 
+export function messageFromResponseBody(body: unknown, fallback: string): string {
+  if (body == null || typeof body !== "object") return fallback;
+  const b = body as Record<string, unknown>;
+  const d = b.detail;
+  if (typeof d === "string" && d.trim()) return d;
+  if (Array.isArray(d)) {
+    const parts = d.map((item: unknown) => {
+      if (item != null && typeof item === "object" && "msg" in item) {
+        return String((item as { msg: unknown }).msg);
+      }
+      return JSON.stringify(item);
+    });
+    const joined = parts.filter(Boolean).join("; ");
+    return joined || fallback;
+  }
+  const m = b.message;
+  if (typeof m === "string" && m.trim()) return m;
+  return fallback;
+}
+
+export class ApiError extends Error {
+  readonly status: number;
+  readonly body?: unknown;
+
+  constructor(status: number, message: string, body?: unknown) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.body = body;
+    Object.setPrototypeOf(this, ApiError.prototype);
+  }
+}
+
 const BASE_API_URL =
   process.env.EXPO_PUBLIC_API_URL ?? "http://127.0.0.1:8080";
 
@@ -179,7 +212,7 @@ export async function callApiEndpoint<RequestBodyType, ResponseBodyType>(
       key: endpointDefinition.key,
       path: resolvedPath,
     });
-    throw new Error("Unauthorized");
+    throw new ApiError(401, "Unauthorized");
   }
   // ------------------------------------------------------------------------
 
@@ -374,11 +407,14 @@ export async function callApiEndpoint<RequestBodyType, ResponseBodyType>(
               url,
             });
             authEvents.emit('token_expired');
-            const message =
-              (retryResponseData as any)?.detail ||
-              (retryResponseData as any)?.message ||
-              `${endpointDefinition.key} failed: Unauthorized`;
-            throw new Error(String(message));
+            throw new ApiError(
+              401,
+              messageFromResponseBody(
+                retryResponseData,
+                `${endpointDefinition.key} failed: Unauthorized`
+              ),
+              retryResponseData
+            );
           }
         } else {
           // Token refresh failed - emit event and fail
@@ -388,11 +424,14 @@ export async function callApiEndpoint<RequestBodyType, ResponseBodyType>(
           });
           const { authEvents } = await import('@/src/services/authEvents');
           authEvents.emit('token_expired');
-          const message =
-            (responseData as any)?.detail ||
-            (responseData as any)?.message ||
-            `${endpointDefinition.key} failed: Unauthorized`;
-          throw new Error(String(message));
+          throw new ApiError(
+            401,
+            messageFromResponseBody(
+              responseData,
+              `${endpointDefinition.key} failed: Unauthorized`
+            ),
+            responseData
+          );
         }
       } catch (refreshError: any) {
         // If refresh attempt itself fails, emit event and throw
@@ -407,20 +446,26 @@ export async function callApiEndpoint<RequestBodyType, ResponseBodyType>(
       }
     } else {
       // Not in real mode or no auth required - just throw the error
-      const message =
-        (responseData as any)?.detail ||
-        (responseData as any)?.message ||
-        `${endpointDefinition.key} failed: Unauthorized`;
-      throw new Error(String(message));
+      throw new ApiError(
+        401,
+        messageFromResponseBody(
+          responseData,
+          `${endpointDefinition.key} failed: Unauthorized`
+        ),
+        responseData
+      );
     }
   }
 
   if (!response.ok) {
-    const message =
-      (responseData as any)?.detail ||
-      (responseData as any)?.message ||
-      `${endpointDefinition.key} failed.`;
-    throw new Error(String(message));
+    throw new ApiError(
+      response.status,
+      messageFromResponseBody(
+        responseData,
+        `${endpointDefinition.key} failed.`
+      ),
+      responseData
+    );
   }
 
   return responseData as ResponseBodyType;

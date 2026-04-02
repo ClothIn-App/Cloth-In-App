@@ -1,4 +1,6 @@
 import { callApiEndpoint } from "../http";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
 import {
   getProductEndpoint,
   GetProductRequest,
@@ -9,6 +11,9 @@ import {
   createProductEndpoint,
   CreateProductRequest,
   CreateProductResponse,
+  submitProductEditSuggestionEndpoint,
+  SubmitProductEditSuggestionRequest,
+  SubmitProductEditSuggestionResponse,
   searchBrandsEndpoint,
   SearchBrandsParams,
   SearchBrandsResponse,
@@ -79,6 +84,36 @@ export async function createProduct(
     createProductEndpoint,
     { requestBody: request }
   );
+}
+
+function buildEditSuggestionHeaders(extra?: Record<string, string>): Record<string, string> {
+  const headers: Record<string, string> = { ...extra };
+  const v =
+    Constants.expoConfig?.version ??
+    (Constants as { nativeAppVersion?: string }).nativeAppVersion;
+  if (v) headers["X-App-Version"] = String(v);
+  headers["X-Platform"] = Platform.OS;
+  return headers;
+}
+
+export async function submitProductEditSuggestion(
+  productId: string,
+  request: SubmitProductEditSuggestionRequest,
+  options?: { idempotencyKey?: string }
+): Promise<SubmitProductEditSuggestionResponse> {
+  const headers = buildEditSuggestionHeaders(
+    options?.idempotencyKey
+      ? { "Idempotency-Key": options.idempotencyKey }
+      : undefined
+  );
+  return callApiEndpoint<
+    SubmitProductEditSuggestionRequest,
+    SubmitProductEditSuggestionResponse
+  >(submitProductEditSuggestionEndpoint, {
+    pathParameters: { productId },
+    requestBody: request,
+    headers,
+  });
 }
 
 export async function searchBrands(
@@ -207,6 +242,7 @@ export const contentApiClient = {
   getProducts,
   getFitPics,
   createProduct,
+  submitProductEditSuggestion,
   searchBrands,
   getTrendingBrands,
   updateProductEngagement,
@@ -241,6 +277,8 @@ export type {
   GetFitPicsResponse,
   CreateProductRequest,
   CreateProductResponse,
+  SubmitProductEditSuggestionRequest,
+  SubmitProductEditSuggestionResponse,
   SearchBrandsParams,
   SearchBrandsResponse,
   BrandSearchHit,

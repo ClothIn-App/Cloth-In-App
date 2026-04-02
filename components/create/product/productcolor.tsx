@@ -8,7 +8,9 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Keyboard,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAddProductContext, COLOR_MAX_LEN } from './addproductcontext';
 import { isColorOptionalForCategory } from './colorCategoryRules';
 import { searchProductColors } from '@/src/services/searchApi';
@@ -24,7 +26,10 @@ export default function ProductColor() {
     productName,
     color,
     setColor,
+    confirmColor,
+    clearColorSelection,
     isProductConfirmed,
+    isColorConfirmed,
   } = useAddProductContext();
 
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -60,7 +65,7 @@ export default function ProductColor() {
   );
 
   useEffect(() => {
-    if (!isProductConfirmed) {
+    if (!isProductConfirmed || isColorConfirmed) {
       if (debounceRef.current) clearTimeout(debounceRef.current);
       setSuggestions([]);
       setLoading(false);
@@ -85,7 +90,7 @@ export default function ProductColor() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [color, runSearch, isProductConfirmed]);
+  }, [color, runSearch, isProductConfirmed, isColorConfirmed]);
 
   const optional = isColorOptionalForCategory(category);
   const label = optional ? 'Color' : 'Color *';
@@ -98,13 +103,16 @@ export default function ProductColor() {
   };
 
   const handlePick = (value: string) => {
-    setColor(value);
+    Keyboard.dismiss();
+    confirmColor(value);
     setSuggestions([]);
   };
 
   const handleCommitTyped = () => {
     const t = color.trim();
     if (!t) return;
+    Keyboard.dismiss();
+    confirmColor(t);
     setSuggestions([]);
   };
 
@@ -112,7 +120,8 @@ export default function ProductColor() {
     Alert.alert('', PRODUCT_FIRST_MESSAGE);
   };
 
-  const showPanel = isProductConfirmed && color.trim().length >= 1;
+  const showPanel =
+    isProductConfirmed && !isColorConfirmed && color.trim().length >= 1;
   const trimmed = color.trim();
   const filteredSuggestions = suggestions.filter(
     (hit) => hit.trim().toLowerCase() !== trimmed.toLowerCase()
@@ -135,6 +144,20 @@ export default function ProductColor() {
             pointerEvents="none"
           />
         </Pressable>
+      ) : isColorConfirmed ? (
+        <View style={styles.chipRow}>
+          <Text style={styles.chipLabel} numberOfLines={2}>
+            {color.trim()}
+          </Text>
+          <Pressable
+            onPress={clearColorSelection}
+            style={({ pressed }) => [styles.chipClear, pressed && styles.chipClearPressed]}
+            accessibilityLabel="Clear color"
+            hitSlop={8}
+          >
+            <Ionicons name="close-circle" size={22} color="#6b7280" />
+          </Pressable>
+        </View>
       ) : (
         <>
           <TextInput
@@ -153,12 +176,17 @@ export default function ProductColor() {
 
       {showPanel ? (
         <View style={styles.suggestionsBox}>
-          <ScrollView keyboardShouldPersistTaps="handled" style={styles.suggestionsScroll}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+            nestedScrollEnabled
+            style={styles.suggestionsScroll}
+          >
             {loading ? <ActivityIndicator style={styles.loader} color="#6b7280" /> : null}
             {!loading
-              ? filteredSuggestions.map((hit) => (
+              ? filteredSuggestions.map((hit, index) => (
                   <Pressable
-                    key={hit}
+                    key={`${hit}-${index}`}
                     style={({ pressed }) => [
                       styles.suggestionRow,
                       pressed && styles.suggestionRowPressed,
@@ -212,6 +240,30 @@ const styles = StyleSheet.create({
   },
   lockedPressed: {
     opacity: 0.92,
+  },
+  chipRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 12,
+    backgroundColor: '#f9fafb',
+    minHeight: 48,
+  },
+  chipLabel: {
+    flex: 1,
+    fontSize: 16,
+    color: '#111827',
+    marginRight: 8,
+  },
+  chipClear: {
+    padding: 2,
+  },
+  chipClearPressed: {
+    opacity: 0.6,
   },
   characterCount: {
     fontSize: 12,

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Alert, Platform, ActionSheetIOS, ActivityIndicator, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAddProductContext } from './addproductcontext';
-import { MockDraftsProvider } from './mockdrafts';
+import { DraftsProvider } from '../draftcontext';
 import PhotoGrid from '../post/photogrid';
 
 const MAX_PHOTOS = 5;
@@ -130,14 +130,14 @@ export default function ProductPhotos() {
       <Text style={styles.subLabel}>Add 1-5 photos of your product</Text>
 
       <View style={styles.photoGridContainer}>
-        <MockDraftsProvider>
+        <DraftsProvider>
           <PhotoGrid
             selectedIds={photos}
             onAddPress={handleAddPhotos}
             removeSelected={handleRemovePhoto}
             setSelectedOrder={handleReorderPhotos}
           />
-        </MockDraftsProvider>
+        </DraftsProvider>
       </View>
     </View>
   );
