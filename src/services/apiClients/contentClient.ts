@@ -25,6 +25,11 @@ import {
   updateProductEngagementEndpoint,
   addProductCommentEndpoint,
   productCommentReactEndpoint,
+  productMatchCheckEndpoint,
+  ProductMatchCheckEndpointRequest,
+  ProductMatchCheckEndpointResponse,
+  ProductMatchCandidate,
+  ProductMatchPreview,
 } from "../endpoints";
 import { getFitPicEndpoint, GetFitPicRequest, GetFitPicResponse } from "../endpoints/content/getFitPic";
 import { getFitPicsEndpoint, GetFitPicsRequest, GetFitPicsResponse } from "../endpoints/content/getFitPics";
@@ -231,6 +236,15 @@ export async function productCommentReact(
   );
 }
 
+export async function productMatchCheck(
+  request: ProductMatchCheckEndpointRequest
+): Promise<ProductMatchCheckEndpointResponse> {
+  return callApiEndpoint<ProductMatchCheckEndpointRequest, ProductMatchCheckEndpointResponse>(
+    productMatchCheckEndpoint,
+    { requestBody: request }
+  );
+}
+
 // object-style (what your screens use)
 export const contentApiClient = {
   getProduct,
@@ -248,6 +262,7 @@ export const contentApiClient = {
   updateProductEngagement,
   addProductComment,
   productCommentReact,
+  productMatchCheck,
 };
 
 // Export types
@@ -291,5 +306,9 @@ export type {
   AddProductCommentResponse,
   ProductCommentReactRequest,
   ProductCommentReactResponse,
+  ProductMatchCheckEndpointRequest,
+  ProductMatchCheckEndpointResponse,
+  ProductMatchCandidate,
+  ProductMatchPreview,
 };
 

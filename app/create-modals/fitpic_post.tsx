@@ -190,7 +190,14 @@ export default function FitPicPostModal({
             searchLoading={searchLoading}
             placeholder="Search by Brand or Product Name"
             onAddNewProduct={() =>
-              router.push({ pathname: '/create-modals/addproduct', params: { returnTo: 'fitpic' } })
+              router.push({
+                pathname: '/create-modals/addproduct',
+                params: {
+                  returnTo: 'fitpic',
+                  sourceFlow: 'fitpic',
+                  resumeRoute: '/create-modals/fitpic_post',
+                },
+              })
             }
           />
 
