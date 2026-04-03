@@ -38,17 +38,26 @@ function buildInitialForm(override?: Partial<ProductFormData>): ProductFormData 
   };
 }
 
+export type AddProductInitialUiState = {
+  isBrandConfirmed?: boolean;
+  isProductConfirmed?: boolean;
+  isColorConfirmed?: boolean;
+};
+
 function computeBaseline(
   initialForm?: Partial<ProductFormData>,
-  initialBrandId?: string | null
+  initialBrandId?: string | null,
+  initialUiState?: AddProductInitialUiState
 ): BaselineState {
   const form = buildInitialForm(initialForm);
   return {
     form,
     selectedBrandId: initialBrandId ?? null,
-    brandConfirmed: form.brand.trim().length >= 2,
-    productConfirmed: form.productName.trim().length >= 2,
-    colorConfirmed: form.color.trim().length > 0,
+    brandConfirmed:
+      initialUiState?.isBrandConfirmed ?? form.brand.trim().length >= 2,
+    productConfirmed:
+      initialUiState?.isProductConfirmed ?? form.productName.trim().length >= 2,
+    colorConfirmed: initialUiState?.isColorConfirmed ?? form.color.trim().length > 0,
   };
 }
 
@@ -114,14 +123,18 @@ export type AddProductProviderProps = {
   children: React.ReactNode;
   initialForm?: Partial<ProductFormData>;
   initialBrandId?: string | null;
+  initialUiState?: AddProductInitialUiState;
 };
 
 export function AddProductProvider({
   children,
   initialForm,
   initialBrandId = null,
+  initialUiState,
 }: AddProductProviderProps) {
-  const [baseline] = useState(() => computeBaseline(initialForm, initialBrandId));
+  const [baseline] = useState(() =>
+    computeBaseline(initialForm, initialBrandId, initialUiState)
+  );
 
   const [formData, setFormData] = useState<ProductFormData>(() => ({
     ...baseline.form,

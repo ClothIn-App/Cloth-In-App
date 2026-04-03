@@ -33,7 +33,13 @@ export function CreateActionBubbles({ visible, onClose, onSelect }: Props) {
   const handleProductPress = () => {
     onSelect?.("product");
     onClose();
-    router.push("/create-modals/addproduct");
+    router.push({
+      pathname: "/create-modals/addproduct",
+      params: {
+        sourceFlow: "standalone",
+        resumeRoute: "/(tabs)",
+      },
+    });
   };
 
   const leftBoxX = SCREEN_WIDTH / 2 - BOX_WIDTH - BOX_SPACING / 2;
