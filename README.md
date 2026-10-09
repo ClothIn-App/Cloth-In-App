@@ -25,6 +25,28 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
+## Web demo
+
+The app also runs in a browser as a self-contained demo: it uses the built-in
+mock API mode (`EXPO_PUBLIC_API_MODE=mock`), so no backend or Firebase project is
+needed, and visitors can log in with any email and password.
+
+```bash
+npm run build:web     # writes a static site to dist/
+npx serve -s dist     # preview locally
+```
+
+On wide screens the app is shown inside a phone frame with a short intro; add
+`?noframe` to the URL to skip it. On phones it fills the screen.
+
+**Deploying:** `vercel.json` (Vercel) and `public/_redirects` (Netlify) are set up
+so importing this repo deploys the demo with no extra settings. Any static host
+works if it serves `dist/` and falls back to `index.html` for unknown paths.
+
+Web-only shims live in `*.web.ts(x)` files (`src/bootstrap/webPolyfills.web.ts`,
+`src/services/secureStorage.web.ts`, `src/components/WebDeviceFrame.web.tsx`), so
+the iOS build is unaffected.
+
 ## Get a fresh project
 
 When you're ready, run:

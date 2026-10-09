@@ -1,6 +1,5 @@
 // app/auth/login.tsx (or wherever your Login screen lives)
 
-import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {

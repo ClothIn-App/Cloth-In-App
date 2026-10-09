@@ -1,7 +1,7 @@
 // src/services/authTokenManager.ts
 // Core token management with caching, race condition prevention, and retry logic
 
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from '@/src/services/secureStorage';
 import { AUTH_CONFIG } from '@/src/config/authConfig';
 import { TokenRefreshError, InvalidTokenError } from '@/src/services/authErrors';
 import { log } from '@/src/debug/log';
