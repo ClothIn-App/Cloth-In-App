@@ -1,5 +1,4 @@
 // app/auth/Signup.tsx
-import * as SecureStore from 'expo-secure-store';
 import { useAuth } from '@/src/context/AuthContext';
 import { log } from '@/src/debug/log';
 import { authApiClient as apiClient, userApiClient } from '@/src/services/apiClients';

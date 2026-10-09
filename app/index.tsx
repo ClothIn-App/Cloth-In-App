@@ -81,7 +81,9 @@ export default function Index() {
             return;
           }
         } else {
-          if (isMockLoggedIn()) {
+          // Mock endpoints still enforce auth policy, so a session flag without
+          // a stored token (e.g. a first-time web visitor) must go through login.
+          if (isMockLoggedIn() && (await getValidIdToken())) {
             router.replace("/(tabs)/home");
           } else {
             router.replace("/auth/welcome");

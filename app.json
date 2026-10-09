@@ -12,6 +12,11 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.CLOTH-IN"
     },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
     "plugins": [
       "expo-router",
       [
